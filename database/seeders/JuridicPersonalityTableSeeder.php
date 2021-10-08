@@ -15,7 +15,6 @@ class JuridicPersonalityTableSeeder extends Seeder
      */
     public function run()
     {
-        //
         DB::table('juridic_personalities')->insert([
             ['code' => Str::random(10), 'wording' => 'Personne physique', 'description' => ''],
             ['code' => Str::random(10), 'wording' => 'Personne morale', 'description' => ''],

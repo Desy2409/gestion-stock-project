@@ -71,8 +71,6 @@ class ProductController extends Controller
             $product->unity = $request->unity;
             $product->description = $request->description;
             $product->sub_category_id = $request->sub_category;
-
-            // dd($product);
             $product->save();
 
             return $product;
