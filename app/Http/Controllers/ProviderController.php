@@ -6,6 +6,7 @@ use App\Models\Provider;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class ProviderController extends Controller
 {
@@ -48,7 +49,7 @@ class ProviderController extends Controller
                 'cc_number' => 'required',
                 'social_reason' => 'required',
                 'email' => 'required|string|email',
-                'phone' => 'required|min:8|max:25|regex:/(01)[0-9]{9}/',
+                'phone' => 'required|min:8|max:25',//|regex:/(01)[0-9]{9}/',
                 'address' => 'max:255',
             ],
             [
@@ -61,17 +62,25 @@ class ProviderController extends Controller
                 'phone.required' => "Le numéro de téléphone est obligatoire.",
                 'phone.min' => "Le numéro de téléphone ne peut être inférieur à 25 caractères.",
                 'phone.max' => "Le numéro de téléphone ne doit pas dépasser 25 caractères.",
-                'phone.regex' => "Le numéro de téléphone est incorrect.",
+                // 'phone.regex' => "Le numéro de téléphone est incorrect.",
                 'address.max' => "L'adresse ne doit pas dépasser 255 caractères.",
             ],
         );
 
         try {
 
-            return Provider::create($request->all());
+            $provider = new Provider();
+            $provider->reference = 'FS000001';
+            $provider->rccm_number = $request->rccm_number;
+            $provider->cc_number = $request->cc_number;
+            $provider->social_reason = $request->social_reason;
+            $provider->address = $request->address;
+            $provider->email = $request->email;
+            $provider->bp = $request->bp;
+            $provider->phone = $request->phone;
+            $provider->save();
 
-            // Session::flash('success', "Enregistrement effectué avec succès.");
-            // return back();
+            return $provider;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
         }
@@ -120,7 +129,7 @@ class ProviderController extends Controller
                 'cc_number' => 'required',
                 'social_reason' => 'required',
                 'email' => 'required|string|email',
-                'phone' => 'required|min:8|max:25|regex:/(01)[0-9]{9}/',
+                'phone' => 'required|min:8|max:25',//|regex:/(01)[0-9]{9}/',
                 'address' => 'max:255',
             ],
             [
@@ -133,18 +142,22 @@ class ProviderController extends Controller
                 'phone.required' => "Le numéro de téléphone est obligatoire.",
                 'phone.min' => "Le numéro de téléphone ne peut être inférieur à 25 caractères.",
                 'phone.max' => "Le numéro de téléphone ne doit pas dépasser 25 caractères.",
-                'phone.regex' => "Le numéro de téléphone est incorrect.",
+                // 'phone.regex' => "Le numéro de téléphone est incorrect.",
                 'address.max' => "L'adresse ne doit pas dépasser 255 caractères.",
             ],
         );
 
         try {
+           $provider->rccm_number = $request->rccm_number;
+            $provider->cc_number = $request->cc_number;
+            $provider->social_reason = $request->social_reason;
+            $provider->address = $request->address;
+            $provider->email = $request->email;
+            $provider->bp = $request->bp;
+            $provider->phone = $request->phone;
+            $provider->save();
 
-            $provider->update($request->all());
             return $provider;
-
-            // Session::flash('success', "Enregistrement effectué avec succès.");
-            // return back();
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la modification.");
         }
@@ -158,10 +171,12 @@ class ProviderController extends Controller
      */
     public function destroy($id)
     {
+        $provider = Provider::findOrFail($id);
         try {
-            return Provider::destroy($id);
+            $provider->delete();
+            return $provider;
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de la suppresion.");
+            Session::flash('danger', "Erreur survenue lors de la suppression.");
         }
     }
 }

@@ -20,6 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('reference');
             $table->string('wording');
             $table->string('description')->nullable();
+            $table->decimal('price', 10, 2);
             $table->string('unity');
             $table->timestamps();
             $table->unsignedBigInteger('sub_category_id');

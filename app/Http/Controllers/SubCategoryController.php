@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
-class SubSubCategoryController extends Controller
+class SubCategoryController extends Controller
 {
     public function __construct()
     {
@@ -32,7 +32,7 @@ class SubSubCategoryController extends Controller
         $this->validate(
             $request,
             [
-                'wording' => 'required|unique:categories|max:150',
+                'wording' => 'required|unique:sub_categories|max:150',
                 'description' => 'max:255',
                 'category' => 'required'
             ],
@@ -46,17 +46,14 @@ class SubSubCategoryController extends Controller
         );
 
         try {
+            $subCategory = new SubCategory();
+            $subCategory->code = Str::random(10);
+            $subCategory->wording = $request->wording;
+            $subCategory->description = $request->description;
+            $subCategory->category_id = $request->category;
+            $subCategory->save();
 
-            return SubCategory::create($request->all());
-            // $subCategory = new SubCategory();
-            // $subCategory->code = Str::random(10);
-            // $subCategory->wording = $request->wording;
-            // $subCategory->description = $request->description;
-            // $subCategory->category_id = $request->category;
-            // $subCategory->save();
-
-            // Session::flash('success', "Enregistrement effectué avec succès.");
-            // return back();
+            return $subCategory;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
         }
@@ -84,16 +81,13 @@ class SubSubCategoryController extends Controller
         );
 
         try {
-
-            $subCategory->update($request->all());
+            // $subCategory->update($request->all());
+            $subCategory->wording = $request->wording;
+            $subCategory->description = $request->description;
+            $subCategory->category_id = $request->category;
+            $subCategory->save();
+            
             return $subCategory;
-            // $subCategory->wording = $request->wording;
-            // $subCategory->description = $request->description;
-            // $subCategory->category_id = $request->category;
-            // $subCategory->save();
-
-            Session::flash('success', "Modification effectuée avec succès.");
-            return back();
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la modification.");
         }
@@ -102,14 +96,10 @@ class SubSubCategoryController extends Controller
     // Suppression d'une sous-catégorie
     public function destroy($id)
     {
-        // $subCategory = SubCategory::findOrFail($id);
+        $subCategory = SubCategory::findOrFail($id);
         try {
-
-            return SubCategory::destroy($id);
-            // $subCategory->delete();
-
-            // Session::flash('destroy', 'Suppression effectuée avec succès');
-            // return back();
+            $subCategory->delete();
+            return $subCategory;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la suppression.");
         }

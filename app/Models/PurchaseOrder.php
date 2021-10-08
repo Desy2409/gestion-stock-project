@@ -5,23 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class PurchaseOrder extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'code',
-        'reference',
-        'wording',
-        'description',
-        'price',
-        'unity',
+        'order_number',
+        'purchase_date',
+        'delevery_date',
+        'total_price',
+        'total_amount',
+        'observation',
     ];
-
-    public function subCategory()
-    {
-        return $this->belongsTo(SubCategory::class);
-    }
 
     public function productPurchaseOrders()
     {

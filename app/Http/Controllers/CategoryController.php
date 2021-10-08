@@ -41,16 +41,13 @@ class CategoryController extends Controller
         );
 
         try {
+            $category = new Category();
+            $category->code = Str::random(10);
+            $category->wording = $request->wording;
+            $category->description = $request->description;
+            $category->save();
 
-            return Category::create($request->all());
-            // $category = new Category();
-            // $category->code = Str::random(10);
-            // $category->wording = $request->wording;
-            // $category->description = $request->description;
-            // $category->save();
-
-            // Session::flash('success', "Enregistrement effectué avec succès.");
-            // return back();
+            return $category;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
         }
@@ -76,15 +73,12 @@ class CategoryController extends Controller
         );
 
         try {
+            // $category->update($request->all());
+            $category->wording = $request->wording;
+            $category->description = $request->description;
+            $category->save();
 
-            $category->update($request->all());
             return $category;
-            // $category->wording = $request->wording;
-            // $category->description = $request->description;
-            // $category->save();
-
-            // Session::flash('success', "Modification effectuée avec succès.");
-            // return back();
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la modification.");
         }
@@ -93,14 +87,10 @@ class CategoryController extends Controller
     // Suppression d'une catégorie
     public function destroy($id)
     {
-        // $category = Category::findOrFail($id);
+        $category = Category::findOrFail($id);
         try {
-
-            return Category::destroy($id);
-            // $category->delete();
-
-            // Session::flash('destroy', 'Suppression effectuée avec succès');
-            // return back();
+            $category->delete();
+            return $category;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la suppression.");
         }

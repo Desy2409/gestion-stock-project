@@ -7,6 +7,7 @@ use App\Models\JuridicPersonality;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -48,41 +49,42 @@ class ClientController extends Controller
             $request,
 
             [
-                'jurdic_personality' => 'required',
+                'juridic_personality' => 'required',
                 'email' => 'required|string|email',
-                'phone' => 'required|min:8|max:25|regex:/(01)[0-9]{9}/',
+                'phone' => 'required|min:8|max:25', //|regex:/(01)[0-9]{9}/',
                 'address' => 'max:255',
             ],
             [
-                'jurdic_personality.required' => "La personnalité juridique est obligatoire.",
+                'juridic_personality.required' => "La personnalité juridique est obligatoire.",
                 'email.required' => "L'email est obligatoire.",
                 'email.string' => "L'email doit être une chaîne de caractères.",
                 'email.email' => "Le format d'email est incorrect.",
                 'phone.required' => "Le numéro de téléphone est obligatoire.",
                 'phone.min' => "Le numéro de téléphone ne peut être inférieur à 25 caractères.",
                 'phone.max' => "Le numéro de téléphone ne doit pas dépasser 25 caractères.",
-                'phone.regex' => "Le numéro de téléphone est incorrect.",
+                // 'phone.regex' => "Le numéro de téléphone est incorrect.",
                 'address.max' => "L'adresse ne doit pas dépasser 255 caractères.",
             ],
         );
 
-        if ($request->jurdic_personality != null) {
-            switch ($request->jurdic_personality) {
+        if ($request->juridic_personality != null) {
+            switch ($request->juridic_personality) {
                 case 1:
                     $this->validate(
                         $request,
 
                         [
-                            'last_name' => 'required|max:50|regex:/^[a-zA-Z]+$/i',
-                            'first_name' => 'required|max:50|regex:/^[a-zA-Z]+$/i',
+                            #Il faudrait réfléchir à comment permettre de mettre un point (.) dans le nom ou le prénom 
+                            'last_name' => 'required|max:50|string', //regex:/^[a-zA-Zé]+$/i',
+                            'first_name' => 'required|max:50|string', //regex:/^[a-zA-Zé]+$/i',
                         ],
                         [
                             'last_name.required' => "Le nom est obligatoire.",
                             'last_name.max' => "Le nom ne doit pas dépasser 50 caractères.",
-                            'last_name.regex' => "Le nom doit être une chaîne de caractères.",
+                            'last_name.string' => "Le nom doit être une chaîne de caractères.",
                             'first_name.required' => "Le prénom est obligatoire.",
                             'first_name.max' => "Le prénom ne doit pas dépasser 50 caractères.",
-                            'first_name.regex' => "Le prénom doit être une chaîne de caractères.",
+                            'first_name.string' => "Le prénom doit être une chaîne de caractères.",
                         ],
                     );
                     break;
@@ -90,7 +92,6 @@ class ClientController extends Controller
                 case 2:
                     $this->validate(
                         $request,
-
                         [
                             'rccm_number' => 'required',
                             'cc_number' => 'required',
@@ -111,11 +112,22 @@ class ClientController extends Controller
         }
 
         try {
+            $client = new Client();
+            $client->reference = 'CL000001';
+            $client->last_name = $request->last_name;
+            $client->first_name = $request->first_name;
+            $client->rccm_number = $request->rccm_number;
+            $client->cc_number = $request->cc_number;
+            $client->social_reason = $request->social_reason;
+            $client->address = $request->address;
+            $client->email = $request->email;
+            $client->bp = $request->bp;
+            $client->phone = $request->phone;
+            $client->juridic_personality_id = $request->juridic_personality;
+            // dd($client);
+            $client->save();
 
-            return Client::create($request->all());
-
-            // Session::flash('success', "Enregistrement effectué avec succès.");
-            // return back();
+            return $client;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
         }
@@ -162,33 +174,33 @@ class ClientController extends Controller
             $request,
 
             [
-                'jurdic_personality' => 'required',
+                'juridic_personality' => 'required',
                 'email' => 'required|string|email',
-                'phone' => 'required|min:8|max:25|regex:/(01)[0-9]{9}/',
+                'phone' => 'required|min:8|max:25', //|regex:/(01)[0-9]{9}/',
                 'address' => 'max:255',
             ],
             [
-                'jurdic_personality.required' => "La personnalité juridique est obligatoire.",
+                'juridic_personality.required' => "La personnalité juridique est obligatoire.",
                 'email.required' => "L'email est obligatoire.",
                 'email.string' => "L'email doit être une chaîne de caractères.",
                 'email.email' => "Le format d'email est incorrect.",
                 'phone.required' => "Le numéro de téléphone est obligatoire.",
                 'phone.min' => "Le numéro de téléphone ne peut être inférieur à 25 caractères.",
                 'phone.max' => "Le numéro de téléphone ne doit pas dépasser 25 caractères.",
-                'phone.regex' => "Le numéro de téléphone est incorrect.",
+                // 'phone.regex' => "Le numéro de téléphone est incorrect.",
                 'address.max' => "L'adresse ne doit pas dépasser 255 caractères.",
             ],
         );
 
-        if ($request->jurdic_personality != null) {
-            switch ($request->jurdic_personality) {
+        if ($request->juridic_personality != null) {
+            switch ($request->juridic_personality) {
                 case 1:
                     $this->validate(
                         $request,
 
                         [
-                            'last_name' => 'required|max:50|regex:/^[a-zA-Z]+$/i',
-                            'first_name' => 'required|max:50|regex:/^[a-zA-Z]+$/i',
+                            'last_name' => 'required|max:50|string', //regex:/^[a-zA-Zé]+$/i',
+                            'first_name' => 'required|max:50|string', //regex:/^[a-zA-Zé]+$/i',
                         ],
                         [
                             'last_name.required' => "Le nom est obligatoire.",
@@ -225,12 +237,21 @@ class ClientController extends Controller
         }
 
         try {
+            // $client->update($request->all());
+            $client->last_name = $request->last_name;
+            $client->first_name = $request->first_name;
+            $client->rccm_number = $request->rccm_number;
+            $client->cc_number = $request->cc_number;
+            $client->social_reason = $request->social_reason;
+            $client->address = $request->address;
+            $client->email = $request->email;
+            $client->bp = $request->bp;
+            $client->phone = $request->phone;
+            $client->juridic_personality_id = $request->juridic_personality;
 
-            $client->update($request->all());
+            $client->save();
+
             return $client;
-
-            // Session::flash('success', "Enregistrement effectué avec succès.");
-            // return back();
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la modification.");
         }
@@ -244,10 +265,12 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
+        $client = Client::findOrFail($id);
         try {
-            return Client::destroy($id);
+            $client->delete();
+            return $client;
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de la suppresion.");
+            Session::flash('danger', "Erreur survenue lors de la suppression.");
         }
     }
 }

@@ -5,6 +5,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\SubCategoryController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,9 +25,10 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{id}/show', [ProductController::class, 'show']);
-Route::get('/products/{$name}/search', [ProductController::class, 'show']);
+Route::get('/product', [ProductController::class, 'index']);
+Route::get('/product/{$name}/search', [ProductController::class, 'search']);
+// Provider routes
+Route::get('/provider', [ProviderController::class, 'index']);
 
 
 // Protected routes
@@ -47,23 +50,35 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Client routes
     Route::get('/client', [ClientController::class, 'index']);
     Route::get('/client-new', [ClientController::class, 'create']);
-    Route::post('/client', [ClientController::class, 'store']);
+    Route::post('/client-new', [ClientController::class, 'store']);
     Route::get('/client{id}/show', [ClientController::class, 'show']);
+    Route::get('/client/{id}/update', [ClientController::class, 'edit']);
     Route::patch('/client/{id}/update', [ClientController::class, 'update']);
     Route::delete('/client/{id}/destroy', [ClientController::class, 'destroy']);
 
     // Provider routes
-    Route::get('/provider', [ProviderController::class, 'index']);
     Route::get('/provider-new', [ProviderController::class, 'create']);
-    Route::post('/provider', [ProviderController::class, 'store']);
-    Route::get('/provider{id}/show', [ProviderController::class, 'show']);
+    Route::post('/provider-new', [ProviderController::class, 'store']);
+    Route::get('/provider/{id}/show', [ProviderController::class, 'show']);
+    Route::get('/provider/{id}/update', [ProviderController::class, 'edit']);
     Route::patch('/provider/{id}/update', [ProviderController::class, 'update']);
     Route::delete('/provider/{id}/destroy', [ProviderController::class, 'destroy']);
 
     // Product routes
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::patch('/products/{id}/update', [ProductController::class, 'update']);
-    Route::delete('/products/{id}/destroy', [ProductController::class, 'destroy']);
+    Route::get('/product-new', [ProductController::class, 'create']);
+    Route::post('/product-new', [ProductController::class, 'store']);
+    Route::get('/product/{id}/show', [ProductController::class, 'show']);
+    Route::get('/product/{id}/update', [ProductController::class, 'edit']);
+    Route::patch('/product/{id}/update', [ProductController::class, 'update']);
+    Route::delete('/product/{id}/destroy', [ProductController::class, 'destroy']);
+
+    // Purchase order routes
+    Route::get('/purchase-order-new', [PurchaseOrderController::class, 'create']);
+    Route::post('/purchase-order-new', [PurchaseOrderController::class, 'store']);
+    Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
+    Route::get('/purchase-order/{id}/update', [PurchaseOrderController::class, 'edit']);
+    Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
+    Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
