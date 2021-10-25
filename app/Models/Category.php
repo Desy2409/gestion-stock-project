@@ -10,7 +10,7 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code',
+        'reference',
         'wording',
         'description'
     ];
@@ -19,4 +19,16 @@ class Category extends Model
     {
         return $this->hasMany(SubCategory::class);
     }
+
+    // public static function boot()
+    // {
+    //     parent::boot();
+
+    //     self::creating(function($model){
+
+    //         $model->description = 'blabla';
+
+    //     });
+    // }
+
 }

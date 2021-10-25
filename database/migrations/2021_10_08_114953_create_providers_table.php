@@ -14,15 +14,9 @@ class CreateProvidersTable extends Migration
     public function up()
     {
         Schema::create('providers', function (Blueprint $table) {
-            $table->id();
+            $table->string('code')->primary()->autoIncrement(false);
             $table->string('reference');
-            $table->string('rccm_number')->nullable();
-            $table->string('cc_number')->nullable();
-            $table->string('social_reason')->nullable();
-            $table->string('address');
-            $table->string('email');
-            $table->string('bp')->nullable();
-            $table->string('phone');
+            $table->text('settings');
             $table->timestamps();
         });
     }

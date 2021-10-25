@@ -10,7 +10,7 @@ class SubCategory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code',
+        'reference',
         'wording',
         'description'
     ];

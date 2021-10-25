@@ -10,17 +10,15 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
 
     public function index()
     {
         $categories = Category::orderBy('wording')->get();
-        return [
-            'categories' => $categories,
-        ];
+        return $categories;
     }
 
     // Enregistrement d'une nouvelle catégorie
@@ -42,7 +40,7 @@ class CategoryController extends Controller
 
         try {
             $category = new Category();
-            $category->code = Str::random(10);
+            $category->reference = $request->reference;
             $category->wording = $request->wording;
             $category->description = $request->description;
             $category->save();
@@ -94,5 +92,21 @@ class CategoryController extends Controller
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la suppression.");
         }
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        // dd('test');
+        // $category = Category::where('id','=', $id);
+         $category = Category::findOrFail($id);
+        // dd($category);
+        return $category;
     }
 }

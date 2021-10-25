@@ -19,8 +19,8 @@ class CreateProductPurchaseOrdersTable extends Migration
             $table->decimal('total_price', 10, 2);
             $table->timestamps();
             $table->unsignedBigInteger('purchase_order_id')->nullable();
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products');
+            $table->string('product_code');
+            $table->foreign('product_code')->references('code')->on('products');
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders');
         });
     }

@@ -10,13 +10,29 @@ class Provider extends Model
     use HasFactory;
 
     protected $fillable = [
+        'code',
         'reference',
-        'rccm_number',
-        'cc_number',
-        'social_reason',
-        'address',
-        'email',
-        'bp',
-        'phone',
+        'settings'
     ];
+
+    // protected $casts = [
+    //     'settings' => 'array'
+    // ];
+
+    // public function setMetaAttribute($value)
+    // {
+    //     $settings = [];
+
+    //     foreach ($value as $array_item) {
+    //         if (!is_null($array_item['key'])) {
+    //             $settings[] = $array_item;
+    //         }
+    //     }
+
+    //     $this->attributes['settings'] = json_encode($settings);
+    // }
+
+    public function person(){
+        return $this->morphOne(Person::class, 'personable');
+    }
 }

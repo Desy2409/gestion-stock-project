@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterClientsTable extends Migration
+class CreateSalePointsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AlterClientsTable extends Migration
      */
     public function up()
     {
-        Schema::table('clients', function(Blueprint $table){
-            $table->string('address')->nullable()->change();
+        Schema::create('sale_points', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
         });
     }
 
@@ -25,6 +26,6 @@ class AlterClientsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('sale_points');
     }
 }

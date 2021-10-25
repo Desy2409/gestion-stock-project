@@ -11,19 +11,16 @@ use Illuminate\Support\Str;
 
 class SubCategoryController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
 
     public function index()
     {
-        $categories = Category::orderBy('wording')->get();
+        // $categories = Category::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
-        return [
-            'categories' => $categories,
-            'subCategories' => $subCategories
-        ];
+        return $subCategories;
     }
 
     // Enregistrement d'une nouvelle sous-catégorie
@@ -86,7 +83,7 @@ class SubCategoryController extends Controller
             $subCategory->description = $request->description;
             $subCategory->category_id = $request->category;
             $subCategory->save();
-            
+
             return $subCategory;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la modification.");
@@ -103,5 +100,18 @@ class SubCategoryController extends Controller
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la suppression.");
         }
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $subCategory = SubCategory::where("id", $id);
+        return $subCategory;
     }
 }

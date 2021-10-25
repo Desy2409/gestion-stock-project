@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\JuridicPersonalityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,33 +26,36 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
-Route::get('/product', [ProductController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index']);
 Route::get('/product/{$name}/search', [ProductController::class, 'search']);
 // Provider routes
-Route::get('/provider', [ProviderController::class, 'index']);
+Route::get('/providers', [ProviderController::class, 'index']);
+
+    //Juridic personality
+Route::get('/juridic-personality', [JuridicPersonalityController::class, 'index']);
 
 
-// Protected routes
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/logout', [AuthUserController::class, 'logout']);
+
 
     // Category routes
-    Route::get('/category', [CategoryController::class, 'index']);
+    Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/category', [CategoryController::class, 'store']);
     Route::patch('/category/{id}/update', [CategoryController::class, 'update']);
     Route::delete('/category/{id}/destroy', [CategoryController::class, 'destroy']);
+    Route::get('/category/{id}/show', [CategoryController::class, 'show']);
 
     // Sub category routes
-    Route::get('/sub-category', [SubCategoryController::class, 'index']);
+    Route::get('/sub-categories', [SubCategoryController::class, 'index']);
     Route::post('/sub-category', [SubCategoryController::class, 'store']);
     Route::patch('/sub-category/{id}/update', [SubCategoryController::class, 'update']);
     Route::delete('/sub-category/{id}/destroy', [SubCategoryController::class, 'destroy']);
+    Route::get('/sub-category/{id}/show', [SubCategoryController::class, 'show']);
 
     // Client routes
-    Route::get('/client', [ClientController::class, 'index']);
+    Route::get('/clients', [ClientController::class, 'index']);
     Route::get('/client-new', [ClientController::class, 'create']);
     Route::post('/client-new', [ClientController::class, 'store']);
-    Route::get('/client{id}/show', [ClientController::class, 'show']);
+    Route::get('/client/{id}/show', [ClientController::class, 'show']);
     Route::get('/client/{id}/update', [ClientController::class, 'edit']);
     Route::patch('/client/{id}/update', [ClientController::class, 'update']);
     Route::delete('/client/{id}/destroy', [ClientController::class, 'destroy']);
@@ -79,6 +83,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/purchase-order/{id}/update', [PurchaseOrderController::class, 'edit']);
     Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
+
+// Protected routes
+Route::group([
+    'middleware' => 'api',
+    'namespace' => 'App\Http\Controllers',
+    'prefix' => 'auth'
+],
+    function ($router) {
+    Route::post('/logout', [AuthUserController::class, 'logout']);
+
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -19,9 +19,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::orderBy('wording')->get();
-        return [
-            'products' => $products,
-        ];
+        return $products;
     }
 
    /**
@@ -140,7 +138,7 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->sub_category_id = $request->sub_category;
             $product->save();
-            
+
             return $product;
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de la modification.");

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Provider;
+use App\Models\Person;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -18,9 +19,7 @@ class ProviderController extends Controller
     public function index()
     {
         $providers = Provider::orderBy('social_reason')->get();
-        return [
-            'providers' => $providers,
-        ];
+        return $providers;
     }
 
     /**
@@ -45,42 +44,40 @@ class ProviderController extends Controller
             $request,
 
             [
-                'rccm_number' => 'required',
-                'cc_number' => 'required',
-                'social_reason' => 'required',
-                'email' => 'required|string|email',
-                'phone' => 'required|min:8|max:25',//|regex:/(01)[0-9]{9}/',
-                'address' => 'max:255',
+                'personType' => 'required',
+                'code' => 'required',
+                'reference' => 'required',
+                'settings' => 'required',
             ],
             [
-                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
-                'cc_number.required' => "Le numéro CC est obligatoire.",
-                'social_reason.required' => "La raison sociale est obligatoire.",
-                'email.required' => "L'email est obligatoire.",
-                'email.string' => "L'email doit être une chaîne de caractères.",
-                'email.email' => "Le format d'email est incorrect.",
-                'phone.required' => "Le numéro de téléphone est obligatoire.",
-                'phone.min' => "Le numéro de téléphone ne peut être inférieur à 25 caractères.",
-                'phone.max' => "Le numéro de téléphone ne doit pas dépasser 25 caractères.",
-                // 'phone.regex' => "Le numéro de téléphone est incorrect.",
-                'address.max' => "L'adresse ne doit pas dépasser 255 caractères.",
+                'personType.required' => "Le type est obligatoire.",
+                'code.required' => "Le code est obligatoire.",
+                'reference.required' => "La reference sociale est obligatoire.",
             ],
         );
 
         try {
 
             $provider = new Provider();
-            $provider->reference = 'FS000001';
-            $provider->rccm_number = $request->rccm_number;
-            $provider->cc_number = $request->cc_number;
-            $provider->social_reason = $request->social_reason;
-            $provider->address = $request->address;
-            $provider->email = $request->email;
-            $provider->bp = $request->bp;
-            $provider->phone = $request->phone;
+            // $provider->code = 'FS000001';
+            $provider->reference = $request->reference;
+            $provider->settings = $request->settings;
             $provider->save();
 
+            $person = new Person();
+            $person->lastName = $request->lastName;
+            $person->firstName = $request->firstName;
+            $person->rccmNumber = $request->rccmNumber;
+            $person->ccNumber = $request->ccNumber;
+            $person->socialReason = $request->socialReason;
+            $person->personType = $request->personType;
+            $person->personable_code = $provider->code;
+            $person->personable_type = 'App\Models\Provider';
+            $person->save();
+
             return $provider;
+
+
         } catch (Exception $e) {
             Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
         }
@@ -148,6 +145,7 @@ class ProviderController extends Controller
         );
 
         try {
+
            $provider->rccm_number = $request->rccm_number;
             $provider->cc_number = $request->cc_number;
             $provider->social_reason = $request->social_reason;

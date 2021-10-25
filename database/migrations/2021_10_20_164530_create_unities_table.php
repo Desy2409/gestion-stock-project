@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterProvidersTable extends Migration
+class CreateUnitiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AlterProvidersTable extends Migration
      */
     public function up()
     {
-        Schema::table('providers', function(Blueprint $table){
-            $table->string('address')->nullable()->change();
+        Schema::create('unities', function (Blueprint $table) {
+            $table->id();
+            $table->string('wording');
+            $table->timestamps();
         });
     }
 
@@ -25,6 +27,6 @@ class AlterProvidersTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('unities');
     }
 }
