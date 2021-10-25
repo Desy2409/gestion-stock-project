@@ -15,6 +15,12 @@ class CreateSalePointsTable extends Migration
     {
         Schema::create('sale_points', function (Blueprint $table) {
             $table->id();
+            $table->string('rccm_number');
+            $table->string('cc_number');
+            $table->string('social_reason');
+            $table->string('email');
+            $table->string('phone_number');
+            $table->string('address')->nullable();
             $table->timestamps();
         });
     }

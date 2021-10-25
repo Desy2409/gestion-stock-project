@@ -10,7 +10,9 @@ class Unity extends Model
     use HasFactory;
 
     protected $fillable = [
-        'wording'
+        'code',
+        'wording',
+        'description'
     ];
 
     public function products()

@@ -22,12 +22,6 @@ class CreatePurchaseOrdersTable extends Migration
             $table->decimal('total_amount', 10, 2);
             $table->string('observation')->nullable();
             $table->timestamps();
-            // $table->unsignedBigInteger('client_id')->nullable();
-            // $table->unsignedBigInteger('provider_id')->nullable();
-            // $table->unsignedBigInteger('product_id');
-            // $table->foreign('client_id')->references('id')->on('clients');
-            // $table->foreign('provider_id')->references('id')->on('providers');
-            // $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

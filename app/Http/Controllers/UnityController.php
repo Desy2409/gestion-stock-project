@@ -2,59 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
-class CategoryController extends Controller
+class UnityController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('wording')->get();
+        $unities = Unity::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['categories' => $categories]
+            'datas' => ['unities' => $unities]
         ]);
     }
 
-    // Enregistrement d'une nouvelle catégorie
+    // Enregistrement d'une nouvelle unité
     public function store(Request $request)
     {
         $this->validate(
             $request,
             [
-                'reference' => 'required|unique:categories',
-                'wording' => 'required|unique:categories|max:150',
+                'wording' => 'required|unique:unities|max:150',
                 'description' => 'max:255',
             ],
             [
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
                 'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette catégorie existe déjà.",
+                'wording.unique' => "Cette unité existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
         try {
-            $category = new Category();
-            $category->reference = $request->reference;
-            $category->wording = $request->wording;
-            $category->description = $request->description;
-            $category->save();
+            $unity = new Unity();
+            $unity->code = Str::random(10);
+            $unity->wording = $request->wording;
+            $unity->description = $request->description;
+            $unity->save();
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'category' => $category,
+                'unity' => $unity,
                 'success' => $success,
                 'message' => $message,
             ], 200 | 400);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -64,20 +60,18 @@ class CategoryController extends Controller
         }
     }
 
-    // Mise à jour d'une catégorie
+    // Mise à jour d'une unité
     public function update(Request $request, $id)
     {
 
-        $category = Category::findOrFail($id);
+        $unity = Unity::findOrFail($id);
         $this->validate(
             $request,
             [
-                'reference' => 'required',
                 'wording' => 'required|max:150',
                 'description' => 'max:255',
             ],
             [
-                'reference.required' => "La référence est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
@@ -85,15 +79,14 @@ class CategoryController extends Controller
         );
 
         try {
-            $category->reference = $request->reference;
-            $category->wording = $request->wording;
-            $category->description = $request->description;
-            $category->save();
+            $unity->wording = $request->wording;
+            $unity->description = $request->description;
+            $unity->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'category' => $category,
+                'unity' => $unity,
                 'success' => $success,
                 'message' => $message,
             ], 200 | 400);
@@ -107,17 +100,17 @@ class CategoryController extends Controller
         }
     }
 
-    // Suppression d'une catégorie
+    // Suppression d'une unité
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
+        $unity = Unity::findOrFail($id);
         try {
-            $category->delete();
+            $unity->delete();
 
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'category' => $category,
+                'unity' => $unity,
                 'success' => $success,
                 'message' => $message,
             ], 200 | 400);
@@ -133,9 +126,9 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::findOrFail($id);
+        $unity = Unity::findOrFail($id);
         return new JsonResponse([
-            'category' => $category
+            'unity' => $unity
         ], 200 | 400);
     }
 }

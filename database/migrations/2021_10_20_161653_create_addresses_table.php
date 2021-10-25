@@ -15,10 +15,12 @@ class CreateAddressesTable extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->string('address');
-            $table->string('email');
-            $table->string('phone');
-            $table->string('bp');
+            $table->string('address')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone_number');
+            $table->string('bp')->nullable();
+            $table->foreignId('client_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('provider_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

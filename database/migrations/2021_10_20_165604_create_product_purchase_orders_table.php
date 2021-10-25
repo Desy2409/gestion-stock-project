@@ -18,10 +18,8 @@ class CreateProductPurchaseOrdersTable extends Migration
             $table->decimal('quantity', 5, 2)->default(0);
             $table->decimal('total_price', 10, 2);
             $table->timestamps();
-            $table->unsignedBigInteger('purchase_order_id')->nullable();
-            $table->string('product_code');
-            $table->foreign('product_code')->references('code')->on('products');
-            $table->foreign('purchase_order_id')->references('id')->on('purchase_orders');
+            $table->foreignId('purchase_order_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
         });
     }
 

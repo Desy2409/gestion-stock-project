@@ -3,83 +3,129 @@
 namespace App\Http\Controllers;
 
 use App\Models\SalePoint;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SalePointController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    // public function index()
+    // {
+    //     $unities = Unity::orderBy('wording')->get();
+    //     return new JsonResponse([
+    //         'datas' => ['unities' => $unities]
+    //     ]);
+    // }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+    // // Enregistrement d'une nouvelle unité
+    // public function store(Request $request)
+    // {
+    //     $this->validate(
+    //         $request,
+    //         [
+    //             'wording' => 'required|unique:unities|max:150',
+    //             'description' => 'max:255',
+    //         ],
+    //         [
+    //             'wording.required' => "Le libellé est obligatoire.",
+    //             'wording.unique' => "Cette unité existe déjà.",
+    //             'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+    //             'description.max' => "La description ne doit pas dépasser 255 caractères."
+    //         ]
+    //     );
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    //     try {
+    //         $unity = new Unity();
+    //         $unity->code = Str::random(10);
+    //         $unity->wording = $request->wording;
+    //         $unity->description = $request->description;
+    //         $unity->save();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\SalePoint  $salePoint
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SalePoint $salePoint)
-    {
-        //
-    }
+    //         $success = true;
+    //         $message = "Enregistrement effectué avec succès.";
+    //         return new JsonResponse([
+    //             'unity' => $unity,
+    //             'success' => $success,
+    //             'message' => $message,
+    //         ], 200 | 400);
+    //     } catch (Exception $e) {
+    //         $success = false;
+    //         $message = "Erreur survenue lors de l'enregistrement.";
+    //         return new JsonResponse([
+    //             'success' => $success,
+    //             'message' => $message,
+    //         ], 200 | 400);
+    //     }
+    // }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\SalePoint  $salePoint
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(SalePoint $salePoint)
-    {
-        //
-    }
+    // // Mise à jour d'une unité
+    // public function update(Request $request, $id)
+    // {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SalePoint  $salePoint
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, SalePoint $salePoint)
-    {
-        //
-    }
+    //     $unity = Unity::findOrFail($id);
+    //     $this->validate(
+    //         $request,
+    //         [
+    //             'wording' => 'required|max:150',
+    //             'description' => 'max:255',
+    //         ],
+    //         [
+    //             'wording.required' => "Le libellé est obligatoire.",
+    //             'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+    //             'description.max' => "La description ne doit pas dépasser 255 caractères."
+    //         ]
+    //     );
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\SalePoint  $salePoint
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SalePoint $salePoint)
-    {
-        //
-    }
+    //     try {
+    //         $unity->wording = $request->wording;
+    //         $unity->description = $request->description;
+    //         $unity->save();
+
+    //         $success = true;
+    //         $message = "Modification effectuée avec succès.";
+    //         return new JsonResponse([
+    //             'unity' => $unity,
+    //             'success' => $success,
+    //             'message' => $message,
+    //         ], 200 | 400);
+    //     } catch (Exception $e) {
+    //         $success = false;
+    //         $message = "Erreur survenue lors de la modification.";
+    //         return new JsonResponse([
+    //             'success' => $success,
+    //             'message' => $message,
+    //         ], 200 | 400);
+    //     }
+    // }
+
+    // // Suppression d'une unité
+    // public function destroy($id)
+    // {
+    //     $unity = Unity::findOrFail($id);
+    //     try {
+    //         $unity->delete();
+
+    //         $success = true;
+    //         $message = "Suppression effectuée avec succès.";
+    //         return new JsonResponse([
+    //             'unity' => $unity,
+    //             'success' => $success,
+    //             'message' => $message,
+    //         ], 200 | 400);
+    //     } catch (Exception $e) {
+    //         $success = false;
+    //         $message = "Erreur survenue lors de la suppression.";
+    //         return new JsonResponse([
+    //             'success' => $success,
+    //             'message' => $message,
+    //         ], 200 | 400);
+    //     }
+    // }
+
+    // public function show($id)
+    // {
+    //     $unity = Unity::findOrFail($id);
+    //     return new JsonResponse([
+    //         'unity' => $unity
+    //     ], 200 | 400);
+    // }
 }

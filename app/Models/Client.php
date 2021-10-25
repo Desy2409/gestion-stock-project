@@ -16,39 +16,14 @@ class Client extends Model
         'settings',
     ];
 
-    public function person(){
-        return $this->morphOne('App\Models\Person','personable','personable_type','personable_code', 'code');
+    public function person()
+    {
+        // return $this->morphOne('App\Models\Person','personable','personable_type','personable_code', 'code');
+        return $this->morphOne(Person::class, 'personable');
     }
 
-     // public static function boot()
-    // {
-    //     parent::boot();
-
-    //     self::creating(function($model){
-
-    //         $model->code = '';
-
-    //     });
-    // }
-
-
-
-    // protected $casts = [
-    //     'settings' => 'array'
-    // ];
-
-    // public function setMetaAttribute($value)
-    // {
-    //     $settings = [];
-
-    //     foreach ($value as $array_item) {
-    //         if (!is_null($array_item['key'])) {
-    //             $settings[] = $array_item;
-    //         }
-    //     }
-
-    //     $this->attributes['settings'] = json_encode($settings);
-    // }
-
-
+    public function address()
+    {
+        return $this->hasMany(Address::class);
+    }
 }

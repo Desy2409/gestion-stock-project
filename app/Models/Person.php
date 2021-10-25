@@ -10,12 +10,12 @@ class Person extends Model
     use HasFactory;
 
     protected $fillable = [
-        'lastName',
-        'firstName',
-        'rccmNumber',
-        'ccNumber',
-        'socialReason',
-        'personType'
+        'last_name',
+        'first_name',
+        'rccm_number',
+        'cc_number',
+        'social_reason',
+        'person_type'
     ];
 
     public function personable()

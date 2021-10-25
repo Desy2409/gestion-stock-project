@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class SalePoint extends Model
 {
-    use HasFactory;
+    protected $fillable=[
+        'rccm_number',
+        'cc_number',
+        'social_reason',
+        'email',
+        'phone_number',
+        'address'
+    ];
 }

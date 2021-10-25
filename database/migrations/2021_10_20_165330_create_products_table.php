@@ -15,16 +15,15 @@ class CreateProductsTable extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->string('code')->primary();
+            $table->id();
+            $table->string('code');
             $table->string('reference');
             $table->string('wording');
             $table->string('description')->nullable();
-            $table->string('typeStock');
+            $table->string('type_stock');
             $table->decimal('price', 10, 2);
-            $table->unsignedBigInteger('unity_id');
-            $table->foreign('unity_id')->references('id')->on('unities');
-            $table->unsignedBigInteger('sub_category_id');
-            $table->foreign('sub_category_id')->references('id')->on('sub_categories');
+            $table->foreignId('unity_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('sub_category_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
