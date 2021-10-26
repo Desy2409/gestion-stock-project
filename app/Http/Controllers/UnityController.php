@@ -16,7 +16,7 @@ class UnityController extends Controller
         $unities = Unity::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['unities' => $unities]
-        ], 200 | 400);
+        ], 200);
     }
 
     // Enregistrement d'une nouvelle unité
@@ -49,14 +49,14 @@ class UnityController extends Controller
                 'unity' => $unity,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -89,14 +89,14 @@ class UnityController extends Controller
                 'unity' => $unity,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -113,14 +113,14 @@ class UnityController extends Controller
                 'unity' => $unity,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -129,6 +129,6 @@ class UnityController extends Controller
         $unity = Unity::findOrFail($id);
         return new JsonResponse([
             'unity' => $unity
-        ], 200 | 400);
+        ], 200);
     }
 }

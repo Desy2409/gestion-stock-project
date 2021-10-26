@@ -23,7 +23,7 @@ class ClientController extends Controller
         $clients = Client::with('person')->get();
         return new JsonResponse([
             'datas' => ['clients' => $clients]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -83,7 +83,7 @@ class ClientController extends Controller
                     'existingMoralPerson' => $existingMoralPerson,
                     'success' => $success,
                     'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
-                ], 200 | 400);
+                ], 400);
             }
         } else {
             $this->validate(
@@ -132,14 +132,14 @@ class ClientController extends Controller
                 'address' => $address,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -148,7 +148,7 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         return new JsonResponse([
             'client' => $client
-        ], 200 | 400);
+        ], 200);
     }
 
     public function edit($id)
@@ -156,7 +156,7 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         return new JsonResponse([
             'client' => $client,
-        ], 200 | 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -220,7 +220,7 @@ class ClientController extends Controller
                     'existingMoralPerson' => $existingMoralPerson,
                     'success' => $success,
                     'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
-                ], 200 | 400);
+                ], 400);
             }
         } else {
             $this->validate(
@@ -261,14 +261,14 @@ class ClientController extends Controller
                 'address' => $address,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -287,14 +287,14 @@ class ClientController extends Controller
                 'person' => $person,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 }

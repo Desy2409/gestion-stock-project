@@ -14,7 +14,7 @@ class InstitutionController extends Controller
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['institutions' => $institutions]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -49,7 +49,7 @@ class InstitutionController extends Controller
                 'existingInstitution' => $existingInstitution,
                 'success' => $success,
                 'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
-            ], 200 | 400);
+            ], 400);
         }
 
         try {
@@ -68,14 +68,14 @@ class InstitutionController extends Controller
                 'institution' => $institution,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -84,7 +84,7 @@ class InstitutionController extends Controller
         $institution = Institution::findOrFail($id);
         return new JsonResponse([
             'institution' => $institution
-        ], 200 | 400);
+        ], 200);
     }
 
     public function edit($id)
@@ -92,7 +92,7 @@ class InstitutionController extends Controller
         $institution = Institution::findOrFail($id);
         return new JsonResponse([
             'institution' => $institution,
-        ], 200 | 400);
+        ], 400);
     }
 
     public function update(Request $request, $id)
@@ -128,7 +128,7 @@ class InstitutionController extends Controller
                 'existingInstitution' => $existingInstitution,
                 'success' => $success,
                 'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
-            ], 200 | 400);
+            ], 400);
         }
 
         try {
@@ -146,14 +146,14 @@ class InstitutionController extends Controller
                 'institution' => $institution,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -169,14 +169,14 @@ class InstitutionController extends Controller
                 'institution' => $institution,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 }
