@@ -10,12 +10,12 @@ class PurchaseOrder extends Model
     use HasFactory;
 
     protected $fillable = [
+        'reference',
         'order_number',
         'purchase_date',
         'delevery_date',
-        'total_price',
         'total_amount',
-        'observation',
+        'observation'
     ];
 
     public function productPurchaseOrders()

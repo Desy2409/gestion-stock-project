@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProductPurchaseOrdersTable extends Migration
+class CreateProductTransferLinesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateProductPurchaseOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_purchase_orders', function (Blueprint $table) {
+        Schema::create('product_transfer_lines', function (Blueprint $table) {
             $table->id();
             $table->decimal('quantity', 5, 2)->default(0);
             $table->decimal('unit_price', 10, 2)->default(0);
-            $table->timestamps();
-            $table->foreignId('purchase_order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('provider_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('transfer_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -31,6 +30,6 @@ class CreateProductPurchaseOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_purchase_orders');
+        Schema::dropIfExists('product_transfer_lines');
     }
 }

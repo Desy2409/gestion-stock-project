@@ -20,8 +20,7 @@ class CreateSubCategoriesTable extends Migration
             $table->string('wording');
             $table->string('description')->nullable();
             $table->timestamps();
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
         });
     }
 

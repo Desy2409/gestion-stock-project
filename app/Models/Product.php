@@ -32,4 +32,19 @@ class Product extends Model
     {
         return $this->hasMany(ProductPurchaseOrder::class);
     }
+
+    public function stockType()
+    {
+        return $this->belongsTo(StockType::class);
+    }
+
+    public function productsTransfersDemandsLines()
+    {
+        return $this->hasMany(ProductTransferDemandLine::class);
+    }
+
+    public function productsTransfersLines()
+    {
+        return $this->hasMany(ProductTransferLine::class);
+    }
 }

@@ -5,22 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class SubCategoryController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
-
     public function index()
     {
-        // $categories = Category::orderBy('wording')->get();
+        $categories = Category::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
-        return $subCategories;
+        return new JsonResponse([
+            'datas' => ['categories' => $categories, 'subCategories' => $subCategories]
+        ], 200 | 400);
     }
 
     // Enregistrement d'une nouvelle sous-catégorie
@@ -29,64 +26,89 @@ class SubCategoryController extends Controller
         $this->validate(
             $request,
             [
+                'category' => 'required',
+                'reference' => 'required|unique:sub_categories',
                 'wording' => 'required|unique:sub_categories|max:150',
-                'description' => 'max:255',
-                'category' => 'required'
+                'description' => 'max:255'
             ],
             [
+                'category.required' => "La catégorie est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.unique' => "Cette sous-catégorie existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'category.required' => "La catégorie est obligatoire."
+                'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
         try {
             $subCategory = new SubCategory();
-            $subCategory->code = Str::random(10);
+            $subCategory->reference = $request->reference;
             $subCategory->wording = $request->wording;
             $subCategory->description = $request->description;
             $subCategory->category_id = $request->category;
             $subCategory->save();
 
-            return $subCategory;
+            $success = true;
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'subCategory' => $subCategory,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
+            $success = false;
+            $message = "Erreur survenue lors de l'enregistrement.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         }
     }
 
     // Mise à jour d'une sous-catégorie
     public function update(Request $request, $id)
     {
-
         $subCategory = SubCategory::findOrFail($id);
         $this->validate(
             $request,
             [
+                'category' => 'required',
+                'reference' => 'required',
                 'wording' => 'required|max:150',
-                'description' => 'max:255',
-                'category' => 'required'
+                'description' => 'max:255'
             ],
             [
+                'category.required' => "La catégorie est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette sous-catégorie existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'category.required' => "La catégorie est obligatoire."
+                'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
         try {
-            // $subCategory->update($request->all());
+            $subCategory->reference = $request->reference;
             $subCategory->wording = $request->wording;
             $subCategory->description = $request->description;
             $subCategory->category_id = $request->category;
             $subCategory->save();
 
-            return $subCategory;
+            $success = true;
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'subCategory' => $subCategory,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de la modification.");
+            $success = false;
+            $message = "Erreur survenue lors de la modification.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         }
     }
 
@@ -96,9 +118,21 @@ class SubCategoryController extends Controller
         $subCategory = SubCategory::findOrFail($id);
         try {
             $subCategory->delete();
-            return $subCategory;
+
+            $success = true;
+            $message = "Suppression effectuée avec succès.";
+            return new JsonResponse([
+                'subCategory' => $subCategory,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de la suppression.");
+            $success = false;
+            $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         }
     }
 
@@ -111,7 +145,9 @@ class SubCategoryController extends Controller
      */
     public function show($id)
     {
-        $subCategory = SubCategory::where("id", $id);
-        return $subCategory;
+        $subCategory = SubCategory::findOrFail($id);
+        return new JsonResponse([
+            'subCategory' => $subCategory
+        ], 200 | 400);
     }
 }

@@ -3,9 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
-class CreateJuridicPersonalitiesTable extends Migration
+class CreateStockTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +13,9 @@ class CreateJuridicPersonalitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('juridic_personalities', function (Blueprint $table) {
+        Schema::create('stock_types', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->default(Str::random(10));
+            $table->string('code');
             $table->string('wording');
             $table->string('description')->nullable();
             $table->timestamps();
@@ -30,6 +29,6 @@ class CreateJuridicPersonalitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('juridic_personalities');
+        Schema::dropIfExists('stock_types');
     }
 }

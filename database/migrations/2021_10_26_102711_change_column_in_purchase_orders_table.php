@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClientsTable extends Migration
+class ChangeColumnInPurchaseOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateClientsTable extends Migration
      */
     public function up()
     {
-        Schema::create('clients', function (Blueprint $table) {
-            $table->id();
-            $table->string('code');
-            $table->string('reference');
-            $table->text('settings')->nullable();
-            $table->timestamps();
+        Schema::table('purchase_orders', function (Blueprint $table) {
+            $table->dropColumn('delevery_date');
+            $table->date('delivery_date');
         });
     }
 
@@ -29,6 +26,8 @@ class CreateClientsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('clients');
+        Schema::table('purchase_orders', function (Blueprint $table) {
+            //
+        });
     }
 }

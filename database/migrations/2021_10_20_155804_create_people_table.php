@@ -15,14 +15,13 @@ class CreatePeopleTable extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->string('lastName')->nullable();
-            $table->string('firstName')->nullable();
-            $table->string('rccmNumber')->nullable();
-            $table->string('ccNumber')->nullable();
-            $table->string('socialReason')->nullable();
-            $table->string('personType')->nullable();
-            $table->string('personable_code')->nullable();
-            $table->string('personable_type')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('rccm_number')->nullable();
+            $table->string('cc_number')->nullable();
+            $table->string('social_reason')->nullable();
+            $table->string('person_type');
+            $table->nullableMorphs('personable');
             $table->timestamps();
         });
     }

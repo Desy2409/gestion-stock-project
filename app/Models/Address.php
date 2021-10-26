@@ -16,7 +16,8 @@ class Address extends Model
         'bp'
     ];
 
-    public function person(){
-        return $this->morphOne(Person::class, 'personable');
+    public function person()
+    {
+        return $this->belongsTo(Person::class);
     }
 }

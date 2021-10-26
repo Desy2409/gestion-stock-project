@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRepositoriesTable extends Migration
+class CreateInstitutionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateRepositoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('repositories', function (Blueprint $table) {
+        Schema::create('institutions', function (Blueprint $table) {
             $table->id();
-            $table->string('rccm_number');
+             $table->string('rccm_number');
             $table->string('cc_number');
             $table->string('social_reason');
             $table->string('email');
             $table->string('phone_number');
-            $table->string('address')->nullable();
+            $table->string('address');
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ class CreateRepositoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('repositories');
+        Schema::dropIfExists('institutions');
     }
 }

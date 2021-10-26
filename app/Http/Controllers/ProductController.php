@@ -2,163 +2,176 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\UtilityTrait;
 use App\Models\Product;
+use App\Models\StockType;
 use App\Models\SubCategory;
+use App\Models\Unity;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    use UtilityTrait;
+
     public function index()
     {
         $products = Product::orderBy('wording')->get();
-        return $products;
+        $unities = Unity::orderBy('wording')->get();
+        $subCategories = SubCategory::orderBy('wording')->get();
+        $stockTypes = StockType::orderBy('wording')->get();
+        return new JsonResponse([
+            'datas' => ['products' => $products, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
+        ], 200 | 400);
     }
 
-   /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-         $subCategories = SubCategory::orderBy('wording')->get();
-        return [
-            'subCategories' => $subCategories,
-        ];
-    }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate(
             [
-                'sub_category'=>'required',
+                'unity' => 'required',
+                'sub_category' => 'required',
+                'reference' => 'required|unique:products',
                 'wording' => 'required|unique:products',
                 'description' => 'max:255',
                 'price' => 'required|min:0',
-                'unity' => 'required',
             ],
             [
+                'unity.required' => "L'unité est obligatoire.",
                 'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
-                'wording.required' => "Le libellé du produit est obligatoire.",
+                'reference.required' => "Le libellé du produit est obligatoire.",
+                'reference.unique' => "Cette référence a déjà été attribuée.",
+                'wording.required' => "La référence est obligatoire.",
                 'wording.unique' => "Ce produit existe déjà.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
                 'price.required' => "Le prix du produit est obligatoire.",
                 'price.min' => "Le prix du produit ne peut être inférieur à 0.",
-                'unity.required' => "L'unité du produit est obligatoire.",
             ]
         );
+
         try {
+            $products = Product::all();
             $product = new Product();
-            $product->code = Str::random(10);
-            $product->reference = '000001';
+            $product->code = $this->formateNPosition('', sizeof($products) + 1, 8);
+            $product->reference = $request->reference;
             $product->wording = $request->wording;
             $product->price = $request->price;
-            $product->unity = $request->unity;
             $product->description = $request->description;
+            $product->unity_id = $request->unity;
             $product->sub_category_id = $request->sub_category;
+            $product->stock_type_id = $request->stock_type;
             $product->save();
 
-            return $product;
+            $success = true;
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'product' => $product,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de l'enregistrement.");
+            dd($e);
+            $success = false;
+            $message = "Erreur survenue lors de l'enregistrement.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        return Product::findOrFail($id);
+        $product = Product::findOrFail($id);
+        return new JsonResponse(['product' => $product], 200 | 400);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $product = Product::findOrFail($id);
+        $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
-        return [
-            'subCategories' => $subCategories,
-            'product' => $product,
-        ];
+        $stockTypes = StockType::orderBy('wording')->get();        return new JsonResponse([
+            'datas' => ['product' => $product, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
+        ], 200 | 400);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
         $request->validate(
             [
-                'sub_category'=>'required',
-                'wording' => 'required',
+                'unity' => 'required',
+                'sub_category' => 'required',
+                'reference' => 'required|unique:products',
+                'wording' => 'required|unique:products',
                 'description' => 'max:255',
                 'price' => 'required|min:0',
-                'unity' => 'required',
             ],
             [
+                'unity.required' => "L'unité est obligatoire.",
                 'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
-                'wording.required' => "Le libellé du produit est obligatoire.",
+                'reference.required' => "Le libellé du produit est obligatoire.",
+                'reference.unique' => "Cette référence a déjà été attribuée.",
+                'wording.required' => "La référence est obligatoire.",
+                'wording.unique' => "Ce produit existe déjà.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
                 'price.required' => "Le prix du produit est obligatoire.",
                 'price.min' => "Le prix du produit ne peut être inférieur à 0.",
-                'unity.required' => "L'unité du produit est obligatoire.",
             ]
         );
+
         try {
+            $product->reference = $request->reference;
             $product->wording = $request->wording;
-            $product->prise = $request->prise;
-            $product->unity = $request->unity;
+            $product->price = $request->price;
             $product->description = $request->description;
+            $product->unity_id = $request->unity;
             $product->sub_category_id = $request->sub_category;
+            $product->stock_type_id = $request->stock_type;
             $product->save();
 
-            return $product;
+            $success = true;
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'product' => $product,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de la modification.");
+            dd($e);
+            $success = false;
+            $message = "Erreur survenue lors de la modification.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
         try {
             $product->delete();
-            return $product;
+
+            $success = true;
+            $message = "Suppression effectuée avec succès.";
+            return new JsonResponse([
+                'product' => $product,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         } catch (Exception $e) {
-            Session::flash('danger', "Erreur survenue lors de la suppression.");
+            $success = false;
+            $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
         }
     }
 

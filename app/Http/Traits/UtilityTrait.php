@@ -3,8 +3,7 @@
 namespace App\Http\Traits;
 
 trait UtilityTrait {
-
-
+    
     function formateNPosition($prefix, $suffixe, $length)
     {
         $valueString = $prefix;

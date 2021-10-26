@@ -2,22 +2,20 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JuridicPersonality extends Model
+class StockType extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'code',
         'wording',
         'description'
     ];
 
-    public function clients()
+    public function products()
     {
-        return $this->hasMany(Client::class);
+        return $this->hasMany(Product::class);
     }
+    
 }
