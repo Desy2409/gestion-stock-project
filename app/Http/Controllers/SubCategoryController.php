@@ -17,7 +17,7 @@ class SubCategoryController extends Controller
         $subCategories = SubCategory::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories, 'subCategories' => $subCategories]
-        ], 200 | 400);
+        ], 200);
     }
 
     // Enregistrement d'une nouvelle sous-catégorie
@@ -56,14 +56,14 @@ class SubCategoryController extends Controller
                 'subCategory' => $subCategory,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -101,14 +101,14 @@ class SubCategoryController extends Controller
                 'subCategory' => $subCategory,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -125,14 +125,14 @@ class SubCategoryController extends Controller
                 'subCategory' => $subCategory,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -148,6 +148,6 @@ class SubCategoryController extends Controller
         $subCategory = SubCategory::findOrFail($id);
         return new JsonResponse([
             'subCategory' => $subCategory
-        ], 200 | 400);
+        ], 200);
     }
 }

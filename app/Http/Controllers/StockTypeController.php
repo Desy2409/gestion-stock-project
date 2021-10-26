@@ -15,7 +15,7 @@ class StockTypeController extends Controller
         $stockTypes = StockType::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['stockTypes' => $stockTypes]
-        ], 200 | 400);
+        ], 200);
     }
 
     // Enregistrement d'un nouveau type de stock
@@ -48,14 +48,14 @@ class StockTypeController extends Controller
                 'stockType' => $stockType,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -87,14 +87,14 @@ class StockTypeController extends Controller
                 'stockType' => $stockType,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -111,14 +111,14 @@ class StockTypeController extends Controller
                 'stockType' => $stockType,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -127,6 +127,6 @@ class StockTypeController extends Controller
         $stockType = StockType::findOrFail($id);
         return new JsonResponse([
             'stockType' => $stockType
-        ], 200 | 400);
+        ], 200);
     }
 }

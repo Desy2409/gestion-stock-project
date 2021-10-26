@@ -16,7 +16,7 @@ class CategoryController extends Controller
         $categories = Category::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories]
-        ]);
+        ], 200);
     }
 
     // Enregistrement d'une nouvelle catégorie
@@ -52,7 +52,7 @@ class CategoryController extends Controller
                 'category' => $category,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             dd($e);
             $success = false;
@@ -60,7 +60,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -96,14 +96,14 @@ class CategoryController extends Controller
                 'category' => $category,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -120,14 +120,14 @@ class CategoryController extends Controller
                 'category' => $category,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -136,6 +136,6 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         return new JsonResponse([
             'category' => $category
-        ], 200 | 400);
+        ], 200);
     }
 }

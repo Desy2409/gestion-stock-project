@@ -21,7 +21,7 @@ class ProviderController extends Controller
         $providers = Provider::with('person')->get();
         return new JsonResponse([
             'datas' => ['providers' => $providers]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -58,7 +58,7 @@ class ProviderController extends Controller
                 'existingMoralPerson' => $existingMoralPerson,
                 'success' => $success,
                 'message' => "Le provider " . $existingMoralPerson->social_reason . " existe déjà."
-            ], 200 | 400);
+            ], 400);
         }
 
         try {
@@ -94,21 +94,21 @@ class ProviderController extends Controller
                 'address' => $address,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
     public function show($id)
     {
         $provider = Provider::where("id", $id);
-        return new JsonResponse(['provider' => $provider], 200 | 400);
+        return new JsonResponse(['provider' => $provider], 200);
     }
 
     public function edit($id)
@@ -116,7 +116,7 @@ class ProviderController extends Controller
         $provider = Provider::findOrFail($id);
         return new JsonResponse([
             'provider' => $provider,
-        ], 200 | 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -157,7 +157,7 @@ class ProviderController extends Controller
                 'existingMoralPerson' => $existingMoralPerson,
                 'success' => $success,
                 'message' => "Le provider " . $existingMoralPerson->social_reason . " existe déjà."
-            ], 200 | 400);
+            ], 400);
         }
 
         try {
@@ -184,14 +184,14 @@ class ProviderController extends Controller
                 'address' => $address,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -210,14 +210,14 @@ class ProviderController extends Controller
                 'person' => $person,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 }
