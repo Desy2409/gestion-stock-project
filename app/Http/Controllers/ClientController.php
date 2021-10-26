@@ -22,7 +22,7 @@ class ClientController extends Controller
     {
         $clients = Client::with('person')->get();
         return new JsonResponse([
-            'clients' => $clients
+            'datas' => ['clients' => $clients]
         ], 200 | 400);
     }
 
@@ -147,7 +147,7 @@ class ClientController extends Controller
     {
         $client = Client::findOrFail($id);
         return new JsonResponse([
-            'client'=>$client
+            'client' => $client
         ], 200 | 400);
     }
 

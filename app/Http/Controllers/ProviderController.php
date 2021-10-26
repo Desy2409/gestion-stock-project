@@ -20,7 +20,7 @@ class ProviderController extends Controller
     {
         $providers = Provider::with('person')->get();
         return new JsonResponse([
-            'providers' => $providers
+            'datas' => ['providers' => $providers]
         ], 200 | 400);
     }
 
@@ -108,7 +108,7 @@ class ProviderController extends Controller
     public function show($id)
     {
         $provider = Provider::where("id", $id);
-        return new JsonResponse(['provider'=>$provider], 200 | 400);
+        return new JsonResponse(['provider' => $provider], 200 | 400);
     }
 
     public function edit($id)

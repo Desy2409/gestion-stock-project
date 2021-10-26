@@ -3,83 +3,180 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class InstitutionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $institutions = Institution::orderBy('social_reason')->get();
+        return new JsonResponse([
+            'datas' => ['institutions' => $institutions]
+        ], 200 | 400);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $this->validate(
+            $request,
+            [
+                'rccm_number' => 'required',
+                'cc_number' => 'required',
+                'social_reason' => 'required',
+                'reference' => 'required',
+                'email' => 'required|email',
+                'phone_number' => 'required',
+                'address' => 'required',
+            ],
+            [
+                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
+                'cc_number.required' => "Le numéro CC est obligatoire.",
+                'social_reason.required' => "La raison sociale est obligatoire.",
+                'reference.required' => "La reference est obligatoire.",
+                'email.required' => "L'adresse email est obligatoire.",
+                'email.email' => "L'adresse email est incorrecte.",
+                'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                'address.required' => "L'adresse est obligatoire.",
+            ],
+        );
+
+        $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
+        if ($existingInstitution) {
+            $success = false;
+            return new JsonResponse([
+                'existingInstitution' => $existingInstitution,
+                'success' => $success,
+                'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
+            ], 200 | 400);
+        }
+
+        try {
+            $institution = new Institution();
+            $institution->rccm_number = $request->rccm_number;
+            $institution->cc_number = $request->cc_number;
+            $institution->social_reason = $request->social_reason;
+            $institution->address = $request->address;
+            $institution->email = $request->email;
+            $institution->phone_number = $request->phone_number;
+            $institution->save();
+
+            $success = true;
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'institution' => $institution,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'enregistrement.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Institution  $institution
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Institution $institution)
+    public function show($id)
     {
-        //
+        $institution = Institution::findOrFail($id);
+        return new JsonResponse([
+            'institution' => $institution
+        ], 200 | 400);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Institution  $institution
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Institution $institution)
+    public function edit($id)
     {
-        //
+        $institution = Institution::findOrFail($id);
+        return new JsonResponse([
+            'institution' => $institution,
+        ], 200 | 400);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Institution  $institution
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Institution $institution)
+    public function update(Request $request, $id)
     {
-        //
+        $institution = Institution::findOrFail($id);
+        $this->validate(
+            $request,
+            [
+                'rccm_number' => 'required',
+                'cc_number' => 'required',
+                'social_reason' => 'required',
+                'reference' => 'required',
+                'email' => 'required|email',
+                'phone_number' => 'required',
+                'address' => 'required',
+            ],
+            [
+                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
+                'cc_number.required' => "Le numéro CC est obligatoire.",
+                'social_reason.required' => "La raison sociale est obligatoire.",
+                'reference.required' => "La reference est obligatoire.",
+                'email.required' => "L'adresse email est obligatoire.",
+                'email.email' => "L'adresse email est incorrecte.",
+                'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                'address.required' => "L'adresse est obligatoire.",
+            ],
+        );
+
+        $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
+        if ($existingInstitution) {
+            $success = false;
+            return new JsonResponse([
+                'existingInstitution' => $existingInstitution,
+                'success' => $success,
+                'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
+            ], 200 | 400);
+        }
+
+        try {
+            $institution->rccm_number = $request->rccm_number;
+            $institution->cc_number = $request->cc_number;
+            $institution->social_reason = $request->social_reason;
+            $institution->address = $request->address;
+            $institution->email = $request->email;
+            $institution->phone_number = $request->phone_number;
+            $institution->save();
+
+            $success = true;
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'institution' => $institution,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la modification.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Institution  $institution
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Institution $institution)
+    public function destroy($id)
     {
-        //
+        $institution = Institution::findOrFail($id);
+        try {
+            $institution->delete();
+
+            $success = true;
+            $message = "Suppression effectuée avec succès.";
+            return new JsonResponse([
+                'institution' => $institution,
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 200 | 400);
+        }
     }
 }

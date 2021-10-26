@@ -3,11 +3,13 @@
 use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
+use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
@@ -89,6 +91,20 @@ Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
 Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
 Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
 Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
+
+// Institution routes
+Route::get('/institution', [InstitutionController::class, 'index']);
+Route::post('/institution', [InstitutionController::class, 'store']);
+Route::get('/institution/{id}/show', [InstitutionController::class, 'show']);
+Route::patch('/institution/{id}/update', [InstitutionController::class, 'update']);
+Route::delete('/institution/{id}/destroy', [InstitutionController::class, 'destroy']);
+
+// Sale point routes
+Route::get('/sale-point', [SalePointController::class, 'index']);
+Route::post('/sale-point', [SalePointController::class, 'store']);
+Route::get('/sale-point/{id}/show', [SalePointController::class, 'show']);
+Route::patch('/sale-point/{id}/update', [SalePointController::class, 'update']);
+Route::delete('/sale-point/{id}/destroy', [SalePointController::class, 'destroy']);
 
 // Protected routes
 Route::group(
