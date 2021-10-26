@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseOrdersTable extends Migration
@@ -17,9 +18,9 @@ class CreatePurchaseOrdersTable extends Migration
             $table->id();
             $table->string('reference');
             $table->string('order_number');
-            $table->date('purchase_date');
+            $table->date('purchase_date')->useCurrent();
             $table->date('delevery_date');
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_amount', 10, 2)->default(0);
             $table->string('observation')->nullable();
             $table->timestamps();
         });

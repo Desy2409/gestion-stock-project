@@ -16,13 +16,8 @@ class Address extends Model
         'bp'
     ];
 
-    public function client()
+    public function person()
     {
-        return $this->belongsTo(Client::class);
-    }
-
-    public function provider()
-    {
-        return $this->belongsTo(Provider::class);
+        return $this->belongsTo(Person::class);
     }
 }

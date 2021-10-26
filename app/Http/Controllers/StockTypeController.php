@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Unity;
+use App\Models\StockType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
-class UnityController extends Controller
+class StockTypeController extends Controller
 {
     public function index()
     {
-        $unities = Unity::orderBy('wording')->get();
+        $stockTypes = StockType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['unities' => $unities]
+            'datas' => ['stockTypes' => $stockTypes]
         ], 200 | 400);
     }
 
-    // Enregistrement d'une nouvelle unité
+    // Enregistrement d'un nouveau type de stock
     public function store(Request $request)
     {
         $this->validate(
             $request,
             [
-                'wording' => 'required|unique:unities|max:150',
+                'wording' => 'required|unique:stock_types|max:150',
                 'description' => 'max:255',
             ],
             [
@@ -37,16 +36,16 @@ class UnityController extends Controller
         );
 
         try {
-            $unity = new Unity();
-            $unity->code = Str::random(10);
-            $unity->wording = $request->wording;
-            $unity->description = $request->description;
-            $unity->save();
+            $stockType = new StockType();
+            $stockType->code = Str::random(10);
+            $stockType->wording = $request->wording;
+            $stockType->description = $request->description;
+            $stockType->save();
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'unity' => $unity,
+                'stockType' => $stockType,
                 'success' => $success,
                 'message' => $message,
             ], 200 | 400);
@@ -60,11 +59,10 @@ class UnityController extends Controller
         }
     }
 
-    // Mise à jour d'une unité
+    // Mise à jour d'un type de stock
     public function update(Request $request, $id)
     {
-
-        $unity = Unity::findOrFail($id);
+        $stockType = StockType::findOrFail($id);
         $this->validate(
             $request,
             [
@@ -79,14 +77,14 @@ class UnityController extends Controller
         );
 
         try {
-            $unity->wording = $request->wording;
-            $unity->description = $request->description;
-            $unity->save();
+            $stockType->wording = $request->wording;
+            $stockType->description = $request->description;
+            $stockType->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'unity' => $unity,
+                'stockType' => $stockType,
                 'success' => $success,
                 'message' => $message,
             ], 200 | 400);
@@ -100,17 +98,17 @@ class UnityController extends Controller
         }
     }
 
-    // Suppression d'une unité
+    // Suppression d'un type de stock
     public function destroy($id)
     {
-        $unity = Unity::findOrFail($id);
+        $stockType = StockType::findOrFail($id);
         try {
-            $unity->delete();
+            $stockType->delete();
 
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'unity' => $unity,
+                'stockType' => $stockType,
                 'success' => $success,
                 'message' => $message,
             ], 200 | 400);
@@ -126,9 +124,9 @@ class UnityController extends Controller
 
     public function show($id)
     {
-        $unity = Unity::findOrFail($id);
+        $stockType = StockType::findOrFail($id);
         return new JsonResponse([
-            'unity' => $unity
+            'stockType' => $stockType
         ], 200 | 400);
     }
 }

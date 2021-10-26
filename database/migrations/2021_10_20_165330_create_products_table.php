@@ -21,9 +21,10 @@ class CreateProductsTable extends Migration
             $table->string('wording');
             $table->string('description')->nullable();
             $table->string('type_stock');
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 2)->default(0);
             $table->foreignId('unity_id')->constrained()->cascadeOnDelete();
             $table->foreignId('sub_category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('stock_type_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

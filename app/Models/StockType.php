@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Unity extends Model
+class StockType extends Model
 {
     protected $fillable = [
         'code',
@@ -15,6 +15,7 @@ class Unity extends Model
 
     public function products()
     {
-        return $this->hasMany(SubCategory::class);
+        return $this->hasMany(Product::class);
     }
+    
 }

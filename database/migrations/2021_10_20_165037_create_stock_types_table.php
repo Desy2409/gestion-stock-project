@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalePointsTable extends Migration
+class CreateStockTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateSalePointsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sale_points', function (Blueprint $table) {
+        Schema::create('stock_types', function (Blueprint $table) {
             $table->id();
-            $table->string('rccm_number');
-            $table->string('cc_number');
-            $table->string('social_reason');
-            $table->string('email');
-            $table->string('phone_number');
-            $table->string('address')->nullable();
+            $table->string('code');
+            $table->string('wording');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ class CreateSalePointsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sale_points');
+        Schema::dropIfExists('stock_types');
     }
 }

@@ -23,7 +23,7 @@ class ClientController extends Controller
         $clients = Client::with('person')->get();
         return new JsonResponse([
             'clients' => $clients
-        ]);
+        ], 200 | 400);
     }
 
     public function store(Request $request)
@@ -83,7 +83,7 @@ class ClientController extends Controller
                     'existingMoralPerson' => $existingMoralPerson,
                     'success' => $success,
                     'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
-                ]);
+                ], 200 | 400);
             }
         } else {
             $this->validate(
@@ -121,7 +121,7 @@ class ClientController extends Controller
             $address->email = $request->email;
             $address->phone_number = $request->phone_number;
             $address->bp = $request->bp;
-            $address->client_id = $request->client;
+            $address->person_id = $request->person;
             $address->save();
 
             $success = true;
@@ -134,7 +134,6 @@ class ClientController extends Controller
                 'message' => $message,
             ], 200 | 400);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -146,8 +145,10 @@ class ClientController extends Controller
 
     public function show($id)
     {
-        $client = Client::where("id", $id);
-        return $client;
+        $client = Client::findOrFail($id);
+        return new JsonResponse([
+            'client'=>$client
+        ], 200 | 400);
     }
 
     public function edit($id)
@@ -155,14 +156,14 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         return new JsonResponse([
             'client' => $client,
-        ]);
+        ], 200 | 400);
     }
 
     public function update(Request $request, $id)
     {
         $client = Client::findOrFail($id);
         $person = Person::where('personable_id', $client->id)->where('personable_type', $client::class)->first();
-        $address = $client ? $client->address : null;
+        $address = $person ? $person->address : null;
 
         if ($request->person_type == "Personne physique") {
             $this->validate(
@@ -219,7 +220,7 @@ class ClientController extends Controller
                     'existingMoralPerson' => $existingMoralPerson,
                     'success' => $success,
                     'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
-                ]);
+                ], 200 | 400);
             }
         } else {
             $this->validate(
@@ -262,7 +263,6 @@ class ClientController extends Controller
                 'message' => $message,
             ], 200 | 400);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([

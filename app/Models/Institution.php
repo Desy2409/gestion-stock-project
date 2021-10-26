@@ -7,13 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Institution extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'reference',
+        'rccm_number',
+        'cc_number',
+        'social_reason',
+        'email',
+        'phone_number',
+        'address'
     ];
 
-    public function person(){
-        return $this->morphOne(Person::class, 'person');
+    public function salesPoints()
+    {
+        return $this->hasMany(SalePoint::class);
     }
 }

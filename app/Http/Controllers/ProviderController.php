@@ -21,7 +21,7 @@ class ProviderController extends Controller
         $providers = Provider::with('person')->get();
         return new JsonResponse([
             'providers' => $providers
-        ]);
+        ], 200 | 400);
     }
 
     public function store(Request $request)
@@ -58,7 +58,7 @@ class ProviderController extends Controller
                 'existingMoralPerson' => $existingMoralPerson,
                 'success' => $success,
                 'message' => "Le provider " . $existingMoralPerson->social_reason . " existe déjà."
-            ]);
+            ], 200 | 400);
         }
 
         try {
@@ -83,7 +83,7 @@ class ProviderController extends Controller
             $address->email = $request->email;
             $address->phone_number = $request->phone_number;
             $address->bp = $request->bp;
-            $address->provider_id = $request->provider;
+            $address->person_id = $request->person;
             $address->save();
 
             $success = true;
@@ -96,7 +96,6 @@ class ProviderController extends Controller
                 'message' => $message,
             ], 200 | 400);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -109,7 +108,7 @@ class ProviderController extends Controller
     public function show($id)
     {
         $provider = Provider::where("id", $id);
-        return $provider;
+        return new JsonResponse(['provider'=>$provider], 200 | 400);
     }
 
     public function edit($id)
@@ -117,7 +116,7 @@ class ProviderController extends Controller
         $provider = Provider::findOrFail($id);
         return new JsonResponse([
             'provider' => $provider,
-        ]);
+        ], 200 | 400);
     }
 
     public function update(Request $request, $id)
@@ -158,7 +157,7 @@ class ProviderController extends Controller
                 'existingMoralPerson' => $existingMoralPerson,
                 'success' => $success,
                 'message' => "Le provider " . $existingMoralPerson->social_reason . " existe déjà."
-            ]);
+            ], 200 | 400);
         }
 
         try {
@@ -187,7 +186,6 @@ class ProviderController extends Controller
                 'message' => $message,
             ], 200 | 400);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([

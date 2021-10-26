@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInstitutionsTable extends Migration
+class DropColumnFromProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateInstitutionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('institutions', function (Blueprint $table) {
-            $table->id();
-            $table->string('reference');
-            $table->timestamps();
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('type_stock');
         });
     }
 
@@ -27,6 +25,8 @@ class CreateInstitutionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('institutions');
+        Schema::table('products', function (Blueprint $table) {
+            //
+        });
     }
 }

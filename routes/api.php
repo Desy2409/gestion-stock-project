@@ -8,6 +8,7 @@ use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
+use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -53,6 +54,13 @@ Route::patch('/unity/{id}/update', [UnityController::class, 'update']);
 Route::delete('/unity/{id}/destroy', [UnityController::class, 'destroy']);
 Route::get('/unity/{id}/show', [UnityController::class, 'show']);
 
+// Stock type routes
+Route::get('/stock-type', [StockTypeController::class, 'index']);
+Route::post('/stock-type', [StockTypeController::class, 'store']);
+Route::patch('/stock-type/{id}/update', [StockTypeController::class, 'update']);
+Route::delete('/stock-type/{id}/destroy', [StockTypeController::class, 'destroy']);
+Route::get('/stock-type/{id}/show', [StockTypeController::class, 'show']);
+
 // Client routes
 Route::get('/client', [ClientController::class, 'index']);
 Route::post('/client', [ClientController::class, 'store']);
@@ -69,18 +77,16 @@ Route::patch('/provider/{id}/update', [ProviderController::class, 'update']);
 Route::delete('/provider/{id}/destroy', [ProviderController::class, 'destroy']);
 
 // Product routes
-Route::get('/product-new', [ProductController::class, 'create']);
-Route::post('/product-new', [ProductController::class, 'store']);
+Route::get('/product', [ProductController::class, 'index']);
+Route::post('/product', [ProductController::class, 'store']);
 Route::get('/product/{id}/show', [ProductController::class, 'show']);
-Route::get('/product/{id}/update', [ProductController::class, 'edit']);
 Route::patch('/product/{id}/update', [ProductController::class, 'update']);
 Route::delete('/product/{id}/destroy', [ProductController::class, 'destroy']);
 
 // Purchase order routes
-Route::get('/purchase-order-new', [PurchaseOrderController::class, 'create']);
-Route::post('/purchase-order-new', [PurchaseOrderController::class, 'store']);
+Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
+Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
 Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
-Route::get('/purchase-order/{id}/update', [PurchaseOrderController::class, 'edit']);
 Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
 Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
 

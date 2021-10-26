@@ -17,7 +17,7 @@ class SubCategoryController extends Controller
         $subCategories = SubCategory::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories, 'subCategories' => $subCategories]
-        ]);
+        ], 200 | 400);
     }
 
     // Enregistrement d'une nouvelle sous-catégorie

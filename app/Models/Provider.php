@@ -20,8 +20,4 @@ class Provider extends Model
         return $this->morphOne(Person::class, 'personable');
     }
 
-    public function address()
-    {
-        return $this->hasMany(Address::class);
-    }
 }
