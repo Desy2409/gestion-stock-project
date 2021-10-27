@@ -13,7 +13,8 @@ class SalePoint extends Model
         'social_reason',
         'email',
         'phone_number',
-        'address'
+        'address',
+        'bp'
     ];
 
     public function institution()
