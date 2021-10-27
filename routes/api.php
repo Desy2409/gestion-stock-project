@@ -69,6 +69,7 @@ Route::post('/client', [ClientController::class, 'store']);
 Route::get('/client/{id}/show', [ClientController::class, 'show']);
 Route::patch('/client/{id}/update', [ClientController::class, 'update']);
 Route::delete('/client/{id}/destroy', [ClientController::class, 'destroy']);
+Route::get('/code', [ClientController::class, 'returnCode']);
 
 // Provider routes
 Route::get('/provider', [ProviderController::class, 'index']);

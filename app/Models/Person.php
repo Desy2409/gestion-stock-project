@@ -23,7 +23,7 @@ class Person extends Model
         return $this->morphTo();
     }
 
-    public function address()
+    public function addresses()
     {
         return $this->hasMany(Address::class);
     }

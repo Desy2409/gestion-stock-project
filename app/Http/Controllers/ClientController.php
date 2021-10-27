@@ -20,10 +20,10 @@ class ClientController extends Controller
 
     public function index()
     {
-        $clients = Client::with('person')->get();
+        $clients = Client::with(['person.addresses'])->get();
         return new JsonResponse([
             'datas' => ['clients' => $clients]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -83,7 +83,7 @@ class ClientController extends Controller
                     'existingMoralPerson' => $existingMoralPerson,
                     'success' => $success,
                     'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
-                ], 200 | 400);
+                ], 400);
             }
         } else {
             $this->validate(
@@ -113,7 +113,8 @@ class ClientController extends Controller
             $person->social_reason = $request->social_reason;
             $person->person_type = $request->person_type;
             $person->personable_id = $client->id;
-            $person->personable_type = $client::class;
+            // $person->personable_type = "$client::class";
+            $person->personable_type = "App\Models\Client";
             $person->save();
 
             $address = new Address();
@@ -132,14 +133,14 @@ class ClientController extends Controller
                 'address' => $address,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -148,7 +149,7 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         return new JsonResponse([
             'client' => $client
-        ], 200 | 400);
+        ], 200);
     }
 
     public function edit($id)
@@ -156,13 +157,13 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         return new JsonResponse([
             'client' => $client,
-        ], 200 | 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
     {
         $client = Client::findOrFail($id);
-        $person = Person::where('personable_id', $client->id)->where('personable_type', $client::class)->first();
+        $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         $address = $person ? $person->address : null;
 
         if ($request->person_type == "Personne physique") {
@@ -220,7 +221,7 @@ class ClientController extends Controller
                     'existingMoralPerson' => $existingMoralPerson,
                     'success' => $success,
                     'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
-                ], 200 | 400);
+                ], 400);
             }
         } else {
             $this->validate(
@@ -261,21 +262,21 @@ class ClientController extends Controller
                 'address' => $address,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
     public function destroy($id)
     {
         $client = Client::findOrFail($id);
-        $person = Person::where('personable_id', $client->id)->where('personable_type', $client::class)->first();
+        $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         try {
             $client->delete();
             $person->delete();
@@ -287,14 +288,14 @@ class ClientController extends Controller
                 'person' => $person,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 }
