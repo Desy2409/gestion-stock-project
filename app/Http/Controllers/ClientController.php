@@ -108,7 +108,6 @@ class ClientController extends Controller
             $person->social_reason = $request->social_reason;
             $person->person_type = $request->person_type;
             $person->personable_id = $client->id;
-            // $person->personable_type = "$client::class";
             $person->personable_type = "App\Models\Client";
             $person->save();
 

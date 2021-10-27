@@ -75,7 +75,7 @@ class ProviderController extends Controller
             $person->social_reason = $request->social_reason;
             $person->person_type = "Personne morale";
             $person->personable_id = $provider->id;
-            $person->personable_type = $provider::class;
+            $person->personable_type = "App\Models\Provider";
             $person->save();
 
             $address = new Address();
@@ -122,7 +122,7 @@ class ProviderController extends Controller
     public function update(Request $request, $id)
     {
         $provider = Provider::findOrFail($id);
-        $person = Person::where('personable_id', $provider->id)->where('personable_type', $provider::class)->first();
+        $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
         $address = $provider ? $provider->address : null;
 
         $this->validate(
@@ -198,7 +198,7 @@ class ProviderController extends Controller
     public function destroy($id)
     {
         $provider = Provider::findOrFail($id);
-        $person = Person::where('personable_id', $provider->id)->where('personable_type', $provider::class)->first();
+        $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
         try {
             $provider->delete();
             $person->delete();
