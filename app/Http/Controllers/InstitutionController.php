@@ -49,7 +49,7 @@ class InstitutionController extends Controller
                 'existingInstitution' => $existingInstitution,
                 'success' => $success,
                 'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
@@ -75,7 +75,7 @@ class InstitutionController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -92,7 +92,7 @@ class InstitutionController extends Controller
         $institution = Institution::findOrFail($id);
         return new JsonResponse([
             'institution' => $institution,
-        ], 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -128,7 +128,7 @@ class InstitutionController extends Controller
                 'existingInstitution' => $existingInstitution,
                 'success' => $success,
                 'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
@@ -153,7 +153,7 @@ class InstitutionController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -176,7 +176,7 @@ class InstitutionController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 }

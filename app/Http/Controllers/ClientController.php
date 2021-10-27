@@ -16,7 +16,7 @@ class ClientController extends Controller
 
     public function index()
     {
-        $clients = Client::with('person')->get();
+        $clients = Client::with(['person.addresses'])->get();
         return new JsonResponse([
             'datas' => ['clients' => $clients]
         ], 200);
@@ -108,7 +108,8 @@ class ClientController extends Controller
             $person->social_reason = $request->social_reason;
             $person->person_type = $request->person_type;
             $person->personable_id = $client->id;
-            $person->personable_type = $client::class;
+            // $person->personable_type = "$client::class";
+            $person->personable_type = "App\Models\Client";
             $person->save();
 
             $address = new Address();
@@ -157,7 +158,7 @@ class ClientController extends Controller
     public function update(Request $request, $id)
     {
         $client = Client::findOrFail($id);
-        $person = Person::where('personable_id', $client->id)->where('personable_type', $client::class)->first();
+        $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         $address = $person ? $person->address : null;
 
         if ($request->person_type == "Personne physique") {
@@ -270,7 +271,7 @@ class ClientController extends Controller
     public function destroy($id)
     {
         $client = Client::findOrFail($id);
-        $person = Person::where('personable_id', $client->id)->where('personable_type', $client::class)->first();
+        $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         try {
             $client->delete();
             $person->delete();
