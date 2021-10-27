@@ -32,6 +32,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
+                'bp'=>'required',
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",
@@ -43,6 +44,7 @@ class SalePointController extends Controller
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
+                'bp.required'=>"La boîte postale est obligatoire",
             ],
         );
 
@@ -63,6 +65,7 @@ class SalePointController extends Controller
             $salePoint->social_reason = $request->social_reason;
             $salePoint->address = $request->address;
             $salePoint->email = $request->email;
+            $salePoint->bp = $request->bp;
             $salePoint->phone_number = $request->phone_number;
             $salePoint->institution_id = $request->institution;
             $salePoint->save();
@@ -115,6 +118,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
+                'bp'=>'required',
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",
@@ -126,6 +130,7 @@ class SalePointController extends Controller
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
+                'bp.required'=>"La boîte postale est obligatoire",
             ],
         );
 
@@ -145,6 +150,7 @@ class SalePointController extends Controller
             $salePoint->social_reason = $request->social_reason;
             $salePoint->address = $request->address;
             $salePoint->email = $request->email;
+            $salePoint->bp = $request->bp;
             $salePoint->phone_number = $request->phone_number;
             $salePoint->institution_id = $request->institution;
             $salePoint->save();

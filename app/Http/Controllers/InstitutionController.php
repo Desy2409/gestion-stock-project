@@ -29,6 +29,7 @@ class InstitutionController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
+                'bp' => 'required',
             ],
             [
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -39,6 +40,7 @@ class InstitutionController extends Controller
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
+                'bp.required' => "La boîte postale est obligatoire",
             ],
         );
 
@@ -59,6 +61,7 @@ class InstitutionController extends Controller
             $institution->social_reason = $request->social_reason;
             $institution->address = $request->address;
             $institution->email = $request->email;
+            $institution->bp = $request->bp;
             $institution->phone_number = $request->phone_number;
             $institution->save();
 
@@ -108,6 +111,7 @@ class InstitutionController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
+                'bp' => 'required',
             ],
             [
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -118,6 +122,7 @@ class InstitutionController extends Controller
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
+                'bp.required' => "La boîte postale est obligatoire",
             ],
         );
 
@@ -137,6 +142,7 @@ class InstitutionController extends Controller
             $institution->social_reason = $request->social_reason;
             $institution->address = $request->address;
             $institution->email = $request->email;
+            $institution->bp = $request->bp;
             $institution->phone_number = $request->phone_number;
             $institution->save();
 

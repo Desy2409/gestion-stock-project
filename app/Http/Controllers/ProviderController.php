@@ -117,8 +117,9 @@ class ProviderController extends Controller
     {
         $provider = Provider::findOrFail($id);
         $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
-        $address = $provider ? $provider->address : null;
+        $address = $person ? $person->address : null;
 
+        dd($address);
         $this->validate(
             $request,
             [
@@ -159,7 +160,7 @@ class ProviderController extends Controller
             $person->social_reason = $request->social_reason;
             $person->save();
 
-            if ($address->address != null || $address->email != null || $address->bp != null) {
+            if ($address) {
                 if ($address->address != $request->address || $address->email != $request->email || $address->phone_number != $request->phone_number || $address->bp != $request->bp) {
                     $address = new Address();
                     $address->address = $request->address;
@@ -169,6 +170,14 @@ class ProviderController extends Controller
                     $address->person_id = $person->id;
                     $address->save();
                 }
+            } else {
+                $address = new Address();
+                $address->address = $request->address;
+                $address->email = $request->email;
+                $address->phone_number = $request->phone_number;
+                $address->bp = $request->bp;
+                $address->person_id = $person->id;
+                $address->save();
             }
 
             $success = true;

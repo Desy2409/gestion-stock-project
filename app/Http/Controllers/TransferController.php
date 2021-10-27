@@ -70,7 +70,6 @@ class TransferController extends Controller
             $transfer->receiver_id = $request->receiver;
             $transfer->save();
 
-            $productsTransfersLines = [];
             if (!empty($request->products) && sizeof($request->products) > 0) {
                 foreach ($request->products as $key => $product) {
                     $productTransferLine = new ProductTransferLine();
@@ -79,8 +78,6 @@ class TransferController extends Controller
                     $productTransferLine->product_id = $product;
                     $productTransferLine->transfer_id = $transfer->id;
                     $productTransferLine->save();
-
-                    array_push($productsTransfersLines, $productTransferLine);
                 }
             }
 
@@ -90,7 +87,6 @@ class TransferController extends Controller
                 'transfer' => $transfer,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTransfersLines' => $productsTransfersLines],
             ], 200);
         } catch (Exception $e) {
             $success = false;
@@ -170,7 +166,6 @@ class TransferController extends Controller
 
             ProductTransferLine::where('transfer_id', $transfer->id)->delete();
 
-            $productsTransfersLines = [];
             if (!empty($request->products) && sizeof($request->products) > 0) {
                 foreach ($request->products as $key => $product) {
                     $productTransferLine = new ProductTransferLine();
@@ -179,8 +174,6 @@ class TransferController extends Controller
                     $productTransferLine->product_id = $product;
                     $productTransferLine->transfer_id = $transfer->id;
                     $productTransferLine->save();
-
-                    array_push($productsTransfersLines, $productTransferLine);
                 }
             }
 
@@ -190,7 +183,6 @@ class TransferController extends Controller
                 'transfer' => $transfer,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTransfersLines' => $productsTransfersLines],
             ], 200);
         } catch (Exception $e) {
             dd($e);
@@ -206,7 +198,7 @@ class TransferController extends Controller
     public function destroy($id)
     {
         $transfer = Transfer::findOrFail($id);
-        $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
+        // $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
         try {
             $transfer->delete();
 
@@ -216,7 +208,6 @@ class TransferController extends Controller
                 'transfer' => $transfer,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTransfersLines' => $productsTransfersLines],
             ], 200);
         } catch (Exception $e) {
             $success = false;
