@@ -17,6 +17,9 @@ class ClientController extends Controller
     public function index()
     {
         $clients = Client::with(['person.addresses'])->get();
+        // return new JsonResponse([
+        //     'datas' => ['clients' => $clients]
+        // ], 200);
         return new JsonResponse([
             'datas' => $clients
         ], 200);
@@ -27,7 +30,7 @@ class ClientController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->person_type === "Personne physique") {
+        if ($request->person_type == "Personne physique") {
             $this->validate(
                 $request,
                 [
@@ -49,7 +52,7 @@ class ClientController extends Controller
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 ],
             );
-        } elseif ($request->person_type === "Personne morale") {
+        } elseif ($request->person_type == "Personne morale") {
             $this->validate(
                 $request,
                 [
@@ -57,21 +60,16 @@ class ClientController extends Controller
                     'cc_number' => 'required',
                     'social_reason' => 'required',
                     'reference' => 'required',
-                    'email' => 'required|email',
+                    'email' => 'email',
                     'phone_number' => 'required',
-                    'address' => 'required',
-                    'bp' => 'required',
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                     'cc_number.required' => "Le numéro CC est obligatoire.",
                     'social_reason.required' => "La raison sociale est obligatoire.",
                     'reference.required' => "La reference est obligatoire.",
-                    'email.required' => "L'adresse email est obligatoire.",
                     'email.email' => "L'adresse email est incorrecte.",
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                    'address.required' => "L'adresse est obligatoire.",
-                    'bp.required' => "La boîte postale est obligatoire.",
                 ],
             );
             $existingMoralPerson = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
@@ -111,7 +109,6 @@ class ClientController extends Controller
             $person->social_reason = $request->social_reason;
             $person->person_type = $request->person_type;
             $person->personable_id = $client->id;
-            // $person->personable_type = "$client::class";
             $person->personable_type = "App\Models\Client";
             $person->save();
 
@@ -120,7 +117,7 @@ class ClientController extends Controller
             $address->email = $request->email;
             $address->phone_number = $request->phone_number;
             $address->bp = $request->bp;
-            $address->person_id = $request->person;
+            $address->person_id = $person->id;
             $address->save();
 
             $success = true;
@@ -144,18 +141,14 @@ class ClientController extends Controller
 
     public function show($id)
     {
-        $client = Client::findOrFail($id);
-        return new JsonResponse([
-            'client' => $client
-        ], 200);
+        $client = Client::with('person.address')->where('id', $id)->first();
+        return new JsonResponse(['client' => $client], 200);
     }
 
     public function edit($id)
     {
-        $client = Client::findOrFail($id);
-        return new JsonResponse([
-            'client' => $client,
-        ], 200);
+        $client = Client::with('person.address')->where('id', $id)->first();
+        return new JsonResponse(['client' => $client], 200);
     }
 
     public function update(Request $request, $id)
@@ -195,21 +188,16 @@ class ClientController extends Controller
                     'cc_number' => 'required',
                     'social_reason' => 'required',
                     'reference' => 'required',
-                    'email' => 'required|email',
+                    'email' => 'email',
                     'phone_number' => 'required',
-                    'address' => 'required',
-                    'bp' => 'required',
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                     'cc_number.required' => "Le numéro CC est obligatoire.",
                     'social_reason.required' => "La raison sociale est obligatoire.",
                     'reference.required' => "La reference est obligatoire.",
-                    'email.required' => "L'adresse email est obligatoire.",
                     'email.email' => "L'adresse email est incorrecte.",
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                    'address.required' => "L'adresse est obligatoire.",
-                    'bp.required' => "La boîte postale est obligatoire.",
                 ],
             );
             $existingMoralPerson = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
@@ -246,11 +234,15 @@ class ClientController extends Controller
             $person->person_type = $request->person_type;
             $person->save();
 
-            $address->address = $request->address;
-            $address->email = $request->email;
-            $address->phone_number = $request->phone_number;
-            $address->bp = $request->bp;
-            $address->save();
+            if ($address->address != $request->address || $address->email != $request->email || $address->phone_number != $request->phone_number || $address->bp != $request->bp) {
+                $address = new Address();
+                $address->address = $request->address;
+                $address->email = $request->email;
+                $address->phone_number = $request->phone_number;
+                $address->bp = $request->bp;
+                $address->person_id = $person->id;
+                $address->save();
+            }
 
             $success = true;
             $message = "Modification effectuée avec succès.";
