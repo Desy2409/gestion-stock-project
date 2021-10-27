@@ -16,7 +16,7 @@ class CategoryController extends Controller
         $categories = Category::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories]
-        ]);
+        ], 200);
     }
 
     // Enregistrement d'une nouvelle catégorie

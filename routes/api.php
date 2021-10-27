@@ -11,6 +11,7 @@ use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
 use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
+use App\Http\Controllers\TransferDemandController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -106,6 +107,13 @@ Route::post('/sale-point', [SalePointController::class, 'store']);
 Route::get('/sale-point/{id}/show', [SalePointController::class, 'show']);
 Route::patch('/sale-point/{id}/update', [SalePointController::class, 'update']);
 Route::delete('/sale-point/{id}/destroy', [SalePointController::class, 'destroy']);
+
+// Sale point routes
+Route::get('/transfer-demand', [TransferDemandController::class, 'index']);
+Route::post('/transfer-demand', [TransferDemandController::class, 'store']);
+Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
+Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
+Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
 
 // Protected routes
 Route::group(

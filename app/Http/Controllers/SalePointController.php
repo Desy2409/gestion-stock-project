@@ -16,7 +16,7 @@ class SalePointController extends Controller
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
             'datas'=>['salesPoints' => $salesPoints,'institutions' => $institutions]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -53,7 +53,7 @@ class SalePointController extends Controller
                 'existingInstitution' => $existingSalePoint,
                 'success' => $success,
                 'message' => "Le point de vente " . $existingSalePoint->social_reason . " existe déjà."
-            ], 200 | 400);
+            ], 400);
         }
 
         try {
@@ -73,14 +73,14 @@ class SalePointController extends Controller
                 'salePoint' => $salePoint,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -89,7 +89,7 @@ class SalePointController extends Controller
         $salePoint = SalePoint::findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint
-        ], 200 | 400);
+        ], 200);
     }
 
     public function edit($id)
@@ -97,7 +97,7 @@ class SalePointController extends Controller
         $salePoint = SalePoint::findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint,
-        ], 200 | 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -135,7 +135,7 @@ class SalePointController extends Controller
                 'existingInstitution' => $existingSalePoint,
                 'success' => $success,
                 'message' => "Le point de vente " . $existingSalePoint->social_reason . " existe déjà."
-            ], 200 | 400);
+            ], 400);
         }
 
         try {
@@ -154,14 +154,14 @@ class SalePointController extends Controller
                 'salePoint' => $salePoint,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -177,14 +177,14 @@ class SalePointController extends Controller
                 'salePoint' => $salePoint,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 }

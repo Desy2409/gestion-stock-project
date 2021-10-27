@@ -10,7 +10,6 @@ use App\Models\PurchaseOrder;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Session;
 
 class PurchaseOrderController extends Controller
@@ -21,9 +20,9 @@ class PurchaseOrderController extends Controller
         $providers = Provider::with('person')->get();
         $products = Product::orderBy('wording')->get();
 
-        return new JsonResource([
+        return new JsonResponse([
             'datas' => ['purchaseOrders' => $purchaseOrders, 'providers' => $providers, 'products' => $products]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -85,10 +84,10 @@ class PurchaseOrderController extends Controller
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
-                'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+                'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
+            ], 200);
         } catch (Exception $e) {
             dd($e);
             $success = false;
@@ -96,19 +95,19 @@ class PurchaseOrderController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
     public function show($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
+        $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productPurchaseOrders : null; //ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
 
         return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
             'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function edit($id)
@@ -118,10 +117,10 @@ class PurchaseOrderController extends Controller
         $products = Product::orderBy('wording')->get();
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
 
-        return new JsonResource([
+        return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
             'datas' => ['providers' => $providers, 'products' => $products, 'productsPurchaseOrders' => $productsPurchaseOrders]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -185,10 +184,10 @@ class PurchaseOrderController extends Controller
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
-                'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+                'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
+            ], 200);
         } catch (Exception $e) {
             dd($e);
             $success = false;
@@ -196,7 +195,7 @@ class PurchaseOrderController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -206,22 +205,22 @@ class PurchaseOrderController extends Controller
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
         try {
             $purchaseOrder->delete();
-            
+
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
-                'datas' => ['productsPurchaseOrders'=>$productsPurchaseOrders],
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+                'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 }

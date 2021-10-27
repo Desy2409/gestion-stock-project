@@ -25,7 +25,7 @@ class ProductController extends Controller
         $stockTypes = StockType::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['products' => $products, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -71,7 +71,7 @@ class ProductController extends Controller
                 'product' => $product,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             dd($e);
             $success = false;
@@ -79,14 +79,14 @@ class ProductController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        return new JsonResponse(['product' => $product], 200 | 400);
+        return new JsonResponse(['product' => $product], 200);
     }
 
     public function edit($id)
@@ -96,7 +96,7 @@ class ProductController extends Controller
         $subCategories = SubCategory::orderBy('wording')->get();
         $stockTypes = StockType::orderBy('wording')->get();        return new JsonResponse([
             'datas' => ['product' => $product, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
-        ], 200 | 400);
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -140,7 +140,7 @@ class ProductController extends Controller
                 'product' => $product,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             dd($e);
             $success = false;
@@ -148,7 +148,7 @@ class ProductController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
@@ -164,14 +164,14 @@ class ProductController extends Controller
                 'product' => $product,
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 200);
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200 | 400);
+            ], 400);
         }
     }
 
