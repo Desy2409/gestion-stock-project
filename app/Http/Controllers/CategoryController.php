@@ -17,6 +17,10 @@ class CategoryController extends Controller
         return new JsonResponse([
             'datas' => ['categories' => $categories]
         ], 200);
+        // return $categories;
+        //  return new JsonResponse([
+        //     'datas' => [$categories]
+        // ], 200);
     }
 
     // Enregistrement d'une nouvelle catégorie

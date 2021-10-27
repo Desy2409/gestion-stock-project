@@ -18,8 +18,11 @@ class ClientController extends Controller
     {
         $clients = Client::with(['person.addresses'])->get();
         return new JsonResponse([
-            'datas' => ['clients' => $clients]
+            'datas' => $clients
         ], 200);
+        // return new JsonResponse([
+        //     'datas' => ['clients' => $clients]
+        // ], 200);
     }
 
     public function store(Request $request)
