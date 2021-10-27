@@ -115,8 +115,8 @@ Route::post('/transfer-demand', [TransferDemandController::class, 'store']);
 Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
 Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
 Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
-Route::delete('/transfer-demand/{id}/validate', [TransferDemandController::class, 'validateTransferDemand']);
-Route::delete('/transfer-demand/{id}/cancel', [TransferDemandController::class, 'cancelTransferDemand']);
+Route::patch('/transfer-demand/{id}/validate', [TransferDemandController::class, 'validateTransferDemand']);
+Route::patch('/transfer-demand/{id}/cancel', [TransferDemandController::class, 'cancelTransferDemand']);
 
 // Transfer routes
 Route::get('/transfer', [TransferController::class, 'index']);

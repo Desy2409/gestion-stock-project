@@ -75,7 +75,6 @@ class TransferDemandController extends Controller
             $transferDemand->state = 'P';
             $transferDemand->save();
 
-            $productsTransfersDemandsLines = [];
             if (!empty($request->products) && sizeof($request->products) > 0) {
                 foreach ($request->products as $key => $product) {
                     $transferDemandLine = new ProductTransferDemandLine();
@@ -84,8 +83,6 @@ class TransferDemandController extends Controller
                     $transferDemandLine->product_id = $product;
                     $transferDemandLine->transfer_demand_id = $transferDemand->id;
                     $transferDemandLine->save();
-
-                    array_push($productsTransfersDemandsLines, $transferDemandLine);
                 }
             }
 
@@ -95,7 +92,6 @@ class TransferDemandController extends Controller
                 'transferDemand' => $transferDemand,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTransfersDemandsLines' => $productsTransfersDemandsLines],
             ], 200);
         } catch (Exception $e) {
             $success = false;
@@ -177,7 +173,6 @@ class TransferDemandController extends Controller
 
             ProductTransferDemandLine::where('transfer_demand_id', $transferDemand->id)->delete();
 
-            $productsTransfersDemandsLines = [];
             if (!empty($request->products) && sizeof($request->products) > 0) {
                 foreach ($request->products as $key => $product) {
                     $transferDemandLine = new ProductTransferDemandLine();
@@ -186,8 +181,6 @@ class TransferDemandController extends Controller
                     $transferDemandLine->product_id = $product;
                     $transferDemandLine->transfer_demand_id = $transferDemand->id;
                     $transferDemandLine->save();
-
-                    array_push($productsTransfersDemandsLines, $transferDemandLine);
                 }
             }
 
@@ -197,7 +190,6 @@ class TransferDemandController extends Controller
                 'transferDemand' => $transferDemand,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTransfersDemandsLines' => $productsTransfersDemandsLines],
             ], 200);
         } catch (Exception $e) {
             dd($e);
@@ -213,7 +205,7 @@ class TransferDemandController extends Controller
     public function destroy($id)
     {
         $transferDemand = TransferDemand::findOrFail($id);
-        $productsTransfersDemandsLines = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
+        // $productsTransfersDemandsLines = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
         try {
             $transferDemand->delete();
 
@@ -223,7 +215,6 @@ class TransferDemandController extends Controller
                 'transferDemand' => $transferDemand,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTransfersDemandsLines' => $productsTransfersDemandsLines],
             ], 200);
         } catch (Exception $e) {
             $success = false;

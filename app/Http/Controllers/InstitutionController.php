@@ -25,20 +25,20 @@ class InstitutionController extends Controller
                 'rccm_number' => 'required',
                 'cc_number' => 'required',
                 'social_reason' => 'required',
-                'reference' => 'required',
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
+                'bp' => 'required',
             ],
             [
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
-                'reference.required' => "La reference est obligatoire.",
                 'email.required' => "L'adresse email est obligatoire.",
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
+                'bp.required' => "La boîte postale est obligatoire",
             ],
         );
 
@@ -59,6 +59,7 @@ class InstitutionController extends Controller
             $institution->social_reason = $request->social_reason;
             $institution->address = $request->address;
             $institution->email = $request->email;
+            $institution->bp = $request->bp;
             $institution->phone_number = $request->phone_number;
             $institution->save();
 
@@ -104,20 +105,20 @@ class InstitutionController extends Controller
                 'rccm_number' => 'required',
                 'cc_number' => 'required',
                 'social_reason' => 'required',
-                'reference' => 'required',
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
+                'bp' => 'required',
             ],
             [
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
-                'reference.required' => "La reference est obligatoire.",
                 'email.required' => "L'adresse email est obligatoire.",
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
+                'bp.required' => "La boîte postale est obligatoire",
             ],
         );
 
@@ -137,6 +138,7 @@ class InstitutionController extends Controller
             $institution->social_reason = $request->social_reason;
             $institution->address = $request->address;
             $institution->email = $request->email;
+            $institution->bp = $request->bp;
             $institution->phone_number = $request->phone_number;
             $institution->save();
 
