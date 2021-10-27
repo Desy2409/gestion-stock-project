@@ -18,7 +18,7 @@ class ProviderController extends Controller
 
     public function index()
     {
-        $providers = Provider::with('person')->get();
+        $providers = Provider::with(['person.addresses'])->get();
         return new JsonResponse([
             'datas' => ['providers' => $providers]
         ], 200);
@@ -35,8 +35,6 @@ class ProviderController extends Controller
                 'reference' => 'required',
                 'email' => 'required|email',
                 'phone_number' => 'required',
-                'address' => 'required',
-                'bp' => 'required',
             ],
             [
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -46,8 +44,6 @@ class ProviderController extends Controller
                 'email.required' => "L'adresse email est obligatoire.",
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                'address.required' => "L'adresse est obligatoire.",
-                'bp.required' => "La boîte postale est obligatoire.",
             ],
         );
 
@@ -83,7 +79,7 @@ class ProviderController extends Controller
             $address->email = $request->email;
             $address->phone_number = $request->phone_number;
             $address->bp = $request->bp;
-            $address->person_id = $request->person;
+            $address->person_id = $person->id;
             $address->save();
 
             $success = true;
@@ -107,16 +103,14 @@ class ProviderController extends Controller
 
     public function show($id)
     {
-        $provider = Provider::where("id", $id);
+        $provider = Provider::with('person.address')->where('id', $id)->first();
         return new JsonResponse(['provider' => $provider], 200);
     }
 
     public function edit($id)
     {
-        $provider = Provider::findOrFail($id);
-        return new JsonResponse([
-            'provider' => $provider,
-        ], 200);
+        $provider = Provider::with('person.address')->where('id', $id)->first();
+        return new JsonResponse(['provider' => $provider], 200);
     }
 
     public function update(Request $request, $id)
@@ -134,19 +128,14 @@ class ProviderController extends Controller
                 'reference' => 'required',
                 'email' => 'required|email',
                 'phone_number' => 'required',
-                'address' => 'required',
-                'bp' => 'required',
             ],
             [
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
                 'reference.required' => "La reference est obligatoire.",
-                'email.required' => "L'adresse email est obligatoire.",
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                'address.required' => "L'adresse est obligatoire.",
-                'bp.required' => "La boîte postale est obligatoire.",
             ],
         );
 
@@ -170,11 +159,17 @@ class ProviderController extends Controller
             $person->social_reason = $request->social_reason;
             $person->save();
 
-            $address->address = $request->address;
-            $address->email = $request->email;
-            $address->phone_number = $request->phone_number;
-            $address->bp = $request->bp;
-            $address->save();
+            if ($address->address != null || $address->email != null || $address->bp != null) {
+                if ($address->address != $request->address || $address->email != $request->email || $address->phone_number != $request->phone_number || $address->bp != $request->bp) {
+                    $address = new Address();
+                    $address->address = $request->address;
+                    $address->email = $request->email;
+                    $address->phone_number = $request->phone_number;
+                    $address->bp = $request->bp;
+                    $address->person_id = $person->id;
+                    $address->save();
+                }
+            }
 
             $success = true;
             $message = "Modification effectuée avec succès.";
@@ -186,6 +181,7 @@ class ProviderController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
