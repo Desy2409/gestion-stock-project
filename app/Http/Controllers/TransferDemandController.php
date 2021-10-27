@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Product;
 use App\Models\ProductTransferDemandLine;
-use App\Models\ProductTransferLine;
 use App\Models\SalePoint;
 use App\Models\TransferDemand;
 use DateTime;
@@ -22,8 +21,9 @@ class TransferDemandController extends Controller
     {
         $salesPoints = SalePoint::orderBy('social_reason')->get();
         $products = Product::orderBy('wording')->get();
+        $transfersDemands = TransferDemand::orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         return new JsonResponse([
-            'datas' => ['salesPoints' => $salesPoints, 'products' => $products]
+            'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products]
         ], 200);
     }
 
@@ -35,7 +35,7 @@ class TransferDemandController extends Controller
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
-                'demand_reason' => 'required',
+                'request_reason' => 'required',
                 'date_of_demand' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
                 'delivery_deadline' => 'required|date|date_format:Y-m-d|after:date_of_demand',
                 'date_of_processing' => 'date|date_format:Y-m-d|after:date_of_demand',
@@ -46,7 +46,7 @@ class TransferDemandController extends Controller
             [
                 'transmitter.required' => "Le point de vente source est obligatoire.",
                 'receiver.required' => "Le point de vente destination est obligatoire.",
-                'demand_reason.required' => "Le motif de la demande de transfert est obligatoire.",
+                'request_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_demand.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_demand.date' => "La date de la demande de transfert est invalide.",
                 'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : AAAA-MM-JJ.",
@@ -67,7 +67,7 @@ class TransferDemandController extends Controller
             $transfersDemands = TransferDemand::all();
             $transferDemand = new TransferDemand();
             $transferDemand->code = $this->formateNPosition('DT', sizeof($transfersDemands) + 1, 8);
-            $transferDemand->demand_reason = $request->demand_reason;
+            $transferDemand->request_reason = $request->request_reason;
             $transferDemand->date_of_demand = $request->date_of_demand;
             $transferDemand->delivery_deadline = $request->delivery_deadline;
             $transferDemand->transmitter_id = $request->transmitter;
@@ -75,7 +75,7 @@ class TransferDemandController extends Controller
             $transferDemand->state = 'P';
             $transferDemand->save();
 
-            $transfersDemandsLines = [];
+            $productsTransfersDemandsLines = [];
             if (!empty($request->products) && sizeof($request->products) > 0) {
                 foreach ($request->products as $key => $product) {
                     $transferDemandLine = new ProductTransferDemandLine();
@@ -85,7 +85,7 @@ class TransferDemandController extends Controller
                     $transferDemandLine->transfer_demand_id = $transferDemand->id;
                     $transferDemandLine->save();
 
-                    array_push($transfersDemandsLines, $transferDemandLine);
+                    array_push($productsTransfersDemandsLines, $transferDemandLine);
                 }
             }
 
@@ -95,7 +95,7 @@ class TransferDemandController extends Controller
                 'transferDemand' => $transferDemand,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['transfersDemandsLines' => $transfersDemandsLines],
+                'datas' => ['productsTransfersDemandsLines' => $productsTransfersDemandsLines],
             ], 200);
         } catch (Exception $e) {
             $success = false;
@@ -139,7 +139,7 @@ class TransferDemandController extends Controller
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
-                'demand_reason' => 'required',
+                'request_reason' => 'required',
                 'date_of_demand' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
                 'delivery_deadline' => 'required|date|date_format:Y-m-d|after:date_of_demand',
                 'date_of_processing' => 'date|date_format:Y-m-d|after:date_of_demand',
@@ -150,7 +150,7 @@ class TransferDemandController extends Controller
             [
                 'transmitter.required' => "Le point de vente source est obligatoire.",
                 'receiver.required' => "Le point de vente destination est obligatoire.",
-                'demand_reason.required' => "Le motif de la demande de transfert est obligatoire.",
+                'request_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_demand.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_demand.date' => "La date de la demande de transfert est invalide.",
                 'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : AAAA-MM-JJ.",
@@ -168,16 +168,16 @@ class TransferDemandController extends Controller
         );
 
         try {
-            $transferDemand->demand_reason = $request->demand_reason;
+            $transferDemand->request_reason = $request->request_reason;
             $transferDemand->date_of_demand = $request->date_of_demand;
             $transferDemand->delivery_deadline = $request->delivery_deadline;
             $transferDemand->transmitter_id = $request->transmitter;
             $transferDemand->receiver_id = $request->receiver;
             $transferDemand->save();
 
-            ProductTransferLine::where('transfer_demand_id', $transferDemand->id)->delete();
+            ProductTransferDemandLine::where('transfer_demand_id', $transferDemand->id)->delete();
 
-            $transfersDemandsLines = [];
+            $productsTransfersDemandsLines = [];
             if (!empty($request->products) && sizeof($request->products) > 0) {
                 foreach ($request->products as $key => $product) {
                     $transferDemandLine = new ProductTransferDemandLine();
@@ -187,7 +187,7 @@ class TransferDemandController extends Controller
                     $transferDemandLine->transfer_demand_id = $transferDemand->id;
                     $transferDemandLine->save();
 
-                    array_push($transfersDemandsLines, $transferDemandLine);
+                    array_push($productsTransfersDemandsLines, $transferDemandLine);
                 }
             }
 
@@ -197,7 +197,7 @@ class TransferDemandController extends Controller
                 'transferDemand' => $transferDemand,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['transfersDemandsLines' => $transfersDemandsLines],
+                'datas' => ['productsTransfersDemandsLines' => $productsTransfersDemandsLines],
             ], 200);
         } catch (Exception $e) {
             dd($e);
@@ -213,7 +213,7 @@ class TransferDemandController extends Controller
     public function destroy($id)
     {
         $transferDemand = TransferDemand::findOrFail($id);
-        $transfersDemandsLines = $transferDemand ? $transferDemand->transfersDemandsLines : null;
+        $productsTransfersDemandsLines = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
         try {
             $transferDemand->delete();
 
@@ -223,7 +223,7 @@ class TransferDemandController extends Controller
                 'transferDemand' => $transferDemand,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['transfersDemandsLines' => $transfersDemandsLines],
+                'datas' => ['productsTransfersDemandsLines' => $productsTransfersDemandsLines],
             ], 200);
         } catch (Exception $e) {
             $success = false;
@@ -235,7 +235,53 @@ class TransferDemandController extends Controller
         }
     }
 
-    public function changeState($id){
+    public function validateTransferDemand($id)
+    {
         $transferDemand = TransferDemand::findOrFail($id);
+        try {
+            $transferDemand->state = 'S';
+            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
+            $transferDemand->save();
+
+            $success = true;
+            $message = "Demande de transfert validée avec succès.";
+            return new JsonResponse([
+                'transferDemand' => $transferDemand,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function cancelTransferDemand($id)
+    {
+        $transferDemand = TransferDemand::findOrFail($id);
+        try {
+            $transferDemand->state = 'A';
+            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
+            $transferDemand->save();
+
+            $success = true;
+            $message = "Demande de transfert validée avec succès.";
+            return new JsonResponse([
+                'transferDemand' => $transferDemand,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
     }
 }

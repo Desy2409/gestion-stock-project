@@ -19,7 +19,7 @@ class CreateAddressesTable extends Migration
             $table->string('email')->nullable();
             $table->string('phone_number');
             $table->string('bp')->nullable();
-            $table->foreignId('person_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('person_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -4,12 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
-use App\Models\JuridicPersonality;
-use App\Models\Product;
-use App\Models\Provider;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use App\Models\Person;
 use App\Models\Address;
 use Illuminate\Http\JsonResponse;
@@ -28,7 +24,7 @@ class ClientController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->person_type == "Personne physique") {
+        if ($request->person_type === "Personne physique") {
             $this->validate(
                 $request,
                 [
@@ -39,7 +35,6 @@ class ClientController extends Controller
                     'phone_number' => 'required',
                 ],
                 [
-
                     'last_name.required' => "Le nom est obligatoire.",
                     'last_name.max' => "Le nom ne doit pas dépasser 50 caractères.",
                     'last_name.string' => "Le nom doit être une chaîne de caractères.",
@@ -51,7 +46,7 @@ class ClientController extends Controller
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 ],
             );
-        } elseif ($request->person_type == "Personne morale") {
+        } elseif ($request->person_type === "Personne morale") {
             $this->validate(
                 $request,
                 [
