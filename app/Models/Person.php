@@ -28,9 +28,10 @@ class Person extends Model
         return $this->hasMany(Address::class);
     }
 
-    public function address($id)
+    public function address()
     {
-        $address = Address::latest('person_id', $id)->fisrt();
-        return $address;
+        // $address = Address::latest('person_id', $this->id)->fisrt();
+        // return $address;
+        return $this->hasOne(Address::class)->latest();
     }
 }
