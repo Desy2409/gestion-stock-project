@@ -3,12 +3,14 @@
 use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
+use App\Http\Controllers\PurchaseCouponController;
 use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\TransferController;
@@ -94,6 +96,23 @@ Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
 Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
 Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
 Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
+
+// Purchase coupon routes
+Route::get('/purchase-coupon', [PurchaseCouponController::class, 'index']);
+Route::post('/purchase-coupon', [PurchaseCouponController::class, 'store']);
+Route::post('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'storeFromPurchaseOrder']);
+Route::get('/purchase-coupon/{id}/products', [PurchaseCouponController::class, 'showProductOfPurchaseOrder']);
+Route::get('/purchase-coupon/{id}/show', [PurchaseCouponController::class, 'show']);
+Route::patch('/purchase-coupon/{id}/update', [PurchaseCouponController::class, 'update']);
+Route::patch('/purchase-coupon-from-purchase-order/{id}/update', [PurchaseCouponController::class, 'updateFromPurchaseOrder']);
+Route::delete('/purchase-coupon/{id}/destroy', [PurchaseCouponController::class, 'destroy']);
+
+// Delivery note routes
+Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
+Route::post('/delivery-note', [DeliveryNoteController::class, 'store']);
+Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
+Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
+Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
 
 // Institution routes
 Route::get('/institution', [InstitutionController::class, 'index']);
