@@ -5,10 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PurchaseOrder extends Model
+class DeliveryNote extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'reference',
         'purchase_date',
@@ -17,13 +15,13 @@ class PurchaseOrder extends Model
         'observation'
     ];
 
-    public function provider()
+    public function purchaseCoupon()
     {
-        return $this->belongsTo(Provider::class);
+        return $this->belongsTo(PurchaseCoupon::class);
     }
 
-    public function productPurchaseOrders()
+    public function productDeliveryNotes()
     {
-        return $this->hasMany(ProductPurchaseOrder::class);
+        return $this->hasMany(ProductDeliveryNote::class);
     }
 }
