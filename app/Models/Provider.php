@@ -20,4 +20,13 @@ class Provider extends Model
         return $this->morphOne(Person::class, 'personable');
     }
 
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function purchaseCoupons()
+    {
+        return $this->hasMany(PurchaseCoupon::class);
+    }
 }

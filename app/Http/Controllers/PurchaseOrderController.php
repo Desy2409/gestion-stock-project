@@ -16,7 +16,7 @@ class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        $purchaseOrders = PurchaseOrder::orderBy('purchase_date')->orderBy('order_number')->get();
+        $purchaseOrders = PurchaseOrder::orderBy('purchase_date')->get();
         $providers = Provider::with('person')->get();
         $products = Product::orderBy('wording')->get();
 
@@ -65,6 +65,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->delivery_date   = $request->delivery_date;
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
+            $purchaseOrder->provider_id = $request->provider;
             $purchaseOrder->save();
 
             $productsPurchaseOrders = [];
@@ -74,7 +75,7 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->unit_price = $request->unit_prices[$key];
                 $productPurchaseOrder->product_id = $product;
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
-                $productPurchaseOrder->provider_id = $request->provider;
+                // $productPurchaseOrder->provider_id = $request->provider;
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
@@ -163,6 +164,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->delivery_date   = $request->delivery_date;
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
+            $purchaseOrder->provider_id = $request->provider;
             $purchaseOrder->save();
 
             ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->delete();
@@ -174,7 +176,7 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->unit_price = $request->unit_prices[$key];
                 $productPurchaseOrder->product_id = $product;
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
-                $productPurchaseOrder->provider_id = $request->provider;
+                // $productPurchaseOrder->provider_id = $request->provider;
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);

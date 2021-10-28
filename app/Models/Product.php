@@ -47,4 +47,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductTransferLine::class);
     }
+
+    public function productPurchaseCoupons()
+    {
+        return $this->hasMany(ProductPurchaseCoupon::class);
+    }
+
+    public function productDeliveryNotes()
+    {
+        return $this->hasMany(ProductDeliveryNote::class);
+    }
 }
