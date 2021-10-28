@@ -26,4 +26,9 @@ class SalePoint extends Model
     {
         return $this->hasMany(TransferDemand::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

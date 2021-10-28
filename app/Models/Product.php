@@ -57,4 +57,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductDeliveryNote::class);
     }
+
+    public function productOrders()
+    {
+        return $this->hasMany(ProductOrder::class);
+    }
 }
