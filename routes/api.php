@@ -129,11 +129,13 @@ Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
 // Sale routes
 Route::get('/sale', [SaleController::class, 'index']);
 Route::post('/sale', [SaleController::class, 'store']);
-Route::post('/sale-from-purchase-order', [SaleController::class, 'storeFromOrder']);
-Route::get('/sale/{id}/products', [SaleController::class, 'showProductOfOrder']);
+Route::get('/sale-from-order', [SaleController::class, 'indexFromOrder']);
+Route::post('/sale-from-order', [SaleController::class, 'storeFromOrder']);
 Route::get('/sale/{id}/show', [SaleController::class, 'show']);
+Route::get('/sale/{id}/update', [SaleController::class, 'edit']);
 Route::patch('/sale/{id}/update', [SaleController::class, 'update']);
-Route::patch('/sale-from-purchase-order/{id}/update', [SaleController::class, 'updateFromOrder']);
+Route::get('/sale-from-order/{id}/update', [SaleController::class, 'editFromOrder']);
+Route::patch('/sale-from-order/{id}/update', [SaleController::class, 'updateFromOrder']);
 Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
 
 // Client delivery note routes
