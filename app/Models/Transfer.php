@@ -14,6 +14,11 @@ class Transfer extends Model
         'date_of_receipt'
     ];
 
+    public function salePoint()
+    {
+        return $this->belongsTo(SalePoint::class);
+    }
+
     public function productsTransfersLines()
     {
         return $this->hasMany(ProductTransferLine::class);

@@ -14,9 +14,9 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::orderBy('order_date')->get();
+        $orders = Order::with('client')->with('salePoint')->with('productOrders')->orderBy('order_date')->get();
         $clients = Client::with('person')->get();
-        $products = Product::orderBy('wording')->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
 
         return new JsonResponse([
             'datas' => ['orders' => $orders, 'clients' => $clients, 'products' => $products]
@@ -31,8 +31,8 @@ class OrderController extends Controller
                 'sale_point'=>'required',
                 'client' => 'required',
                 'reference' => 'required|unique:orders',
-                'purchase_date' => 'required|date',
-                'delivery_date' => 'required|date',
+                'order_date' => 'required|date|date_format:Y-m-d',
+                'delivery_date' => 'required|date|date_format:Y-m-d|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -43,11 +43,14 @@ class OrderController extends Controller
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'client.required' => "Le choix du client est obligatoire.",
                 'reference.required' => "La référence de la commande est obligatoire.",
-                'reference.unique' => "Ce bon de commande existe déjà.",
-                'purchase_date.required' => "La date de la commande est obligatoire.",
-                'purchase_date.date' => "Format de date incorrect.",
+                'reference.unique' => "Cette commande existe déjà.",
+                'order_date.required' => "La date de la commande est obligatoire.",
+                'order_date.date' => "La date de la commande est incorrecte.",
+                'order_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "Format de date incorrect.",
+                'delivery_date.date' => "La date de livraison est incorrecte.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
@@ -61,7 +64,7 @@ class OrderController extends Controller
         try {
             $order = new Order();
             $order->reference = $request->reference;
-            $order->purchase_date   = $request->purchase_date;
+            $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;
@@ -101,7 +104,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('client')->with('salePoint')->with('productOrders')->findOrFail($id);
         $productsOrders = $order ? $order->productOrders : null; //ProductOrder::where('order_id', $order->id)->get();
 
         return new JsonResponse([
@@ -112,9 +115,9 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('client')->with('salePoint')->with('productOrders')->findOrFail($id);
         $clients = Client::with('person')->get();
-        $products = Product::orderBy('wording')->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
         $productsOrders = $order ? $order->productsOrders : null;
 
         return new JsonResponse([
@@ -132,7 +135,7 @@ class OrderController extends Controller
                 'sale_point'=>'required',
                 'client' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date',
+                'order_date' => 'required|date',
                 'delivery_date' => 'required|date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
@@ -144,8 +147,8 @@ class OrderController extends Controller
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'client.required' => "Le choix du client est obligatoire.",
                 'reference.required' => "La référence de la commande est obligatoire.",
-                'purchase_date.required' => "La date de la commande est obligatoire.",
-                'purchase_date.date' => "Format de date incorrect.",
+                'order_date.required' => "La date de la commande est obligatoire.",
+                'order_date.date' => "Format de date incorrect.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "Format de date incorrect.",
                 'total_amount.required' => "Le montant total est obligatoire.",
@@ -161,7 +164,7 @@ class OrderController extends Controller
         try {
             // $order = new Order();
             $order->reference = $request->reference;
-            $order->purchase_date   = $request->purchase_date;
+            $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;

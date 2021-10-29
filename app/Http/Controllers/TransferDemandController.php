@@ -20,8 +20,8 @@ class TransferDemandController extends Controller
     public function index()
     {
         $salesPoints = SalePoint::orderBy('social_reason')->get();
-        $products = Product::orderBy('wording')->get();
-        $transfersDemands = TransferDemand::orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         return new JsonResponse([
             'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products]
         ], 200);
@@ -105,7 +105,7 @@ class TransferDemandController extends Controller
 
     public function show($id)
     {
-        $transferDemand = TransferDemand::findOrFail($id);
+        $transferDemand = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->findOrFail($id);
         $productsTransferDemands = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
 
         return new JsonResponse([
@@ -116,7 +116,7 @@ class TransferDemandController extends Controller
 
     public function edit($id)
     {
-        $transferDemand = TransferDemand::findOrFail($id);
+        $transferDemand = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->findOrFail($id);
         $products = Product::orderBy('wording')->get();
         $productsTransferDemands = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
 

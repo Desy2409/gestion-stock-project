@@ -15,6 +15,11 @@ class CreateClientDeliveryNotesTable extends Migration
     {
         Schema::create('client_delivery_notes', function (Blueprint $table) {
             $table->id();
+            $table->date('delivery_note_date')->useCurrent();
+            $table->date('delivery_date');
+            $table->double('total_amount')->default(0);
+            $table->string('observation')->nullable();
+            $table->foreignId('sale_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

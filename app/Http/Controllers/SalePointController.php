@@ -12,7 +12,7 @@ class SalePointController extends Controller
 {
     public function index()
     {
-        $salesPoints = SalePoint::orderBy('social_reason')->get();
+        $salesPoints = SalePoint::with('insitution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
             'datas'=>['salesPoints' => $salesPoints,'institutions' => $institutions]
@@ -88,7 +88,7 @@ class SalePointController extends Controller
 
     public function show($id)
     {
-        $salePoint = SalePoint::findOrFail($id);
+        $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint
         ], 200);
@@ -96,7 +96,7 @@ class SalePointController extends Controller
 
     public function edit($id)
     {
-        $salePoint = SalePoint::findOrFail($id);
+        $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint,
         ], 200);

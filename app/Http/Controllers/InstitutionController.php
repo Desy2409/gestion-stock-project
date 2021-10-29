@@ -11,7 +11,7 @@ class InstitutionController extends Controller
 {
     public function index()
     {
-        $institutions = Institution::orderBy('social_reason')->get();
+        $institutions = Institution::with('salePoints')->orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['institutions' => $institutions]
         ], 200);
@@ -82,7 +82,7 @@ class InstitutionController extends Controller
 
     public function show($id)
     {
-        $institution = Institution::findOrFail($id);
+        $institution = Institution::with('salePoints')->findOrFail($id);
         return new JsonResponse([
             'institution' => $institution
         ], 200);
@@ -90,7 +90,7 @@ class InstitutionController extends Controller
 
     public function edit($id)
     {
-        $institution = Institution::findOrFail($id);
+        $institution = Institution::with('salePoints')->findOrFail($id);
         return new JsonResponse([
             'institution' => $institution,
         ], 200);

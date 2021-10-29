@@ -22,6 +22,11 @@ class SalePoint extends Model
         return $this->belongsTo(Institution::class);
     }
 
+    public function transfers()
+    {
+        return $this->hasMany(Transfer::class);
+    }
+
     public function transfersDemands()
     {
         return $this->hasMany(TransferDemand::class);
@@ -30,5 +35,15 @@ class SalePoint extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function clientDeliveryNotes()
+    {
+        return $this->hasMany(ClientDeliveryNote::class);
     }
 }
