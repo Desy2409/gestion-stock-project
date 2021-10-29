@@ -13,7 +13,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('wording')->get();
+        $categories = Category::with('subCategories')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories]
         ], 200);
@@ -133,7 +133,7 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::findOrFail($id);
+        $category = Category::with('subCategories')->findOrFail($id);
         return new JsonResponse([
             'category' => $category
         ], 200);

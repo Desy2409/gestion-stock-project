@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::orderBy('wording')->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
         $stockTypes = StockType::orderBy('wording')->get();
@@ -73,7 +73,6 @@ class ProductController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -85,13 +84,13 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
         return new JsonResponse(['product' => $product], 200);
     }
 
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
         $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
         $stockTypes = StockType::orderBy('wording')->get();        return new JsonResponse([
@@ -101,7 +100,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
         $request->validate(
             [
                 'unity' => 'required',
@@ -154,7 +153,7 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
         try {
             $product->delete();
 
