@@ -31,4 +31,9 @@ class Client extends Model
     {
         return $this->hasMany(Sale::class);
     }
+    
+    public function goodToRemoves()
+    {
+        return $this->hasMany(GoodToRemove::class);
+    }
 }

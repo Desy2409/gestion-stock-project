@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientDeliveryNoteController;
 use App\Http\Controllers\DeliveryNoteController;
+use App\Http\Controllers\GoodToRemoveController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferDemandController;
+use App\Http\Controllers\TruckController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -181,6 +183,23 @@ Route::post('/transfer', [TransferController::class, 'store']);
 Route::get('/transfer/{id}/show', [TransferController::class, 'show']);
 Route::patch('/transfer/{id}/update', [TransferController::class, 'update']);
 Route::delete('/transfer/{id}/destroy', [TransferController::class, 'destroy']);
+
+// Truck routes
+Route::get('/truck', [TruckController::class, 'index']);
+Route::post('/truck', [TruckController::class, 'store']);
+Route::get('/truck/{id}/show', [TruckController::class, 'show']);
+Route::patch('/truck/{id}/update', [TruckController::class, 'update']);
+Route::delete('/truck/{id}/destroy', [TruckController::class, 'destroy']);
+
+// Good to remove routes
+Route::get('/good-to-remove', [GoodToRemoveController::class, 'index']);
+Route::post('/good-to-remove', [GoodToRemoveController::class, 'store']);
+Route::get('/good-to-remove/{id}/show', [GoodToRemoveController::class, 'show']);
+Route::patch('/good-to-remove/{id}/update', [GoodToRemoveController::class, 'update']);
+Route::delete('/good-to-remove/{id}/destroy', [GoodToRemoveController::class, 'destroy']);
+
+
+
 
 // Protected routes
 Route::group(

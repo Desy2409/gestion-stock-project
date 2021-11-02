@@ -61,4 +61,9 @@ class SalePoint extends Model
     {
         return $this->hasMany(PurchaseCoupon::class);
     }
+
+    public function goodToRemoves()
+    {
+        return $this->hasMany(GoodToRemove::class);
+    }
 }

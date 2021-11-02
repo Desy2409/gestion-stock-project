@@ -47,7 +47,7 @@ class PurchaseOrderController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : AAAA-MM-JJ.",
                 'purchase_date.date_equals' => "La date du bon de commande ne peut être qu'aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
@@ -133,14 +133,15 @@ class PurchaseOrderController extends Controller
     public function update(Request $request, $id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
+        // $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'sale_point'=>'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date',
-                'delivery_date' => 'required|date',
+                'purchase_date' => 'required|date|date_format:Y-m-d',//|date_equals:' . $currentDate,
+                'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -152,9 +153,13 @@ class PurchaseOrderController extends Controller
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
-                'purchase_date.date' => "Format de date incorrect.",
+                'purchase_date.date' => "La date du bon de commande est incorrecte.",
+                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : AAAA-MM-JJ.",
+                // 'purchase_date.date_equals' => "La date du bon de commande ne peut être qu'aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "Format de date incorrect.",
+                'delivery_date.date' => "La date de livraison est incorrecte.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
