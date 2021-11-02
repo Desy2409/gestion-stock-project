@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
+class Sale extends Model
 {
     protected $fillable = [
         'reference',
-        'order_date',
+        'sale_date',
         'delivery_date',
         'total_amount',
         'observation'
@@ -25,8 +25,8 @@ class Order extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
-    public function productOrders()
+    public function productSales()
     {
-        return $this->hasMany(ProductOrder::class);
+        return $this->hasMany(ProductSale::class);
     }
 }

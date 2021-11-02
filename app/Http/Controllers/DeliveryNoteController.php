@@ -15,8 +15,8 @@ class DeliveryNoteController extends Controller
 {
     public function index()
     {
-        $purchaseCoupons = PurchaseCoupon::orderBy('purchase_date')->get();
-        $deliveryNotes = DeliveryNote::orderBy('purchase_date')->get();
+        $purchaseCoupons = PurchaseCoupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productPurchaseCoupons')->orderBy('purchase_date')->get();
+        $deliveryNotes = DeliveryNote::with('purchaseCoupon')->with('productDeliveryNotes')->orderBy('purchase_date')->get();
 
         return new JsonResponse([
             'datas' => ['deliveryNotes' => $deliveryNotes, 'purchaseCoupons' => $purchaseCoupons]
@@ -26,7 +26,7 @@ class DeliveryNoteController extends Controller
     public function showProductOfPurchaseCoupon($id)
     {
         $idOfProducts = ProductPurchaseCoupon::where('purchase_coupon_id', $id)->pluck('product_id')->toArray();
-        $products = Product::whereIn('id', $idOfProducts)->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
             'datas' => ['products' => $products]
         ], 200);
@@ -34,12 +34,13 @@ class DeliveryNoteController extends Controller
 
     public function store(Request $request)
     {
+        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'purchase_coupon'=>'required',
-                'reference' => 'required|unique:purchase_coupons',
-                'purchase_date' => 'required|date|date_format:Y-m-d',
+                'reference' => 'required|unique:delivery_notes',
+                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
                 'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
@@ -48,12 +49,13 @@ class DeliveryNoteController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
-                'purchase_coupon.required'=>"Le choix d'un bon d'achat est obligatoire.",
+                'purchase_coupon.required'=>"Le choix d'un bon de livraison est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'reference.unique' => "Ce bon de livraison existe déjà.",
-                'purchase_date.required' => "La date du bon est obligatoire.",
+                'purchase_date.required' => "La date du bon de livraison  est obligatoire.",
                 'purchase_date.date' => "La date du bon de livraison est incorrecte.",
                 'purchase_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'purchase_date.date_equals' => "La date du bon de livraison ne peut être qu'aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
@@ -111,7 +113,7 @@ class DeliveryNoteController extends Controller
 
     public function show($id)
     {
-        $deliveryNote = DeliveryNote::findOrFail($id);
+        $deliveryNote = DeliveryNote::with('purchaseCoupon')->with('productDeliveryNotes')->findOrFail($id);
         $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null; //ProductDeliveryNote::where('purchase_order_id', $deliveryNote->id)->get();
 
         return new JsonResponse([
@@ -122,24 +124,26 @@ class DeliveryNoteController extends Controller
 
     public function edit($id)
     {
-        $deliveryNote = DeliveryNote::findOrFail($id);
+        $deliveryNote = DeliveryNote::with('purchaseCoupon')->with('productDeliveryNotes')->findOrFail($id);
+        $purchaseCoupons = PurchaseCoupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productPurchaseCoupons')->orderBy('purchase_date')->get();
         $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null;
 
         return new JsonResponse([
             'deliveryNote' => $deliveryNote,
-            'datas' => ['deliveryNote' => $deliveryNote, 'productDeliveryNotes' => $productDeliveryNotes]
+            'datas' => ['deliveryNote' => $deliveryNote, 'productDeliveryNotes' => $productDeliveryNotes, 'purchaseCoupons' => $purchaseCoupons]
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
+        $currentDate = date('Y-m-d', strtotime(now()));
         $deliveryNote = DeliveryNote::findOrFail($id);
         $this->validate(
             $request,
             [
                 'purchase_coupon'=>'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Y-m-d',
+                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
                 'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
@@ -148,11 +152,12 @@ class DeliveryNoteController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
-                'purchase_coupon.required'=>"Le choix d'un bon d'achat est obligatoire.",
+                'purchase_coupon.required'=>"Le choix d'un bon de livraison est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon de livraison est incorrecte.",
                 'purchase_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'purchase_date.date_equals' => "La date du bon de livraison ne peut être qu'aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientDeliveryNoteController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ProductController;
@@ -10,7 +11,10 @@ use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\PurchaseCouponController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\TransferController;
@@ -36,8 +40,6 @@ Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/product/{$name}/search', [ProductController::class, 'search']);
-// Provider routes
-Route::get('/providers', [ProviderController::class, 'index']);
 
 // Category routes
 Route::get('/category', [CategoryController::class, 'index']);
@@ -83,6 +85,14 @@ Route::get('/provider/{id}/update', [ProviderController::class, 'edit']);
 Route::patch('/provider/{id}/update', [ProviderController::class, 'update']);
 Route::delete('/provider/{id}/destroy', [ProviderController::class, 'destroy']);
 
+// Provider type routes
+Route::get('/provider-type', [ProviderTypeController::class, 'index']);
+Route::post('/provider-type', [ProviderTypeController::class, 'store']);
+Route::get('/provider-type/{id}/show', [ProviderTypeController::class, 'show']);
+Route::get('/provider-type/{id}/update', [ProviderTypeController::class, 'edit']);
+Route::patch('/provider-type/{id}/update', [ProviderTypeController::class, 'update']);
+Route::delete('/provider-type/{id}/destroy', [ProviderTypeController::class, 'destroy']);
+
 // Product routes
 Route::get('/product', [ProductController::class, 'index']);
 Route::post('/product', [ProductController::class, 'store']);
@@ -100,10 +110,12 @@ Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, '
 // Purchase coupon routes
 Route::get('/purchase-coupon', [PurchaseCouponController::class, 'index']);
 Route::post('/purchase-coupon', [PurchaseCouponController::class, 'store']);
+Route::get('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'indexFromPurchaseOrder']);
 Route::post('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'storeFromPurchaseOrder']);
-Route::get('/purchase-coupon/{id}/products', [PurchaseCouponController::class, 'showProductOfPurchaseOrder']);
 Route::get('/purchase-coupon/{id}/show', [PurchaseCouponController::class, 'show']);
+Route::get('/purchase-coupon/{id}/update', [PurchaseCouponController::class, 'edit']);
 Route::patch('/purchase-coupon/{id}/update', [PurchaseCouponController::class, 'update']);
+Route::get('/purchase-coupon-from-purchase-order/{id}/update', [PurchaseCouponController::class, 'editFromPurchaseOrder']);
 Route::patch('/purchase-coupon-from-purchase-order/{id}/update', [PurchaseCouponController::class, 'updateFromPurchaseOrder']);
 Route::delete('/purchase-coupon/{id}/destroy', [PurchaseCouponController::class, 'destroy']);
 
@@ -113,6 +125,32 @@ Route::post('/delivery-note', [DeliveryNoteController::class, 'store']);
 Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
 Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
 Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
+
+// Order routes
+Route::get('/order', [OrderController::class, 'index']);
+Route::post('/order', [OrderController::class, 'store']);
+Route::get('/order/{id}/show', [OrderController::class, 'show']);
+Route::patch('/order/{id}/update', [OrderController::class, 'update']);
+Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
+
+// Sale routes
+Route::get('/sale', [SaleController::class, 'index']);
+Route::post('/sale', [SaleController::class, 'store']);
+Route::get('/sale-from-order', [SaleController::class, 'indexFromOrder']);
+Route::post('/sale-from-order', [SaleController::class, 'storeFromOrder']);
+Route::get('/sale/{id}/show', [SaleController::class, 'show']);
+Route::get('/sale/{id}/update', [SaleController::class, 'edit']);
+Route::patch('/sale/{id}/update', [SaleController::class, 'update']);
+Route::get('/sale-from-order/{id}/update', [SaleController::class, 'editFromOrder']);
+Route::patch('/sale-from-order/{id}/update', [SaleController::class, 'updateFromOrder']);
+Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
+
+// Client delivery note routes
+Route::get('/client-delivery-note', [ClientDeliveryNoteController::class, 'index']);
+Route::post('/client-delivery-note', [ClientDeliveryNoteController::class, 'store']);
+Route::get('/client-delivery-note/{id}/show', [ClientDeliveryNoteController::class, 'show']);
+Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
+Route::delete('/client-delivery-note/{id}/destroy', [ClientDeliveryNoteController::class, 'destroy']);
 
 // Institution routes
 Route::get('/institution', [InstitutionController::class, 'index']);

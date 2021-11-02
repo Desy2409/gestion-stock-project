@@ -12,10 +12,10 @@ class SalePointController extends Controller
 {
     public function index()
     {
-        $salesPoints = SalePoint::orderBy('social_reason')->get();
+        $salesPoints = SalePoint::with('insitution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
-            'datas'=>['salesPoints' => $salesPoints,'institutions' => $institutions]
+            'datas' => ['salesPoints' => $salesPoints, 'institutions' => $institutions]
         ], 200);
     }
 
@@ -31,7 +31,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
-                'bp'=>'required',
+                'bp' => 'required',
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",
@@ -42,7 +42,7 @@ class SalePointController extends Controller
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
-                'bp.required'=>"La boîte postale est obligatoire",
+                'bp.required' => "La boîte postale est obligatoire",
             ],
         );
 
@@ -88,7 +88,7 @@ class SalePointController extends Controller
 
     public function show($id)
     {
-        $salePoint = SalePoint::findOrFail($id);
+        $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint
         ], 200);
@@ -96,7 +96,7 @@ class SalePointController extends Controller
 
     public function edit($id)
     {
-        $salePoint = SalePoint::findOrFail($id);
+        $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint,
         ], 200);
@@ -115,7 +115,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
-                'bp'=>'required',
+                'bp' => 'required',
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",
@@ -126,17 +126,17 @@ class SalePointController extends Controller
                 'email.email' => "L'adresse email est incorrecte.",
                 'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 'address.required' => "L'adresse est obligatoire.",
-                'bp.required'=>"La boîte postale est obligatoire",
+                'bp.required' => "La boîte postale est obligatoire",
             ],
         );
 
-        $existingSalePoint = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
-        if ($existingSalePoint) {
+        $existingSalePoints = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
+        if (!empty($existingSalePoints) && sizeof($existingSalePoints) > 1) {
             $success = false;
             return new JsonResponse([
-                'existingInstitution' => $existingSalePoint,
+                'existingInstitution' => $existingSalePoints[0],
                 'success' => $success,
-                'message' => "Le point de vente " . $existingSalePoint->social_reason . " existe déjà."
+                'message' => "Le point de vente " . $existingSalePoints[0]->social_reason . " existe déjà."
             ], 400);
         }
 

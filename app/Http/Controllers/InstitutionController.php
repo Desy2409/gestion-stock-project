@@ -11,7 +11,7 @@ class InstitutionController extends Controller
 {
     public function index()
     {
-        $institutions = Institution::orderBy('social_reason')->get();
+        $institutions = Institution::with('salesPoints')->orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['institutions' => $institutions]
         ], 200);
@@ -82,7 +82,7 @@ class InstitutionController extends Controller
 
     public function show($id)
     {
-        $institution = Institution::findOrFail($id);
+        $institution = Institution::with('salePoints')->findOrFail($id);
         return new JsonResponse([
             'institution' => $institution
         ], 200);
@@ -90,7 +90,7 @@ class InstitutionController extends Controller
 
     public function edit($id)
     {
-        $institution = Institution::findOrFail($id);
+        $institution = Institution::with('salePoints')->findOrFail($id);
         return new JsonResponse([
             'institution' => $institution,
         ], 200);
@@ -122,13 +122,13 @@ class InstitutionController extends Controller
             ],
         );
 
-        $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
-        if ($existingInstitution) {
+        $existingInstitutions = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
+        if (!empty($existingInstitutions)&&sizeof($existingInstitutions)>1) {
             $success = false;
             return new JsonResponse([
-                'existingInstitution' => $existingInstitution,
+                'existingInstitution' => $existingInstitutions[0],
                 'success' => $success,
-                'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
+                'message' => "L'institution " . $existingInstitutions[0]->social_reason . " existe déjà."
             ], 200);
         }
 
