@@ -12,7 +12,7 @@ class SalePointController extends Controller
 {
     public function index()
     {
-        $salesPoints = SalePoint::with('insitution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
+        $salesPoints = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['salesPoints' => $salesPoints, 'institutions' => $institutions]
