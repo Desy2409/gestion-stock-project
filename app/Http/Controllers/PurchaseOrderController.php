@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductPurchaseOrder;
 use App\Models\Provider;
@@ -10,7 +9,7 @@ use App\Models\PurchaseOrder;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+
 
 class PurchaseOrderController extends Controller
 {

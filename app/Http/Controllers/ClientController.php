@@ -17,11 +17,9 @@ class ClientController extends Controller
     public function index()
     {
         $clients = Client::with(['person.addresses'])->get();
-        // return new JsonResponse([
-        //     'datas' => ['clients' => $clients]
-        // ], 200);
+
         return new JsonResponse([
-            'datas' => [$clients]
+            'datas' => ['clients' => $clients]
         ], 200);
     }
 
