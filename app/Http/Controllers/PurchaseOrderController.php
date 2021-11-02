@@ -16,9 +16,9 @@ class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        $purchaseOrders = PurchaseOrder::orderBy('purchase_date')->get();
+        $purchaseOrders = PurchaseOrder::with('provider')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
         $providers = Provider::with('person')->get();
-        $products = Product::orderBy('wording')->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
 
         return new JsonResponse([
             'datas' => ['purchaseOrders' => $purchaseOrders, 'providers' => $providers, 'products' => $products]
@@ -27,13 +27,14 @@ class PurchaseOrderController extends Controller
 
     public function store(Request $request)
     {
+        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'provider' => 'required',
-                'reference' => 'required|unique:purchase_orders',
-                'purchase_date' => 'required|date',
-                'delivery_date' => 'required|date',
+                'reference' => 'required',
+                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
+                'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -43,11 +44,14 @@ class PurchaseOrderController extends Controller
             [
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
-                'reference.unique' => "Ce bon de commande existe déjà.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
-                'purchase_date.date' => "Format de date incorrect.",
+                'purchase_date.date' => "La date du bon de commande est incorrecte.",
+                'purchase_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'purchase_date.date_equals' => "La date du bon de commande ne peut être qu'aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "Format de date incorrect.",
+                'delivery_date.date' => "La date de livraison est incorrecte.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
@@ -102,7 +106,7 @@ class PurchaseOrderController extends Controller
 
     public function show($id)
     {
-        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $purchaseOrder = PurchaseOrder::with('provider')->with('productPurchaseOrders')->findOrFail($id);
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productPurchaseOrders : null; //ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
 
         return new JsonResponse([
@@ -113,9 +117,9 @@ class PurchaseOrderController extends Controller
 
     public function edit($id)
     {
-        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $purchaseOrder = PurchaseOrder::with('provider')->with('productPurchaseOrders')->findOrFail($id);
         $providers = Provider::with('person')->get();
-        $products = Product::orderBy('wording')->get();
+        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
 
         return new JsonResponse([

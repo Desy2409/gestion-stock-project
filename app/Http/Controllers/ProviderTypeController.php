@@ -2,50 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\StockType;
+use App\Models\ProviderType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
-class StockTypeController extends Controller
+class ProviderTypeController extends Controller
 {
+
+    private $types = ["Raffinerie", "Unité de stockage", "Transport", "Autre fournisseur"];
+
     public function index()
     {
-        $stockTypes = StockType::with('products')->orderBy('wording')->get();
+        $listTypes = $this->types;
+        $providerTypes = ProviderType::with('providers')->orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['stockTypes' => $stockTypes]
+            'datas' => ['listTypes' => $listTypes, 'providerTypes' => $providerTypes]
         ], 200);
     }
 
-    // Enregistrement d'un nouveau type de stock
+    // Enregistrement d'une nouvelle sous-catégorie
     public function store(Request $request)
     {
         $this->validate(
             $request,
             [
-                'wording' => 'required|unique:stock_types|max:150',
-                'description' => 'max:255',
+                'type' => 'required',
+                'category' => 'required',
+                'reference' => 'required|unique:sub_listTypes',
+                'wording' => 'required|unique:sub_listTypes|max:150',
+                'description' => 'max:255'
             ],
             [
+                'type.required' => "Le type du type de fournisseur est obligatoire.",
+                'category.required' => "Le type de fournisseur est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
                 'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette unité existe déjà.",
+                'wording.unique' => "Ce type de fournisseur existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
         try {
-            $stockType = new StockType();
-            $stockType->code = Str::random(10);
-            $stockType->wording = $request->wording;
-            $stockType->description = $request->description;
-            $stockType->save();
+            $providerType = new ProviderType();
+            $providerType->reference = $request->reference;
+            $providerType->wording = $request->wording;
+            $providerType->description = $request->description;
+            $providerType->type = $request->type;
+            $providerType->save();
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'stockType' => $stockType,
+                'providerType' => $providerType,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -59,17 +70,23 @@ class StockTypeController extends Controller
         }
     }
 
-    // Mise à jour d'un type de stock
+    // Mise à jour d'une sous-catégorie
     public function update(Request $request, $id)
     {
-        $stockType = StockType::findOrFail($id);
+        $providerType = ProviderType::findOrFail($id);
         $this->validate(
             $request,
             [
+                'type' => 'required',
+                'category' => 'required',
+                'reference' => 'required',
                 'wording' => 'required|max:150',
-                'description' => 'max:255',
+                'description' => 'max:255'
             ],
             [
+                'type.required' => "Le type du type de fournisseur est obligatoire.",
+                'category.required' => "Le type de fournisseur est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
@@ -77,14 +94,16 @@ class StockTypeController extends Controller
         );
 
         try {
-            $stockType->wording = $request->wording;
-            $stockType->description = $request->description;
-            $stockType->save();
+            $providerType->reference = $request->reference;
+            $providerType->wording = $request->wording;
+            $providerType->description = $request->description;
+            $providerType->type = $request->type;
+            $providerType->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'stockType' => $stockType,
+                'providerType' => $providerType,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -98,17 +117,17 @@ class StockTypeController extends Controller
         }
     }
 
-    // Suppression d'un type de stock
+    // Suppression d'une sous-catégorie
     public function destroy($id)
     {
-        $stockType = StockType::findOrFail($id);
+        $providerType = ProviderType::findOrFail($id);
         try {
-            $stockType->delete();
+            $providerType->delete();
 
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'stockType' => $stockType,
+                'providerType' => $providerType,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -122,11 +141,18 @@ class StockTypeController extends Controller
         }
     }
 
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
-        $stockType = StockType::with('products')->findOrFail($id);
+        $providerType = ProviderType::findOrFail($id);
         return new JsonResponse([
-            'stockType' => $stockType
+            'providerType' => $providerType
         ], 200);
     }
 }

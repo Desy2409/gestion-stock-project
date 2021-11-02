@@ -20,7 +20,7 @@ class Order extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function sealePoint()
+    public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);
     }
