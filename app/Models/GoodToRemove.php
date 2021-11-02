@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PurchaseOrder extends Model
+class GoodToRemove extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
+        'code',
         'reference',
-        'purchase_date',
-        'delivery_date',
-        'total_amount',
-        'observation'
+        'voucher_date',
+        'delivery_date_wished',
+        'voucher_type',
+        'customs_regime',
+        'storage_unit',
+        'carrier',
     ];
 
     public function provider()
@@ -22,9 +23,9 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Provider::class);
     }
 
-    public function productPurchaseOrders()
+    public function client()
     {
-        return $this->hasMany(ProductPurchaseOrder::class);
+        return $this->belongsTo(Client::class);
     }
 
     public function salePoint()

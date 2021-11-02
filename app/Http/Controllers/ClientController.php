@@ -16,10 +16,21 @@ class ClientController extends Controller
 
     public function index()
     {
-        $clients = Client::with(['person.addresses'])->get();
 
+        // $users = User::whereHas('posts', function($q){
+        //     $q->where('created_at', '>=', '2015-01-01 00:00:00');
+        // })->get();
+
+        $corporations = Client::with(['person.addresses'])->whereHas('person', function ($q) {
+            $q->where('person_type', '=', 'Personne morale');
+        })->get();
+
+        $personPhyqic = Client::with(['person.addresses'])->whereHas('person', function ($q) {
+            $q->where('person_type', '=', 'Personne physique');
+        })->get();
+        // $personPhyqic = Client::with(['person.addresses'])->where('person.person_type', "Personne physique")->get();
         return new JsonResponse([
-            'datas' => ['clients' => $clients]
+            'datas' => ['corporations' => $corporations, 'personPhyqic' => $personPhyqic]
         ], 200);
     }
 
@@ -67,13 +78,13 @@ class ClientController extends Controller
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 ],
             );
-            $existingMoralPerson = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
-            if ($existingMoralPerson) {
+            $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
+            if (!empty($existingMoralPersons) && sizeof($existingMoralPersons) > 1) {
                 $success = false;
                 return new JsonResponse([
-                    'existingMoralPerson' => $existingMoralPerson,
+                    'existingMoralPerson' => $existingMoralPersons[0],
                     'success' => $success,
-                    'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
+                    'message' => "Le client " . $existingMoralPersons[0]->social_reason . " existe déjà."
                 ], 400);
             }
         } else {
@@ -195,13 +206,13 @@ class ClientController extends Controller
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
                 ],
             );
-            $existingMoralPerson = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
-            if ($existingMoralPerson) {
+            $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
+            if (!empty($existingMoralPersons) && sizeof($existingMoralPersons) > 1) {
                 $success = false;
                 return new JsonResponse([
-                    'existingMoralPerson' => $existingMoralPerson,
+                    'existingMoralPerson' => $existingMoralPersons[0],
                     'success' => $success,
-                    'message' => "Le client " . $existingMoralPerson->social_reason . " existe déjà."
+                    'message' => "Le client " . $existingMoralPersons[0]->social_reason . " existe déjà."
                 ], 400);
             }
         } else {

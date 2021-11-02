@@ -12,7 +12,8 @@ class DeliveryNote extends Model
         'purchase_date',
         'delivery_date',
         'total_amount',
-        'observation'
+        'observation',
+        'place_of_delivery'
     ];
 
     public function purchaseCoupon()

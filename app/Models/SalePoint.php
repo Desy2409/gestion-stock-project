@@ -46,9 +46,24 @@ class SalePoint extends Model
     {
         return $this->hasMany(ClientDeliveryNote::class);
     }
-    
+
     public function stocks()
     {
         return $this->hasMany(Stock::class);
+    }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function purchaseCoupons()
+    {
+        return $this->hasMany(PurchaseCoupon::class);
+    }
+
+    public function goodToRemoves()
+    {
+        return $this->hasMany(GoodToRemove::class);
     }
 }

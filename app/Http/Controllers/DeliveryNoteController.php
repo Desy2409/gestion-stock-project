@@ -77,6 +77,7 @@ class DeliveryNoteController extends Controller
             $deliveryNote->delivery_date   = $request->delivery_date;
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;
+            $deliveryNote->place_of_delivery = $request->place_of_delivery;
             $deliveryNote->purchase_coupon_id = $request->purchase_coupon;
             $deliveryNote->save();
 
@@ -178,6 +179,7 @@ class DeliveryNoteController extends Controller
             $deliveryNote->delivery_date   = $request->delivery_date;
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;
+            $deliveryNote->place_of_delivery = $request->place_of_delivery;
             $deliveryNote->purchase_coupon_id = $request->purchase_coupon;
             $deliveryNote->save();
 
