@@ -102,7 +102,7 @@ class SalePointController extends Controller
         $salePoint = SalePoint::with('institution')->orderBy('social_reason')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint,
-        ], 200);
+        ], 200); 
     }
 
     public function update(Request $request, $id)
