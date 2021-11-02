@@ -28,14 +28,12 @@ class ProviderTypeController extends Controller
             $request,
             [
                 'type' => 'required',
-                'category' => 'required',
-                'reference' => 'required|unique:sub_listTypes',
-                'wording' => 'required|unique:sub_listTypes|max:150',
+                'reference' => 'required|unique:provider_types',
+                'wording' => 'required|unique:provider_types|max:150',
                 'description' => 'max:255'
             ],
             [
                 'type.required' => "Le type du type de fournisseur est obligatoire.",
-                'category.required' => "Le type de fournisseur est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette réference a déjà été attribuée déjà.",
                 'wording.required' => "Le libellé est obligatoire.",
@@ -78,14 +76,12 @@ class ProviderTypeController extends Controller
             $request,
             [
                 'type' => 'required',
-                'category' => 'required',
                 'reference' => 'required',
                 'wording' => 'required|max:150',
                 'description' => 'max:255'
             ],
             [
                 'type.required' => "Le type du type de fournisseur est obligatoire.",
-                'category.required' => "Le type de fournisseur est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",

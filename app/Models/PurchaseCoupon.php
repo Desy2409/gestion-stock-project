@@ -34,4 +34,9 @@ class PurchaseCoupon extends Model
     {
         return $this->hasMany(ProductPurchaseCoupon::class);
     }
+
+    public function salePoint()
+    {
+        return $this->belongsTo(SalePoint::class);
+    }
 }

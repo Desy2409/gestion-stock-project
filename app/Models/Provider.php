@@ -34,4 +34,14 @@ class Provider extends Model
     {
         return $this->belongsTo(ProviderType::class);
     }
+
+    public function trucks()
+    {
+        return $this->hasMany(Truck::class);
+    }
+    
+    public function goodToRemoves()
+    {
+        return $this->hasMany(GoodToRemove::class);
+    }
 }

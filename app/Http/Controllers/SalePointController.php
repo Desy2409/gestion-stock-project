@@ -12,7 +12,8 @@ class SalePointController extends Controller
 {
     public function index()
     {
-        $salesPoints = SalePoint::with('insitution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
+        // $salesPoints = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
+        $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['salesPoints' => $salesPoints, 'institutions' => $institutions]
@@ -88,7 +89,8 @@ class SalePointController extends Controller
 
     public function show($id)
     {
-        $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
+        // $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
+        $salePoint = SalePoint::with('institution')->orderBy('social_reason')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint
         ], 200);
@@ -96,10 +98,11 @@ class SalePointController extends Controller
 
     public function edit($id)
     {
-        $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
+        // $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
+        $salePoint = SalePoint::with('institution')->orderBy('social_reason')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint,
-        ], 200);
+        ], 200);  
     }
 
     public function update(Request $request, $id)
@@ -115,7 +118,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
-                'bp' => 'required',
+                'bp' => 'required', 
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",

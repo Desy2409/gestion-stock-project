@@ -93,7 +93,8 @@ class ProductController extends Controller
         $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
         $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
-        $stockTypes = StockType::orderBy('wording')->get();        return new JsonResponse([
+        $stockTypes = StockType::orderBy('wording')->get();
+        return new JsonResponse([
             'datas' => ['product' => $product, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
         ], 200);
     }
@@ -105,8 +106,8 @@ class ProductController extends Controller
             [
                 'unity' => 'required',
                 'sub_category' => 'required',
-                'reference' => 'required|unique:products',
-                'wording' => 'required|unique:products',
+                'reference' => 'required',
+                'wording' => 'required',
                 'description' => 'max:255',
                 'price' => 'required|min:0',
             ],
@@ -114,14 +115,34 @@ class ProductController extends Controller
                 'unity.required' => "L'unité est obligatoire.",
                 'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
                 'reference.required' => "Le libellé du produit est obligatoire.",
-                'reference.unique' => "Cette référence a déjà été attribuée.",
+                // 'reference.unique' => "Cette référence a déjà été attribuée.",
                 'wording.required' => "La référence est obligatoire.",
-                'wording.unique' => "Ce produit existe déjà.",
+                // 'wording.unique' => "Ce produit existe déjà.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
                 'price.required' => "Le prix du produit est obligatoire.",
                 'price.min' => "Le prix du produit ne peut être inférieur à 0.",
             ]
         );
+
+        $existingProductsOnReference = Product::where('reference', $request->reference)->get();
+        if (!empty($existingProductsOnReference) && sizeof($existingProductsOnReference) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'existingProductOnReference' => $existingProductsOnReference[0],
+                'success' => $success,
+                'message' => "La référence " . $existingProductsOnReference[0]->reference . " a déjà été attribuée."
+            ], 400);
+        }
+
+        $existingProductsOnWording = Product::where('wording', $request->wording)->get();
+        if (!empty($existingProductsOnWording) && sizeof($existingProductsOnWording) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'existingProduct' => $existingProductsOnWording[0],
+                'success' => $success,
+                'message' => "Le produit " . $existingProductsOnWording[0]->wording . " existe déjà."
+            ], 400);
+        }
 
         try {
             $product->reference = $request->reference;

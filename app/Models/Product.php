@@ -18,6 +18,8 @@ class Product extends Model
         'unity',
     ];
 
+    protected $hidden=['created_at'];
+
     public function subCategory()
     {
         return $this->belongsTo(SubCategory::class);
