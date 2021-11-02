@@ -12,6 +12,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\PurchaseCouponController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
@@ -39,8 +40,6 @@ Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/product/{$name}/search', [ProductController::class, 'search']);
-// Provider routes
-Route::get('/providers', [ProviderController::class, 'index']);
 
 // Category routes
 Route::get('/category', [CategoryController::class, 'index']);
@@ -85,6 +84,14 @@ Route::get('/provider/{id}/show', [ProviderController::class, 'show']);
 Route::get('/provider/{id}/update', [ProviderController::class, 'edit']);
 Route::patch('/provider/{id}/update', [ProviderController::class, 'update']);
 Route::delete('/provider/{id}/destroy', [ProviderController::class, 'destroy']);
+
+// Provider type routes
+Route::get('/provider-type', [ProviderTypeController::class, 'index']);
+Route::post('/provider-type', [ProviderTypeController::class, 'store']);
+Route::get('/provider-type/{id}/show', [ProviderTypeController::class, 'show']);
+Route::get('/provider-type/{id}/update', [ProviderTypeController::class, 'edit']);
+Route::patch('/provider-type/{id}/update', [ProviderTypeController::class, 'update']);
+Route::delete('/provider-type/{id}/destroy', [ProviderTypeController::class, 'destroy']);
 
 // Product routes
 Route::get('/product', [ProductController::class, 'index']);

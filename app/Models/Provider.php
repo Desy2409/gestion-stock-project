@@ -29,4 +29,9 @@ class Provider extends Model
     {
         return $this->hasMany(PurchaseCoupon::class);
     }
+
+    public function providerType()
+    {
+        return $this->belongsTo(ProviderType::class);
+    }
 }

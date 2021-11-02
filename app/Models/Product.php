@@ -67,9 +67,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductSale::class);
     }
-    
+
     public function productClientDeliveryNotes()
     {
         return $this->hasMany(ProductClientDeliveryNote::class);
+    }
+
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
     }
 }

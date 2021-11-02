@@ -6,6 +6,7 @@ use App\Http\Traits\UtilityTrait;
 use App\Models\Address;
 use App\Models\Provider;
 use App\Models\Person;
+use App\Models\ProviderType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,8 +20,9 @@ class ProviderController extends Controller
     public function index()
     {
         $providers = Provider::with(['person.addresses'])->get();
+        $providerTypes = ProviderType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['providers' => $providers]
+            'datas' => ['providers' => $providers,'providerTypes'=>$providerTypes]
         ], 200);
     }
 
@@ -29,6 +31,7 @@ class ProviderController extends Controller
         $this->validate(
             $request,
             [
+                'provider_type'=>'required',
                 'rccm_number' => 'required',
                 'cc_number' => 'required',
                 'social_reason' => 'required',
@@ -37,6 +40,7 @@ class ProviderController extends Controller
                 'phone_number' => 'required',
             ],
             [
+                'provider_type.required'=>"Le choix du type de fournisseur est obligatoire.",
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
@@ -123,6 +127,7 @@ class ProviderController extends Controller
         $this->validate(
             $request,
             [
+                'provider_type'=>'required',
                 'rccm_number' => 'required',
                 'cc_number' => 'required',
                 'social_reason' => 'required',
@@ -131,6 +136,7 @@ class ProviderController extends Controller
                 'phone_number' => 'required',
             ],
             [
+                'provider_type.required'=>"Le choix du type de fournisseur est obligatoire.",
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
