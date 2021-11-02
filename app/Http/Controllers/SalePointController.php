@@ -118,7 +118,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
-                'bp' => 'required',
+                'bp' => 'required', 
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",
