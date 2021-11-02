@@ -10,8 +10,6 @@ use App\Models\ProviderType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
 
 class ProviderController extends Controller
 {
@@ -22,7 +20,7 @@ class ProviderController extends Controller
         $providers = Provider::with(['person.addresses'])->get();
         $providerTypes = ProviderType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['providers' => $providers,'providerTypes'=>$providerTypes]
+            'datas' => ['providers' => $providers, 'providerTypes' => $providerTypes]
         ], 200);
     }
 
@@ -31,7 +29,7 @@ class ProviderController extends Controller
         $this->validate(
             $request,
             [
-                'provider_type'=>'required',
+                'provider_type' => 'required',
                 'rccm_number' => 'required',
                 'cc_number' => 'required',
                 'social_reason' => 'required',
@@ -40,7 +38,7 @@ class ProviderController extends Controller
                 'phone_number' => 'required',
             ],
             [
-                'provider_type.required'=>"Le choix du type de fournisseur est obligatoire.",
+                'provider_type.required' => "Le choix du type de fournisseur est obligatoire.",
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
@@ -67,6 +65,7 @@ class ProviderController extends Controller
             $provider->code = $this->formateNPosition('FS', sizeof($providers) + 1, 8);
             $provider->reference = $request->reference;
             $provider->settings = $request->settings;
+            $provider->provider_type_id = $request->provider_type;
             $provider->save();
 
             $person = new Person();
@@ -127,7 +126,7 @@ class ProviderController extends Controller
         $this->validate(
             $request,
             [
-                'provider_type'=>'required',
+                'provider_type' => 'required',
                 'rccm_number' => 'required',
                 'cc_number' => 'required',
                 'social_reason' => 'required',
@@ -136,7 +135,7 @@ class ProviderController extends Controller
                 'phone_number' => 'required',
             ],
             [
-                'provider_type.required'=>"Le choix du type de fournisseur est obligatoire.",
+                'provider_type.required' => "Le choix du type de fournisseur est obligatoire.",
                 'rccm_number.required' => "Le numéro RRCM est obligatoire.",
                 'cc_number.required' => "Le numéro CC est obligatoire.",
                 'social_reason.required' => "La raison sociale est obligatoire.",
@@ -146,19 +145,20 @@ class ProviderController extends Controller
             ],
         );
 
-        $existingMoralPerson = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
-        if ($existingMoralPerson) {
+        $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
+        if (!empty($existingMoralPersons) && sizeof($existingMoralPersons) > 1) {
             $success = false;
             return new JsonResponse([
-                'existingMoralPerson' => $existingMoralPerson,
+                'existingMoralPerson' => $existingMoralPersons[0],
                 'success' => $success,
-                'message' => "Le provider " . $existingMoralPerson->social_reason . " existe déjà."
+                'message' => "Le provider " . $existingMoralPersons[0]->social_reason . " existe déjà."
             ], 400);
         }
 
         try {
             $provider->reference = $request->reference;
             $provider->settings = $request->settings;
+            $provider->provider_type_id = $request->provider_type;
             $provider->save();
 
             $person->rccm_number = $request->rccm_number;

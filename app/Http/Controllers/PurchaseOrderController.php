@@ -30,6 +30,7 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
+                'sale_point'=>'required',
                 'provider' => 'required',
                 'reference' => 'required',
                 'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
@@ -41,6 +42,7 @@ class PurchaseOrderController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
+                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
@@ -69,6 +71,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
             $purchaseOrder->provider_id = $request->provider;
+            $purchaseOrder->sale_point_id = $request->sale_point;
             $purchaseOrder->save();
 
             $productsPurchaseOrders = [];
@@ -133,6 +136,7 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
+                'sale_point'=>'required',
                 'provider' => 'required',
                 'reference' => 'required',
                 'purchase_date' => 'required|date',
@@ -144,6 +148,7 @@ class PurchaseOrderController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
+                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
@@ -168,6 +173,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
             $purchaseOrder->provider_id = $request->provider;
+            $purchaseOrder->sale_point_id = $request->sale_point;
             $purchaseOrder->save();
 
             ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->delete();

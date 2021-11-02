@@ -52,6 +52,7 @@ class PurchaseCouponController extends Controller
         $this->validate(
             $request,
             [
+                'sale_point'=>'required',
                 'provider' => 'required',
                 'reference' => 'required|unique:purchase_coupons',
                 'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
@@ -63,6 +64,7 @@ class PurchaseCouponController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
+                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'reference.unique' => "Ce bon d'achat existe déjà.",
@@ -92,6 +94,7 @@ class PurchaseCouponController extends Controller
             $purchaseCoupon->total_amount = $request->total_amount;
             $purchaseCoupon->observation = $request->observation;
             $purchaseCoupon->provider_id = $request->provider;
+            $purchaseCoupon->sale_point_id = $request->sale_point;
             $purchaseCoupon->save();
 
             $productPurchaseCoupons = [];
@@ -174,6 +177,7 @@ class PurchaseCouponController extends Controller
             $purchaseCoupon->observation = $request->observation;
             $purchaseCoupon->purchase_order_id = $purchaseOrder->id;
             $purchaseCoupon->provider_id = $purchaseOrder->provider->id;
+            $purchaseCoupon->sale_point_id = $purchaseOrder->sale_point;
             $purchaseCoupon->save();
 
             $productPurchaseCoupons = [];
@@ -238,6 +242,7 @@ class PurchaseCouponController extends Controller
         $this->validate(
             $request,
             [
+                'sale_point'=>'required',
                 'provider' => 'required',
                 'reference' => 'required',
                 'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
@@ -249,6 +254,7 @@ class PurchaseCouponController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
+                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
@@ -277,6 +283,7 @@ class PurchaseCouponController extends Controller
             $purchaseCoupon->total_amount = $request->total_amount;
             $purchaseCoupon->observation = $request->observation;
             $purchaseCoupon->provider_id = $request->provider;
+            $purchaseCoupon->sale_point_id = $request->sale_point;
             $purchaseCoupon->save();
 
             ProductPurchaseCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->delete();
@@ -374,6 +381,7 @@ class PurchaseCouponController extends Controller
             $purchaseCoupon->observation = $request->observation;
             $purchaseCoupon->purchase_order_id = $purchaseOrder->id;
             $purchaseCoupon->provider_id = $purchaseOrder->provider->id;
+            $purchaseCoupon->sale_point_id = $purchaseOrder->sale_point;
             $purchaseCoupon->save();
 
             ProductPurchaseCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->delete();
