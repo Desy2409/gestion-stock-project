@@ -22,8 +22,10 @@ class CreateGoodToRemovesTable extends Migration
             $table->string('place_of_delivery')->nullable();
             $table->string('voucher_type');
             $table->string('customs_regime');
-            $table->integer('storage_unit');
-            $table->integer('carrier');
+            $table->unsignedBigInteger('storage_unit_id');
+            $table->foreign('storage_unit_id')->references('id')->on('providers');
+            $table->unsignedBigInteger('carrier_id');
+            $table->foreign('carrier_id')->references('id')->on('providers');
             $table->foreignId('client_id')->nullable()->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('transmitter_id')->nullable();
             $table->foreign('transmitter_id')->references('id')->on('sale_points');

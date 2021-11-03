@@ -30,13 +30,13 @@ class GoodToRemoveController extends Controller
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
-        $clients = Client::with('person.address')->get();
+        // $clients = Client::with('person.address')->get();
         return new JsonResponse([
             'datas' => [
                 'goodToRemoves' => $goodToRemoves, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
-                'clients' => $clients
+                // 'clients' => $clients
             ]
         ], 200);
     }
@@ -83,8 +83,8 @@ class GoodToRemoveController extends Controller
             $goodToRemove->place_of_delivery = $request->place_of_delivery;
             $goodToRemove->voucher_type = $request->voucher_type;
             $goodToRemove->customs_regime = $request->customs_regime;
-            $goodToRemove->storage_unit = $request->storage_unit;
-            $goodToRemove->carrier = $request->carrier;
+            $goodToRemove->storage_unit_id = $request->storage_unit;
+            $goodToRemove->carrier_id = $request->carrier;
             $goodToRemove->transmitter_id = $request->transmitter;
             $goodToRemove->receiver_id = $request->receiver;
             $goodToRemove->client_id = $request->client;
@@ -171,11 +171,11 @@ class GoodToRemoveController extends Controller
             $goodToRemove->place_of_delivery = $request->place_of_delivery;
             $goodToRemove->voucher_type = $request->voucher_type;
             $goodToRemove->customs_regime = $request->customs_regime;
-            $goodToRemove->storage_unit = $request->storage_unit;
+            $goodToRemove->storage_unit_id = $request->storage_unit;
+            $goodToRemove->carrier_id = $request->carrier;
             $goodToRemove->transmitter_id = $request->transmitter;
             $goodToRemove->receiver_id = $request->receiver;
             $goodToRemove->client_id = $request->client;
-            $goodToRemove->carrier = $request->carrier;
             $goodToRemove->save();
 
             $success = true;
