@@ -102,7 +102,7 @@ class SalePointController extends Controller
         $salePoint = SalePoint::with('institution')->orderBy('social_reason')->findOrFail($id);
         return new JsonResponse([
             'salePoint' => $salePoint,
-        ], 200);  
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -118,7 +118,7 @@ class SalePointController extends Controller
                 'email' => 'required|email',
                 'phone_number' => 'required',
                 'address' => 'required',
-                'bp' => 'required', 
+                'bp' => 'required',
             ],
             [
                 'institution.required' => "Le choix de l'institution est obligatoire.",
