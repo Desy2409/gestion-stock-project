@@ -16,11 +16,6 @@ class ClientController extends Controller
 
     public function index()
     {
-
-        // $users = User::whereHas('posts', function($q){
-        //     $q->where('created_at', '>=', '2015-01-01 00:00:00');
-        // })->get();
-
         $corporations = Client::with(['person.addresses'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne morale');
         })->get();
@@ -28,7 +23,6 @@ class ClientController extends Controller
         $personPhyqic = Client::with(['person.addresses'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne physique');
         })->get();
-        // $personPhyqic = Client::with(['person.addresses'])->where('person.person_type', "Personne physique")->get();
         return new JsonResponse([
             'datas' => ['corporations' => $corporations, 'personPhyqic' => $personPhyqic]
         ], 200);

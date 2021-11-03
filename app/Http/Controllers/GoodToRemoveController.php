@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\Client;
 use App\Models\GoodToRemove;
+use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\SalePoint;
 use Exception;
@@ -20,15 +22,21 @@ class GoodToRemoveController extends Controller
 
     public function index()
     {
-        $goodToRemoves = GoodToRemove::with('salePoint')->orderBy('social_reason')->get();
-        $storageUnits = ProviderType::where('provide_type', "Unité de stockage")->orderBy('wording')->get();
-        $carriers = ProviderType::where('provide_type', "Transporteur")->orderBy('wording')->get();
+
+        $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
+        $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
+
+        $goodToRemoves = GoodToRemove::orderBy('voucher_date')->orderBy('reference')->get();
+        $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
+        $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
+        $clients = Client::with('person.address')->get();
         return new JsonResponse([
             'datas' => [
                 'goodToRemoves' => $goodToRemoves, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
-                'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints
+                'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
+                'clients' => $clients
             ]
         ], 200);
     }
@@ -72,10 +80,14 @@ class GoodToRemoveController extends Controller
             $goodToRemove->reference = $request->reference;
             $goodToRemove->voucher_date = $request->voucher_date;
             $goodToRemove->delivery_date_wished = $request->delivery_date_wished;
+            $goodToRemove->place_of_delivery = $request->place_of_delivery;
             $goodToRemove->voucher_type = $request->voucher_type;
             $goodToRemove->customs_regime = $request->customs_regime;
             $goodToRemove->storage_unit = $request->storage_unit;
             $goodToRemove->carrier = $request->carrier;
+            $goodToRemove->transmitter_id = $request->transmitter;
+            $goodToRemove->receiver_id = $request->receiver;
+            $goodToRemove->client_id = $request->client;
             $goodToRemove->save();
 
             $success = true;
@@ -156,9 +168,13 @@ class GoodToRemoveController extends Controller
             $goodToRemove->reference = $request->reference;
             $goodToRemove->voucher_date = $request->voucher_date;
             $goodToRemove->delivery_date_wished = $request->delivery_date_wished;
+            $goodToRemove->place_of_delivery = $request->place_of_delivery;
             $goodToRemove->voucher_type = $request->voucher_type;
             $goodToRemove->customs_regime = $request->customs_regime;
             $goodToRemove->storage_unit = $request->storage_unit;
+            $goodToRemove->transmitter_id = $request->transmitter;
+            $goodToRemove->receiver_id = $request->receiver;
+            $goodToRemove->client_id = $request->client;
             $goodToRemove->carrier = $request->carrier;
             $goodToRemove->save();
 

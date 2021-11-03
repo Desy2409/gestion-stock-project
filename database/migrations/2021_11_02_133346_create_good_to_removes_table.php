@@ -18,14 +18,17 @@ class CreateGoodToRemovesTable extends Migration
             $table->string('code');
             $table->string('reference');
             $table->date('voucher_date');
-            $table->date('delivery_date_wished');
+            $table->date('delivery_date_wished')->nullable();
+            $table->string('place_of_delivery')->nullable();
             $table->string('voucher_type');
             $table->string('customs_regime');
-            $table->string('storage_unit');
-            $table->string('carrier');
-            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('sale_point_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('provider_id')->constrained()->cascadeOnDelete();
+            $table->integer('storage_unit');
+            $table->integer('carrier');
+            $table->foreignId('client_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('transmitter_id')->nullable();
+            $table->foreign('transmitter_id')->references('id')->on('sale_points');
+            $table->unsignedBigInteger('receiver_id')->nullable();
+            $table->foreign('receiver_id')->references('id')->on('sale_points');
             $table->timestamps();
         });
     }
