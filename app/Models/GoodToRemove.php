@@ -12,6 +12,7 @@ class GoodToRemove extends Model
         'reference',
         'voucher_date',
         'delivery_date_wished',
+        'place_of_delivery',
         'voucher_type',
         'customs_regime',
         'storage_unit',
