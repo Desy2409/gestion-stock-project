@@ -19,6 +19,12 @@ class CategoryController extends Controller
         ], 200);
     }
 
+    public function subCategoriesOfCategory($id)
+    {
+        $category = Category::with('subCategories')->findOrFail($id);
+        return new JsonResponse(['category' => $category]);
+    }
+
     // Enregistrement d'une nouvelle catégorie
     public function store(Request $request)
     {

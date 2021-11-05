@@ -49,6 +49,7 @@ Route::post('/category', [CategoryController::class, 'store']);
 Route::patch('/category/{id}/update', [CategoryController::class, 'update']);
 Route::delete('/category/{id}/destroy', [CategoryController::class, 'destroy']);
 Route::get('/category/{id}/show', [CategoryController::class, 'show']);
+Route::get('/category/{id}/sub-categories', [CategoryController::class, 'subCategoriesOfCategory']);
 
 // Sub category routes
 Route::get('/sub-category', [SubCategoryController::class, 'index']);
