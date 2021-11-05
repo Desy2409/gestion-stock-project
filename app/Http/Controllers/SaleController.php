@@ -246,6 +246,7 @@ class SaleController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'client.required' => "Le choix du fournisseur est obligatoire.",
@@ -265,11 +266,11 @@ class SaleController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
         try {
-            // $purchaseCoupon = new Sale();
             $purchaseCoupon->reference = $request->reference;
             $purchaseCoupon->sale_date   = $request->sale_date;
             $purchaseCoupon->delivery_date   = $request->delivery_date;
@@ -287,6 +288,7 @@ class SaleController extends Controller
                 $productSale->unit_price = $request->unit_prices[$key];
                 $productSale->product_id = $product;
                 $productSale->purchase_coupon_id = $purchaseCoupon->id;
+                $productSale->unity_id = $request->unities[$key];
                 $productSale->save();
 
                 array_push($productSales, $productSale);
@@ -341,6 +343,7 @@ class SaleController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'order.required' => "Le choix d'un bon de commande est obligatoire.",
@@ -360,6 +363,7 @@ class SaleController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -384,6 +388,7 @@ class SaleController extends Controller
                 $productSale->unit_price = $request->unit_prices[$key];
                 $productSale->product_id = $product;
                 $productSale->purchase_coupon_id = $purchaseCoupon->id;
+                $productSale->unity_id = $request->unities[$key];
                 $productSale->save();
 
                 array_push($productSales, $productSale);

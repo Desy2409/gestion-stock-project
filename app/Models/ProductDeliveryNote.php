@@ -9,7 +9,6 @@ class ProductDeliveryNote extends Model
 {
     protected $fillable = [
         'quantity',
-        'unit_price',
     ];
 
     public function product()
@@ -20,5 +19,10 @@ class ProductDeliveryNote extends Model
     public function deliveryNote()
     {
         return $this->belongsTo(DeliveryNote::class);
+    }
+    
+    public function unity()
+    {
+        return $this->belongsTo(Unity::class);
     }
 }

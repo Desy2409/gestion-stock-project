@@ -21,4 +21,9 @@ class ProductPurchaseCoupon extends Model
     {
         return $this->belongsTo(PurchaseCoupon::class);
     }
+    
+    public function unity()
+    {
+        return $this->belongsTo(Unity::class);
+    }
 }

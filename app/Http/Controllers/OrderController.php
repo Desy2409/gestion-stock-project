@@ -38,6 +38,7 @@ class OrderController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
@@ -58,6 +59,7 @@ class OrderController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -78,6 +80,7 @@ class OrderController extends Controller
                 $productOrder->unit_price = $request->unit_prices[$key];
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
+                $productOrder->unity_id = $request->unities[$key];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
@@ -142,6 +145,7 @@ class OrderController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
@@ -158,11 +162,11 @@ class OrderController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
         try {
-            // $order = new Order();
             $order->reference = $request->reference;
             $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
@@ -180,7 +184,7 @@ class OrderController extends Controller
                 $productOrder->unit_price = $request->unit_prices[$key];
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
-                // $productOrder->client_id = $request->client;
+                $productOrder->unity_id = $request->unities[$key];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);

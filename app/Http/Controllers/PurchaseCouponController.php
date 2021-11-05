@@ -252,6 +252,7 @@ class PurchaseCouponController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
@@ -272,6 +273,7 @@ class PurchaseCouponController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -295,6 +297,7 @@ class PurchaseCouponController extends Controller
                 $productPurchaseCoupon->unit_price = $request->unit_prices[$key];
                 $productPurchaseCoupon->product_id = $product;
                 $productPurchaseCoupon->purchase_coupon_id = $purchaseCoupon->id;
+                $productPurchaseCoupon->unity_id = $request->unities[$key];
                 $productPurchaseCoupon->save();
 
                 array_push($productPurchaseCoupons, $productPurchaseCoupon);
@@ -349,6 +352,7 @@ class PurchaseCouponController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
@@ -368,6 +372,7 @@ class PurchaseCouponController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -393,6 +398,7 @@ class PurchaseCouponController extends Controller
                 $productPurchaseCoupon->unit_price = $request->unit_prices[$key];
                 $productPurchaseCoupon->product_id = $product;
                 $productPurchaseCoupon->purchase_coupon_id = $purchaseCoupon->id;
+                $productPurchaseCoupon->unity_id = $request->unities[$key];
                 $productPurchaseCoupon->save();
 
                 array_push($productPurchaseCoupons, $productPurchaseCoupon);

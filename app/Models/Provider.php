@@ -39,7 +39,12 @@ class Provider extends Model
     {
         return $this->hasMany(Truck::class);
     }
-    
+
+    public function tanks()
+    {
+        return $this->hasMany(Tank::class);
+    }
+
     public function goodToRemoves()
     {
         return $this->hasMany(GoodToRemove::class);

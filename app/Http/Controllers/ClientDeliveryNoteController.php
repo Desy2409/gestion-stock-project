@@ -46,7 +46,7 @@ class ClientClientDeliveryNoteController extends Controller
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale.required'=>"Le choix d'un bon de vente est obligatoire.",
@@ -65,8 +65,7 @@ class ClientClientDeliveryNoteController extends Controller
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -77,6 +76,7 @@ class ClientClientDeliveryNoteController extends Controller
             $clientDeliveryNote->delivery_date   = $request->delivery_date;
             $clientDeliveryNote->total_amount = $request->total_amount;
             $clientDeliveryNote->observation = $request->observation;
+            $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
             $clientDeliveryNote->sale_id = $request->sale;
             $clientDeliveryNote->save();
 
@@ -84,9 +84,9 @@ class ClientClientDeliveryNoteController extends Controller
             foreach ($request->ordered_product as $key => $product) {
                 $productClientDeliveryNote = new ProductClientDeliveryNote();
                 $productClientDeliveryNote->quantity = $request->quantities[$key];
-                $productClientDeliveryNote->unit_price = $request->unit_prices[$key];
                 $productClientDeliveryNote->product_id = $product;
                 $productClientDeliveryNote->purchase_order_id = $clientDeliveryNote->id;
+                $productClientDeliveryNote->unity_id = $request->unities[$key];
                 $productClientDeliveryNote->save();
 
                 array_push($productClientDeliveryNotes, $productClientDeliveryNote);
@@ -149,7 +149,7 @@ class ClientClientDeliveryNoteController extends Controller
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale.required'=>"Le choix d'un bon de vente est obligatoire.",
@@ -167,8 +167,7 @@ class ClientClientDeliveryNoteController extends Controller
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -178,6 +177,7 @@ class ClientClientDeliveryNoteController extends Controller
             $clientDeliveryNote->delivery_date   = $request->delivery_date;
             $clientDeliveryNote->total_amount = $request->total_amount;
             $clientDeliveryNote->observation = $request->observation;
+            $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
             $clientDeliveryNote->sale_id = $request->sale;
             $clientDeliveryNote->save();
 
@@ -187,9 +187,9 @@ class ClientClientDeliveryNoteController extends Controller
             foreach ($request->ordered_product as $key => $product) {
                 $productClientDeliveryNote = new ProductClientDeliveryNote();
                 $productClientDeliveryNote->quantity = $request->quantities[$key];
-                $productClientDeliveryNote->unit_price = $request->unit_prices[$key];
                 $productClientDeliveryNote->product_id = $product;
                 $productClientDeliveryNote->purchase_order_id = $clientDeliveryNote->id;
+                $productClientDeliveryNote->unity_id = $request->unities[$key];
                 $productClientDeliveryNote->save();
 
                 array_push($productClientDeliveryNotes, $productClientDeliveryNote);

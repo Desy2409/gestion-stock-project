@@ -33,4 +33,14 @@ class GoodToRemove extends Model
     {
         return $this->belongsTo(SalePoint::class);
     }
+
+    public function tourns()
+    {
+        return $this->hasMany(Tourn::class);
+    }
+
+    public function stockType()
+    {
+        return $this->belongsTo(StockType::class);
+    }
 }

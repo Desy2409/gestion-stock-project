@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductPurchaseOrder;
 use App\Models\Provider;
 use App\Models\PurchaseOrder;
+use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,9 +19,10 @@ class PurchaseOrderController extends Controller
         $purchaseOrders = PurchaseOrder::with('provider')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
         $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $unities = Unity::orderBy('wording');
 
         return new JsonResponse([
-            'datas' => ['purchaseOrders' => $purchaseOrders, 'providers' => $providers, 'products' => $products]
+            'datas' => ['purchaseOrders' => $purchaseOrders, 'providers' => $providers, 'products' => $products, 'unities' => $unities]
         ], 200);
     }
 
@@ -30,7 +32,7 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
-                'sale_point'=>'required',
+                'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
                 'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
@@ -40,9 +42,10 @@ class PurchaseOrderController extends Controller
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
-                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
@@ -60,6 +63,7 @@ class PurchaseOrderController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -81,7 +85,7 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->unit_price = $request->unit_prices[$key];
                 $productPurchaseOrder->product_id = $product;
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
-                // $productPurchaseOrder->provider_id = $request->provider;
+                $productPurchaseOrder->unity_id = $request->unities[$key];
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
@@ -137,19 +141,20 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
-                'sale_point'=>'required',
+                'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Y-m-d',//|date_equals:' . $currentDate,
+                'purchase_date' => 'required|date|date_format:Y-m-d', //|date_equals:' . $currentDate,
                 'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
-                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
@@ -167,6 +172,7 @@ class PurchaseOrderController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -190,7 +196,7 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->unit_price = $request->unit_prices[$key];
                 $productPurchaseOrder->product_id = $product;
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
-                // $productPurchaseOrder->provider_id = $request->provider;
+                $productPurchaseOrder->unity_id = $request->unities[$key];
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);

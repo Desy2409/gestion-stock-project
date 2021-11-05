@@ -12,7 +12,8 @@ class ClientDeliveryNote extends Model
         'delivery_note_date',
         'delivery_date',
         'total_amount',
-        'observation'
+        'observation',
+        'place_of_delivery'
     ];
 
     public function salePoint()
@@ -23,5 +24,10 @@ class ClientDeliveryNote extends Model
     public function productClientDeliveryNotes()
     {
         return $this->hasMany(ProductClientDeliveryNote::class);
+    }
+
+    public function tourn()
+    {
+        return $this->belongsTo(Tourn::class);
     }
 }
