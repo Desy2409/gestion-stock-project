@@ -40,7 +40,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|date_format:Y-m-d|after:yesterday',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'last_name.required' => "Le nom est obligatoire.",
@@ -55,7 +55,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : AAAA-MM-JJ.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
@@ -70,7 +70,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|date_format:Y-m-d|after:yesterday',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -82,7 +82,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : AAAA-MM-JJ.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
@@ -183,7 +183,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|date_format:Y-m-d|after:yesterday',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'last_name.required' => "Le nom est obligatoire.",
@@ -198,7 +198,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : AAAA-MM-JJ.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
@@ -213,7 +213,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|date_format:Y-m-d|after:yesterday',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -225,7 +225,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : AAAA-MM-JJ.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );

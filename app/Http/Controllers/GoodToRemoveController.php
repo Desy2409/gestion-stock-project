@@ -45,15 +45,15 @@ class GoodToRemoveController extends Controller
 
     public function store(Request $request)
     {
-        $currentDate = date('Y-m-d', strtotime(now()));
+        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'client'=>'required',
                 'stock_type'=>'required',
                 'reference' => 'required|unique:good_to_removes',
-                'voucher_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date_wished' => 'required|date|date_format:Y-m-d|after:voucher_date',
+                'voucher_date' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
+                'delivery_date_wished' => 'required|date|date_format:d-m-Y|after:voucher_date',
                 'voucher_type' => 'required',
                 'customs_regime' => 'required',
                 'storage_unit' => 'required',
@@ -66,11 +66,11 @@ class GoodToRemoveController extends Controller
                 'reference.unique' => "Cette référence existe déjà.",
                 'voucher_date.required' => "La date du bon à enlever est obligatoire.",
                 'voucher_date.date' => "La date du bon à enlever est incorrecte.",
-                'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : AAAA-MM-JJ.",
+                'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : JJ-MM-AAAA.",
                 'voucher_date.date_equals' => "La date du bon à enlever ne peut être qu'aujourd'hui.",
                 'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
                 'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
-                'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
                 'voucher_type.required' => "Le type de bon est obligatoire.",
                 'customs_regime.required' => "Le régime douanier est obligatoire.",
@@ -139,8 +139,8 @@ class GoodToRemoveController extends Controller
                 'client'=>'required',
                 'stock_type'=>'required',
                 'reference' => 'required|unique:good_to_removes',
-                'voucher_date' => 'required|date|date_format:Y-m-d',
-                'delivery_date_wished' => 'required|date|date_format:Y-m-d|after:voucher_date',
+                'voucher_date' => 'required|date|date_format:d-m-Y',
+                'delivery_date_wished' => 'required|date|date_format:d-m-Y|after:voucher_date',
                 'voucher_type' => 'required',
                 'customs_regime' => 'required',
                 'storage_unit' => 'required',
@@ -153,10 +153,10 @@ class GoodToRemoveController extends Controller
                 'reference.unique' => "Cette référence existe déjà.",
                 'voucher_date.required' => "La date du bon à enlever est obligatoire.",
                 'voucher_date.date' => "La date du bon à enlever est incorrecte.",
-                'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : AAAA-MM-JJ.",
+                'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
                 'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
-                'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
                 'voucher_type.required' => "Le type de bon est obligatoire.",
                 'customs_regime.required' => "Le régime douanier est obligatoire.",

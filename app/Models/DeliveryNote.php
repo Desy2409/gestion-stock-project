@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeliveryNote extends Model
 {
     protected $fillable = [
+        'code',
         'reference',
         'purchase_date',
         'delivery_date',

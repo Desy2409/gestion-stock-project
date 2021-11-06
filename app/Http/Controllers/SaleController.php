@@ -2,44 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductOrder;
 use App\Models\ProductSale;
 use App\Models\Sale;
+use App\Models\SaleRegister;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
+    use UtilityTrait;
+
     public function index()
     {
-        $purchaseCoupons = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $sales = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $clients = Client::with('person')->get();
 
+        $lastSaleRegister = SaleRegister::latest()->first();
+
+        $saleRegister = new SaleRegister();
+        if ($lastSaleRegister) {
+            $saleRegister->code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+        } else {
+            $saleRegister->code = $this->formateNPosition('VT', 1, 8);
+        }
+        $saleRegister->save();
+
         return new JsonResponse([
-            'datas' => ['purchaseCoupons' => $purchaseCoupons, 'clients' => $clients, 'products' => $products]
+            'datas' => ['sales' => $sales, 'clients' => $clients, 'products' => $products]
         ], 200);
     }
 
     public function indexFromOrder($id)
     {
         $orders = Order::with('client')->with('productOrders')->orderBy('sale_date')->get();
-        $purchaseCoupons = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
         $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
-            'datas' => ['purchaseCoupons' => $purchaseCoupons,  'orders' => $orders, 'products' => $products]
+            'datas' => ['sales' => $sales,  'orders' => $orders, 'products' => $products]
         ], 200);
     }
 
     public function showProductOfOrder($id)
     {
         $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
             'datas' => ['products' => $products]
         ], 200);
@@ -47,14 +61,13 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
-        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'client' => 'required',
-                'reference' => 'required|unique:purchase_coupons',
-                'sale_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:sale_date',
+                'reference' => 'required|unique:sales',
+                'sale_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:sale_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -67,11 +80,11 @@ class SaleController extends Controller
                 'reference.unique' => "Cette vente existe déjà.",
                 'sale_date.required' => "La date du bon est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : AAAA-MM-JJ.",
-                'sale_date.date_equals' => "La date de la vente ne peut être qu'aujourd'hui.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -84,14 +97,21 @@ class SaleController extends Controller
         );
 
         try {
-            $purchaseCoupon = new Sale();
-            $purchaseCoupon->reference = $request->reference;
-            $purchaseCoupon->sale_date   = $request->sale_date;
-            $purchaseCoupon->delivery_date   = $request->delivery_date;
-            $purchaseCoupon->total_amount = $request->total_amount;
-            $purchaseCoupon->observation = $request->observation;
-            $purchaseCoupon->client_id = $request->client;
-            $purchaseCoupon->save();
+            $lastSale = Sale::latest()->first();
+
+            $sale = new Sale();
+            if ($lastSale) {
+                $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
+            } else {
+                $sale->code = $this->formateNPosition('VT', 1, 8);
+            }
+            $sale->reference = $request->reference;
+            $sale->sale_date   = $request->sale_date;
+            $sale->delivery_date   = $request->delivery_date;
+            $sale->total_amount = $request->total_amount;
+            $sale->observation = $request->observation;
+            $sale->client_id = $request->client;
+            $sale->save();
 
             $productSales = [];
             foreach ($request->ordered_product as $key => $product) {
@@ -99,7 +119,7 @@ class SaleController extends Controller
                 $productSale->quantity = $request->quantities[$key];
                 $productSale->unit_price = $request->unit_prices[$key];
                 $productSale->product_id = $product;
-                $productSale->purchase_coupon_id = $purchaseCoupon->id;
+                $productSale->sale_id = $sale->id;
                 $productSale->save();
 
                 array_push($productSales, $productSale);
@@ -108,7 +128,7 @@ class SaleController extends Controller
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'purchaseCoupon' => $purchaseCoupon,
+                'sale' => $sale,
                 'success' => $success,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
@@ -126,14 +146,13 @@ class SaleController extends Controller
 
     public function storeFromOrder(Request $request)
     {
-        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'order' => 'required',
-                'reference' => 'required|unique:purchase_coupons',
-                'sale_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:sale_date',
+                'reference' => 'required|unique:sales',
+                'sale_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:sale_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -146,11 +165,11 @@ class SaleController extends Controller
                 'reference.unique' => "Cette vente existe déjà.",
                 'sale_date.required' => "La date du bon est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : AAAA-MM-JJ.",
-                'sale_date.date_equals' => "La date de la vente ne peut être qu'aujourd'hui.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -165,15 +184,22 @@ class SaleController extends Controller
         try {
             $order = Order::findOrFail($request->order);
 
-            $purchaseCoupon = new Sale();
-            $purchaseCoupon->reference = $request->reference;
-            $purchaseCoupon->sale_date   = $request->sale_date;
-            $purchaseCoupon->delivery_date   = $request->delivery_date;
-            $purchaseCoupon->total_amount = $request->total_amount;
-            $purchaseCoupon->observation = $request->observation;
-            $purchaseCoupon->order_id = $order->id;
-            $purchaseCoupon->client_id = $order->client->id;
-            $purchaseCoupon->save();
+            $lastSale = Sale::latest()->first();
+
+            $sale = new Sale();
+            if ($lastSale) {
+                $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
+            } else {
+                $sale->code = $this->formateNPosition('VT', 1, 8);
+            }
+            $sale->reference = $request->reference;
+            $sale->sale_date   = $request->sale_date;
+            $sale->delivery_date   = $request->delivery_date;
+            $sale->total_amount = $request->total_amount;
+            $sale->observation = $request->observation;
+            $sale->order_id = $order->id;
+            $sale->client_id = $order->client->id;
+            $sale->save();
 
             $productSales = [];
             foreach ($request->ordered_product as $key => $product) {
@@ -181,7 +207,7 @@ class SaleController extends Controller
                 $productSale->quantity = $request->quantities[$key];
                 $productSale->unit_price = $request->unit_prices[$key];
                 $productSale->product_id = $product;
-                $productSale->purchase_coupon_id = $purchaseCoupon->id;
+                $productSale->order_id = $order->id;
                 $productSale->save();
 
                 array_push($productSales, $productSale);
@@ -190,7 +216,7 @@ class SaleController extends Controller
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'purchaseCoupon' => $purchaseCoupon,
+                'sale' => $sale,
                 'success' => $success,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
@@ -208,39 +234,38 @@ class SaleController extends Controller
 
     public function show($id)
     {
-        $purchaseCoupon = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
-        $productSales = $purchaseCoupon ? $purchaseCoupon->productSales : null; //ProductSale::where('order_id', $purchaseCoupon->id)->get();
+        $sale = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
+        $productSales = $sale ? $sale->productSales : null; //ProductSale::where('order_id', $order->id)->get();
 
         return new JsonResponse([
-            'purchaseCoupon' => $purchaseCoupon,
+            'sale' => $sale,
             'datas' => ['productSales' => $productSales]
         ], 200);
     }
 
     public function edit($id)
     {
-        $purchaseCoupon = Sale::with('client')->with('deliveryNotes')->with('productSales')->findOrFail($id);
+        $sale = Sale::with('client')->with('deliveryNotes')->with('productSales')->findOrFail($id);
         $clients = Client::with('person')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
-        $productSales = $purchaseCoupon ? $purchaseCoupon->productSales : null;
+        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $productSales = $sale ? $sale->productSales : null;
 
         return new JsonResponse([
-            'purchaseCoupon' => $purchaseCoupon,
+            'sale' => $sale,
             'datas' => ['clients' => $clients, 'productSales' => $productSales, 'products' => $products]
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
-        $purchaseCoupon = Sale::findOrFail($id);
-        $currentDate = date('Y-m-d', strtotime(now()));
+        $sale = Sale::findOrFail($id);
         $this->validate(
             $request,
             [
                 'client' => 'required',
                 'reference' => 'required',
-                'sale_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:sale_date',
+                'sale_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:sale_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -253,11 +278,11 @@ class SaleController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'sale_date.required' => "La date de la vente est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : AAAA-MM-JJ.",
-                'sale_date.date_equals' => "La date de la vente ne peut être qu'aujourd'hui.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -271,15 +296,15 @@ class SaleController extends Controller
         );
 
         try {
-            $purchaseCoupon->reference = $request->reference;
-            $purchaseCoupon->sale_date   = $request->sale_date;
-            $purchaseCoupon->delivery_date   = $request->delivery_date;
-            $purchaseCoupon->total_amount = $request->total_amount;
-            $purchaseCoupon->observation = $request->observation;
-            $purchaseCoupon->client_id = $request->client;
-            $purchaseCoupon->save();
+            $sale->reference = $request->reference;
+            $sale->sale_date   = $request->sale_date;
+            $sale->delivery_date   = $request->delivery_date;
+            $sale->total_amount = $request->total_amount;
+            $sale->observation = $request->observation;
+            $sale->client_id = $request->client;
+            $sale->save();
 
-            ProductSale::where('purchase_coupon_id', $purchaseCoupon->id)->delete();
+            ProductSale::where('sale_id', $sale->id)->delete();
 
             $productSales = [];
             foreach ($request->ordered_product as $key => $product) {
@@ -287,7 +312,7 @@ class SaleController extends Controller
                 $productSale->quantity = $request->quantities[$key];
                 $productSale->unit_price = $request->unit_prices[$key];
                 $productSale->product_id = $product;
-                $productSale->purchase_coupon_id = $purchaseCoupon->id;
+                $productSale->sale_id = $sale->id;
                 $productSale->unity_id = $request->unities[$key];
                 $productSale->save();
 
@@ -297,7 +322,7 @@ class SaleController extends Controller
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'purchaseCoupon' => $purchaseCoupon,
+                'sale' => $sale,
                 'success' => $success,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
@@ -316,28 +341,27 @@ class SaleController extends Controller
     public function editFromOrder($id)
     {
         $orders = Order::with('client')->with('productOrders')->orderBy('sale_date')->get();
-        $purchaseCoupon = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
+        $sale = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
         $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
-        $productSales = $purchaseCoupon ? $purchaseCoupon->productSales : null;
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
+        $productSales = $sale ? $sale->productSales : null;
 
         return new JsonResponse([
-            'purchaseCoupon' => $purchaseCoupon,
+            'sale' => $sale,
             'datas' => ['productSales' => $productSales, 'orders' => $orders, 'products' => $products]
         ], 200);
     }
 
     public function updateFromOrder(Request $request, $id)
     {
-        $purchaseCoupon = Sale::findOrFail($id);
-        $currentDate = date('Y-m-d', strtotime(now()));
+        $sale = Sale::findOrFail($id);
         $this->validate(
             $request,
             [
                 'order' => 'required',
                 'reference' => 'required',
-                'sale_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:sale_date',
+                'sale_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:sale_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -350,11 +374,11 @@ class SaleController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'sale_date.required' => "La date du bon est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : AAAA-MM-JJ.",
-                'sale_date.date_equals' => "La date de la vente ne peut être qu'aujourd'hui.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -370,16 +394,16 @@ class SaleController extends Controller
         try {
             $order = Order::findOrFail($request->order);
 
-            $purchaseCoupon->reference = $request->reference;
-            $purchaseCoupon->sale_date   = $request->sale_date;
-            $purchaseCoupon->delivery_date   = $request->delivery_date;
-            $purchaseCoupon->total_amount = $request->total_amount;
-            $purchaseCoupon->observation = $request->observation;
-            $purchaseCoupon->order_id = $order->id;
-            $purchaseCoupon->client_id = $order->client->id;
-            $purchaseCoupon->save();
+            $sale->reference = $request->reference;
+            $sale->sale_date   = $request->sale_date;
+            $sale->delivery_date   = $request->delivery_date;
+            $sale->total_amount = $request->total_amount;
+            $sale->observation = $request->observation;
+            $sale->order_id = $order->id;
+            $sale->client_id = $order->client->id;
+            $sale->save();
 
-            ProductSale::where('purchase_coupon_id', $purchaseCoupon->id)->delete();
+            ProductSale::where('order_id', $order->id)->delete();
 
             $productSales = [];
             foreach ($request->ordered_product as $key => $product) {
@@ -387,7 +411,7 @@ class SaleController extends Controller
                 $productSale->quantity = $request->quantities[$key];
                 $productSale->unit_price = $request->unit_prices[$key];
                 $productSale->product_id = $product;
-                $productSale->purchase_coupon_id = $purchaseCoupon->id;
+                $productSale->order_id = $order->id;
                 $productSale->unity_id = $request->unities[$key];
                 $productSale->save();
 
@@ -397,7 +421,7 @@ class SaleController extends Controller
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'purchaseCoupon' => $purchaseCoupon,
+                'sale' => $sale,
                 'success' => $success,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
@@ -415,15 +439,15 @@ class SaleController extends Controller
 
     public function destroy($id)
     {
-        $purchaseCoupon = Sale::findOrFail($id);
-        $productSales = $purchaseCoupon ? $purchaseCoupon->productSales : null;
+        $sale = Sale::findOrFail($id);
+        $productSales = $sale ? $sale->productSales : null;
         try {
-            $purchaseCoupon->delete();
+            $sale->delete();
 
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'purchaseCoupon' => $purchaseCoupon,
+                'sale' => $sale,
                 'success' => $success,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],

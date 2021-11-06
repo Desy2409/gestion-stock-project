@@ -133,7 +133,7 @@ class SalePointController extends Controller
             ],
         );
 
-        $existingSalePoints = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
+        $existingSalePoints = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
         if (!empty($existingSalePoints) && sizeof($existingSalePoints) > 1) {
             $success = false;
             return new JsonResponse([

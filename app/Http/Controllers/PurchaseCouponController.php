@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\UtilityTrait;
 use App\Models\Product;
 use App\Models\ProductPurchaseCoupon;
 use App\Models\ProductPurchaseOrder;
 use App\Models\Provider;
 use App\Models\PurchaseCoupon;
+use App\Models\PurchaseCouponRegister;
 use App\Models\PurchaseOrder;
+use App\Models\SalePoint;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,14 +18,27 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseCouponController extends Controller
 {
+    use UtilityTrait;
+
     public function index()
     {
         $purchaseCoupons = PurchaseCoupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productPurchaseCoupons')->orderBy('purchase_date')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $providers = Provider::with('person')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
+
+        $lastPurchaseCouponRegister = PurchaseCouponRegister::latest()->first();
+
+        $purchaseCouponRegister = new PurchaseCouponRegister();
+        if ($lastPurchaseCouponRegister) {
+            $purchaseCouponRegister->code = $this->formateNPosition('BA', $lastPurchaseCouponRegister->id + 1, 8);
+        } else {
+            $purchaseCouponRegister->code = $this->formateNPosition('BA', 1, 8);
+        }
+        $purchaseCouponRegister->save();
 
         return new JsonResponse([
-            'datas' => ['purchaseCoupons' => $purchaseCoupons, 'providers' => $providers, 'products' => $products]
+            'datas' => ['purchaseCoupons' => $purchaseCoupons, 'providers' => $providers, 'products' => $products, 'salePoints' => $salePoints]
         ], 200);
     }
 
@@ -31,7 +47,7 @@ class PurchaseCouponController extends Controller
         $purchaseOrders = PurchaseOrder::with('provider')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
         $purchaseCoupons = PurchaseCoupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productPurchaseCoupons')->orderBy('purchase_date')->get();
         $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
             'datas' => ['purchaseCoupons' => $purchaseCoupons,  'purchaseOrders' => $purchaseOrders, 'products' => $products]
         ], 200);
@@ -40,7 +56,7 @@ class PurchaseCouponController extends Controller
     public function showProductOfPurchaseOrder($id)
     {
         $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
             'datas' => ['products' => $products]
         ], 200);
@@ -48,15 +64,14 @@ class PurchaseCouponController extends Controller
 
     public function store(Request $request)
     {
-        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
-                'sale_point'=>'required',
+                'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required|unique:purchase_coupons',
-                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
+                'purchase_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -64,17 +79,17 @@ class PurchaseCouponController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
-                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'reference.unique' => "Ce bon d'achat existe déjà.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : AAAA-MM-JJ.",
-                'purchase_date.date_equals' => "La date du bon d'achat ne peut être qu'aujourd'hui.",
+                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : JJ-MM-AAAA.",
+                'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon d'achat.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -87,7 +102,14 @@ class PurchaseCouponController extends Controller
         );
 
         try {
+            $lastPurchaseCoupon = PurchaseCoupon::latest()->first();
+
             $purchaseCoupon = new PurchaseCoupon();
+            if ($lastPurchaseCoupon) {
+                $purchaseCoupon->code = $this->formateNPosition('BA', $lastPurchaseCoupon->id + 1, 8);
+            } else {
+                $purchaseCoupon->code = $this->formateNPosition('BA', 1, 8);
+            }
             $purchaseCoupon->reference = $request->reference;
             $purchaseCoupon->purchase_date   = $request->purchase_date;
             $purchaseCoupon->delivery_date   = $request->delivery_date;
@@ -130,14 +152,13 @@ class PurchaseCouponController extends Controller
 
     public function storeFromPurchaseOrder(Request $request)
     {
-        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'purchase_order' => 'required',
                 'reference' => 'required|unique:purchase_coupons',
-                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
+                'purchase_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -150,11 +171,11 @@ class PurchaseCouponController extends Controller
                 'reference.unique' => "Ce bon d'achat existe déjà.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : AAAA-MM-JJ.",
-                'purchase_date.date_equals' => "La date du bon d'achat ne peut être qu'aujourd'hui.",
+                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : JJ-MM-AAAA.",
+                'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon d'achat.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -226,7 +247,7 @@ class PurchaseCouponController extends Controller
     {
         $purchaseCoupon = PurchaseCoupon::with('provider')->with('deliveryNotes')->with('productPurchaseCoupons')->findOrFail($id);
         $providers = Provider::with('person')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $productPurchaseCoupons = $purchaseCoupon ? $purchaseCoupon->productPurchaseCoupons : null;
 
         return new JsonResponse([
@@ -238,15 +259,14 @@ class PurchaseCouponController extends Controller
     public function update(Request $request, $id)
     {
         $purchaseCoupon = PurchaseCoupon::findOrFail($id);
-        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
-                'sale_point'=>'required',
+                'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
+                'purchase_date' => 'required|date|date_format:d-m-Y||before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -255,16 +275,16 @@ class PurchaseCouponController extends Controller
                 'unities' => 'required',
             ],
             [
-                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : AAAA-MM-JJ.",
-                'purchase_date.date_equals' => "La date du bon d'achat ne peut être qu'aujourd'hui.",
+                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : JJ-MM-AAAA.",
+                'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon d'achat.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -327,7 +347,7 @@ class PurchaseCouponController extends Controller
         $purchaseOrders = PurchaseOrder::with('provider')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
         $purchaseCoupon = PurchaseCoupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productPurchaseCoupons')->findOrFail($id);
         $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->whereIn('id', $idOfProducts)->get();
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         $productPurchaseCoupons = $purchaseCoupon ? $purchaseCoupon->productPurchaseCoupons : null;
 
         return new JsonResponse([
@@ -339,14 +359,13 @@ class PurchaseCouponController extends Controller
     public function updateFromPurchaseOrder(Request $request, $id)
     {
         $purchaseCoupon = PurchaseCoupon::findOrFail($id);
-        $currentDate = date('Y-m-d', strtotime(now()));
         $this->validate(
             $request,
             [
                 'purchase_order' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:purchase_date',
+                'purchase_date' => 'required|date|date_format:d-m-Y||before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -359,11 +378,11 @@ class PurchaseCouponController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : AAAA-MM-JJ.",
-                'purchase_date.date_equals' => "La date du bon d'achat ne peut être qu'aujourd'hui.",
+                'purchase_date.date_format' => "La du bon d'achat doit être sous le format : JJ-MM-AAAA.",
+                'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon d'achat.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",

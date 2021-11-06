@@ -21,4 +21,9 @@ class Truck extends Model
     {
         return $this->hasMany(Tourn::class);
     }
+
+    public function tankTrucks()
+    {
+        return $this->hasMany(TankTruck::class);
+    }
 }

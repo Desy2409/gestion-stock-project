@@ -26,4 +26,9 @@ class Tank extends Model
     {
         return $this->belongsTo(Compartment::class);
     }
+    
+    public function tankTrucks()
+    {
+        return $this->hasMany(TankTruck::class);
+    }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Sale extends Model
 {
     protected $fillable = [
+        'code',
         'reference',
         'sale_date',
         'delivery_date',

@@ -10,6 +10,7 @@ class PurchaseOrder extends Model
     use HasFactory;
 
     protected $fillable = [
+        'code',
         'reference',
         'purchase_date',
         'delivery_date',
