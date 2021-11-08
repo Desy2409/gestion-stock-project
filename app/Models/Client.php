@@ -14,6 +14,8 @@ class Client extends Model
         'code',
         'reference',
         'settings',
+        'exemption_reference',
+        'limit_date_exemption'
     ];
 
     public function person()

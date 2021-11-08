@@ -39,6 +39,8 @@ class ClientController extends Controller
                     'reference' => 'required',
                     'email' => 'email',
                     'phone_number' => 'required',
+                    'exemption_reference' => 'required',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'last_name.required' => "Le nom est obligatoire.",
@@ -50,6 +52,11 @@ class ClientController extends Controller
                     'reference.required' => "La reference est obligatoire.",
                     'email.email' => "L'adresse email est incorrecte.",
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'exemption_reference.required' => "La référence d'exonération est obligatoire.",
+                    'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
+                    'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
         } elseif ($request->person_type == "Personne morale") {
@@ -62,6 +69,8 @@ class ClientController extends Controller
                     'reference' => 'required',
                     'email' => 'email',
                     'phone_number' => 'required',
+                    'exemption_reference' => 'required',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -70,6 +79,11 @@ class ClientController extends Controller
                     'reference.required' => "La reference est obligatoire.",
                     'email.email' => "L'adresse email est incorrecte.",
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'exemption_reference.required' => "La référence d'exonération est obligatoire.",
+                    'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
+                    'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
             $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
@@ -94,11 +108,13 @@ class ClientController extends Controller
         }
 
         try {
-            $clients = Client::all();
+            $lastClient = Client::latest()->first();
             $client = new Client();
-            $client->code = $this->formateNPosition('CL', sizeof($clients) + 1, 8);
+            $client->code = $this->formateNPosition('CL', $lastClient->id + 1, 8);
             $client->reference = $request->reference;
             $client->settings = $request->settings;
+            $client->exemption_reference = $request->exemption_reference;
+            $client->limit_date_exemption = $request->limit_date_exemption;
             $client->save();
 
             $person = new Person();
@@ -166,9 +182,10 @@ class ClientController extends Controller
                     'reference' => 'required',
                     'email' => 'email',
                     'phone_number' => 'required',
+                    'exemption_reference' => 'required',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
-
                     'last_name.required' => "Le nom est obligatoire.",
                     'last_name.max' => "Le nom ne doit pas dépasser 50 caractères.",
                     'last_name.string' => "Le nom doit être une chaîne de caractères.",
@@ -178,6 +195,11 @@ class ClientController extends Controller
                     'reference.required' => "La reference est obligatoire.",
                     'email.email' => "L'adresse email est incorrecte.",
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'exemption_reference.required' => "La référence d'exonération est obligatoire.",
+                    'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
+                    'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
         } elseif ($request->person_type == "Personne morale") {
@@ -190,6 +212,8 @@ class ClientController extends Controller
                     'reference' => 'required',
                     'email' => 'email',
                     'phone_number' => 'required',
+                    'exemption_reference' => 'required',
+                    'limit_date_exemption' => 'required|date|date_format:d-m-Y|after:yesterday',
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -198,6 +222,11 @@ class ClientController extends Controller
                     'reference.required' => "La reference est obligatoire.",
                     'email.email' => "L'adresse email est incorrecte.",
                     'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'exemption_reference.required' => "La référence d'exonération est obligatoire.",
+                    'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
+                    'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
             $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
@@ -224,6 +253,8 @@ class ClientController extends Controller
         try {
             $client->reference = $request->reference;
             $client->settings = $request->settings;
+            $client->exemption_reference = $request->exemption_reference;
+            $client->limit_date_exemption = $request->limit_date_exemption;
             $client->save();
 
             $person->last_name = $request->last_name;

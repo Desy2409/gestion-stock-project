@@ -10,13 +10,20 @@ class Truck extends Model
     protected $fillable = [
         'reference',
         'truck_registration',
-        'tank_registration',
-        'number_of_compartments',
-        'capacity'
     ];
 
     public function provider()
     {
         return $this->belongsTo(Provider::class);
+    }
+
+    public function tourns()
+    {
+        return $this->hasMany(Tourn::class);
+    }
+
+    public function tankTrucks()
+    {
+        return $this->hasMany(TankTruck::class);
     }
 }
