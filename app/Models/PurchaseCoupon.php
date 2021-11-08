@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseCoupon extends Model
 {
     protected $fillable = [
+        'code',
         'reference',
         'purchase_date',
         'delivery_date',

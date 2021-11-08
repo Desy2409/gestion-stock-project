@@ -4,7 +4,12 @@ use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientDeliveryNoteController;
+use App\Http\Controllers\CompartmentController;
 use App\Http\Controllers\DeliveryNoteController;
+use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\ExtensionController;
+use App\Http\Controllers\FileTypeController;
+use App\Http\Controllers\FolderController;
 use App\Http\Controllers\GoodToRemoveController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ProductController;
@@ -18,6 +23,9 @@ use App\Http\Controllers\PurchaseCouponController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
+use App\Http\Controllers\TankController;
+use App\Http\Controllers\TankTruckController;
+use App\Http\Controllers\TournController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferDemandController;
 use App\Http\Controllers\TruckController;
@@ -185,6 +193,20 @@ Route::get('/transfer/{id}/show', [TransferController::class, 'show']);
 Route::patch('/transfer/{id}/update', [TransferController::class, 'update']);
 Route::delete('/transfer/{id}/destroy', [TransferController::class, 'destroy']);
 
+// Compartment routes
+Route::get('/compartment', [CompartmentController::class, 'index']);
+Route::post('/compartment', [CompartmentController::class, 'store']);
+Route::get('/compartment/{id}/show', [CompartmentController::class, 'show']);
+Route::patch('/compartment/{id}/update', [CompartmentController::class, 'update']);
+Route::delete('/compartment/{id}/destroy', [CompartmentController::class, 'destroy']);
+
+// Tank routes
+Route::get('/tank', [TankController::class, 'index']);
+Route::post('/tank', [TankController::class, 'store']);
+Route::get('/tank/{id}/show', [TankController::class, 'show']);
+Route::patch('/tank/{id}/update', [TankController::class, 'update']);
+Route::delete('/tank/{id}/destroy', [TankController::class, 'destroy']);
+
 // Truck routes
 Route::get('/truck', [TruckController::class, 'index']);
 Route::post('/truck', [TruckController::class, 'store']);
@@ -192,12 +214,54 @@ Route::get('/truck/{id}/show', [TruckController::class, 'show']);
 Route::patch('/truck/{id}/update', [TruckController::class, 'update']);
 Route::delete('/truck/{id}/destroy', [TruckController::class, 'destroy']);
 
+// Tank truck routes
+Route::get('/tank-truck', [TankTruckController::class, 'index']);
+Route::post('/tank-truck', [TankTruckController::class, 'store']);
+Route::get('/tank-truck/{id}/show', [TankTruckController::class, 'show']);
+Route::patch('/tank-truck/{id}/update', [TankTruckController::class, 'update']);
+Route::delete('/tank-truck/{id}/destroy', [TankTruckController::class, 'destroy']);
+
+// Tourn routes
+Route::get('/tourn', [TournController::class, 'index']);
+Route::post('/tourn', [TournController::class, 'store']);
+Route::get('/tourn/{id}/show', [TournController::class, 'show']);
+Route::patch('/tourn/{id}/update', [TournController::class, 'update']);
+Route::delete('/tourn/{id}/destroy', [TournController::class, 'destroy']);
+
+// Destination routes
+Route::get('/destination', [DestinationController::class, 'index']);
+Route::post('/destination', [DestinationController::class, 'store']);
+Route::get('/destination/{id}/show', [DestinationController::class, 'show']);
+Route::patch('/destination/{id}/update', [DestinationController::class, 'update']);
+Route::delete('/destination/{id}/destroy', [DestinationController::class, 'destroy']);
+
 // Good to remove routes
 Route::get('/good-to-remove', [GoodToRemoveController::class, 'index']);
 Route::post('/good-to-remove', [GoodToRemoveController::class, 'store']);
 Route::get('/good-to-remove/{id}/show', [GoodToRemoveController::class, 'show']);
 Route::patch('/good-to-remove/{id}/update', [GoodToRemoveController::class, 'update']);
 Route::delete('/good-to-remove/{id}/destroy', [GoodToRemoveController::class, 'destroy']);
+
+// Extension routes
+Route::get('/extension', [ExtensionController::class, 'index']);
+Route::post('/extension', [ExtensionController::class, 'store']);
+Route::get('/extension/{id}/show', [ExtensionController::class, 'show']);
+Route::patch('/extension/{id}/update', [ExtensionController::class, 'update']);
+Route::delete('/extension/{id}/destroy', [ExtensionController::class, 'destroy']);
+
+// FileType routes
+Route::get('/file-type', [FileTypeController::class, 'index']);
+Route::post('/file-type', [FileTypeController::class, 'store']);
+Route::get('/file-type/{id}/show', [FileTypeController::class, 'show']);
+Route::patch('/file-type/{id}/update', [FileTypeController::class, 'update']);
+Route::delete('/file-type/{id}/destroy', [FileTypeController::class, 'destroy']);
+
+// Folder routes
+Route::get('/folder', [FolderController::class, 'index']);
+Route::post('/folder', [FolderController::class, 'store']);
+Route::get('/folder/{id}/show', [FolderController::class, 'show']);
+Route::patch('/folder/{id}/update', [FolderController::class, 'update']);
+Route::delete('/folder/{id}/destroy', [FolderController::class, 'destroy']);
 
 
 

@@ -21,4 +21,9 @@ class ProductPurchaseOrder extends Model
     {
         return $this->belongsTo(PurchaseOrder::class);
     }
+
+    public function unity()
+    {
+        return $this->belongsTo(Unity::class);
+    }
 }

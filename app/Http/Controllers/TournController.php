@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Traits\UtilityTrait;
+use App\Models\GoodToRemove;
+use App\Models\Tourn;
+use App\Models\TournRegister;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class TournController extends Controller
+{
+    use UtilityTrait;
+
+    public function index()
+    {
+        $tourns = Tourn::orderBy('reference')->get();
+        $goodToRemoves = GoodToRemove::orderBy('voucher_date')->orderBy('reference')->get();
+        return new JsonResponse([
+            'datas' => ['tourns' => $tourns, 'goodToRemoves' => $goodToRemoves]
+        ], 200);
+    }
+
+    // Enregistrement d'une nouvelle tournée
+    public function store(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'good_to_remove' => 'required',
+                'reference' => 'required|unique:tourns',
+            ],
+            [
+                'good_to_remove.required' => "Le choix du bon à enlever est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+                'reference.unique' => "Cette référence existe déjà.",
+            ]
+        );
+
+        try {
+            $lastTourn = Tourn::latest()->first();
+            // dd($lastTourn);
+            $tourn = new Tourn();
+            $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+            $tourn->reference = $request->reference;
+            $tourn->good_to_remove_id = $request->good_to_remove;
+            $tourn->save();
+
+            $tournRegister = new TournRegister();
+            $tournRegister->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+
+            $success = true;
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'tourn' => $tourn,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'enregistrement.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    // Mise à jour d'une tournée
+    public function update(Request $request, $id)
+    {
+
+        $tourn = Tourn::findOrFail($id);
+        $this->validate(
+            $request,
+            [
+                'good_to_remove' => 'required',
+                'reference' => 'required',
+            ],
+            [
+                'good_to_remove.required' => "Le choix du bon à enlever est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+            ]
+        );
+
+        $existingTourns = Tourn::where('reference', $request->reference)->get();
+        if (!empty($existingTourns) && sizeof($existingTourns) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'existingTourn' => $existingTourns[0],
+                'success' => $success,
+                'message' => "Cette tournée existe déjà."
+            ], 400);
+        }
+
+        try {
+            $tourn->reference = $request->reference;
+            $tourn->good_to_remove_id = $request->good_to_remove;
+            $tourn->save();
+
+            $success = true;
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'tourn' => $tourn,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la modification.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    // Suppression d'une tournée
+    public function destroy($id)
+    {
+        $tourn = Tourn::findOrFail($id);
+        try {
+            $tourn->delete();
+
+            $success = true;
+            $message = "Suppression effectuée avec succès.";
+            return new JsonResponse([
+                'tourn' => $tourn,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function show($id)
+    {
+        $tourn = Tourn::findOrFail($id);
+        return new JsonResponse([
+            'tourn' => $tourn
+        ], 200);
+    }
+}

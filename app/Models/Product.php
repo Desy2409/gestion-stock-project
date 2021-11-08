@@ -15,7 +15,6 @@ class Product extends Model
         'wording',
         'description',
         'price',
-        'unity',
     ];
 
     protected $hidden=['created_at'];
@@ -25,19 +24,9 @@ class Product extends Model
         return $this->belongsTo(SubCategory::class);
     }
 
-    public function unity()
-    {
-        return $this->belongsTo(Unity::class);
-    }
-
     public function productPurchaseOrders()
     {
         return $this->hasMany(ProductPurchaseOrder::class);
-    }
-
-    public function stockType()
-    {
-        return $this->belongsTo(StockType::class);
     }
 
     public function productsTransfersDemandsLines()

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductTransferLine;
 use App\Models\SalePoint;
 use App\Models\Transfer;
+use App\Models\TransferRegister;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,8 +19,19 @@ class TransferController extends Controller
     public function index()
     {
         $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $transfers = Transfer::with('productsTransfersLines')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
+
+        $lastTransferRegister = TransferRegister::latest()->first();
+
+        $transferRegister = new TransferRegister();
+        if ($lastTransferRegister) {
+            $transferRegister->code = $this->formateNPosition('TF', $lastTransferRegister->id + 1, 8);
+        } else {
+            $transferRegister->code = $this->formateNPosition('TF', 1, 8);
+        }
+        $transferRegister->save();
+
         return new JsonResponse([
             'datas' => ['transfers' => $transfers, 'salesPoints' => $salesPoints, 'products' => $products]
         ], 200);
@@ -27,15 +39,15 @@ class TransferController extends Controller
 
     public function store(Request $request)
     {
-        $currentDate = date('Y-m-d', strtotime(now()));
+        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'date_of_receipt' => 'date|date_format:Y-m-d|after:date_of_transfer',
+                'date_of_transfer' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
+                'date_of_receipt' => 'date|date_format:d-m-Y|after:date_of_transfer',
                 'products' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
@@ -46,10 +58,10 @@ class TransferController extends Controller
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : AAAA-MM-JJ.",
+                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : JJ-MM-AAAA.",
                 'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : AAAA-MM-JJ.",
+                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : JJ-MM-AAAA.",
                 'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",
@@ -60,9 +72,14 @@ class TransferController extends Controller
         );
 
         try {
-            $transfers = Transfer::all();
+            $lastTransfer = Transfer::latest()->first();
+
             $transfer = new Transfer();
-            $transfer->code = $this->formateNPosition('TF', sizeof($transfers) + 1, 8);
+            if ($lastTransfer) {
+                $transfer->code = $this->formateNPosition('TF', $lastTransfer->id + 1, 8);
+            } else {
+                $transfer->code = $this->formateNPosition('TF', 1, 8);
+            }
             $transfer->transfer_reason = $request->transfer_reason;
             $transfer->date_of_transfer = $request->date_of_transfer;
             $transfer->date_of_receipt = $request->date_of_receipt;
@@ -112,7 +129,7 @@ class TransferController extends Controller
     public function edit($id)
     {
         $transfer = Transfer::with('productsTransfersLines')->findOrFail($id);
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
 
         return new JsonResponse([
@@ -124,15 +141,15 @@ class TransferController extends Controller
     public function update(Request $request, $id)
     {
         $transfer = Transfer::findOrFail($id);
-        $currentDate = date('Y-m-d', strtotime(now()));
+        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_format:Y-m-d|date_equals:' . $currentDate,
-                'date_of_receipt' => 'date|date_format:Y-m-d|after:date_of_transfer',
+                'date_of_transfer' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
+                'date_of_receipt' => 'date|date_format:d-m-Y|after:date_of_transfer',
                 'products' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
@@ -143,10 +160,10 @@ class TransferController extends Controller
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : AAAA-MM-JJ.",
+                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : JJ-MM-AAAA.",
                 'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : AAAA-MM-JJ.",
+                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : JJ-MM-AAAA.",
                 'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",

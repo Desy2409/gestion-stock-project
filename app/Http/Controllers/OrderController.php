@@ -2,24 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\Order;
+use App\Models\OrderRegister;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\SalePoint;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    use UtilityTrait;
+
     public function index()
     {
         $orders = Order::with('client')->with('salePoint')->with('productOrders')->orderBy('order_date')->get();
         $clients = Client::with('person')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
+
+        $lastOrderRegister = OrderRegister::latest()->first();
+
+        $orderRegister = new OrderRegister();
+        if ($lastOrderRegister) {
+            $orderRegister->code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
+        } else {
+            $orderRegister->code = $this->formateNPosition('BC', 1, 8);
+        }
+        $orderRegister->save();
 
         return new JsonResponse([
-            'datas' => ['orders' => $orders, 'clients' => $clients, 'products' => $products]
+            'datas' => ['orders' => $orders, 'clients' => $clients, 'products' => $products,'salePoints'=>$salePoints]
         ], 200);
     }
 
@@ -31,13 +47,14 @@ class OrderController extends Controller
                 'sale_point'=>'required',
                 'client' => 'required',
                 'reference' => 'required|unique:orders',
-                'order_date' => 'required|date|date_format:Y-m-d',
-                'delivery_date' => 'required|date|date_format:Y-m-d|after:order_date',
+                'order_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
@@ -46,10 +63,11 @@ class OrderController extends Controller
                 'reference.unique' => "Cette commande existe déjà.",
                 'order_date.required' => "La date de la commande est obligatoire.",
                 'order_date.date' => "La date de la commande est incorrecte.",
-                'order_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'order_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'order_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : AAAA-MM-JJ.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -58,11 +76,19 @@ class OrderController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
         try {
+            $lastOrder = Order::latest()->first();
+
             $order = new Order();
+            if ($lastOrder) {
+                $order->code = $this->formateNPosition('BC', $lastOrder->id + 1, 8);
+            } else {
+                $order->code = $this->formateNPosition('BC', 1, 8);
+            }
             $order->reference = $request->reference;
             $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
@@ -78,6 +104,7 @@ class OrderController extends Controller
                 $productOrder->unit_price = $request->unit_prices[$key];
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
+                $productOrder->unity_id = $request->unities[$key];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
@@ -117,7 +144,7 @@ class OrderController extends Controller
     {
         $order = Order::with('client')->with('salePoint')->with('productOrders')->findOrFail($id);
         $clients = Client::with('person')->get();
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $productsOrders = $order ? $order->productsOrders : null;
 
         return new JsonResponse([
@@ -135,22 +162,27 @@ class OrderController extends Controller
                 'sale_point'=>'required',
                 'client' => 'required',
                 'reference' => 'required',
-                'order_date' => 'required|date',
-                'delivery_date' => 'required|date',
+                'order_date' => 'required|date|date_format:d-m-Y|before:today',
+                'delivery_date' => 'required|date|date_format:d-m-Y|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
+                'unities' => 'required',
             ],
             [
                 'sale_point.required'=>"Le choix du point de vente est obligatoire.",
                 'client.required' => "Le choix du client est obligatoire.",
                 'reference.required' => "La référence de la commande est obligatoire.",
                 'order_date.required' => "La date de la commande est obligatoire.",
-                'order_date.date' => "Format de date incorrect.",
+                'order_date.date' => "La date de la commande est incorrecte.",
+                'order_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'order_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "Format de date incorrect.",
+                'delivery_date.date' => "La date de livraison est incorrecte.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
@@ -158,11 +190,11 @@ class OrderController extends Controller
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
         try {
-            // $order = new Order();
             $order->reference = $request->reference;
             $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
@@ -180,7 +212,7 @@ class OrderController extends Controller
                 $productOrder->unit_price = $request->unit_prices[$key];
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
-                // $productOrder->client_id = $request->client;
+                $productOrder->unity_id = $request->unities[$key];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);

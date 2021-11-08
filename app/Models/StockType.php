@@ -13,9 +13,8 @@ class StockType extends Model
         'description'
     ];
 
-    public function products()
+    public function goodToRemoves()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(GoodToRemove::class);
     }
-    
 }

@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::with('subCategory')->with('unity')->with('stockType')->orderBy('wording')->get();
+        $products = Product::with('subCategory')->orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
         $stockTypes = StockType::orderBy('wording')->get();
@@ -32,23 +32,18 @@ class ProductController extends Controller
     {
         $request->validate(
             [
-                'unity' => 'required',
                 'sub_category' => 'required',
                 'reference' => 'required|unique:products',
                 'wording' => 'required|unique:products',
                 'description' => 'max:255',
-                'price' => 'required|min:0',
             ],
             [
-                'unity.required' => "L'unité est obligatoire.",
                 'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
                 'reference.required' => "Le libellé du produit est obligatoire.",
                 'reference.unique' => "Cette référence a déjà été attribuée.",
                 'wording.required' => "La référence est obligatoire.",
                 'wording.unique' => "Ce produit existe déjà.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'price.required' => "Le prix du produit est obligatoire.",
-                'price.min' => "Le prix du produit ne peut être inférieur à 0.",
             ]
         );
 
@@ -58,11 +53,8 @@ class ProductController extends Controller
             $product->code = $this->formateNPosition('', sizeof($products) + 1, 8);
             $product->reference = $request->reference;
             $product->wording = $request->wording;
-            $product->price = $request->price;
             $product->description = $request->description;
-            $product->unity_id = $request->unity;
             $product->sub_category_id = $request->sub_category;
-            $product->stock_type_id = $request->stock_type;
             $product->save();
 
             $success = true;
@@ -84,43 +76,34 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
+        $product = Product::with('subCategory')->findOrFail($id);
         return new JsonResponse(['product' => $product], 200);
     }
 
     public function edit($id)
     {
-        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
-        $unities = Unity::orderBy('wording')->get();
+        $product = Product::with('subCategory')->findOrFail($id);
         $subCategories = SubCategory::orderBy('wording')->get();
-        $stockTypes = StockType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['product' => $product, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
+            'datas' => ['product' => $product, 'subCategories' => $subCategories]
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
-        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
+        $product = Product::with('subCategory')->findOrFail($id);
         $request->validate(
             [
-                'unity' => 'required',
                 'sub_category' => 'required',
                 'reference' => 'required',
                 'wording' => 'required',
                 'description' => 'max:255',
-                'price' => 'required|min:0',
             ],
             [
-                'unity.required' => "L'unité est obligatoire.",
                 'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
                 'reference.required' => "Le libellé du produit est obligatoire.",
-                // 'reference.unique' => "Cette référence a déjà été attribuée.",
                 'wording.required' => "La référence est obligatoire.",
-                // 'wording.unique' => "Ce produit existe déjà.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'price.required' => "Le prix du produit est obligatoire.",
-                'price.min' => "Le prix du produit ne peut être inférieur à 0.",
             ]
         );
 
@@ -147,11 +130,8 @@ class ProductController extends Controller
         try {
             $product->reference = $request->reference;
             $product->wording = $request->wording;
-            $product->price = $request->price;
             $product->description = $request->description;
-            $product->unity_id = $request->unity;
             $product->sub_category_id = $request->sub_category;
-            $product->stock_type_id = $request->stock_type;
             $product->save();
 
             $success = true;
@@ -174,7 +154,7 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::with('subCategory')->with('unity')->with('stockType')->findOrFail($id);
+        $product = Product::with('subCategory')->findOrFail($id);
         try {
             $product->delete();
 
