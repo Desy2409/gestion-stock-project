@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\Folder;
 use App\Models\Product;
 use App\Models\ProductPurchaseOrder;
 use App\Models\Provider;
@@ -10,9 +11,11 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderRegister;
 use App\Models\SalePoint;
 use App\Models\Unity;
+use App\Models\UploadFile;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 
 class PurchaseOrderController extends Controller
@@ -41,7 +44,7 @@ class PurchaseOrderController extends Controller
             'datas' => ['purchaseOrders' => $purchaseOrders, 'providers' => $providers, 'products' => $products, 'unities' => $unities, 'salePoints' => $salePoints]
         ], 200);
     }
-        
+
     public function showNextCode()
     {
         $lastPurchaseOrderRegister = PurchaseOrderRegister::latest()->first();
@@ -57,6 +60,7 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
+                // 'folder' => 'required',
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
@@ -68,8 +72,10 @@ class PurchaseOrderController extends Controller
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
+                // 'upload_files' => 'required',
             ],
             [
+                // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
@@ -89,6 +95,7 @@ class PurchaseOrderController extends Controller
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 
@@ -122,6 +129,20 @@ class PurchaseOrderController extends Controller
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
             }
+
+            // $folder = Folder::findOrFail($request->folder);
+
+            // foreach ($request->upload_files as $key => $file) {
+            //     $fileName = $currentFileType->wording . ' - ' . $postulant->last_name . ' ' . $postulant->first_name . '.' . $file->getClientOriginalExtension();
+            //         $path = $file->storeAs($folder->path.'/' . $postulant->last_name . ' ' . $postulant->first_name, $fileName, 'public');
+            //     $uploadFile = new UploadFile();
+            //     $uploadFile->code = Str::random(10);
+            //     $uploadFile->name = $path;
+            //     $uploadFile->personalized_name = $request->personalized_name;
+            //     $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
+            //     $uploadFile->folder_id = $folder->id;
+            //     $uploadFile->save();
+            // }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
@@ -172,6 +193,7 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
+                // 'folder' => 'required',
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
@@ -183,8 +205,10 @@ class PurchaseOrderController extends Controller
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
+                // 'upload_files' => 'required',
             ],
             [
+                // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
@@ -204,6 +228,7 @@ class PurchaseOrderController extends Controller
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 

@@ -18,16 +18,16 @@ class ProviderController extends Controller
 
     public function index()
     {
-        $providers = Provider::with(['person.addresses'])->get();
+        $providers = Provider::with(['person.addresses'])->with('providerType')->get();
         $providerTypes = ProviderType::orderBy('wording')->get();
  
         $lastProviderRegister = ProviderRegister::latest()->first();
 
         $providerRegister = new ProviderRegister();
         if ($lastProviderRegister) {
-            $providerRegister->code = $this->formateNPosition('CL', $lastProviderRegister->id + 1, 8);
+            $providerRegister->code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
         } else {
-            $providerRegister->code = $this->formateNPosition('CL', 1, 8);
+            $providerRegister->code = $this->formateNPosition('FS', 1, 8);
         }
         $providerRegister->save();
         
