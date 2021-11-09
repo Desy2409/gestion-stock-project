@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\SubCategory;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,8 +20,8 @@ class CategoryController extends Controller
 
     public function subCategoriesOfCategory($id)
     {
-        $category = Category::with('subCategories')->findOrFail($id);
-        return new JsonResponse(['category' => $category]);
+        $subCategories = SubCategory::where('category_id',$id);
+        return new JsonResponse(['subCategories' => $subCategories]);
     }
 
     // Enregistrement d'une nouvelle catégorie
