@@ -23,8 +23,8 @@ class AddColumnsToUsersTable extends Migration
             $table->longText('roles')->nullable();
             $table->boolean('is_retired')->default(false);
             $table->boolean('is_dead')->default(false);
-            $table->foreignId('employee_function_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('type_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('employee_function_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('type_id')->nullable()->constrained()->cascadeOnDelete();
         });
     }
 

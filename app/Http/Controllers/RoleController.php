@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Operation;
 use App\Models\PageOperation;
 use App\Models\Role;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -86,6 +87,16 @@ class RoleController extends Controller
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
+
+        $existingRoles = Role::where('wording', $request->wording)->get();
+        if (!empty($existingRoles) && sizeof($existingRoles) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingRole' => $existingRoles[0],
+                'message' => "Le rôle " . $existingRoles[0]->wording . " existe déjà"
+            ], 200);
+        }
 
         try {
             $role->wording = $request->wording;

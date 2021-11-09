@@ -9,6 +9,7 @@ use App\Models\OrderRegister;
 use App\Models\Product;
 use App\Models\ProductOrder;
 use App\Models\SalePoint;
+use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class OrderController extends Controller
         $clients = Client::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
+        $unities = Unity::orderBy('wording')->get();
 
         $lastOrderRegister = OrderRegister::latest()->first();
 
@@ -35,7 +37,7 @@ class OrderController extends Controller
         $orderRegister->save();
 
         return new JsonResponse([
-            'datas' => ['orders' => $orders, 'clients' => $clients, 'products' => $products,'salePoints'=>$salePoints]
+            'datas' => ['orders' => $orders, 'clients' => $clients, 'products' => $products, 'salePoints' => $salePoints, 'unities' => $unities]
         ], 200);
     }
 
@@ -54,7 +56,7 @@ class OrderController extends Controller
         $this->validate(
             $request,
             [
-                'sale_point'=>'required',
+                'sale_point' => 'required',
                 'client' => 'required',
                 'reference' => 'required|unique:orders',
                 'order_date' => 'required|date|date_format:d-m-Y|before:today',
@@ -67,7 +69,7 @@ class OrderController extends Controller
                 'unities' => 'required',
             ],
             [
-                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'client.required' => "Le choix du client est obligatoire.",
                 'reference.required' => "La référence de la commande est obligatoire.",
                 'reference.unique' => "Cette commande existe déjà.",
@@ -169,7 +171,7 @@ class OrderController extends Controller
         $this->validate(
             $request,
             [
-                'sale_point'=>'required',
+                'sale_point' => 'required',
                 'client' => 'required',
                 'reference' => 'required',
                 'order_date' => 'required|date|date_format:d-m-Y|before:today',
@@ -182,7 +184,7 @@ class OrderController extends Controller
                 'unities' => 'required',
             ],
             [
-                'sale_point.required'=>"Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'client.required' => "Le choix du client est obligatoire.",
                 'reference.required' => "La référence de la commande est obligatoire.",
                 'order_date.required' => "La date de la commande est obligatoire.",
