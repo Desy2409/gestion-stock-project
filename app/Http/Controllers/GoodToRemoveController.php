@@ -39,9 +39,9 @@ class GoodToRemoveController extends Controller
 
         $goodToRemoveRegister = new GoodToRemoveRegister();
         if ($lastGoodToRemoveRegister) {
-            $goodToRemoveRegister->code = $this->formateNPosition('CL', $lastGoodToRemoveRegister->id + 1, 8);
+            $goodToRemoveRegister->code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
         } else {
-            $goodToRemoveRegister->code = $this->formateNPosition('CL', 1, 8);
+            $goodToRemoveRegister->code = $this->formateNPosition('BE', 1, 8);
         }
         $goodToRemoveRegister->save();
 
@@ -58,7 +58,7 @@ class GoodToRemoveController extends Controller
     public function showNextCode()
     {
         $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
-        $code = $this->formateNPosition('CL', $lastGoodToRemoveRegister->id + 1, 8);
+        $code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
 
         return new JsonResponse([
             'code' => $code
