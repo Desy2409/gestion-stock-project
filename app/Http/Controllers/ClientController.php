@@ -17,11 +17,11 @@ class ClientController extends Controller
 
     public function index()
     {
-        $corporations = Client::with(['person.addresses'])->whereHas('person', function ($q) {
+        $corporations = Client::with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne morale');
         })->get();
 
-        $personPhysic = Client::with(['person.addresses'])->whereHas('person', function ($q) {
+        $personPhysic = Client::with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne physique');
         })->get();
 
