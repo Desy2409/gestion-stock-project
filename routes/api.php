@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientDeliveryNoteController;
 use App\Http\Controllers\CompartmentController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\EmployeeFunctionController;
 use App\Http\Controllers\ExtensionController;
 use App\Http\Controllers\FileTypeController;
 use App\Http\Controllers\FolderController;
@@ -17,7 +18,9 @@ use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\JuridicPersonalityController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageOperationController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\PurchaseCouponController;
 use App\Http\Controllers\SaleController;
@@ -29,6 +32,7 @@ use App\Http\Controllers\TournController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferDemandController;
 use App\Http\Controllers\TruckController;
+use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -275,6 +279,36 @@ Route::post('/folder', [FolderController::class, 'store']);
 Route::get('/folder/{id}/show', [FolderController::class, 'show']);
 Route::patch('/folder/{id}/update', [FolderController::class, 'update']);
 Route::delete('/folder/{id}/destroy', [FolderController::class, 'destroy']);
+
+// Operation routes
+Route::get('/operation', [OperationController::class, 'index']);
+Route::post('/operation', [OperationController::class, 'store']);
+Route::get('/operation/{id}/show', [OperationController::class, 'show']);
+Route::get('/operation/{id}/roles', [OperationController::class, 'rolesOfOperation']);
+Route::patch('/operation/{id}/update', [OperationController::class, 'update']);
+Route::delete('/operation/{id}/destroy', [OperationController::class, 'destroy']);
+
+// Page operation routes
+Route::get('/page-operation', [PageOperationController::class, 'index']);
+Route::post('/page-operation', [PageOperationController::class, 'store']);
+Route::get('/page-operation/{id}/show', [PageOperationController::class, 'show']);
+Route::get('/page-operation/{id}/roles', [PageOperationController::class, 'rolesOfPageOperation']);
+Route::patch('/page-operation/{id}/update', [PageOperationController::class, 'update']);
+Route::delete('/page-operation/{id}/destroy', [PageOperationController::class, 'destroy']);
+
+// Type routes
+Route::get('/type', [TypeController::class, 'index']);
+Route::post('/type', [TypeController::class, 'store']);
+Route::get('/type/{id}/show', [TypeController::class, 'show']);
+Route::patch('/type/{id}/update', [TypeController::class, 'update']);
+Route::delete('/type/{id}/destroy', [TypeController::class, 'destroy']);
+
+// Employee function routes
+Route::get('/employee-function', [EmployeeFunctionController::class, 'index']);
+Route::post('/employee-function', [EmployeeFunctionController::class, 'store']);
+Route::get('/employee-function/{id}/show', [EmployeeFunctionController::class, 'show']);
+Route::patch('/employee-function/{id}/update', [EmployeeFunctionController::class, 'update']);
+Route::delete('/employee-function/{id}/destroy', [EmployeeFunctionController::class, 'destroy']);
 
 
 

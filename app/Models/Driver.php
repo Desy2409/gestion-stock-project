@@ -12,10 +12,10 @@ class Driver extends Model
         'description'
     ];
 
-    // public function emailChannelParams()
-    // {
-    //     return $this->hasMany(EmailChannelParams::class);
-    // }
+    public function emailChannelParams()
+    {
+        return $this->hasMany(EmailChannelParam::class);
+    }
 
     public function hosts()
     {

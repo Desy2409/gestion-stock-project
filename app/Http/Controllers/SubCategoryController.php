@@ -88,6 +88,16 @@ class SubCategoryController extends Controller
             ]
         );
 
+        $existingSubCategories = SubCategory::where('wording', $request->wording)->get();
+        if (!empty($existingSubCategories) && sizeof($existingSubCategories) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingSubCategory' => $existingSubCategories[0],
+                'message' => "La sous-catégorie " . $existingSubCategories[0]->wording . " existe déjà"
+            ], 200);
+        }
+
         try {
             $subCategory->reference = $request->reference;
             $subCategory->wording = $request->wording;

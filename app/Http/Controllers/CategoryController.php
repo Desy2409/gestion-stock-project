@@ -91,6 +91,16 @@ class CategoryController extends Controller
             ]
         );
 
+        $existingCategories = Category::where('wording', $request->wording)->get();
+        if (!empty($existingCategories) && sizeof($existingCategories) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingCategory' => $existingCategories[0],
+                'message' => "La catégorie " . $existingCategories[0]->wording . " existe déjà"
+            ], 200);
+        }
+
         try {
             $category->reference = $request->reference;
             $category->wording = $request->wording;

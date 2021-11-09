@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Operation;
+use App\Models\Role;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,12 @@ class OperationController extends Controller
         return new JsonResponse([
             'datas' => ['operations' => $operations]
         ], 200);
+    }
+    
+    public function rolesOfOperation($id)
+    {
+        $roles = Role::where('operation_id', $id)->get();
+        return new JsonResponse(['roles' => $roles]);
     }
 
     public function store(Request $request)
