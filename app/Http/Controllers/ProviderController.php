@@ -18,7 +18,7 @@ class ProviderController extends Controller
 
     public function index()
     {
-        $providers = Provider::with(['person.addresses'])->with('providerType')->get();
+        $providers = Provider::with(['person.address'])->with('providerType')->get();
         $providerTypes = ProviderType::orderBy('wording')->get();
  
         $lastProviderRegister = ProviderRegister::latest()->first();
