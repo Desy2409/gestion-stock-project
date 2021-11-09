@@ -6,6 +6,7 @@ use App\Http\Traits\UtilityTrait;
 use App\Models\Address;
 use App\Models\Provider;
 use App\Models\Person;
+use App\Models\ProviderRegister;
 use App\Models\ProviderType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -19,8 +20,29 @@ class ProviderController extends Controller
     {
         $providers = Provider::with(['person.addresses'])->get();
         $providerTypes = ProviderType::orderBy('wording')->get();
+ 
+        $lastProviderRegister = ProviderRegister::latest()->first();
+
+        $providerRegister = new ProviderRegister();
+        if ($lastProviderRegister) {
+            $providerRegister->code = $this->formateNPosition('CL', $lastProviderRegister->id + 1, 8);
+        } else {
+            $providerRegister->code = $this->formateNPosition('CL', 1, 8);
+        }
+        $providerRegister->save();
+        
         return new JsonResponse([
             'datas' => ['providers' => $providers, 'providerTypes' => $providerTypes]
+        ], 200);
+    }
+
+    public function showNextCode()
+    {
+        $lastProviderRegister = ProviderRegister::latest()->first();
+        $code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
         ], 200);
     }
 
@@ -60,9 +82,14 @@ class ProviderController extends Controller
         }
 
         try {
-            $providers = Provider::all();
+            $lastProvider = Provider::latest()->first();
+
             $provider = new Provider();
-            $provider->code = $this->formateNPosition('FS', sizeof($providers) + 1, 8);
+            if ($lastProvider) {
+                $provider->code = $this->formateNPosition('FS', $lastProvider->id + 1, 8);
+            } else {
+                $provider->code = $this->formateNPosition('FS', 1, 8);
+            }
             $provider->reference = $request->reference;
             $provider->settings = $request->settings;
             $provider->provider_type_id = $request->provider_type;

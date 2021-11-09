@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Models\Address;
+use App\Models\ClientRegister;
 use Illuminate\Http\JsonResponse;
 
 class ClientController extends Controller
@@ -23,8 +24,29 @@ class ClientController extends Controller
         $personPhysic = Client::with(['person.addresses'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne physique');
         })->get();
+
+        $lastClientRegister = ClientRegister::latest()->first();
+
+        $clientRegister = new ClientRegister();
+        if ($lastClientRegister) {
+            $clientRegister->code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
+        } else {
+            $clientRegister->code = $this->formateNPosition('CL', 1, 8);
+        }
+        $clientRegister->save();
+
         return new JsonResponse([
             'datas' => ['corporations' => $corporations, 'personPhysic' => $personPhysic]
+        ], 200);
+    }
+
+    public function showNextCode()
+    {
+        $lastClientRegister = ClientRegister::latest()->first();
+        $code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
         ], 200);
     }
 
@@ -55,7 +77,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ/MM/AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
@@ -82,7 +104,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ/MM/AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
@@ -109,7 +131,13 @@ class ClientController extends Controller
 
         try {
             $lastClient = Client::latest()->first();
+
             $client = new Client();
+            if ($lastClient) {
+                $client->code = $this->formateNPosition('BC', $lastClient->id + 1, 8);
+            } else {
+                $client->code = $this->formateNPosition('BC', 1, 8);
+            }
             $client->code = $this->formateNPosition('CL', $lastClient->id + 1, 8);
             $client->reference = $request->reference;
             $client->settings = $request->settings;
@@ -198,7 +226,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ/MM/AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );
@@ -225,7 +253,7 @@ class ClientController extends Controller
                     'exemption_reference.required' => "La référence d'exonération est obligatoire.",
                     'limit_date_exemption.required' => "La date limite d'exonération est obligatoire.",
                     'limit_date_exemption.date' => "La date limite d'exonération est incorrecte.",
-                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ-MM-AAAA.",
+                    'limit_date_exemption.date_format' => "La date limite d'exonération doit être sous le format : JJ/MM/AAAA.",
                     'limit_date_exemption.after' => "La date limite d'exonération est déjà dépassée.",
                 ],
             );

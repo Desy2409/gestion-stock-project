@@ -39,6 +39,15 @@ class TransferDemandController extends Controller
         ], 200);
     }
 
+    public function showNextCode()
+    {
+        $lastTransferDemandRegister = TransferDemandRegister::latest()->first();
+        $code = $this->formateNPosition('VT', $lastTransferDemandRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
+        ], 200);
+    }
     public function store(Request $request)
     {
         $currentDate = date('d-m-Y', strtotime(now()));
@@ -61,11 +70,11 @@ class TransferDemandController extends Controller
                 'request_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_demand.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_demand.date' => "La date de la demande de transfert est invalide.",
-                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : JJ-MM-AAAA.",
+                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : JJ/MM/AAAA.",
                 'date_of_demand.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'delivery_deadline.required' => "La date limite de livraison est obligatoire.",
                 'delivery_deadline.date' => "La date limite de livraison est invalide.",
-                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_deadline.after' => "La date limite de livraison ne peut être antérieur à la date de demande de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",
@@ -166,11 +175,11 @@ class TransferDemandController extends Controller
                 'request_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_demand.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_demand.date' => "La date de la demande de transfert est invalide.",
-                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : JJ-MM-AAAA.",
+                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : JJ/MM/AAAA.",
                 'date_of_demand.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'delivery_deadline.required' => "La date limite de livraison est obligatoire.",
                 'delivery_deadline.date' => "La date limite de livraison est invalide.",
-                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_deadline.after' => "La date limite de livraison ne peut être antérieur à la date de demande de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",
