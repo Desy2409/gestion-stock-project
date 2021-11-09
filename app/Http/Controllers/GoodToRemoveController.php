@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\GoodToRemove;
+use App\Models\GoodToRemoveRegister;
 use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\SalePoint;
@@ -33,6 +34,17 @@ class GoodToRemoveController extends Controller
         $salePoints = SalePoint::orderBy('social_reason')->get();
         $stockTypes = StockType::orderBy('wording')->get();
         $clients = Client::with('person.address')->get();
+
+        $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
+
+        $goodToRemoveRegister = new GoodToRemoveRegister();
+        if ($lastGoodToRemoveRegister) {
+            $goodToRemoveRegister->code = $this->formateNPosition('CL', $lastGoodToRemoveRegister->id + 1, 8);
+        } else {
+            $goodToRemoveRegister->code = $this->formateNPosition('CL', 1, 8);
+        }
+        $goodToRemoveRegister->save();
+
         return new JsonResponse([
             'datas' => [
                 'goodToRemoves' => $goodToRemoves, 'voucherTypes' => $this->voucherTypes,
@@ -40,6 +52,16 @@ class GoodToRemoveController extends Controller
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
                 'stockTypes' => $stockTypes, 'clients' => $clients
             ]
+        ], 200);
+    }
+    
+    public function showNextCode()
+    {
+        $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
+        $code = $this->formateNPosition('CL', $lastGoodToRemoveRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
         ], 200);
     }
 
@@ -80,9 +102,14 @@ class GoodToRemoveController extends Controller
         );
 
         try {
-            $goods = GoodToRemove::all();
+            $lastGoodToRemove = GoodToRemove::latest()->first();
+
             $goodToRemove = new GoodToRemove();
-            $goodToRemove->code =  $this->formateNPosition('BE', sizeof($goods) + 1, 8);
+            if ($lastGoodToRemove) {
+                $goodToRemove->code = $this->formateNPosition('BE', $lastGoodToRemove->id + 1, 8);
+            } else {
+                $goodToRemove->code = $this->formateNPosition('BE', 1, 8);
+            }            
             $goodToRemove->reference = $request->reference;
             $goodToRemove->voucher_date = $request->voucher_date;
             $goodToRemove->delivery_date_wished = $request->delivery_date_wished;

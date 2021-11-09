@@ -82,6 +82,7 @@ Route::get('/stock-type/{id}/show', [StockTypeController::class, 'show']);
 
 // Client routes
 Route::get('/client', [ClientController::class, 'index']);
+Route::get('/client-code', [ClientController::class, 'showNextCode']);
 Route::post('/client', [ClientController::class, 'store']);
 Route::get('/client/{id}/show', [ClientController::class, 'show']);
 Route::patch('/client/{id}/update', [ClientController::class, 'update']);
@@ -90,6 +91,7 @@ Route::get('/code', [ClientController::class, 'returnCode']);
 
 // Provider routes
 Route::get('/provider', [ProviderController::class, 'index']);
+Route::get('/provider-code', [ProviderController::class, 'showNextCode']);
 Route::post('/provider', [ProviderController::class, 'store']);
 Route::get('/provider/{id}/show', [ProviderController::class, 'show']);
 Route::get('/provider/{id}/update', [ProviderController::class, 'edit']);
@@ -106,6 +108,7 @@ Route::delete('/provider-type/{id}/destroy', [ProviderTypeController::class, 'de
 
 // Product routes
 Route::get('/product', [ProductController::class, 'index']);
+Route::get('/product-code', [ProductController::class, 'showNextCode']);
 Route::post('/product', [ProductController::class, 'store']);
 Route::get('/product/{id}/show', [ProductController::class, 'show']);
 Route::patch('/product/{id}/update', [ProductController::class, 'update']);
@@ -113,6 +116,7 @@ Route::delete('/product/{id}/destroy', [ProductController::class, 'destroy']);
 
 // Purchase order routes
 Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
+Route::get('/purchase-order-code', [PurchaseOrderController::class, 'showNextCode']);
 Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
 Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
 Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
@@ -120,6 +124,7 @@ Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, '
 
 // Purchase coupon routes
 Route::get('/purchase-coupon', [PurchaseCouponController::class, 'index']);
+Route::get('/purchase-coupon-code', [PurchaseCouponController::class, 'showNextCode']);
 Route::post('/purchase-coupon', [PurchaseCouponController::class, 'store']);
 Route::get('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'indexFromPurchaseOrder']);
 Route::post('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'storeFromPurchaseOrder']);
@@ -132,6 +137,7 @@ Route::delete('/purchase-coupon/{id}/destroy', [PurchaseCouponController::class,
 
 // Delivery note routes
 Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
+Route::get('/delivery-note-code', [DeliveryNoteController::class, 'showNextCode']);
 Route::post('/delivery-note', [DeliveryNoteController::class, 'store']);
 Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
 Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
@@ -139,6 +145,7 @@ Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'de
 
 // Order routes
 Route::get('/order', [OrderController::class, 'index']);
+Route::get('/order-code', [OrderController::class, 'showNextCode']);
 Route::post('/order', [OrderController::class, 'store']);
 Route::get('/order/{id}/show', [OrderController::class, 'show']);
 Route::patch('/order/{id}/update', [OrderController::class, 'update']);
@@ -146,6 +153,7 @@ Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
 
 // Sale routes
 Route::get('/sale', [SaleController::class, 'index']);
+Route::get('/sale-code', [SaleController::class, 'showNextCode']);
 Route::post('/sale', [SaleController::class, 'store']);
 Route::get('/sale-from-order', [SaleController::class, 'indexFromOrder']);
 Route::post('/sale-from-order', [SaleController::class, 'storeFromOrder']);
@@ -158,6 +166,7 @@ Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
 
 // Client delivery note routes
 Route::get('/client-delivery-note', [ClientDeliveryNoteController::class, 'index']);
+Route::get('/client-delivery-note-code', [ClientDeliveryNoteController::class, 'showNextCode']);
 Route::post('/client-delivery-note', [ClientDeliveryNoteController::class, 'store']);
 Route::get('/client-delivery-note/{id}/show', [ClientDeliveryNoteController::class, 'show']);
 Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
@@ -179,6 +188,7 @@ Route::delete('/sale-point/{id}/destroy', [SalePointController::class, 'destroy'
 
 // Transfer demand routes
 Route::get('/transfer-demand', [TransferDemandController::class, 'index']);
+Route::get('/transfer-demand-code', [TransferDemandController::class, 'showNextCode']);
 Route::post('/transfer-demand', [TransferDemandController::class, 'store']);
 Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
 Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
@@ -188,6 +198,7 @@ Route::patch('/transfer-demand/{id}/cancel', [TransferDemandController::class, '
 
 // Transfer routes
 Route::get('/transfer', [TransferController::class, 'index']);
+Route::get('/transfer-code', [TransferController::class, 'showNextCode']);
 Route::post('/transfer', [TransferController::class, 'store']);
 Route::get('/transfer/{id}/show', [TransferController::class, 'show']);
 Route::patch('/transfer/{id}/update', [TransferController::class, 'update']);
@@ -223,6 +234,7 @@ Route::delete('/tank-truck/{id}/destroy', [TankTruckController::class, 'destroy'
 
 // Tourn routes
 Route::get('/tourn', [TournController::class, 'index']);
+Route::get('/tourn-code', [TournController::class, 'showNextCode']);
 Route::post('/tourn', [TournController::class, 'store']);
 Route::get('/tourn/{id}/show', [TournController::class, 'show']);
 Route::patch('/tourn/{id}/update', [TournController::class, 'update']);
@@ -237,6 +249,7 @@ Route::delete('/destination/{id}/destroy', [DestinationController::class, 'destr
 
 // Good to remove routes
 Route::get('/good-to-remove', [GoodToRemoveController::class, 'index']);
+Route::get('/good-to-remove-code', [GoodToRemoveController::class, 'showNextCode']);
 Route::post('/good-to-remove', [GoodToRemoveController::class, 'store']);
 Route::get('/good-to-remove/{id}/show', [GoodToRemoveController::class, 'show']);
 Route::patch('/good-to-remove/{id}/update', [GoodToRemoveController::class, 'update']);

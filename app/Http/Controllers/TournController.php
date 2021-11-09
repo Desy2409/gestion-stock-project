@@ -18,8 +18,29 @@ class TournController extends Controller
     {
         $tourns = Tourn::orderBy('reference')->get();
         $goodToRemoves = GoodToRemove::orderBy('voucher_date')->orderBy('reference')->get();
+
+        $lastTournRegister = TournRegister::latest()->first();
+
+        $tournRegister = new TournRegister();
+        if ($lastTournRegister) {
+            $tournRegister->code = $this->formateNPosition('CL', $lastTournRegister->id + 1, 8);
+        } else {
+            $tournRegister->code = $this->formateNPosition('CL', 1, 8);
+        }
+        $tournRegister->save();
+
         return new JsonResponse([
             'datas' => ['tourns' => $tourns, 'goodToRemoves' => $goodToRemoves]
+        ], 200);
+    }
+
+    public function showNextCode()
+    {
+        $lastTournRegister = TournRegister::latest()->first();
+        $code = $this->formateNPosition('CL', $lastTournRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
         ], 200);
     }
 
@@ -41,15 +62,16 @@ class TournController extends Controller
 
         try {
             $lastTourn = Tourn::latest()->first();
-            // dd($lastTourn);
+
             $tourn = new Tourn();
-            $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+            if ($lastTourn) {
+                $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+            } else {
+                $tourn->code = $this->formateNPosition('TO', 1, 8);
+            }
             $tourn->reference = $request->reference;
             $tourn->good_to_remove_id = $request->good_to_remove;
             $tourn->save();
-
-            $tournRegister = new TournRegister();
-            $tournRegister->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
