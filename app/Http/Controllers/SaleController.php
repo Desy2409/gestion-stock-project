@@ -39,6 +39,16 @@ class SaleController extends Controller
         ], 200);
     }
 
+    public function showNextCode()
+    {
+        $lastSaleRegister = SaleRegister::latest()->first();
+        $code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
+        ], 200);
+    }
+
     public function indexFromOrder($id)
     {
         $orders = Order::with('client')->with('productOrders')->orderBy('sale_date')->get();
@@ -80,11 +90,11 @@ class SaleController extends Controller
                 'reference.unique' => "Cette vente existe déjà.",
                 'sale_date.required' => "La date du bon est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ/MM/AAAA.",
                 'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -165,11 +175,11 @@ class SaleController extends Controller
                 'reference.unique' => "Cette vente existe déjà.",
                 'sale_date.required' => "La date du bon est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ/MM/AAAA.",
                 'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -278,11 +288,11 @@ class SaleController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'sale_date.required' => "La date de la vente est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ/MM/AAAA.",
                 'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -374,11 +384,11 @@ class SaleController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'sale_date.required' => "La date du bon est obligatoire.",
                 'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ-MM-AAAA.",
+                'sale_date.date_format' => "La date de la vente doit être sous le format : JJ/MM/AAAA.",
                 'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",

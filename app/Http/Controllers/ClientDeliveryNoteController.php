@@ -37,6 +37,16 @@ class ClientDeliveryNoteController extends Controller
         ], 200);
     }
 
+    public function showNextCode()
+    {
+        $lastClientDeliveryNoteRegister = ClientDeliveryNoteRegister::latest()->first();
+        $code = $this->formateNPosition('BL', $lastClientDeliveryNoteRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
+        ], 200);
+    }
+
     public function showProductOfSale($id)
     {
         $idOfProducts = ProductSale::where('sale_id', $id)->pluck('product_id')->toArray();
@@ -67,11 +77,11 @@ class ClientDeliveryNoteController extends Controller
                 'reference.unique' => "Ce bon de livraison existe déjà.",
                 'delivery_note_date.required' => "La date du bon de livraison  est obligatoire.",
                 'delivery_note_date.date' => "La date du bon de livraison est incorrecte.",
-                'delivery_note_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_note_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_note_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -175,11 +185,11 @@ class ClientDeliveryNoteController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'delivery_note_date.required' => "La date du bon est obligatoire.",
                 'delivery_note_date.date' => "La date du bon de livraison est incorrecte.",
-                'delivery_note_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_note_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_note_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",

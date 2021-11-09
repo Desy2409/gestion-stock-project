@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Product;
+use App\Models\ProductRegister;
 use App\Models\StockType;
 use App\Models\SubCategory;
 use App\Models\Unity;
@@ -20,11 +21,32 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('subCategory')->orderBy('wording')->get();
-        $unities = Unity::orderBy('wording')->get();
+        // $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
-        $stockTypes = StockType::orderBy('wording')->get();
+        // $stockTypes = StockType::orderBy('wording')->get();
+
+        $lastProductRegister = ProductRegister::latest()->first();
+
+        $productRegister = new ProductRegister();
+        if ($lastProductRegister) {
+            $productRegister->code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+        } else {
+            $productRegister->code = $this->formateNPosition('', 1, 8);
+        }
+        $productRegister->save();
+
         return new JsonResponse([
-            'datas' => ['products' => $products, 'unities' => $unities, 'subCategories' => $subCategories, 'stockTypes' => $stockTypes]
+            'datas' => ['products' => $products, 'subCategories' => $subCategories]
+        ], 200);
+    }
+    
+    public function showNextCode()
+    {
+        $lastProductRegister = ProductRegister::latest()->first();
+        $code = $this->formateNPosition('CL', $lastProductRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
         ], 200);
     }
 
@@ -48,9 +70,14 @@ class ProductController extends Controller
         );
 
         try {
-            $products = Product::all();
+            $lastProduct = Product::latest()->first();
+
             $product = new Product();
-            $product->code = $this->formateNPosition('', sizeof($products) + 1, 8);
+            if ($lastProduct) {
+                $product->code = $this->formateNPosition('', $lastProduct->id + 1, 8);
+            } else {
+                $product->code = $this->formateNPosition('', 1, 8);
+            }
             $product->reference = $request->reference;
             $product->wording = $request->wording;
             $product->description = $request->description;

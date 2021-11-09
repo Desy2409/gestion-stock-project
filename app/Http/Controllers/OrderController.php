@@ -39,6 +39,16 @@ class OrderController extends Controller
         ], 200);
     }
 
+    public function showNextCode()
+    {
+        $lastOrderRegister = OrderRegister::latest()->first();
+        $code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
+
+        return new JsonResponse([
+            'code' => $code
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $this->validate(
@@ -63,11 +73,11 @@ class OrderController extends Controller
                 'reference.unique' => "Cette commande existe déjà.",
                 'order_date.required' => "La date de la commande est obligatoire.",
                 'order_date.date' => "La date de la commande est incorrecte.",
-                'order_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'order_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'order_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -177,11 +187,11 @@ class OrderController extends Controller
                 'reference.required' => "La référence de la commande est obligatoire.",
                 'order_date.required' => "La date de la commande est obligatoire.",
                 'order_date.date' => "La date de la commande est incorrecte.",
-                'order_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'order_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'order_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ-MM-AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",

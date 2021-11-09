@@ -7,7 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Folder extends Model
 {
-    protected $fillable=[
-        'name'
+    protected $fillable = [
+        'name',
+        'affiliation',
+        'path',
     ];
+
+    public function children()
+    {
+        return $this->belongsTo(Folder::class);
+    }
+
+    public function parent()
+    {
+        return $this->hasMany(Folder::class);
+    }
 }
