@@ -17,4 +17,9 @@ class Host extends Model
     {
         return $this->belongsTo(Driver::class);
     }
+
+    public function emailChannelParams()
+    {
+        return $this->hasMany(EmailChannelParams::class);
+    }
 }

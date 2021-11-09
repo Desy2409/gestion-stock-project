@@ -2,9 +2,149 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Driver;
+use App\Models\EmailChannelParam;
+use App\Models\Host;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class DriverController extends Controller
 {
-    //
+    public function index()
+    {
+        $drivers = Driver::with('hosts')->orderBy('wording')->get();
+        return new JsonResponse([
+            'datas' => ['drivers' => $drivers],
+        ], 200);
+    }
+
+    public function hostsOfDriver($id)
+    {
+        $hosts = Host::where('driver_id', $id)->get();
+        return new JsonResponse(['datas' => ['hosts' => $hosts]]);
+    }
+
+    public function emailChannelParamsOfDriver($id)
+    {
+        $emailChannelParamss = EmailChannelParam::where('driver_id', $id)->get();
+        return new JsonResponse(['datas' => ['emailChannelParamss' => $emailChannelParamss]]);
+    }
+
+    // Enregistrement d'une nouvelle donnée driver
+    public function store(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'wording' => 'required|unique:drivers|max:150',
+                'description' => 'max:255',
+            ],
+            [
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.unique' => "Ce driver existe déjà.",
+                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'description.max' => "La description ne doit pas dépasser 255 caractères."
+            ]
+        );
+
+        try {
+            $driver = new Driver();
+            $driver->code = Str::random(10);
+            $driver->wording = $request->wording;
+            $driver->description = $request->description;
+            $driver->save();
+
+            $success = true;
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'driver' => $driver,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'enregistrement.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+
+    // Mise à jour d'une donnée driver
+    public function update(Request $request, $id)
+    {
+
+        $driver = Driver::findOrFail($id);
+        $this->validate(
+            $request,
+            [
+                'wording' => 'required|max:150',
+                'description' => 'max:255',
+            ],
+            [
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'description.max' => "La description ne doit pas dépasser 255 caractères."
+            ]
+        );
+
+        $existingDrivers = Driver::where('wording', $request->wording)->get();
+        if (!empty($existingDrivers) && sizeof($existingDrivers) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingDriver' => $existingDrivers[0],
+                'message' => "Le driver " . $existingDrivers[0]->wording . " existe déjà"
+            ], 200);
+        }
+
+        try {
+            $driver->wording = $request->wording;
+            $driver->description = $request->description;
+            $driver->save();
+
+            $success = true;
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'driver' => $driver,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la modification.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+
+    // Suppression d'une donnée driver
+    public function destroy($id)
+    {
+        $driver = Driver::findOrFail($id);
+        try {
+            $driver->delete();
+            $success = true;
+            $message = "Suppression effectuée avec succès.";
+            return new JsonResponse([
+                'driver' => $driver,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
 }

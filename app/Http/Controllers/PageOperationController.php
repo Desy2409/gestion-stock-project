@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PageOperation;
+use App\Models\Role;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,12 @@ class PageOperationController extends Controller
         return new JsonResponse([
             'datas' => ['pageOperations' => $pageOperations]
         ], 200);
+    }
+    
+    public function rolesOfPageOperation($id)
+    {
+        $roles = Role::where('page_operation_id', $id)->get();
+        return new JsonResponse(['roles' => $roles]);
     }
 
     public function store(Request $request)
