@@ -20,7 +20,7 @@ class ProviderController extends Controller
     {
         $providers = Provider::with(['person.address'])->with('providerType')->get();
         $providerTypes = ProviderType::orderBy('wording')->get();
- 
+
         $lastProviderRegister = ProviderRegister::latest()->first();
 
         $providerRegister = new ProviderRegister();
@@ -30,7 +30,7 @@ class ProviderController extends Controller
             $providerRegister->code = $this->formateNPosition('FS', 1, 8);
         }
         $providerRegister->save();
-        
+
         return new JsonResponse([
             'datas' => ['providers' => $providers, 'providerTypes' => $providerTypes]
         ], 200);
@@ -149,7 +149,7 @@ class ProviderController extends Controller
         $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
         $address = $person ? $person->address : null;
 
-        dd($address);
+        // dd($address);
         $this->validate(
             $request,
             [
@@ -223,7 +223,7 @@ class ProviderController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
