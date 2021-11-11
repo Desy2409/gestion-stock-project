@@ -16,7 +16,7 @@ class CreateCorrespondenceChannelsTable extends Migration
         Schema::create('correspondence_channels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description')->nullable();
+            $table->string('description');
             $table->nullableMorphs('channelable');
             $table->timestamps();
         });

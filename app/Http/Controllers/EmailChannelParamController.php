@@ -44,7 +44,7 @@ class EmailChannelParamController extends Controller
                         [
                             'host' => 'required',
                             'port' => 'required|numeric|unique:email_channel_params',
-                            'username' => 'max:20|unique:email_channel_params',
+                            'username' => 'max:20',//|unique:email_channel_params',
                             'password' => 'min:8|confirmed',
                             'from_address' => 'required|email',
                             'from_name' => 'required',
@@ -55,7 +55,7 @@ class EmailChannelParamController extends Controller
                             'port.numeric' => "Le port doit être un nombre positif sans virgule.",
                             'port.unique' => "Ce port est déjà utilisé.",
                             'username.max' => "Le nom d'utilisateur ne doit pas dépasser 20 caractères.",
-                            'username.unique' => "Ce nom d'utilisateur existe déjà.",
+                            // 'username.unique' => "Ce nom d'utilisateur existe déjà.",
                             'from_address.required' => "L'adresse email de l'expéditeur est obligatoire.",
                             'from_address.email' => "L'adresse email de l'expéditeur est incorrecte.",
                             'from_name.required' => "Le nom à afficher est obligatoire.",
@@ -232,8 +232,9 @@ class EmailChannelParamController extends Controller
 
     public function update(Request $request, $id)
     {
-        $emailChannelParam = EmailChannelParam::findOrFail($id);
-        $correspondenceChannel = $emailChannelParam?$emailChannelParam->correspondenceChannel:null;
+        $emailChannelParam = EmailChannelParam::with('correspondenceChannel')->findOrFail($id);
+        // $correspondenceChannel = $emailChannelParam ? $emailChannelParam->correspondenceChannel : null;
+        $correspondenceChannel = CorrespondenceChannel::where(['channelable_id' => $id, 'channelable_type' => $emailChannelParam::class])->first();
         $this->validate(
             $request,
             [
@@ -255,7 +256,7 @@ class EmailChannelParamController extends Controller
                         [
                             'host' => 'required',
                             'port' => 'required|numeric',
-                            'username' => 'max:20|unique:email_channel_params',
+                            'username' => 'max:20',//|unique:email_channel_params',
                             'password' => 'min:8|confirmed',
                             'from_address' => 'required|email',
                             'from_name' => 'required',
@@ -265,7 +266,7 @@ class EmailChannelParamController extends Controller
                             'port.required' => "Le port est obligatoire.",
                             'port.numeric' => "Le port doit être un nombre positif sans virgule.",
                             'username.max' => "Le nom d'utilisateur ne doit pas dépasser 20 caractères.",
-                            'username.unique' => "Ce nom d'utilisateur existe déjà.",
+                            // 'username.unique' => "Ce nom d'utilisateur existe déjà.",
                             'from_address.required' => "L'adresse email de l'expéditeur est obligatoire.",
                             'from_address.email' => "L'adresse email de l'expéditeur est incorrecte.",
                             'from_name.required' => "Le nom à afficher est obligatoire.",
@@ -385,6 +386,16 @@ class EmailChannelParamController extends Controller
 
                     break;
             }
+        }
+
+        $existingEmailChannelParamsOnPort = EmailChannelParam::where('port', $request->port)->get();
+        if (!empty($existingEmailChannelParamsOnPort) && sizeof($existingEmailChannelParamsOnPort) >= 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingEmailChannelParam' => $existingEmailChannelParamsOnPort[0],
+                'message' => "Le port " . $existingEmailChannelParamsOnPort[0]->port . " est déjà utilisé"
+            ]);
         }
 
         try {

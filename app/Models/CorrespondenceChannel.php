@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CorrespondenceChannel extends Model
 {
-    protected $fillable=[
+    protected $fillable = [
         'name',
         'description'
     ];

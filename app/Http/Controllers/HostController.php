@@ -11,14 +11,13 @@ use Illuminate\Support\Str;
 
 class HostController extends Controller
 {
-    // public function index()
-    // {
-    //     $drivers = Driver::orderBy('wording')->get();
-    //     $hosts = Host::orderBy('provider')->get();
-    //     return new JsonResponse([
-    //         'datas' => ['drivers' => $drivers, 'hosts' => $hosts]
-    //     ], 200);
-    // }
+    public function index()
+    {
+        $hosts = Host::with('driver')->orderBy('provider')->get();
+        return new JsonResponse([
+            'datas' => ['hosts' => $hosts]
+        ], 200);
+    }
 
     public function store(Request $request)
     {
@@ -87,7 +86,7 @@ class HostController extends Controller
         );
 
         $existingHosts = Host::where('host_name', $request->host_name)->get();
-        if (!empty($existingHosts) && sizeof($existingHosts) > 1) {
+        if (!empty($existingHosts) && sizeof($existingHosts) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,

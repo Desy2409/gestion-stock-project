@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DropForeignkeysInProductsTable extends Migration
+class DropForeignKeysInProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,9 @@ class DropForeignkeysInProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['stock_type_id']);
+            $table->dropColumn('stock_type_id');
             $table->dropForeign(['unity_id']);
+            $table->dropColumn('unity_id');
         });
     }
 

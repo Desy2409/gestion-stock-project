@@ -25,6 +25,7 @@ class CreateEmailChannelParamsTable extends Migration
             $table->string('channel');
             $table->boolean('is_active')->default(false);
             $table->foreignId('driver_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('host_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
