@@ -15,14 +15,14 @@ class AddColumnsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('username')->nullable();
-            $table->string('matricule');
+            $table->string('matricule')->nullable();
             $table->string('last_name')->nullable();
             $table->string('first_name')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth')->nullable();
             $table->longText('roles')->nullable();
-            $table->boolean('is_retired')->default(false);
-            $table->boolean('is_dead')->default(false);
+            $table->boolean('is_retired')->default(false)->nullable();
+            $table->boolean('is_dead')->default(false)->nullable();
             $table->foreignId('employee_function_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('type_id')->nullable()->constrained()->cascadeOnDelete();
         });

@@ -39,11 +39,11 @@ class ProductController extends Controller
             'datas' => ['products' => $products, 'subCategories' => $subCategories]
         ], 200);
     }
-    
+
     public function showNextCode()
     {
         $lastProductRegister = ProductRegister::latest()->first();
-        $code = $this->formateNPosition('CL', $lastProductRegister->id + 1, 8);
+        $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
 
         return new JsonResponse([
             'code' => $code
@@ -92,6 +92,7 @@ class ProductController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
