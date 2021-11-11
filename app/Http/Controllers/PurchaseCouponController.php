@@ -45,7 +45,11 @@ class PurchaseCouponController extends Controller
     public function showNextCode()
     {
         $lastPurchaseCouponRegister = PurchaseCouponRegister::latest()->first();
-        $code = $this->formateNPosition('BA', $lastPurchaseCouponRegister->id + 1, 8);
+        if ($lastPurchaseCouponRegister) {
+            $code = $this->formateNPosition('BA', $lastPurchaseCouponRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('BA', 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code

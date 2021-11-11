@@ -23,9 +23,9 @@ class TournController extends Controller
 
         $tournRegister = new TournRegister();
         if ($lastTournRegister) {
-            $tournRegister->code = $this->formateNPosition('CL', $lastTournRegister->id + 1, 8);
+            $tournRegister->code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
         } else {
-            $tournRegister->code = $this->formateNPosition('CL', 1, 8);
+            $tournRegister->code = $this->formateNPosition('TO', 1, 8);
         }
         $tournRegister->save();
 
@@ -37,7 +37,11 @@ class TournController extends Controller
     public function showNextCode()
     {
         $lastTournRegister = TournRegister::latest()->first();
-        $code = $this->formateNPosition('CL', $lastTournRegister->id + 1, 8);
+        if ($lastTournRegister) {
+            $code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('TO', 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code

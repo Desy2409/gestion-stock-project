@@ -43,7 +43,11 @@ class ClientController extends Controller
     public function showNextCode()
     {
         $lastClientRegister = ClientRegister::latest()->first();
-        $code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
+        if ($lastClientRegister) {
+            $code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('CL', 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code
@@ -62,7 +66,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|after:yesterday',//|date_format:d-m-Y
+                    'limit_date_exemption' => 'required|date|after:yesterday', //|date_format:d-m-Y
                 ],
                 [
                     'last_name.required' => "Le nom est obligatoire.",
@@ -92,7 +96,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|after:yesterday',//|date_format:d-m-Y
+                    'limit_date_exemption' => 'required|date|after:yesterday', //|date_format:d-m-Y
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",
@@ -211,7 +215,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|after:yesterday'//|date_format:d-m-Y,
+                    'limit_date_exemption' => 'required|date|after:yesterday' //|date_format:d-m-Y,
                 ],
                 [
                     'last_name.required' => "Le nom est obligatoire.",
@@ -241,7 +245,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|after:yesterday',//|date_format:d-m-Y
+                    'limit_date_exemption' => 'required|date|after:yesterday', //|date_format:d-m-Y
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",

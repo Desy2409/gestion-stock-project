@@ -42,8 +42,12 @@ class TransferDemandController extends Controller
     public function showNextCode()
     {
         $lastTransferDemandRegister = TransferDemandRegister::latest()->first();
-        $code = $this->formateNPosition('VT', $lastTransferDemandRegister->id + 1, 8);
-
+        if ( $lastTransferDemandRegister) {
+            $code = $this->formateNPosition('DT', $lastTransferDemandRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('DT', 1, 8);
+        }
+        
         return new JsonResponse([
             'code' => $code
         ], 200);

@@ -37,11 +37,15 @@ class DeliveryNoteController extends Controller
         ], 200);
     }
 
-    
+
     public function showNextCode()
     {
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
-        $code = $this->formateNPosition('BL', $lastDeliveryNoteRegister->id + 1, 8);
+        if ($lastDeliveryNoteRegister) {
+            $code = $this->formateNPosition('BL', $lastDeliveryNoteRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('BL', 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code

@@ -48,7 +48,11 @@ class PurchaseOrderController extends Controller
     public function showNextCode()
     {
         $lastPurchaseOrderRegister = PurchaseOrderRegister::latest()->first();
-        $code = $this->formateNPosition('BC', $lastPurchaseOrderRegister->id + 1, 8);
+        if ($lastPurchaseOrderRegister) {
+            $code = $this->formateNPosition('BC', $lastPurchaseOrderRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('BC', 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code

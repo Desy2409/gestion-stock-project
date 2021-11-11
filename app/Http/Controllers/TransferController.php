@@ -40,7 +40,12 @@ class TransferController extends Controller
     public function showNextCode()
     {
         $lastTransferRegister = TransferRegister::latest()->first();
-        $code = $this->formateNPosition('VT', $lastTransferRegister->id + 1, 8);
+        if ($lastTransferRegister) {
+            $code = $this->formateNPosition('TF', $lastTransferRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('TF', 1, 8);
+        }
+        
 
         return new JsonResponse([
             'code' => $code
