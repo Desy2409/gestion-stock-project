@@ -75,7 +75,7 @@ class EmployeeFunctionController extends Controller
         );
         
         $existingEmployeeFunctions = EmployeeFunction::where('wording', $request->wording)->get();
-        if (!empty($existingEmployeeFunctions) && sizeof($existingEmployeeFunctions) > 1) {
+        if (!empty($existingEmployeeFunctions) && sizeof($existingEmployeeFunctions) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,

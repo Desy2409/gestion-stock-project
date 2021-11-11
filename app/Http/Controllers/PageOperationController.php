@@ -83,7 +83,7 @@ class PageOperationController extends Controller
         );
 
         $existingPageOperations = PageOperation::where('wording', $request->wording)->get();
-        if (!empty($existingPageOperations) && sizeof($existingPageOperations) > 1) {
+        if (!empty($existingPageOperations) && sizeof($existingPageOperations) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,

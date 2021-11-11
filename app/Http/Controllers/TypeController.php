@@ -77,7 +77,7 @@ class TypeController extends Controller
         );
 
         $existingTypes = Type::where('wording', $request->wording)->get();
-        if (!empty($existingTypes) && sizeof($existingTypes) > 1) {
+        if (!empty($existingTypes) && sizeof($existingTypes) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,

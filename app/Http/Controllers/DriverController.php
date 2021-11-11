@@ -93,7 +93,7 @@ class DriverController extends Controller
         );
 
         $existingDrivers = Driver::where('wording', $request->wording)->get();
-        if (!empty($existingDrivers) && sizeof($existingDrivers) > 1) {
+        if (!empty($existingDrivers) && sizeof($existingDrivers) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,

@@ -89,7 +89,7 @@ class RoleController extends Controller
         );
 
         $existingRoles = Role::where('wording', $request->wording)->get();
-        if (!empty($existingRoles) && sizeof($existingRoles) > 1) {
+        if (!empty($existingRoles) && sizeof($existingRoles) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,
