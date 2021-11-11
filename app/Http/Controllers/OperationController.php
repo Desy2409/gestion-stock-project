@@ -82,7 +82,7 @@ class OperationController extends Controller
         );
 
         $existingOperations = Operation::where('wording', $request->wording)->get();
-        if (!empty($existingOperations) && sizeof($existingOperations) > 1) {
+        if (!empty($existingOperations) && sizeof($existingOperations) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,
