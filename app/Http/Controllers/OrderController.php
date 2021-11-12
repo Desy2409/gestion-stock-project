@@ -44,7 +44,11 @@ class OrderController extends Controller
     public function showNextCode()
     {
         $lastOrderRegister = OrderRegister::latest()->first();
-        $code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
+        if ($lastOrderRegister) {
+            $code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('BC',  1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code

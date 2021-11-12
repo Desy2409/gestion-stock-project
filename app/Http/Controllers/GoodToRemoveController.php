@@ -58,8 +58,12 @@ class GoodToRemoveController extends Controller
     public function showNextCode()
     {
         $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
-        $code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
-
+        if ($lastGoodToRemoveRegister) {
+            $code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('BE', 1, 8);
+        }
+        
         return new JsonResponse([
             'code' => $code
         ], 200);

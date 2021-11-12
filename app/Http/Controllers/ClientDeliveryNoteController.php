@@ -40,7 +40,11 @@ class ClientDeliveryNoteController extends Controller
     public function showNextCode()
     {
         $lastClientDeliveryNoteRegister = ClientDeliveryNoteRegister::latest()->first();
-        $code = $this->formateNPosition('BL', $lastClientDeliveryNoteRegister->id + 1, 8);
+        if ($lastClientDeliveryNoteRegister) {
+            $code = $this->formateNPosition('BL', $lastClientDeliveryNoteRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('BL', 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code

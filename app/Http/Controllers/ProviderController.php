@@ -39,7 +39,12 @@ class ProviderController extends Controller
     public function showNextCode()
     {
         $lastProviderRegister = ProviderRegister::latest()->first();
-        $code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
+        if ($lastProviderRegister) {
+            $code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('FS', 1, 8);
+        }
+
 
         return new JsonResponse([
             'code' => $code
