@@ -43,7 +43,11 @@ class ProductController extends Controller
     public function showNextCode()
     {
         $lastProductRegister = ProductRegister::latest()->first();
-        $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+        if ($lastProductRegister) {
+            $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+        }
 
         return new JsonResponse([
             'code' => $code
