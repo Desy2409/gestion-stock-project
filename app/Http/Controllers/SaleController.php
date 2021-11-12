@@ -42,8 +42,9 @@ class SaleController extends Controller
     public function showNextCode()
     {
         $lastSaleRegister = SaleRegister::latest()->first();
+        // dd($lastSaleRegister);
         $code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
-
+        dd($code);
         return new JsonResponse([
             'code' => $code
         ], 200);
