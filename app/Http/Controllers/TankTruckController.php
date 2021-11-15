@@ -36,7 +36,7 @@ class TankTruckController extends Controller
             [
                 'truck' => 'required',
                 'tank' => 'required',
-                'validity_date' => 'required|date|date_format:d-m-Y|before:today',
+                'validity_date' => 'required|date|date_format:Ymd|before:today',
                 'gauging_certificate' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [
@@ -44,7 +44,7 @@ class TankTruckController extends Controller
                 'tank.required' => "Le choix d'une citerne est obligatoire.",
                 'validity_date.required' => "La date de validité est obligatoire.",
                 'validity_date.date' => "La date de validité saisie est incorrecte.",
-                'validity_date.date_format' => "La date de validité doit être au format : JJ/MM/AAAA.",
+                'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
                 'validity_date.before' => "La date de validité doit être antérieure ou égale à aujourd'hui.",
                 'gauging_certificate.required' => "Le certificat de jaugeage est obligatoire.",
                 'gauging_certificate.file' => "Le certificat de jaugeage doit être un fichier.",
@@ -86,7 +86,7 @@ class TankTruckController extends Controller
             [
                 'truck' => 'required',
                 'tank' => 'required',
-                'validity_date' => 'required|date|date_format:d-m-Y|before:today',
+                'validity_date' => 'required|date|date_format:Ymd|before:today',
                 'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [
@@ -94,7 +94,7 @@ class TankTruckController extends Controller
                 'tank.required' => "Le choix d'une citerne est obligatoire.",
                 'validity_date.required' => "La date de validité est obligatoire.",
                 'validity_date.date' => "La date de validité saisie est incorrecte.",
-                'validity_date.date_format' => "La date de validité doit être au format : JJ/MM/AAAA.",
+                'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
                 'validity_date.before' => "La date de validité doit être antérieure ou égale à aujourd'hui.",
                 'gauging_certificate.required' => "Le certificat de jaugeage est obligatoire.",
                 'gauging_certificate.file' => "Le certificat de jaugeage doit être un fichier.",

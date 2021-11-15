@@ -1,0 +1,631 @@
+[{
+        "code": "ROLE_DRIVER_READ",
+        "wording": "Consultation de la configuration des drivers",
+        "description": "Consultation de la configuration des drivers"
+    },
+    {
+        "code": "ROLE_DRIVER_CREATE",
+        "wording": "Création d'un nouveau driver",
+        "description": "Création d'un nouveau driver"
+    },
+    {
+        "code": "ROLE_DRIVER_UPDATE",
+        "wording": "Mise à jour d'un driver",
+        "description": "Mise à jour d'un driver"
+    },
+    {
+        "code": "ROLE_DRIVER_DELETE",
+        "wording": "Suppression d'un driver",
+        "description": "Suppression d'un driver"
+    },
+    {
+        "code": "ROLE_HOST_READ",
+        "wording": "Consultation de la configuration des hôtes",
+        "description": "Consultation de la configuration des hôtes"
+    },
+    {
+        "code": "ROLE_HOST_CREATE",
+        "wording": "Création d'un nouvel hôte",
+        "description": "Création d'un nouvel hôte"
+    },
+    {
+        "code": "ROLE_HOST_UPDATE",
+        "wording": "Mise à jour d'un hôte",
+        "description": "Mise à jour d'un hôte"
+    },
+    {
+        "code": "ROLE_HOST_DELETE",
+        "wording": "Suppression d'un hôte",
+        "description": "Suppression d'un hôte"
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_READ",
+        "wording": "Consultation de la configuration des envois de mail",
+        "description": "Consultation de la configuration des envois de mail"
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_CREATE",
+        "wording": "Création d'un nouvel envoi de mail",
+        "description": "Création d'un nouvel envoi de mail"
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_UPDATE",
+        "wording": "Mise à jour d'un envoi de mail",
+        "description": "Mise à jour d'un envoi de mail"
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_DELETE",
+        "wording": "Suppression d'un envoi de mail",
+        "description": "Suppression d'un envoi de mail"
+    },
+    {
+        "code": "ROLE_INSTITUTION_READ",
+        "wording": "Consultation des institutions",
+        "description": "Consultation des institutions"
+    },
+    {
+        "code": "ROLE_INSTITUTION_CREATE",
+        "wording": "Création d'une nouvelle institution ",
+        "description": "Création d'une nouvelle institution "
+    },
+    {
+        "code": "ROLE_INSTITUTION_UPDATE",
+        "wording": "Mise à jour d'une institution ",
+        "description": "Mise à jour d'une institution "
+    },
+    {
+        "code": "ROLE_INSTITUTION_DELETE",
+        "wording": "Suppression d'une institution ",
+        "description": "Suppression d'une institution "
+    },
+    {
+        "code": "ROLE_SALE_POINT_READ",
+        "wording": "Consultation des point de vente",
+        "description": "Consultation des point de vente"
+    },
+    {
+        "code": "ROLE_SALE_POINT_CREATE",
+        "wording": "Création d'un nouveau point de vente",
+        "description": "Création d'un nouveau point de vente"
+    },
+    {
+        "code": "ROLE_SALE_POINT_UPDATE",
+        "wording": "Mise à jour d'un point de vente",
+        "description": "Mise à jour d'un point de vente"
+    },
+    {
+        "code": "ROLE_SALE_POINT_DELETE",
+        "wording": "Suppression d'un point de vente",
+        "description": "Suppression d'un point de vente"
+    },
+    {
+        "code": "ROLE_CATEGORY_READ",
+        "wording": "Consultation des catégories",
+        "description": "Consultation des catégories"
+    },
+    {
+        "code": "ROLE_CATEGORY_CREATE",
+        "wording": "Création d'une nouvelle catégorie",
+        "description": "Création d'une nouvelle catégorie"
+    },
+    {
+        "code": "ROLE_CATEGORY_UPDATE",
+        "wording": "Mise à jour d'une catégorie",
+        "description": "Mise à jour d'une catégorie"
+    },
+    {
+        "code": "ROLE_CATEGORY_DELETE",
+        "wording": "Suppression d'une catégorie",
+        "description": "Suppression d'une catégorie"
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_READ",
+        "wording": "Consultation des sous-catégories",
+        "description": "Consultation des sous-catégories"
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_CREATE",
+        "wording": "Création d'une nouvelle sous-catégorie",
+        "description": "Création d'une nouvelle sous-catégorie"
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_UPDATE",
+        "wording": "Mise à jour d'une sous-catégorie",
+        "description": "Mise à jour d'une sous-catégorie"
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_DELETE",
+        "wording": "Suppression d'une sous-catégorie",
+        "description": "Suppression d'une sous-catégorie"
+    },
+    {
+        "code": "ROLE_PRODUCT_READ",
+        "wording": "Consultation des produits",
+        "description": "Consultation des produits"
+    },
+    {
+        "code": "ROLE_PRODUCT_CREATE",
+        "wording": "Création d'un nouveau produit",
+        "description": "Création d'un nouveau produit"
+    },
+    {
+        "code": "ROLE_PRODUCT_UPDATE",
+        "wording": "Mise à jour d'un produit",
+        "description": "Mise à jour d'un produit"
+    },
+    {
+        "code": "ROLE_PRODUCT_DELETE",
+        "wording": "Suppression d'un produit",
+        "description": "Suppression d'un produit"
+    },
+    {
+        "code": "ROLE_CLIENT_READ",
+        "wording": "Consultation des clients",
+        "description": "Consultation des clients"
+    },
+    {
+        "code": "ROLE_CLIENT_CREATE",
+        "wording": "Création d'un nouveau client",
+        "description": "Création d'un nouveau client"
+    },
+    {
+        "code": "ROLE_CLIENT_UPDATE",
+        "wording": "Mise à jour d'un client",
+        "description": "Mise à jour d'un client"
+    },
+    {
+        "code": "ROLE_CLIENT_DELETE",
+        "wording": "Suppression d'un client",
+        "description": "Suppression d'un client"
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_READ",
+        "wording": "Consultation des types de fournisseur",
+        "description": "Consultation des types de fournisseur"
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_CREATE",
+        "wording": "Création d'un nouveau type de fournisseur",
+        "description": "Création d'un nouveau type de fournisseur"
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_UPDATE",
+        "wording": "Mise à jour d'un type de fournisseur",
+        "description": "Mise à jour d'un type de fournisseur"
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_DELETE",
+        "wording": "Suppression d'un type de fournisseur",
+        "description": "Suppression d'un type de fournisseur"
+    },
+    {
+        "code": "ROLE_PROVIDER_READ",
+        "wording": "Consultation des fournisseurs",
+        "description": "Consultation des fournisseurs"
+    },
+    {
+        "code": "ROLE_PROVIDER_CREATE",
+        "wording": "Création d'un nouveau fournisseur",
+        "description": "Création d'un nouveau fournisseur"
+    },
+    {
+        "code": "ROLE_PROVIDER_UPDATE",
+        "wording": "Mise à jour d'un fournisseur",
+        "description": "Mise à jour d'un fournisseur"
+    },
+    {
+        "code": "ROLE_PROVIDER_DELETE",
+        "wording": "Suppression d'un fournisseur",
+        "description": "Suppression d'un fournisseur"
+    },
+    {
+        "code": "ROLE_UNITY_READ",
+        "wording": "Consultation des unités",
+        "description": "Consultation des unités"
+    },
+    {
+        "code": "ROLE_UNITY_CREATE",
+        "wording": "Création d'une nouvelle unité",
+        "description": "Création d'une nouvelle unité"
+    },
+    {
+        "code": "ROLE_UNITY_UPDATE",
+        "wording": "Mise à jour d'une unité",
+        "description": "Mise à jour d'une unité"
+    },
+    {
+        "code": "ROLE_UNITY_DELETE",
+        "wording": "Suppression d'une unité",
+        "description": "Suppression d'une unité"
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_READ",
+        "wording": "Consultation des types de stock",
+        "description": "Consultation des types de stock"
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_CREATE",
+        "wording": "Création d'un nouveau type de stock",
+        "description": "Création d'un nouveau type de stock"
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_UPDATE",
+        "wording": "Mise à jour d'un type de stock",
+        "description": "Mise à jour d'un type de stock"
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_DELETE",
+        "wording": "Suppression d'un type de stock",
+        "description": "Suppression d'un type de stock"
+    },
+    {
+        "code": "ROLE_COMPARTMENT_READ",
+        "wording": "Consultation des compartiments",
+        "description": "Consultation des compartiments"
+    },
+    {
+        "code": "ROLE_COMPARTMENT_CREATE",
+        "wording": "Création d'un nouveau compartiment",
+        "description": "Création d'un nouveau compartiment"
+    },
+    {
+        "code": "ROLE_COMPARTMENT_UPDATE",
+        "wording": "Mise à jour d'un compartiment",
+        "description": "Mise à jour d'un compartiment"
+    },
+    {
+        "code": "ROLE_COMPARTMENT_DELETE",
+        "wording": "Suppression d'un compartiment",
+        "description": "Suppression d'un compartiment"
+    },
+    {
+        "code": "ROLE_FOLDER_READ",
+        "wording": "Consultation des dossiers",
+        "description": "Consultation des dossiers"
+    },
+    {
+        "code": "ROLE_FOLDER_CREATE",
+        "wording": "Création d'un nouveau dossier",
+        "description": "Création d'un nouveau dossier"
+    },
+    {
+        "code": "ROLE_FOLDER_UPDATE",
+        "wording": "Mise à jour d'un dossier",
+        "description": "Mise à jour d'un dossier"
+    },
+    {
+        "code": "ROLE_FOLDER_DELETE",
+        "wording": "Suppression d'un dossier",
+        "description": "Suppression d'un dossier"
+    },
+    {
+        "code": "ROLE_TANK_READ",
+        "wording": "Consultation des citernes",
+        "description": "Consultation des citernes"
+    },
+    {
+        "code": "ROLE_TANK_CREATE",
+        "wording": "Création d'une nouvelle citerne",
+        "description": "Création d'une nouvelle citerne"
+    },
+    {
+        "code": "ROLE_TANK_UPDATE",
+        "wording": "Mise à jour d'une citerne",
+        "description": "Mise à jour d'une citerne"
+    },
+    {
+        "code": "ROLE_TANK_DELETE",
+        "wording": "Suppression d'une citerne",
+        "description": "Suppression d'une citerne"
+    },
+    {
+        "code": "ROLE_TRUCK_READ",
+        "wording": "Consultation des tracteurs",
+        "description": "Consultation des tracteurs"
+    },
+    {
+        "code": "ROLE_TRUCK_CREATE",
+        "wording": "Création d'un nouveau tracteur",
+        "description": "Création d'un nouveau tracteur"
+    },
+    {
+        "code": "ROLE_TRUCK_UPDATE",
+        "wording": "Mise à jour d'un tracteur",
+        "description": "Mise à jour d'un tracteur"
+    },
+    {
+        "code": "ROLE_TRUCK_DELETE",
+        "wording": "Suppression d'un tracteur",
+        "description": "Suppression d'un tracteur"
+    },
+    {
+        "code": "ROLE_DESTINATION_READ",
+        "wording": "Consultation des destinations",
+        "description": "Consultation des destinations"
+    },
+    {
+        "code": "ROLE_DESTINATION_CREATE",
+        "wording": "Création d'une nouvelle destination",
+        "description": "Création d'une nouvelle destination"
+    },
+    {
+        "code": "ROLE_DESTINATION_UPDATE",
+        "wording": "Mise à jour d'une destination",
+        "description": "Mise à jour d'une destination"
+    },
+    {
+        "code": "ROLE_DESTINATION_DELETE",
+        "wording": "Suppression d'une destination",
+        "description": "Suppression d'une destination"
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_READ",
+        "wording": "Consultation des bons de commande",
+        "description": "Consultation des bons de commande"
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_CREATE",
+        "wording": "Création d'un nouveau bon de commande",
+        "description": "Création d'un nouveau bon de commande"
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_UPDATE",
+        "wording": "Mise à jour d'un bon de commande",
+        "description": "Mise à jour d'un bon de commande"
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_DELETE",
+        "wording": "Suppression d'un bon de commande",
+        "description": "Suppression d'un bon de commande"
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_VALIDATE",
+        "wording": "Validation d'un bon de commande",
+        "description": "Validation d'un bon de commande"
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_REJECT",
+        "wording": "Suppression d'un bon de commande",
+        "description": "Suppression d'un bon de commande"
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_READ",
+        "wording": "Consultation des bons d'achat",
+        "description": "Consultation des bons d'achat"
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_CREATE",
+        "wording": "Création d'un nouveau bon d'achat",
+        "description": "Création d'un nouveau bon d'achat"
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_UPDATE",
+        "wording": "Mise à jour d'un bon d'achat",
+        "description": "Mise à jour d'un bon d'achat"
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_DELETE",
+        "wording": "Suppression d'un bon d'achat",
+        "description": "Suppression d'un bon d'achat"
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_VALIDATE",
+        "wording": "Validation d'un bon d'achat",
+        "description": "Validation d'un bon d'achat"
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_REJECT",
+        "wording": "Suppression d'un bon d'achat",
+        "description": "Suppression d'un bon d'achat"
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_READ",
+        "wording": "Consultation des bons de livraison",
+        "description": "Consultation des bons de livraison"
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_CREATE",
+        "wording": "Création d'un nouveau bon de livraison",
+        "description": "Création d'un nouveau bon de livraison"
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_UPDATE",
+        "wording": "Mise à jour d'un bon de livraison",
+        "description": "Mise à jour d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_DELETE",
+        "wording": "Suppression d'un bon de livraison",
+        "description": "Suppression d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_VALIDATE",
+        "wording": "Validation d'un bon de livraison",
+        "description": "Validation d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_REJECT",
+        "wording": "Suppression d'un bon de livraison",
+        "description": "Suppression d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_ORDER_READ",
+        "wording": "Consultation des bons de commande",
+        "description": "Consultation des bons de commande"
+    },
+    {
+        "code": "ROLE_ORDER_CREATE",
+        "wording": "Création d'un nouveau bon de commande",
+        "description": "Création d'un nouveau bon de commande"
+    },
+    {
+        "code": "ROLE_ORDER_UPDATE",
+        "wording": "Mise à jour d'un bon de commande",
+        "description": "Mise à jour d'un bon de commande"
+    },
+    {
+        "code": "ROLE_ORDER_DELETE",
+        "wording": "Suppression d'un bon de commande",
+        "description": "Suppression d'un bon de commande"
+    },
+    {
+        "code": "ROLE_ORDER_VALIDATE",
+        "wording": "Validation d'un bon de commande",
+        "description": "Validation d'un bon de commande"
+    },
+    {
+        "code": "ROLE_ORDER_REJECT",
+        "wording": "Suppression d'un bon de commande",
+        "description": "Suppression d'un bon de commande"
+    },
+    {
+        "code": "ROLE_SALE_READ",
+        "wording": "Consultation des ventes",
+        "description": "Consultation des ventes"
+    },
+    {
+        "code": "ROLE_SALE_CREATE",
+        "wording": "Création d'une nouvelle vente",
+        "description": "Création d'une nouvelle vente"
+    },
+    {
+        "code": "ROLE_SALE_UPDATE",
+        "wording": "Mise à jour d'une vente",
+        "description": "Mise à jour d'une vente"
+    },
+    {
+        "code": "ROLE_SALE_DELETE",
+        "wording": "Suppression d'une vente",
+        "description": "Suppression d'une vente"
+    },
+    {
+        "code": "ROLE_SALE_VALIDATE",
+        "wording": "Validation d'une vente",
+        "description": "Validation d'une vente"
+    },
+    {
+        "code": "ROLE_SALE_REJECT",
+        "wording": "Suppression d'une vente",
+        "description": "Suppression d'une vente"
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_READ",
+        "wording": "Consultation des bons de livraison",
+        "description": "Consultation des bons de livraison"
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_CREATE",
+        "wording": "Création d'un nouveau bon de livraison",
+        "description": "Création d'un nouveau bon de livraison"
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_UPDATE",
+        "wording": "Mise à jour d'un bon de livraison",
+        "description": "Mise à jour d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_DELETE",
+        "wording": "Suppression d'un bon de livraison",
+        "description": "Suppression d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_VALIDATE",
+        "wording": "Validation d'un bon de livraison",
+        "description": "Validation d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_REJECT",
+        "wording": "Suppression d'un bon de livraison",
+        "description": "Suppression d'un bon de livraison"
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_READ",
+        "wording": "Consultation des bons à enlever",
+        "description": "Consultation des bons à enlever"
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_CREATE",
+        "wording": "Création d'un nouveau bon à enlever",
+        "description": "Création d'un nouveau bon à enlever"
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_UPDATE",
+        "wording": "Mise à jour d'un bon à enlever",
+        "description": "Mise à jour d'un bon à enlever"
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_DELETE",
+        "wording": "Suppression d'un bon à enlever",
+        "description": "Suppression d'un bon à enlever"
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_VALIDATE",
+        "wording": "Validation d'un bon à enlever",
+        "description": "Validation d'un bon à enlever"
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_REJECT",
+        "wording": "Suppression d'un bon à enlever",
+        "description": "Suppression d'un bon à enlever"
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_READ",
+        "wording": "Consultation des demandes de transfert",
+        "description": "Consultation des demandes de transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_CREATE",
+        "wording": "Création d'un nouvelle demande de transfert",
+        "description": "Création d'un nouvelle demande de transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_UPDATE",
+        "wording": "Mise à jour d'une demande de transfert",
+        "description": "Mise à jour d'une demande de transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_DELETE",
+        "wording": "Suppression d'une demande de transfert",
+        "description": "Suppression d'une demande de transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_VALIDATE",
+        "wording": "Validation d'une demande de transfert",
+        "description": "Validation d'une demande de transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_REJECT",
+        "wording": "Suppression d'une demande de transfert",
+        "description": "Suppression d'une demande de transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_READ",
+        "wording": "Consultation des transferts",
+        "description": "Consultation des transferts"
+    },
+    {
+        "code": "ROLE_TRANSFER_CREATE",
+        "wording": "Création d'un nouveau transfert",
+        "description": "Création d'un nouveau transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_UPDATE",
+        "wording": "Mise à jour d'un transfert",
+        "description": "Mise à jour d'un transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_DELETE",
+        "wording": "Suppression d'un transfert",
+        "description": "Suppression d'un transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_VALIDATE",
+        "wording": "Validation d'un transfert",
+        "description": "Validation d'un transfert"
+    },
+    {
+        "code": "ROLE_TRANSFER_REJECT",
+        "wording": "Suppression d'un transfert",
+        "description": "Suppression d'un transfert"
+    }
+]

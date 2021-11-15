@@ -1,0 +1,36 @@
+[{
+        "code": "CREATE",
+        "wording": "Création",
+        "description": "Opération de Création"
+    },
+    {
+        "code": "READ",
+        "wording": "Lecture",
+        "description": "Opération de Lecture"
+    },
+    {
+        "code": "UPDATE",
+        "wording": "Modification",
+        "description": "Opération de Modification"
+    },
+    {
+        "code": "DELETE",
+        "wording": "Suppression",
+        "description": "Opération de Suppression"
+    },
+    {
+        "code": "REJECT",
+        "wording": "Rejet",
+        "description": "Opération de Rejet"
+    },
+    {
+        "code": "PRINT",
+        "wording": "Impression",
+        "description": "Opération d'Impression"
+    },
+    {
+        "code": "VALIDATE",
+        "wording": "Validation",
+        "description": "Opération de Validation"
+    }
+]
