@@ -36,7 +36,7 @@ use App\Http\Controllers\TournController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferDemandController;
 use App\Http\Controllers\TruckController;
-use App\Http\Controllers\TypeController;
+use App\Http\Controllers\UserTypeController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -301,12 +301,12 @@ Route::prefix('user')->group(function () {
     Route::patch('/page-operation/{id}/update', [PageOperationController::class, 'update']);
     Route::delete('/page-operation/{id}/destroy', [PageOperationController::class, 'destroy']);
 
-    // Type routes
-    Route::get('/type', [TypeController::class, 'index']);
-    Route::post('/type', [TypeController::class, 'store']);
-    Route::get('/type/{id}/show', [TypeController::class, 'show']);
-    Route::patch('/type/{id}/update', [TypeController::class, 'update']);
-    Route::delete('/type/{id}/destroy', [TypeController::class, 'destroy']);
+    // User type routes
+    Route::get('/user-type', [UserTypeController::class, 'index']);
+    Route::post('/user-type', [UserTypeController::class, 'store']);
+    Route::get('/user-type/{id}/show', [UserTypeController::class, 'show']);
+    Route::patch('/user-type/{id}/update', [UserTypeController::class, 'update']);
+    Route::delete('/user-type/{id}/destroy', [UserTypeController::class, 'destroy']);
 
     // Employee function routes
     Route::get('/employee-function', [EmployeeFunctionController::class, 'index']);
@@ -321,6 +321,13 @@ Route::prefix('user')->group(function () {
     Route::get('/role/{id}/show', [RoleController::class, 'show']);
     Route::patch('/role/{id}/update', [RoleController::class, 'update']);
     Route::delete('/role/{id}/destroy', [RoleController::class, 'destroy']);
+
+    // User routes
+    Route::get('', [RoleController::class, 'index']);
+    Route::post('', [RoleController::class, 'store']);
+    Route::get('{id}/show', [RoleController::class, 'show']);
+    Route::patch('{id}/update', [RoleController::class, 'update']);
+    Route::delete('{id}/destroy', [RoleController::class, 'destroy']);
 });
 
 // Driver routes

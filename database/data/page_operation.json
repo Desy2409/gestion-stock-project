@@ -1,0 +1,113 @@
+[{
+    "code": "ROLE_DRIVER",
+    "title": "Page de configuration d'un' driver",
+    "description": "Page de configuration d'un' driver"
+}, {
+    "code": "ROLE_HOST",
+    "title": "Page de configuration d'un hôte",
+    "description": "Page de configuration d'un hôte"
+}, {
+    "code": "ROLE_EMAIL_CHANNEL_PARAM",
+    "title": "Page de configuration de l'envoi de mail",
+    "description": "Page de configuration de l'envoi de mail"
+}, {
+    "code": "ROLE_INSTITUTION",
+    "title": "Page de configuration d'une instituion",
+    "description": "Page de configuration d'une instituion"
+}, {
+    "code": "ROLE_SALE_POINT",
+    "title": "Page de configuration d'un point de vente",
+    "description": "Page de configuration d'un point de vente"
+}, {
+    "code": "ROLE_CATEGORY",
+    "title": "Page de configuration d'une catégorie",
+    "description": "Page de configuration d'une catégorie"
+}, {
+    "code": "ROLE_SUB_CATEGORY",
+    "title": "Page de configuration dune sous-catégorie",
+    "description": "Page de configuration dune sous-catégorie"
+}, {
+    "code": "ROLE_PRODUCT",
+    "title": "Page de configuration d'un produit",
+    "description": "Page de configuration d'un produit"
+}, {
+    "code": "ROLE_CLIENT",
+    "title": "Page de configuration d'un client",
+    "description": "Page de configuration d'un client"
+}, {
+    "code": "ROLE_PROVIDER_TYPE",
+    "title": "Page de configuration d'un type fournisseur",
+    "description": "Page de configuration d'un type fournisseur"
+}, {
+    "code": "ROLE_PROVIDER",
+    "title": "Page de configuration d'un fournisseur",
+    "description": "Page de configuration d'un fournisseur"
+}, {
+    "code": "ROLE_UNITY",
+    "title": "Page de configuration d'une unité",
+    "description": "Page de configuration d'une unité"
+}, {
+    "code": "ROLE_STOCK_TYPE",
+    "title": "Page de configuration d'un type de stock",
+    "description": "Page de configuration d'un type de stock"
+}, {
+    "code": "ROLE_PURCHASE_ORDER",
+    "title": "Page de configuration d'une commande auprès du fournisseur",
+    "description": "Page de configuration d'une commande auprès du fournisseur"
+}, {
+    "code": "ROLE_PURCHASE_COUPON",
+    "title": "Page de configuration d'un bon d'achat auprès d'un fournisseur",
+    "description": "Page de configuration d'un bon d'achat auprès d'un fournisseur"
+}, {
+    "code": "ROLE_DELIVERY_NOTE",
+    "title": "Page de configuration d'un bon de livraison (entrée)",
+    "description": "Page de configuration d'un bon de livraison (entrée)"
+}, {
+    "code": "ROLE_ORDER",
+    "title": "Page de configuration d'une commande client",
+    "description": "Page de configuration d'une commande client"
+}, {
+    "code": "ROLE_SALE",
+    "title": "Page de configuration d'une vente",
+    "description": "Page de configuration d'une vente"
+}, {
+    "code": "ROLE_CLIENT_DELIVERY_NOTE",
+    "title": "Page de configuration d'un bon de livraison (sortie)",
+    "description": "Page de configuration d'un bon de livraison (sortie)"
+}, {
+    "code": "ROLE_COMPARTMENT",
+    "title": "Page de configuration d'un compartiment",
+    "description": "Page de configuration d'un compartiment"
+}, {
+    "code": "ROLE_FOLDER",
+    "title": "Page de configuration d'un dossier",
+    "description": "Page de configuration d'un dossier"
+}, {
+    "code": "ROLE_TANK",
+    "title": "Page de configuration d'une citerne",
+    "description": "Page de configuration d'une citerne"
+}, {
+    "code": "ROLE_TRUCK",
+    "title": "Page de configuration d'un tracteur",
+    "description": "Page de configuration d'un tracteur"
+}, {
+    "code": "ROLE_TOURN",
+    "title": "Page de configuration d'une tournée",
+    "description": "Page de configuration d'une tournée"
+}, {
+    "code": "ROLE_DESTINATION",
+    "title": "Page de configuration dune destination",
+    "description": "Page de configuration dune destination"
+}, {
+    "code": "ROLE_GOOD_TO_REMOVE",
+    "title": "Page de configuration d'un bon à enlever",
+    "description": "Page de configuration d'un bon à enlever"
+}, {
+    "code": "ROLE_TRANSFER_DEMAND",
+    "title": "Page de configuration d'une demande de transfert",
+    "description": "Page de configuration d'une demande de transfert"
+}, {
+    "code": "ROLE_TRANSFER",
+    "title": "Page de configuration d'un transfert",
+    "description": "Page de configuration d'un transfert"
+}]

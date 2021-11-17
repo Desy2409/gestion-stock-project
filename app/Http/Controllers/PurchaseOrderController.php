@@ -68,14 +68,14 @@ class PurchaseOrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                // 'purchase_date' => 'required|date|date_format:d-m-Y|before:today',
-                // 'delivery_date' => 'required|date|date_format:d-m-Y|after:purchase_date',
+                'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                // 'ordered_product' => 'required',
-                // 'quantities' => 'required|min:0',
-                // 'unit_prices' => 'required|min:0',
-                // 'unities' => 'required',
+                'ordered_product' => 'required',
+                'quantities' => 'required|min:0',
+                'unit_prices' => 'required|min:0',
+                'unities' => 'required',
                 // 'upload_files' => 'required',
             ],
             [
@@ -85,11 +85,11 @@ class PurchaseOrderController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : JJ/MM/AAAA.",
+                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
                 'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -133,6 +133,14 @@ class PurchaseOrderController extends Controller
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
             }
+
+            $savedProductPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
+            if (empty($savedProductPurchaseOrders)||sizeof($savedProductPurchaseOrders)==0) {
+                $purchaseOrder->delete();
+            }
+
+
+
 
             // $folder = Folder::findOrFail($request->folder);
 
@@ -201,8 +209,8 @@ class PurchaseOrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:d-m-Y|before:today',
-                'delivery_date' => 'required|date|date_format:d-m-Y|after:purchase_date',
+                'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
@@ -218,11 +226,11 @@ class PurchaseOrderController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : JJ/MM/AAAA.",
+                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
                 'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : JJ/MM/AAAA.",
+                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
@@ -260,6 +268,11 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
+            }
+
+            $savedProductPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
+            if (empty($savedProductPurchaseOrders)||sizeof($savedProductPurchaseOrders)==0) {
+                $purchaseOrder->delete();
             }
 
             $success = true;

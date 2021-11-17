@@ -54,15 +54,14 @@ class TransferController extends Controller
 
     public function store(Request $request)
     {
-        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
-                'date_of_receipt' => 'date|date_format:d-m-Y|after:date_of_transfer',
+                'date_of_transfer' => 'required|date|date_format:Ymd|date_equals:today',
+                'date_of_receipt' => 'date|date_format:Ymd|after:date_of_transfer',
                 'products' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
@@ -73,10 +72,10 @@ class TransferController extends Controller
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : JJ/MM/AAAA.",
+                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
                 'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : JJ/MM/AAAA.",
+                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
                 'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",
@@ -156,15 +155,14 @@ class TransferController extends Controller
     public function update(Request $request, $id)
     {
         $transfer = Transfer::findOrFail($id);
-        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
-                'date_of_receipt' => 'date|date_format:d-m-Y|after:date_of_transfer',
+                'date_of_transfer' => 'required|date|date_format:Ymd|date_equals:today',
+                'date_of_receipt' => 'date|date_format:Ymd|after:date_of_transfer',
                 'products' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
@@ -175,10 +173,10 @@ class TransferController extends Controller
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : JJ/MM/AAAA.",
+                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
                 'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : JJ/MM/AAAA.",
+                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
                 'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",

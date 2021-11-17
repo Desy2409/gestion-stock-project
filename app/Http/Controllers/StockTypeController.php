@@ -12,7 +12,7 @@ class StockTypeController extends Controller
 {
     public function index()
     {
-        $stockTypes = StockType::with('products')->orderBy('wording')->get();
+        $stockTypes = StockType::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['stockTypes' => $stockTypes]
         ], 200);
@@ -124,7 +124,7 @@ class StockTypeController extends Controller
 
     public function show($id)
     {
-        $stockType = StockType::with('products')->findOrFail($id);
+        $stockType = StockType::findOrFail($id);
         return new JsonResponse([
             'stockType' => $stockType
         ], 200);

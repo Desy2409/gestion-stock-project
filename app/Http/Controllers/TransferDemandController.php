@@ -54,16 +54,15 @@ class TransferDemandController extends Controller
     }
     public function store(Request $request)
     {
-        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'request_reason' => 'required',
-                'date_of_demand' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
-                'delivery_deadline' => 'required|date|date_format:d-m-Y|after:date_of_demand',
-                'date_of_processing' => 'date|date_format:d-m-Y|after:date_of_demand',
+                'date_of_demand' => 'required|date|date_format:Ymd|date_equals:today',
+                'delivery_deadline' => 'required|date|date_format:Ymd|after:date_of_demand',
+                'date_of_processing' => 'date|date_format:Ymd|after:date_of_demand',
                 'products' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
@@ -74,11 +73,11 @@ class TransferDemandController extends Controller
                 'request_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_demand.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_demand.date' => "La date de la demande de transfert est invalide.",
-                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : JJ/MM/AAAA.",
+                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
                 'date_of_demand.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'delivery_deadline.required' => "La date limite de livraison est obligatoire.",
                 'delivery_deadline.date' => "La date limite de livraison est invalide.",
-                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : JJ/MM/AAAA.",
+                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
                 'delivery_deadline.after' => "La date limite de livraison ne peut être antérieur à la date de demande de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",
@@ -159,16 +158,15 @@ class TransferDemandController extends Controller
     public function update(Request $request, $id)
     {
         $transferDemand = TransferDemand::findOrFail($id);
-        $currentDate = date('d-m-Y', strtotime(now()));
         $this->validate(
             $request,
             [
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'request_reason' => 'required',
-                'date_of_demand' => 'required|date|date_format:d-m-Y|date_equals:' . $currentDate,
-                'delivery_deadline' => 'required|date|date_format:d-m-Y|after:date_of_demand',
-                'date_of_processing' => 'date|date_format:d-m-Y|after:date_of_demand',
+                'date_of_demand' => 'required|date|date_format:Ymd|date_equals:today',
+                'delivery_deadline' => 'required|date|date_format:Ymd|after:date_of_demand',
+                'date_of_processing' => 'date|date_format:Ymd|after:date_of_demand',
                 'products' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
@@ -179,11 +177,11 @@ class TransferDemandController extends Controller
                 'request_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_demand.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_demand.date' => "La date de la demande de transfert est invalide.",
-                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : JJ/MM/AAAA.",
+                'date_of_demand.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
                 'date_of_demand.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'delivery_deadline.required' => "La date limite de livraison est obligatoire.",
                 'delivery_deadline.date' => "La date limite de livraison est invalide.",
-                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : JJ/MM/AAAA.",
+                'delivery_deadline.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
                 'delivery_deadline.after' => "La date limite de livraison ne peut être antérieur à la date de demande de transfert.",
                 'products.required' => "Vous devez ajouter au moins un produit.",
                 'quantities.required' => "Les quantités sont obligatoires.",
@@ -261,7 +259,7 @@ class TransferDemandController extends Controller
         $transferDemand = TransferDemand::findOrFail($id);
         try {
             $transferDemand->state = 'S';
-            $transferDemand->date_of_processing = date('d-m-Y', strtotime(now()));
+            $transferDemand->date_of_processing = date('Ymd', strtotime(now()));
             $transferDemand->save();
 
             $success = true;
@@ -286,7 +284,7 @@ class TransferDemandController extends Controller
         $transferDemand = TransferDemand::findOrFail($id);
         try {
             $transferDemand->state = 'A';
-            $transferDemand->date_of_processing = date('d-m-Y', strtotime(now()));
+            $transferDemand->date_of_processing = date('Ymd', strtotime(now()));
             $transferDemand->save();
 
             $success = true;

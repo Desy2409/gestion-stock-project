@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
@@ -15,8 +16,17 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            ['name' => 'admin', 'email' => 'admin@admin.com', 'password' => Hash::make('aaaaaaaa')],
-        ]);
+        $json_user = File::get('database/data/user.json');
+        $users = json_decode($json_user);
+        foreach ($users as $key => $user) {
+            $existingUser = User::where('email', $user->email)->first();
+            if (!$existingUser) {
+                User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => Hash::make($user->password)
+                ]);
+            }
+        }
     }
 }

@@ -30,12 +30,16 @@ class OperationController extends Controller
         $this->validate(
             $request,
             [
+                'code' => 'required|unique:operations|max:50',
                 'wording' => 'required|unique:operations|max:150',
                 'description' => 'max:255',
             ],
             [
+                'code.required' => "Le code est obligatoire.",
+                'code.unique' => "Ce code existe déjà.",
+                'code.max' => "Le code ne doit pas dépasser 50 caractères.",
                 'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette opération existe déjà.",
+                'wording.unique' => "Ce libellé existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
@@ -43,7 +47,7 @@ class OperationController extends Controller
 
         try {
             $operation = new Operation();
-            $operation->code = Str::random(10);
+            $operation->code = strtoupper(str_replace(' ','_',$request->code));
             $operation->wording = $request->wording;
             $operation->description = $request->description;
             $operation->save();
@@ -71,27 +75,41 @@ class OperationController extends Controller
         $this->validate(
             $request,
             [
+                'code' => 'required|max:50',
                 'wording' => 'required|max:150',
                 'description' => 'max:255',
             ],
             [
+                'code.required' => "Le code est obligatoire.",
+                'code.max' => "Le code ne doit pas dépasser 50 caractères.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
-        $existingOperations = Operation::where('wording', $request->wording)->get();
-        if (!empty($existingOperations) && sizeof($existingOperations) >= 1) {
+        $existingOperationsOnCode = Operation::where('code', $request->code)->get();
+        if (!empty($existingOperationsOnCode) && sizeof($existingOperationsOnCode) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,
-                'existingOperation' => $existingOperations[0],
-                'message' => "L'opération " . $existingOperations[0]->wording . " existe déjà"
+                'existingOperation' => $existingOperationsOnCode[0],
+                'message' => "Le code " . $existingOperationsOnCode[0]->wording . " existe déjà"
+            ], 200);
+        }
+
+        $existingOperationsOnWording = Operation::where('wording', $request->wording)->get();
+        if (!empty($existingOperationsOnWording) && sizeof($existingOperationsOnWording) >= 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingOperation' => $existingOperationsOnWording[0],
+                'message' => "Le libellé " . $existingOperationsOnWording[0]->wording . " existe déjà"
             ], 200);
         }
 
         try {
+            $operation->code = strtoupper(str_replace(' ','_',$request->code));
             $operation->wording = $request->wording;
             $operation->description = $request->description;
             $operation->save();

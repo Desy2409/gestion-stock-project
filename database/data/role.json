@@ -1,0 +1,1107 @@
+[{
+        "code": "ROLE_DRIVER_READ",
+        "wording": "Consultation de la configuration des drivers",
+        "description": "Consultation de la configuration des drivers",
+        "operation_id": 1,
+        "page_operation_id": 1
+    },
+    {
+        "code": "ROLE_DRIVER_CREATE",
+        "wording": "Création d'un nouveau driver",
+        "description": "Création d'un nouveau driver",
+        "operation_id": 2,
+        "page_operation_id": 1
+    },
+    {
+        "code": "ROLE_DRIVER_UPDATE",
+        "wording": "Mise à jour d'un driver",
+        "description": "Mise à jour d'un driver",
+        "operation_id": 3,
+        "page_operation_id": 1
+    },
+    {
+        "code": "ROLE_DRIVER_DELETE",
+        "wording": "Suppression d'un driver",
+        "description": "Suppression d'un driver",
+        "operation_id": 4,
+        "page_operation_id": 1
+    },
+    {
+        "code": "ROLE_DRIVER_PRINT",
+        "wording": "Impression de drivers",
+        "description": "Impression de drivers",
+        "operation_id": 5,
+        "page_operation_id": 1
+    },
+    {
+        "code": "ROLE_HOST_READ",
+        "wording": "Consultation de la configuration des hôtes",
+        "description": "Consultation de la configuration des hôtes",
+        "operation_id": 1,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_HOST_CREATE",
+        "wording": "Création d'un nouvel hôte",
+        "description": "Création d'un nouvel hôte",
+        "operation_id": 2,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_HOST_UPDATE",
+        "wording": "Mise à jour d'un hôte",
+        "description": "Mise à jour d'un hôte",
+        "operation_id": 3,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_HOST_DELETE",
+        "wording": "Suppression d'un hôte",
+        "description": "Suppression d'un hôte",
+        "operation_id": 4,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_HOST_PRINT",
+        "wording": "Impression d'hôtes",
+        "description": "Impression d'hôtes",
+        "operation_id": 5,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_READ",
+        "wording": "Consultation de la configuration des envois de mail",
+        "description": "Consultation de la configuration des envois de mail",
+        "operation_id": 1,
+        "page_operation_id": 3
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_CREATE",
+        "wording": "Création d'un nouvel envoi de mail",
+        "description": "Création d'un nouvel envoi de mail",
+        "operation_id": 2,
+        "page_operation_id": 3
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_UPDATE",
+        "wording": "Mise à jour d'un envoi de mail",
+        "description": "Mise à jour d'un envoi de mail",
+        "operation_id": 3,
+        "page_operation_id": 3
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_DELETE",
+        "wording": "Suppression d'un envoi de mail",
+        "description": "Suppression d'un envoi de mail",
+        "operation_id": 4,
+        "page_operation_id": 3
+    },
+    {
+        "code": "ROLE_EMAIL_CHANNEL_PARAM_PRINT",
+        "wording": "Impression de la configuration d'envoi de mail",
+        "description": "Impression de la configuration d'envoi de mail",
+        "operation_id": 5,
+        "page_operation_id": 3
+    },
+    {
+        "code": "ROLE_INSTITUTION_READ",
+        "wording": "Consultation des institutions",
+        "description": "Consultation des institutions",
+        "operation_id": 1,
+        "page_operation_id": 4
+    },
+    {
+        "code": "ROLE_INSTITUTION_CREATE",
+        "wording": "Création d'une nouvelle institution ",
+        "description": "Création d'une nouvelle institution ",
+        "operation_id": 2,
+        "page_operation_id": 4
+    },
+    {
+        "code": "ROLE_INSTITUTION_UPDATE",
+        "wording": "Mise à jour d'une institution ",
+        "description": "Mise à jour d'une institution ",
+        "operation_id": 3,
+        "page_operation_id": 4
+    },
+    {
+        "code": "ROLE_INSTITUTION_DELETE",
+        "wording": "Suppression d'une institution ",
+        "description": "Suppression d'une institution ",
+        "operation_id": 4,
+        "page_operation_id": 4
+    },
+    {
+        "code": "ROLE_INSTITUTION_PRINT",
+        "wording": "Impression d'institutions ",
+        "description": "Impression d'institutions ",
+        "operation_id": 5,
+        "page_operation_id": 4
+    },
+    {
+        "code": "ROLE_SALE_POINT_READ",
+        "wording": "Consultation des point de vente",
+        "description": "Consultation des point de vente",
+        "operation_id": 1,
+        "page_operation_id": 5
+    },
+    {
+        "code": "ROLE_SALE_POINT_CREATE",
+        "wording": "Création d'un nouveau point de vente",
+        "description": "Création d'un nouveau point de vente",
+        "operation_id": 2,
+        "page_operation_id": 5
+    },
+    {
+        "code": "ROLE_SALE_POINT_UPDATE",
+        "wording": "Mise à jour d'un point de vente",
+        "description": "Mise à jour d'un point de vente",
+        "operation_id": 3,
+        "page_operation_id": 5
+    },
+    {
+        "code": "ROLE_SALE_POINT_DELETE",
+        "wording": "Suppression d'un point de vente",
+        "description": "Suppression d'un point de vente",
+        "operation_id": 4,
+        "page_operation_id": 5
+    },
+    {
+        "code": "ROLE_SALE_POINT_PRINT",
+        "wording": "Impression de points de vente",
+        "description": "Impression de points de vente",
+        "operation_id": 5,
+        "page_operation_id": 5
+    },
+    {
+        "code": "ROLE_CATEGORY_READ",
+        "wording": "Consultation des catégories",
+        "description": "Consultation des catégories",
+        "operation_id": 1,
+        "page_operation_id": 6
+    },
+    {
+        "code": "ROLE_CATEGORY_CREATE",
+        "wording": "Création d'une nouvelle catégorie",
+        "description": "Création d'une nouvelle catégorie",
+        "operation_id": 2,
+        "page_operation_id": 6
+    },
+    {
+        "code": "ROLE_CATEGORY_UPDATE",
+        "wording": "Mise à jour d'une catégorie",
+        "description": "Mise à jour d'une catégorie",
+        "operation_id": 3,
+        "page_operation_id": 6
+    },
+    {
+        "code": "ROLE_CATEGORY_DELETE",
+        "wording": "Suppression d'une catégorie",
+        "description": "Suppression d'une catégorie",
+        "operation_id": 4,
+        "page_operation_id": 6
+    },
+    {
+        "code": "ROLE_CATEGORY_PRINT",
+        "wording": "Impression de catégories",
+        "description": "Impression de catégories",
+        "operation_id": 5,
+        "page_operation_id": 6
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_READ",
+        "wording": "Consultation des sous-catégories",
+        "description": "Consultation des sous-catégories",
+        "operation_id": 1,
+        "page_operation_id": 7
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_CREATE",
+        "wording": "Création d'une nouvelle sous-catégorie",
+        "description": "Création d'une nouvelle sous-catégorie",
+        "operation_id": 2,
+        "page_operation_id": 7
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_UPDATE",
+        "wording": "Mise à jour d'une sous-catégorie",
+        "description": "Mise à jour d'une sous-catégorie",
+        "operation_id": 3,
+        "page_operation_id": 7
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_DELETE",
+        "wording": "Suppression d'une sous-catégorie",
+        "description": "Suppression d'une sous-catégorie",
+        "operation_id": 4,
+        "page_operation_id": 7
+    },
+    {
+        "code": "ROLE_SUB_CATEGORY_PRINT",
+        "wording": "Impression de sous-catégories",
+        "description": "Impression de sous-catégories",
+        "operation_id": 5,
+        "page_operation_id": 7
+    },
+    {
+        "code": "ROLE_PRODUCT_READ",
+        "wording": "Consultation des produits",
+        "description": "Consultation des produits",
+        "operation_id": 1,
+        "page_operation_id": 8
+    },
+    {
+        "code": "ROLE_PRODUCT_CREATE",
+        "wording": "Création d'un nouveau produit",
+        "description": "Création d'un nouveau produit",
+        "operation_id": 2,
+        "page_operation_id": 8
+    },
+    {
+        "code": "ROLE_PRODUCT_UPDATE",
+        "wording": "Mise à jour d'un produit",
+        "description": "Mise à jour d'un produit",
+        "operation_id": 3,
+        "page_operation_id": 8
+    },
+    {
+        "code": "ROLE_PRODUCT_DELETE",
+        "wording": "Suppression d'un produit",
+        "description": "Suppression d'un produit",
+        "operation_id": 4,
+        "page_operation_id": 8
+    },
+    {
+        "code": "ROLE_PRODUCT_PRINT",
+        "wording": "Impression de produits",
+        "description": "Impression de produits",
+        "operation_id": 5,
+        "page_operation_id": 8
+    },
+    {
+        "code": "ROLE_CLIENT_READ",
+        "wording": "Consultation des clients",
+        "description": "Consultation des clients",
+        "operation_id": 1,
+        "page_operation_id": 9
+    },
+    {
+        "code": "ROLE_CLIENT_CREATE",
+        "wording": "Création d'un nouveau client",
+        "description": "Création d'un nouveau client",
+        "operation_id": 2,
+        "page_operation_id": 9
+    },
+    {
+        "code": "ROLE_CLIENT_UPDATE",
+        "wording": "Mise à jour d'un client",
+        "description": "Mise à jour d'un client",
+        "operation_id": 3,
+        "page_operation_id": 9
+    },
+    {
+        "code": "ROLE_CLIENT_DELETE",
+        "wording": "Suppression d'un client",
+        "description": "Suppression d'un client",
+        "operation_id": 4,
+        "page_operation_id": 9
+    },
+    {
+        "code": "ROLE_CLIENT_PRINT",
+        "wording": "Impression de clients",
+        "description": "Impression de clients",
+        "operation_id": 5,
+        "page_operation_id": 9
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_READ",
+        "wording": "Consultation des types de fournisseur",
+        "description": "Consultation des types de fournisseur",
+        "operation_id": 1,
+        "page_operation_id": 10
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_CREATE",
+        "wording": "Création d'un nouveau type de fournisseur",
+        "description": "Création d'un nouveau type de fournisseur",
+        "operation_id": 2,
+        "page_operation_id": 10
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_UPDATE",
+        "wording": "Mise à jour d'un type de fournisseur",
+        "description": "Mise à jour d'un type de fournisseur",
+        "operation_id": 3,
+        "page_operation_id": 10
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_DELETE",
+        "wording": "Suppression d'un type de fournisseur",
+        "description": "Suppression d'un type de fournisseur",
+        "operation_id": 4,
+        "page_operation_id": 10
+    },
+    {
+        "code": "ROLE_PROVIDER_TYPE_PRINT",
+        "wording": "Impression de types de fournisseur",
+        "description": "Impression de types de fournisseur",
+        "operation_id": 5,
+        "page_operation_id": 10
+    },
+    {
+        "code": "ROLE_PROVIDER_READ",
+        "wording": "Consultation des fournisseurs",
+        "description": "Consultation des fournisseurs",
+        "operation_id": 1,
+        "page_operation_id": 11
+    },
+    {
+        "code": "ROLE_PROVIDER_CREATE",
+        "wording": "Création d'un nouveau fournisseur",
+        "description": "Création d'un nouveau fournisseur",
+        "operation_id": 2,
+        "page_operation_id": 11
+    },
+    {
+        "code": "ROLE_PROVIDER_UPDATE",
+        "wording": "Mise à jour d'un fournisseur",
+        "description": "Mise à jour d'un fournisseur",
+        "operation_id": 3,
+        "page_operation_id": 11
+    },
+    {
+        "code": "ROLE_PROVIDER_DELETE",
+        "wording": "Suppression d'un fournisseur",
+        "description": "Suppression d'un fournisseur",
+        "operation_id": 4,
+        "page_operation_id": 11
+    },
+    {
+        "code": "ROLE_PROVIDER_PRINT",
+        "wording": "Impression de fournisseurs",
+        "description": "Impression de fournisseurs",
+        "operation_id": 5,
+        "page_operation_id": 11
+    },
+    {
+        "code": "ROLE_UNITY_READ",
+        "wording": "Consultation des unités",
+        "description": "Consultation des unités",
+        "operation_id": 1,
+        "page_operation_id": 12
+    },
+    {
+        "code": "ROLE_UNITY_CREATE",
+        "wording": "Création d'une nouvelle unité",
+        "description": "Création d'une nouvelle unité",
+        "operation_id": 2,
+        "page_operation_id": 12
+    },
+    {
+        "code": "ROLE_UNITY_UPDATE",
+        "wording": "Mise à jour d'une unité",
+        "description": "Mise à jour d'une unité",
+        "operation_id": 3,
+        "page_operation_id": 12
+    },
+    {
+        "code": "ROLE_UNITY_DELETE",
+        "wording": "Suppression d'une unité",
+        "description": "Suppression d'une unité",
+        "operation_id": 4,
+        "page_operation_id": 12
+    },
+    {
+        "code": "ROLE_UNITY_PRINT",
+        "wording": "Impression d'unités",
+        "description": "Impression d'unités",
+        "operation_id": 5,
+        "page_operation_id": 12
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_READ",
+        "wording": "Consultation des types de stock",
+        "description": "Consultation des types de stock",
+        "operation_id": 1,
+        "page_operation_id": 13
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_CREATE",
+        "wording": "Création d'un nouveau type de stock",
+        "description": "Création d'un nouveau type de stock",
+        "operation_id": 2,
+        "page_operation_id": 13
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_UPDATE",
+        "wording": "Mise à jour d'un type de stock",
+        "description": "Mise à jour d'un type de stock",
+        "operation_id": 3,
+        "page_operation_id": 13
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_DELETE",
+        "wording": "Suppression d'un type de stock",
+        "description": "Suppression d'un type de stock",
+        "operation_id": 4,
+        "page_operation_id": 13
+    },
+    {
+        "code": "ROLE_STOCK_TYPE_PRINT",
+        "wording": "Impression de types de stock",
+        "description": "Impression de types de stock",
+        "operation_id": 5,
+        "page_operation_id": 13
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_READ",
+        "wording": "Consultation des bons de commande",
+        "description": "Consultation des bons de commande",
+        "operation_id": 1,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_CREATE",
+        "wording": "Création d'un nouveau bon de commande",
+        "description": "Création d'un nouveau bon de commande",
+        "operation_id": 2,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_UPDATE",
+        "wording": "Mise à jour d'un bon de commande",
+        "description": "Mise à jour d'un bon de commande",
+        "operation_id": 3,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_DELETE",
+        "wording": "Suppression d'un bon de commande",
+        "description": "Suppression d'un bon de commande",
+        "operation_id": 4,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_PRINT",
+        "wording": "Impression de bons de commande",
+        "description": "Impression de bons de commande",
+        "operation_id": 5,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_VALIDATE",
+        "wording": "Validation d'un bon de commande",
+        "description": "Validation d'un bon de commande",
+        "operation_id": 6,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_ORDER_REJECT",
+        "wording": "Rejet d'un bon de commande",
+        "description": "Rejet d'un bon de commande",
+        "operation_id": 7,
+        "page_operation_id": 14
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_READ",
+        "wording": "Consultation des bons d'achat",
+        "description": "Consultation des bons d'achat",
+        "operation_id": 1,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_CREATE",
+        "wording": "Création d'un nouveau bon d'achat",
+        "description": "Création d'un nouveau bon d'achat",
+        "operation_id": 2,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_UPDATE",
+        "wording": "Mise à jour d'un bon d'achat",
+        "description": "Mise à jour d'un bon d'achat",
+        "operation_id": 3,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_DELETE",
+        "wording": "Suppression d'un bon d'achat",
+        "description": "Suppression d'un bon d'achat",
+        "operation_id": 4,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_PRINT",
+        "wording": "Impression de bons d'achat",
+        "description": "Impression de bons d'achat",
+        "operation_id": 5,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_VALIDATE",
+        "wording": "Validation d'un bon d'achat",
+        "description": "Validation d'un bon d'achat",
+        "operation_id": 6,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_PURCHASE_COUPON_REJECT",
+        "wording": "Rejet d'un bon d'achat",
+        "description": "Rejet d'un bon d'achat",
+        "operation_id": 7,
+        "page_operation_id": 15
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_READ",
+        "wording": "Consultation des bons de livraison",
+        "description": "Consultation des bons de livraison",
+        "operation_id": 1,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_CREATE",
+        "wording": "Création d'un nouveau bon de livraison",
+        "description": "Création d'un nouveau bon de livraison",
+        "operation_id": 2,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_UPDATE",
+        "wording": "Mise à jour d'un bon de livraison",
+        "description": "Mise à jour d'un bon de livraison",
+        "operation_id": 3,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_DELETE",
+        "wording": "Suppression d'un bon de livraison",
+        "description": "Suppression d'un bon de livraison",
+        "operation_id": 4,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_PRINT",
+        "wording": "Impression de bons de livraison",
+        "description": "Impression de bons de livraison",
+        "operation_id": 5,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_VALIDATE",
+        "wording": "Validation d'un bon de livraison",
+        "description": "Validation d'un bon de livraison",
+        "operation_id": 6,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_DELIVERY_NOTE_REJECT",
+        "wording": "Rejet d'un bon de livraison",
+        "description": "Rejet d'un bon de livraison",
+        "operation_id": 7,
+        "page_operation_id": 16
+    },
+    {
+        "code": "ROLE_ORDER_READ",
+        "wording": "Consultation des commandes",
+        "description": "Consultation des commandes",
+        "operation_id": 1,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_ORDER_CREATE",
+        "wording": "Création d'une nouvelle commande",
+        "description": "Création d'une nouvelle commande",
+        "operation_id": 2,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_ORDER_UPDATE",
+        "wording": "Mise à jour d'une commande",
+        "description": "Mise à jour d'une commande",
+        "operation_id": 3,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_ORDER_DELETE",
+        "wording": "Suppression d'une commande",
+        "description": "Suppression d'une commande",
+        "operation_id": 4,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_ORDER_PRINT",
+        "wording": "Impressionde de commandes",
+        "description": "Impressionde de commandes",
+        "operation_id": 5,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_ORDER_VALIDATE",
+        "wording": "Validation d'une commande",
+        "description": "Validation d'une commande",
+        "operation_id": 6,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_ORDER_REJECT",
+        "wording": "Rejet d'une commande",
+        "description": "Rejet d'une commande",
+        "operation_id": 7,
+        "page_operation_id": 17
+    },
+    {
+        "code": "ROLE_SALE_READ",
+        "wording": "Consultation des ventes",
+        "description": "Consultation des ventes",
+        "operation_id": 1,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_SALE_CREATE",
+        "wording": "Création d'une nouvelle vente",
+        "description": "Création d'une nouvelle vente",
+        "operation_id": 2,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_SALE_UPDATE",
+        "wording": "Mise à jour d'une vente",
+        "description": "Mise à jour d'une vente",
+        "operation_id": 3,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_SALE_DELETE",
+        "wording": "Suppression d'une vente",
+        "description": "Suppression d'une vente",
+        "operation_id": 4,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_SALE_PRINT",
+        "wording": "Impression de ventes",
+        "description": "Impression de ventes",
+        "operation_id": 5,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_SALE_VALIDATE",
+        "wording": "Validation d'une vente",
+        "description": "Validation d'une vente",
+        "operation_id": 6,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_SALE_REJECT",
+        "wording": "Rejet d'une vente",
+        "description": "Rejet d'une vente",
+        "operation_id": 7,
+        "page_operation_id": 18
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_READ",
+        "wording": "Consultation des bons de livraison client",
+        "description": "Consultation des bons de livraison client",
+        "operation_id": 1,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_CREATE",
+        "wording": "Création d'un nouveau bon de livraison client",
+        "description": "Création d'un nouveau bon de livraison client",
+        "operation_id": 2,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_UPDATE",
+        "wording": "Mise à jour d'un bon de livraison client",
+        "description": "Mise à jour d'un bon de livraison client",
+        "operation_id": 3,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_DELETE",
+        "wording": "Suppression d'un bon de livraison client",
+        "description": "Suppression d'un bon de livraison client",
+        "operation_id": 4,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_PRINT",
+        "wording": "Impression de bon de livraison client",
+        "description": "Impression de bon de livraison client",
+        "operation_id": 5,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_VALIDATE",
+        "wording": "Validation d'un bon de livraison client",
+        "description": "Validation d'un bon de livraison client",
+        "operation_id": 6,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_CLIENT_DELIVERY_NOTE_REJECT",
+        "wording": "Rejet d'un bon de livraison client",
+        "description": "Rejet d'un bon de livraison client",
+        "operation_id": 7,
+        "page_operation_id": 19
+    },
+    {
+        "code": "ROLE_COMPARTMENT_READ",
+        "wording": "Consultation des compartiments",
+        "description": "Consultation des compartiments",
+        "operation_id": 1,
+        "page_operation_id": 20
+    },
+    {
+        "code": "ROLE_COMPARTMENT_CREATE",
+        "wording": "Création d'un nouveau compartiment",
+        "description": "Création d'un nouveau compartiment",
+        "operation_id": 2,
+        "page_operation_id": 20
+    },
+    {
+        "code": "ROLE_COMPARTMENT_UPDATE",
+        "wording": "Mise à jour d'un compartiment",
+        "description": "Mise à jour d'un compartiment",
+        "operation_id": 3,
+        "page_operation_id": 20
+    },
+    {
+        "code": "ROLE_COMPARTMENT_DELETE",
+        "wording": "Suppression d'un compartiment",
+        "description": "Suppression d'un compartiment",
+        "operation_id": 4,
+        "page_operation_id": 20
+    },
+    {
+        "code": "ROLE_COMPARTMENT_PRINT",
+        "wording": "Impression de compartiments",
+        "description": "Impression de compartiments",
+        "operation_id": 5,
+        "page_operation_id": 20
+    },
+    {
+        "code": "ROLE_FOLDER_READ",
+        "wording": "Consultation des dossiers",
+        "description": "Consultation des dossiers",
+        "operation_id": 1,
+        "page_operation_id": 21
+    },
+    {
+        "code": "ROLE_FOLDER_CREATE",
+        "wording": "Création d'un nouveau dossier",
+        "description": "Création d'un nouveau dossier",
+        "operation_id": 2,
+        "page_operation_id": 21
+    },
+    {
+        "code": "ROLE_FOLDER_UPDATE",
+        "wording": "Mise à jour d'un dossier",
+        "description": "Mise à jour d'un dossier",
+        "operation_id": 3,
+        "page_operation_id": 21
+    },
+    {
+        "code": "ROLE_FOLDER_DELETE",
+        "wording": "Suppression d'un dossier",
+        "description": "Suppression d'un dossier",
+        "operation_id": 4,
+        "page_operation_id": 21
+    },
+    {
+        "code": "ROLE_FOLDER_PRINT",
+        "wording": "Impression de dossiers",
+        "description": "Impression de dossiers",
+        "operation_id": 5,
+        "page_operation_id": 21
+    },
+    {
+        "code": "ROLE_TANK_READ",
+        "wording": "Consultation des citernes",
+        "description": "Consultation des citernes",
+        "operation_id": 1,
+        "page_operation_id": 22
+    },
+    {
+        "code": "ROLE_TANK_CREATE",
+        "wording": "Création d'une nouvelle citerne",
+        "description": "Création d'une nouvelle citerne",
+        "operation_id": 2,
+        "page_operation_id": 22
+    },
+    {
+        "code": "ROLE_TANK_UPDATE",
+        "wording": "Mise à jour d'une citerne",
+        "description": "Mise à jour d'une citerne",
+        "operation_id": 3,
+        "page_operation_id": 22
+    },
+    {
+        "code": "ROLE_TANK_DELETE",
+        "wording": "Suppression d'une citerne",
+        "description": "Suppression d'une citerne",
+        "operation_id": 4,
+        "page_operation_id": 22
+    },
+    {
+        "code": "ROLE_TANK_PRINT",
+        "wording": "Impression de citernes",
+        "description": "Impression de citernes",
+        "operation_id": 5,
+        "page_operation_id": 22
+    },
+    {
+        "code": "ROLE_TRUCK_READ",
+        "wording": "Consultation des tracteurs",
+        "description": "Consultation des tracteurs",
+        "operation_id": 1,
+        "page_operation_id": 23
+    },
+    {
+        "code": "ROLE_TRUCK_CREATE",
+        "wording": "Création d'un nouveau tracteur",
+        "description": "Création d'un nouveau tracteur",
+        "operation_id": 2,
+        "page_operation_id": 23
+    },
+    {
+        "code": "ROLE_TRUCK_UPDATE",
+        "wording": "Mise à jour d'un tracteur",
+        "description": "Mise à jour d'un tracteur",
+        "operation_id": 3,
+        "page_operation_id": 23
+    },
+    {
+        "code": "ROLE_TRUCK_DELETE",
+        "wording": "Suppression d'un tracteur",
+        "description": "Suppression d'un tracteur",
+        "operation_id": 4,
+        "page_operation_id": 23
+    },
+    {
+        "code": "ROLE_TRUCK_PRINT",
+        "wording": "Impression  de tracteurs",
+        "description": "Impression  de tracteurs",
+        "operation_id": 5,
+        "page_operation_id": 23
+    },
+    {
+        "code": "ROLE_TOURN_READ",
+        "wording": "Consultation des tournées",
+        "description": "Consultation des tournées",
+        "operation_id": 1,
+        "page_operation_id": 24
+    },
+    {
+        "code": "ROLE_TOURN_CREATE",
+        "wording": "Création d'une nouvelle tournée",
+        "description": "Création d'une nouvelle tournée",
+        "operation_id": 2,
+        "page_operation_id": 24
+    },
+    {
+        "code": "ROLE_TOURN_UPDATE",
+        "wording": "Mise à jour d'une tournée",
+        "description": "Mise à jour d'une tournée",
+        "operation_id": 3,
+        "page_operation_id": 24
+    },
+    {
+        "code": "ROLE_TOURN_DELETE",
+        "wording": "Suppression d'une tournée",
+        "description": "Suppression d'une tournée",
+        "operation_id": 4,
+        "page_operation_id": 24
+    },
+    {
+        "code": "ROLE_TOURN_PRINT",
+        "wording": "Impression de tournées",
+        "description": "Impression de tournées",
+        "operation_id": 5,
+        "page_operation_id": 24
+    },
+    {
+        "code": "ROLE_DESTINATION_READ",
+        "wording": "Consultation des destinations",
+        "description": "Consultation des destinations",
+        "operation_id": 1,
+        "page_operation_id": 25
+    },
+    {
+        "code": "ROLE_DESTINATION_CREATE",
+        "wording": "Création d'une nouvelle destination",
+        "description": "Création d'une nouvelle destination",
+        "operation_id": 2,
+        "page_operation_id": 25
+    },
+    {
+        "code": "ROLE_DESTINATION_UPDATE",
+        "wording": "Mise à jour d'une destination",
+        "description": "Mise à jour d'une destination",
+        "operation_id": 3,
+        "page_operation_id": 25
+    },
+    {
+        "code": "ROLE_DESTINATION_DELETE",
+        "wording": "Suppression d'une destination",
+        "description": "Suppression d'une destination",
+        "operation_id": 4,
+        "page_operation_id": 25
+    },
+    {
+        "code": "ROLE_DESTINATION_PRINT",
+        "wording": "Impression de destinations",
+        "description": "Impression de destinations",
+        "operation_id": 5,
+        "page_operation_id": 25
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_READ",
+        "wording": "Consultation des bons à enlever",
+        "description": "Consultation des bons à enlever",
+        "operation_id": 1,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_CREATE",
+        "wording": "Création d'un nouveau bon à enlever",
+        "description": "Création d'un nouveau bon à enlever",
+        "operation_id": 2,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_UPDATE",
+        "wording": "Mise à jour d'un bon à enlever",
+        "description": "Mise à jour d'un bon à enlever",
+        "operation_id": 3,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_DELETE",
+        "wording": "Suppression d'un bon à enlever",
+        "description": "Suppression d'un bon à enlever",
+        "operation_id": 4,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_PRINT",
+        "wording": "Impression de bons à enlever",
+        "description": "Impression de bons à enlever",
+        "operation_id": 5,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_VALIDATE",
+        "wording": "Validation d'un bon à enlever",
+        "description": "Validation d'un bon à enlever",
+        "operation_id": 6,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_GOOD_TO_REMOVE_REJECT",
+        "wording": "Rejet d'un bon à enlever",
+        "description": "Rejet d'un bon à enlever",
+        "operation_id": 7,
+        "page_operation_id": 26
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_READ",
+        "wording": "Consultation des demandes de transfert",
+        "description": "Consultation des demandes de transfert",
+        "operation_id": 1,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_CREATE",
+        "wording": "Création d'un nouvelle demande de transfert",
+        "description": "Création d'un nouvelle demande de transfert",
+        "operation_id": 2,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_UPDATE",
+        "wording": "Mise à jour d'une demande de transfert",
+        "description": "Mise à jour d'une demande de transfert",
+        "operation_id": 3,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_DELETE",
+        "wording": "Suppression d'une demande de transfert",
+        "description": "Suppression d'une demande de transfert",
+        "operation_id": 4,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_PRINT",
+        "wording": "Impression de demandes de transfert",
+        "description": "Impression de demandes de transfert",
+        "operation_id": 5,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_VALIDATE",
+        "wording": "Validation d'une demande de transfert",
+        "description": "Validation d'une demande de transfert",
+        "operation_id": 6,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_DEMANDE_REJECT",
+        "wording": "Rejet d'une demande de transfert",
+        "description": "Rejet d'une demande de transfert",
+        "operation_id": 7,
+        "page_operation_id": 27
+    },
+    {
+        "code": "ROLE_TRANSFER_READ",
+        "wording": "Consultation des transferts",
+        "description": "Consultation des transferts",
+        "operation_id": 1,
+        "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_TRANSFER_CREATE",
+        "wording": "Création d'un nouveau transfert",
+        "description": "Création d'un nouveau transfert",
+        "operation_id": 2,
+        "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_TRANSFER_UPDATE",
+        "wording": "Mise à jour d'un transfert",
+        "description": "Mise à jour d'un transfert",
+        "operation_id": 3,
+        "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_TRANSFER_DELETE",
+        "wording": "Suppression d'un transfert",
+        "description": "Suppression d'un transfert",
+        "operation_id": 4,
+        "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_TRANSFER_PRINT",
+        "wording": "Impression de transferts",
+        "description": "Impression de transferts",
+        "operation_id": 5,
+        "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_TRANSFER_VALIDATE",
+        "wording": "Validation d'un transfert",
+        "description": "Validation d'un transfert",
+        "operation_id": 6,
+        "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_TRANSFER_REJECT",
+        "wording": "Rejet d'un transfert",
+        "description": "Rejet d'un transfert",
+        "operation_id": 7,
+        "page_operation_id": 28
+    }
+]
