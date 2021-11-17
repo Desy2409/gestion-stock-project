@@ -26,6 +26,9 @@ class RolesTableSeeder extends Seeder
                    'code'=>$role->code,
                    'wording'=>$role->wording,
                    'description'=>$role->description,
+                   'description'=>$role->description,
+                   'page_operation_id'=>$role->page_operation_id,
+                   'operation_id'=>$role->operation_id,
                ]);
            }
         }

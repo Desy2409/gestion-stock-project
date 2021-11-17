@@ -24,7 +24,7 @@ class AddColumnsToUsersTable extends Migration
             $table->boolean('is_retired')->default(false)->nullable();
             $table->boolean('is_dead')->default(false)->nullable();
             $table->foreignId('employee_function_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('type_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('user_type_id')->nullable()->constrained()->cascadeOnDelete();
         });
     }
 

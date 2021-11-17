@@ -134,6 +134,14 @@ class PurchaseOrderController extends Controller
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
             }
 
+            $savedProductPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
+            if (empty($savedProductPurchaseOrders)||sizeof($savedProductPurchaseOrders)==0) {
+                $purchaseOrder->delete();
+            }
+
+
+
+
             // $folder = Folder::findOrFail($request->folder);
 
             // foreach ($request->upload_files as $key => $file) {
@@ -260,6 +268,11 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
+            }
+
+            $savedProductPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
+            if (empty($savedProductPurchaseOrders)||sizeof($savedProductPurchaseOrders)==0) {
+                $purchaseOrder->delete();
             }
 
             $success = true;
