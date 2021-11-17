@@ -33,7 +33,7 @@ class SaleController extends Controller
             $saleRegister->code = $this->formateNPosition('VT', 1, 8);
         }
         $saleRegister->save();
-
+        // dd( $saleRegister);
         return new JsonResponse([
             'datas' => ['sales' => $sales, 'clients' => $clients, 'products' => $products]
         ], 200);
@@ -42,6 +42,7 @@ class SaleController extends Controller
     public function showNextCode()
     {
         $lastSaleRegister = SaleRegister::latest()->first();
+        // dd($lastSaleRegister);
         if ($lastSaleRegister) {
             $code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
         } else {
@@ -148,7 +149,7 @@ class SaleController extends Controller
                 'datas' => ['productSales' => $productSales],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
