@@ -43,6 +43,7 @@ class ClientController extends Controller
     public function showNextCode()
     {
         $lastClientRegister = ClientRegister::latest()->first();
+        dd($lastClientRegister);
         if ($lastClientRegister) {
             $code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
         } else {

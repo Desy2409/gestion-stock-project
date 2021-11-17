@@ -60,7 +60,7 @@ class OrderController extends Controller
         $this->validate(
             $request,
             [
-                'sale_point' => 'required',
+                 'sale_point' => 'required',
                 'client' => 'required',
                 'reference' => 'required|unique:orders',
                 'order_date' => 'required|date|date_format:Ymd|before:today',
@@ -111,9 +111,11 @@ class OrderController extends Controller
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;
             $order->client_id = $request->client;
+            $order->sale_point_id = $request->sale_point;
             $order->save();
 
             $productsOrders = [];
+
             foreach ($request->ordered_product as $key => $product) {
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $request->quantities[$key];
@@ -121,6 +123,12 @@ class OrderController extends Controller
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
                 $productOrder->unity_id = $request->unities[$key];
+
+                // $productOrder->quantity = $product->quantity;
+                // $productOrder->unit_price = $product->unit_price;
+                // $productOrder->product_id = $product->product;
+                // $productOrder->order_id = $order->id;
+                // $productOrder->unity_id = $product->unity;
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
@@ -135,7 +143,7 @@ class OrderController extends Controller
                 'datas' => ['productsOrders' => $productsOrders],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
