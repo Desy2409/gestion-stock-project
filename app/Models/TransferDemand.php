@@ -21,6 +21,11 @@ class TransferDemand extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
+    public function transfers()
+    {
+        return $this->hasMany(Transfer::class);
+    }
+
     public function productsTransfersDemandsLines()
     {
         return $this->hasMany(ProductTransferDemandLine::class);
