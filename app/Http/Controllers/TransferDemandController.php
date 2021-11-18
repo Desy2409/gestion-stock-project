@@ -272,7 +272,7 @@ class TransferDemandController extends Controller
         $transferDemand = TransferDemand::findOrFail($id);
         try {
             $transferDemand->state = 'S';
-            $transferDemand->date_of_processing = date('Ymd', strtotime(now()));
+            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
             $transferDemand->save();
 
             $success = true;
@@ -297,11 +297,11 @@ class TransferDemandController extends Controller
         $transferDemand = TransferDemand::findOrFail($id);
         try {
             $transferDemand->state = 'A';
-            $transferDemand->date_of_processing = date('Ymd', strtotime(now()));
+            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
             $transferDemand->save();
 
             $success = true;
-            $message = "Demande de transfert validée avec succès.";
+            $message = "Demande de transfert annulée avec succès.";
             return new JsonResponse([
                 'transferDemand' => $transferDemand,
                 'success' => $success,
@@ -309,7 +309,7 @@ class TransferDemandController extends Controller
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            $message = "Erreur survenue lors de l'annulation de la demande de transfert.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

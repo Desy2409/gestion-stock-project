@@ -20,7 +20,7 @@ class CouponController extends Controller
 {
     use UtilityTrait;
 
-    public function index($purchaseType)
+    public function index($couponType)
     {
         $coupons = Coupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productCoupons')->orderBy('code')->orderBy('purchase_date')->get();
         $lastCouponRegister = CouponRegister::latest()->first();
@@ -33,7 +33,7 @@ class CouponController extends Controller
         }
         $couponRegister->save();
 
-        if ($purchaseType == "Achat direct") {
+        if ($couponType == "Achat direct") {
             $providers = Provider::with('person')->get();
             $salePoints = SalePoint::orderBy('social_reason')->get();
             $products = Product::with('subCategory')->get();
@@ -42,9 +42,9 @@ class CouponController extends Controller
                 'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'coupons' => $coupons]
             ]);
         } else {
-            $purchaseOrders = PurchaseOrder::with('provider')->with('salePoint')->orderBy('code')->get();
+            $orders = PurchaseOrder::with('provider')->with('salePoint')->orderBy('code')->get();
             return new JsonResponse([
-                'datas' => ['purchaseOrders' => $purchaseOrders, 'coupons' => $coupons]
+                'datas' => ['orders' => $orders, 'coupons' => $coupons]
             ]);
         }
     }
@@ -76,18 +76,18 @@ class CouponController extends Controller
 
     public function show($id)
     {
-        $purchaseCoupon = Coupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productCoupons')->findOrFail($id);
-        $productCoupons = $purchaseCoupon ? $purchaseCoupon->productCoupons : null; //ProductCoupon::where('order_id', $purchaseCoupon->id)->get();
+        $coupon = Coupon::with('provider')->with('purchaseOrder')->with('deliveryNotes')->with('productCoupons')->findOrFail($id);
+        $productCoupons = $coupon ? $coupon->productCoupons : null; //ProductCoupon::where('order_id', $coupon->id)->get();
 
         return new JsonResponse([
-            'purchaseCoupon' => $purchaseCoupon,
+            'coupon' => $coupon,
             'datas' => ['productCoupons' => $productCoupons]
         ], 200);
     }
 
-    public function store(Request $request, $purchaseType)
+    public function store(Request $request, $couponType)
     {
-        if ($purchaseType == "Achat direct") {
+        if ($couponType == "Achat direct") {
             $this->validate(
                 $request,
                 [
@@ -130,26 +130,26 @@ class CouponController extends Controller
 
                 $lastCoupon = Coupon::latest()->first();
 
-                $purchaseCoupon = new Coupon();
+                $coupon = new Coupon();
                 if ($lastCoupon) {
-                    $purchaseCoupon->code = $this->formateNPosition('BA', $lastCoupon->id + 1, 8);
+                    $coupon->code = $this->formateNPosition('BA', $lastCoupon->id + 1, 8);
                 } else {
-                    $purchaseCoupon->code = $this->formateNPosition('BA', 1, 8);
+                    $coupon->code = $this->formateNPosition('BA', 1, 8);
                 }
-                $purchaseCoupon->reference = $request->reference;
-                $purchaseCoupon->purchase_date   = $request->purchase_date;
-                $purchaseCoupon->delivery_date   = $request->delivery_date;
+                $coupon->reference = $request->reference;
+                $coupon->purchase_date   = $request->purchase_date;
+                $coupon->delivery_date   = $request->delivery_date;
                 foreach ($request->unit_prices as $key => $unitPrice) {
                     $totalAmount += $unitPrice;
                 }
-                $purchaseCoupon->amount_gross = $totalAmount;
-                $purchaseCoupon->ht_amount = $totalAmount;
-                $purchaseCoupon->discount = $request->discount;
-                $purchaseCoupon->amount_token = $request->amount_token;
-                $purchaseCoupon->observation = $request->observation;
-                $purchaseCoupon->provider_id = $request->provider;
-                $purchaseCoupon->sale_point_id = $request->sale_point;
-                $purchaseCoupon->save();
+                $coupon->amount_gross = $totalAmount;
+                $coupon->ht_amount = $totalAmount;
+                $coupon->discount = $request->discount;
+                $coupon->amount_token = $request->amount_token;
+                $coupon->observation = $request->observation;
+                $coupon->provider_id = $request->provider;
+                $coupon->sale_point_id = $request->sale_point;
+                $coupon->save();
 
                 $productCoupons = [];
                 foreach ($request->products_of_purchase_coupon as $key => $product) {
@@ -157,21 +157,21 @@ class CouponController extends Controller
                     $productCoupon->quantity = $request->quantities[$key];
                     $productCoupon->unit_price = $request->unit_prices[$key];
                     $productCoupon->product_id = $product;
-                    $productCoupon->purchase_coupon_id = $purchaseCoupon->id;
+                    $productCoupon->coupon_id = $coupon->id;
                     $productCoupon->save();
 
                     array_push($productCoupons, $productCoupon);
                 }
 
-                $savedProductCoupons = ProductCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->get();
+                $savedProductCoupons = ProductCoupon::where('coupon_id', $coupon->id)->get();
                 if (empty($savedProductCoupons) || sizeof($savedProductCoupons) == 0) {
-                    $purchaseCoupon->delete();
+                    $coupon->delete();
                 }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
-                    'purchaseCoupon' => $purchaseCoupon,
+                    'coupon' => $coupon,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productCoupons' => $productCoupons],
@@ -225,24 +225,24 @@ class CouponController extends Controller
 
                 $lastCoupon = Coupon::latest()->first();
 
-                $purchaseCoupon = new Coupon();
+                $coupon = new Coupon();
                 if ($lastCoupon) {
-                    $purchaseCoupon->code = $this->formateNPosition('BA', $lastCoupon->id + 1, 8);
+                    $coupon->code = $this->formateNPosition('BA', $lastCoupon->id + 1, 8);
                 } else {
-                    $purchaseCoupon->code = $this->formateNPosition('BA', 1, 8);
+                    $coupon->code = $this->formateNPosition('BA', 1, 8);
                 }
-                $purchaseCoupon->reference = $request->reference;
-                $purchaseCoupon->purchase_date   = $request->purchase_date;
-                $purchaseCoupon->delivery_date   = $request->delivery_date;
-                $purchaseCoupon->amount_gross = $purchaseOrder->total_amount;
-                $purchaseCoupon->ht_amount = $purchaseOrder->total_amount;
-                $purchaseCoupon->discount = $request->discount;
-                $purchaseCoupon->amount_token = $request->amount_token;
-                $purchaseCoupon->observation = $request->observation;
-                $purchaseCoupon->order_id = $purchaseOrder->id;
-                $purchaseCoupon->provider_id = $purchaseOrder->provider->id;
-                $purchaseCoupon->sale_point_id = $purchaseOrder->sale_point->id;
-                $purchaseCoupon->save();
+                $coupon->reference = $request->reference;
+                $coupon->purchase_date   = $request->purchase_date;
+                $coupon->delivery_date   = $request->delivery_date;
+                $coupon->amount_gross = $purchaseOrder->total_amount;
+                $coupon->ht_amount = $purchaseOrder->total_amount;
+                $coupon->discount = $request->discount;
+                $coupon->amount_token = $request->amount_token;
+                $coupon->observation = $request->observation;
+                $coupon->order_id = $purchaseOrder->id;
+                $coupon->provider_id = $purchaseOrder->provider->id;
+                $coupon->sale_point_id = $purchaseOrder->sale_point->id;
+                $coupon->save();
 
                 $productCoupons = [];
                 foreach ($request->products_of_purchase_coupon as $key => $product) {
@@ -250,21 +250,21 @@ class CouponController extends Controller
                     $productCoupon->quantity = $request->quantities[$key];
                     $productCoupon->unit_price = $request->unit_prices[$key];
                     $productCoupon->product_id = $product;
-                    $productCoupon->purchase_coupon_id = $purchaseCoupon->id;
+                    $productCoupon->coupon_id = $coupon->id;
                     $productCoupon->save();
 
                     array_push($productCoupons, $productCoupon);
                 }
 
-                $savedProductCoupons = ProductCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->get();
+                $savedProductCoupons = ProductCoupon::where('coupon_id', $coupon->id)->get();
                 if (empty($savedProductCoupons) || sizeof($savedProductCoupons) == 0) {
-                    $purchaseCoupon->delete();
+                    $coupon->delete();
                 }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
-                    'purchaseCoupon' => $purchaseCoupon,
+                    'coupon' => $coupon,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productCoupons' => $productCoupons],
@@ -281,10 +281,10 @@ class CouponController extends Controller
         }
     }
 
-    public function update(Request $request, $id, $purchaseType)
+    public function update(Request $request, $id, $couponType)
     {
-        $purchaseCoupon = Coupon::findOrFail($id);
-        if ($purchaseType == "Achat direct") {
+        $coupon = Coupon::findOrFail($id);
+        if ($couponType == "Achat direct") {
             $this->validate(
                 $request,
                 [
@@ -325,22 +325,22 @@ class CouponController extends Controller
             try {
                 $totalAmount = 0;
 
-                $purchaseCoupon->reference = $request->reference;
-                $purchaseCoupon->purchase_date   = $request->purchase_date;
-                $purchaseCoupon->delivery_date   = $request->delivery_date;
+                $coupon->reference = $request->reference;
+                $coupon->purchase_date   = $request->purchase_date;
+                $coupon->delivery_date   = $request->delivery_date;
                 foreach ($request->unit_prices as $key => $unitPrice) {
                     $totalAmount += $unitPrice;
                 }
-                $purchaseCoupon->amount_gross = $totalAmount;
-                $purchaseCoupon->ht_amount = $totalAmount;
-                $purchaseCoupon->discount = $request->discount;
-                $purchaseCoupon->amount_token = $request->amount_token;
-                $purchaseCoupon->observation = $request->observation;
-                $purchaseCoupon->provider_id = $request->provider;
-                $purchaseCoupon->sale_point_id = $request->sale_point;
-                $purchaseCoupon->save();
+                $coupon->amount_gross = $totalAmount;
+                $coupon->ht_amount = $totalAmount;
+                $coupon->discount = $request->discount;
+                $coupon->amount_token = $request->amount_token;
+                $coupon->observation = $request->observation;
+                $coupon->provider_id = $request->provider;
+                $coupon->sale_point_id = $request->sale_point;
+                $coupon->save();
 
-                ProductCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->delete();
+                ProductCoupon::where('coupon_id', $coupon->id)->delete();
 
                 $productCoupons = [];
                 foreach ($request->products_of_purchase_coupon as $key => $product) {
@@ -348,21 +348,21 @@ class CouponController extends Controller
                     $productCoupon->quantity = $request->quantities[$key];
                     $productCoupon->unit_price = $request->unit_prices[$key];
                     $productCoupon->product_id = $product;
-                    $productCoupon->purchase_coupon_id = $purchaseCoupon->id;
+                    $productCoupon->coupon_id = $coupon->id;
                     $productCoupon->save();
 
                     array_push($productCoupons, $productCoupon);
                 }
 
-                $savedProductCoupons = ProductCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->get();
+                $savedProductCoupons = ProductCoupon::where('coupon_id', $coupon->id)->get();
                 if (empty($savedProductCoupons) || sizeof($savedProductCoupons) == 0) {
-                    $purchaseCoupon->delete();
+                    $coupon->delete();
                 }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
-                    'purchaseCoupon' => $purchaseCoupon,
+                    'coupon' => $coupon,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productCoupons' => $productCoupons],
@@ -414,20 +414,20 @@ class CouponController extends Controller
             try {
                 $purchaseOrder = PurchaseOrder::findOrFail($request->order);
 
-                $purchaseCoupon->reference = $request->reference;
-                $purchaseCoupon->purchase_date   = $request->purchase_date;
-                $purchaseCoupon->delivery_date   = $request->delivery_date;
-                $purchaseCoupon->amount_gross = $purchaseOrder->total_amount;
-                $purchaseCoupon->ht_amount = $purchaseOrder->total_amount;
-                $purchaseCoupon->discount = $request->discount;
-                $purchaseCoupon->amount_token = $request->amount_token;
-                $purchaseCoupon->observation = $request->observation;
-                $purchaseCoupon->order_id = $purchaseOrder->id;
-                $purchaseCoupon->provider_id = $purchaseOrder->provider->id;
-                $purchaseCoupon->sale_point_id = $purchaseOrder->sale_point->id;
-                $purchaseCoupon->save();
+                $coupon->reference = $request->reference;
+                $coupon->purchase_date   = $request->purchase_date;
+                $coupon->delivery_date   = $request->delivery_date;
+                $coupon->amount_gross = $purchaseOrder->total_amount;
+                $coupon->ht_amount = $purchaseOrder->total_amount;
+                $coupon->discount = $request->discount;
+                $coupon->amount_token = $request->amount_token;
+                $coupon->observation = $request->observation;
+                $coupon->order_id = $purchaseOrder->id;
+                $coupon->provider_id = $purchaseOrder->provider->id;
+                $coupon->sale_point_id = $purchaseOrder->sale_point->id;
+                $coupon->save();
 
-                ProductCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->delete();
+                ProductCoupon::where('coupon_id', $coupon->id)->delete();
 
                 $productCoupons = [];
                 foreach ($request->products_of_purchase_coupon as $key => $product) {
@@ -435,21 +435,21 @@ class CouponController extends Controller
                     $productCoupon->quantity = $request->quantities[$key];
                     $productCoupon->unit_price = $request->unit_prices[$key];
                     $productCoupon->product_id = $product;
-                    $productCoupon->purchase_coupon_id = $purchaseCoupon->id;
+                    $productCoupon->coupon_id = $coupon->id;
                     $productCoupon->save();
 
                     array_push($productCoupons, $productCoupon);
                 }
 
-                $savedProductCoupons = ProductCoupon::where('purchase_coupon_id', $purchaseCoupon->id)->get();
+                $savedProductCoupons = ProductCoupon::where('coupon_id', $coupon->id)->get();
                 if (empty($savedProductCoupons) || sizeof($savedProductCoupons) == 0) {
-                    $purchaseCoupon->delete();
+                    $coupon->delete();
                 }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
-                    'purchaseCoupon' => $purchaseCoupon,
+                    'coupon' => $coupon,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productCoupons' => $productCoupons],
@@ -468,15 +468,15 @@ class CouponController extends Controller
 
     public function destroy($id)
     {
-        $purchaseCoupon = Coupon::findOrFail($id);
-        $productCoupons = $purchaseCoupon ? $purchaseCoupon->productCoupons : null;
+        $coupon = Coupon::findOrFail($id);
+        $productCoupons = $coupon ? $coupon->productCoupons : null;
         try {
-            $purchaseCoupon->delete();
+            $coupon->delete();
 
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'purchaseCoupon' => $purchaseCoupon,
+                'coupon' => $coupon,
                 'success' => $success,
                 'message' => $message,
                 'datas' => ['productCoupons' => $productCoupons],

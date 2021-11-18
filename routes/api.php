@@ -25,7 +25,7 @@ use App\Http\Controllers\OperationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageOperationController;
 use App\Http\Controllers\ProviderTypeController;
-use App\Http\Controllers\PurchaseCouponController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
@@ -122,26 +122,26 @@ Route::get('/product/{id}/show', [ProductController::class, 'show']);
 Route::patch('/product/{id}/update', [ProductController::class, 'update']);
 Route::delete('/product/{id}/destroy', [ProductController::class, 'destroy']);
 
-// Purchase order routes
-Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
-Route::get('/purchase-order-code', [PurchaseOrderController::class, 'showNextCode']);
-Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
-Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
-Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
-Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
+// Order routes
+Route::get('/order', [OrderController::class, 'index']);
+Route::get('/order-code', [OrderController::class, 'showNextCode']);
+Route::post('/order', [OrderController::class, 'store']);
+Route::get('/order/{id}/show', [OrderController::class, 'show']);
+Route::patch('/order/{id}/update', [OrderController::class, 'update']);
+Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
 
 // Purchase coupon routes
-Route::get('/purchase-coupon/{purchaseType}', [PurchaseCouponController::class, 'index']);
-Route::get('/purchase-coupon-code', [PurchaseCouponController::class, 'showNextCode']);
-Route::post('/purchase-coupon/{purchaseType}', [PurchaseCouponController::class, 'store']);
-// Route::get('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'indexFromPurchaseOrder']);
-// Route::post('/purchase-coupon-from-purchase-order', [PurchaseCouponController::class, 'storeFromPurchaseOrder']);
-Route::get('/purchase-coupon/{id}/show', [PurchaseCouponController::class, 'show']);
-// Route::get('/purchase-coupon/{id}/update', [PurchaseCouponController::class, 'edit']);
-Route::patch('/purchase-coupon/{id}/{purchaseType}/update', [PurchaseCouponController::class, 'update']);
-// Route::get('/purchase-coupon-from-purchase-order/{id}/update', [PurchaseCouponController::class, 'editFromPurchaseOrder']);
-// Route::patch('/purchase-coupon-from-purchase-order/{id}/update', [PurchaseCouponController::class, 'updateFromPurchaseOrder']);
-Route::delete('/purchase-coupon/{id}/destroy', [PurchaseCouponController::class, 'destroy']);
+Route::get('/coupon/{couponType}', [CouponController::class, 'index']);
+Route::get('/coupon-code', [CouponController::class, 'showNextCode']);
+Route::post('/coupon/{couponType}', [CouponController::class, 'store']);
+// Route::get('/coupon-from-purchase-order', [CouponController::class, 'indexFromPurchaseOrder']);
+// Route::post('/coupon-from-purchase-order', [CouponController::class, 'storeFromPurchaseOrder']);
+Route::get('/coupon/{id}/show', [CouponController::class, 'show']);
+// Route::get('/coupon/{id}/update', [CouponController::class, 'edit']);
+Route::patch('/coupon/{id}/{couponType}/update', [CouponController::class, 'update']);
+// Route::get('/coupon-from-purchase-order/{id}/update', [CouponController::class, 'editFromPurchaseOrder']);
+// Route::patch('/coupon-from-purchase-order/{id}/update', [CouponController::class, 'updateFromPurchaseOrder']);
+Route::delete('/coupon/{id}/destroy', [CouponController::class, 'destroy']);
 
 // Delivery note routes
 Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
@@ -151,13 +151,13 @@ Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
 Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
 Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
 
-// Order routes
-Route::get('/order', [OrderController::class, 'index']);
-Route::get('/order-code', [OrderController::class, 'showNextCode']);
-Route::post('/order', [OrderController::class, 'store']);
-Route::get('/order/{id}/show', [OrderController::class, 'show']);
-Route::patch('/order/{id}/update', [OrderController::class, 'update']);
-Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
+// Purchase order routes
+Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
+Route::get('/purchase-order-code', [PurchaseOrderController::class, 'showNextCode']);
+Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
+Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
+Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
+Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
 
 // Sale routes
 Route::get('/sale', [SaleController::class, 'index']);
@@ -203,6 +203,7 @@ Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, '
 Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
 Route::patch('/transfer-demand/{id}/validate', [TransferDemandController::class, 'validateTransferDemand']);
 Route::patch('/transfer-demand/{id}/cancel', [TransferDemandController::class, 'cancelTransferDemand']);
+Route::patch('/transfer-demand/{id}/transform-to-transfer', [TransferDemandController::class, 'transformDemandToTransfer']);
 
 // Transfer routes
 Route::get('/transfer', [TransferController::class, 'index']);

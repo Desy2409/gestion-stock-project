@@ -25,9 +25,9 @@ class Provider extends Model
         return $this->hasMany(PurchaseOrder::class);
     }
 
-    public function purchaseCoupons()
+    public function coupons()
     {
-        return $this->hasMany(PurchaseCoupon::class);
+        return $this->hasMany(Coupon::class);
     }
 
     public function providerType()

@@ -34,9 +34,9 @@ class Coupon extends Model
         return $this->hasMany(DeliveryNote::class);
     }
 
-    public function productPurchaseCoupons()
+    public function productCoupons()
     {
-        return $this->hasMany(ProductPurchaseCoupon::class);
+        return $this->hasMany(ProductCoupon::class);
     }
 
     public function salePoint()

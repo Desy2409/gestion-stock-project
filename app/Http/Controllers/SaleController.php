@@ -56,7 +56,7 @@ class SaleController extends Controller
 
     public function indexFromOrder($id)
     {
-        $orders = Order::with('client')->with('productOrders')->orderBy('sale_date')->get();
+        $orders = Order::with('provider')->with('productOrders')->orderBy('sale_date')->get();
         $sales = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
         $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
@@ -355,7 +355,7 @@ class SaleController extends Controller
 
     public function editFromOrder($id)
     {
-        $orders = Order::with('client')->with('productOrders')->orderBy('sale_date')->get();
+        $orders = Order::with('provider')->with('productOrders')->orderBy('sale_date')->get();
         $sale = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
         $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
