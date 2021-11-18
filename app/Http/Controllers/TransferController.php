@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductTransferLine;
 use App\Models\SalePoint;
 use App\Models\Transfer;
+use App\Models\TransferDemand;
 use App\Models\TransferRegister;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,7 @@ class TransferController extends Controller
         $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $transfers = Transfer::with('productsTransfersLines')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
+        $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
 
         $lastTransferRegister = TransferRegister::latest()->first();
 
@@ -33,10 +35,10 @@ class TransferController extends Controller
         $transferRegister->save();
 
         return new JsonResponse([
-            'datas' => ['transfers' => $transfers, 'salesPoints' => $salesPoints, 'products' => $products]
+            'datas' => ['transfers' => $transfers, 'salesPoints' => $salesPoints, 'products' => $products, 'transferDemands' => $transferDemands]
         ], 200);
     }
-    
+
     public function showNextCode()
     {
         $lastTransferRegister = TransferRegister::latest()->first();
@@ -45,7 +47,7 @@ class TransferController extends Controller
         } else {
             $code = $this->formateNPosition('TF', 1, 8);
         }
-        
+
 
         return new JsonResponse([
             'code' => $code
@@ -57,6 +59,7 @@ class TransferController extends Controller
         $this->validate(
             $request,
             [
+                'transfer_demand' => 'required',
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'transfer_reason' => 'required',
@@ -67,6 +70,7 @@ class TransferController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
+                'transfer_demand.required' => "Le choix d'une demande de transfert est obligatoire.",
                 'transmitter.required' => "Le point de vente source est obligatoire.",
                 'receiver.required' => "Le point de vente destination est obligatoire.",
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
@@ -99,6 +103,7 @@ class TransferController extends Controller
             $transfer->date_of_receipt = $request->date_of_receipt;
             $transfer->transmitter_id = $request->transmitter;
             $transfer->receiver_id = $request->receiver;
+            $transfer->transfer_demand_id = $request->transfer_demand;
             $transfer->save();
 
             if (!empty($request->products) && sizeof($request->products) > 0) {
@@ -110,6 +115,11 @@ class TransferController extends Controller
                     $productTransferLine->transfer_id = $transfer->id;
                     $productTransferLine->save();
                 }
+            }
+
+            $savedProductTransferLines = ProductTransferLine::where('transfer_id', $transfer->id)->get();
+            if (empty($savedProductTransferLines) || sizeof($savedProductTransferLines) == 0) {
+                $transfer->delete();
             }
 
             $success = true;
@@ -158,6 +168,7 @@ class TransferController extends Controller
         $this->validate(
             $request,
             [
+                'transfer_demand' => 'required',
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'transfer_reason' => 'required',
@@ -168,6 +179,7 @@ class TransferController extends Controller
                 'unit_prices' => 'required|min:0',
             ],
             [
+                'transfer_demand.required' => "Le choix d'une demande de transfert est obligatoire.",
                 'transmitter.required' => "Le point de vente source est obligatoire.",
                 'receiver.required' => "Le point de vente destination est obligatoire.",
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
@@ -192,6 +204,7 @@ class TransferController extends Controller
             $transfer->date_of_receipt = $request->date_of_receipt;
             $transfer->transmitter_id = $request->transmitter;
             $transfer->receiver_id = $request->receiver;
+            $transfer->transfer_demand_id = $request->transfer_demand;
             $transfer->save();
 
             ProductTransferLine::where('transfer_id', $transfer->id)->delete();
@@ -205,6 +218,11 @@ class TransferController extends Controller
                     $productTransferLine->transfer_id = $transfer->id;
                     $productTransferLine->save();
                 }
+            }
+
+            $savedProductTransferLines = ProductTransferLine::where('transfer_id', $transfer->id)->get();
+            if (empty($savedProductTransferLines) || sizeof($savedProductTransferLines) == 0) {
+                $transfer->delete();
             }
 
             $success = true;

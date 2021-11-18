@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnToUserTypesTable extends Migration
+class AddSymbolInUnitiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddColumnToUserTypesTable extends Migration
      */
     public function up()
     {
-        Schema::table('user_types', function (Blueprint $table) {
-            $table->longText('roles')->nullable();
+        Schema::table('unities', function (Blueprint $table) {
+            $table->string('symbol')->nullable();
         });
     }
 
@@ -25,7 +25,7 @@ class AddColumnToUserTypesTable extends Migration
      */
     public function down()
     {
-        Schema::table('user_types', function (Blueprint $table) {
+        Schema::table('unities', function (Blueprint $table) {
             //
         });
     }

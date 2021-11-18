@@ -15,19 +15,18 @@ class Order extends Model
         'total_amount',
         'observation'
     ];
-
-    public function client()
+    public function provider()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Provider::class);
+    }
+
+    public function productPurchaseOrders()
+    {
+        return $this->hasMany(ProductPurchaseOrder::class);
     }
 
     public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);
-    }
-
-    public function productOrders()
-    {
-        return $this->hasMany(ProductOrder::class);
     }
 }

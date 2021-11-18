@@ -3,32 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
-use App\Models\Folder;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductPurchaseOrder;
-use App\Models\Provider;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderRegister;
 use App\Models\SalePoint;
 use App\Models\Unity;
-use App\Models\UploadFile;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 
 class PurchaseOrderController extends Controller
 {
+    
     use UtilityTrait;
 
     public function index()
     {
-        $purchaseOrders = PurchaseOrder::with('provider')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
-        $providers = Provider::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
-        $unities = Unity::orderBy('wording')->get();
-        $salePoints = SalePoint::orderBy('social_reason')->get();
+        $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->purchaseOrderBy('purchaseOrder_date')->get();
+        $clients = Client::with('person')->get();
+        $products = Product::with('subCategory')->purchaseOrderBy('wording')->get();
+        $salePoints = SalePoint::purchaseOrderBy('social_reason')->get();
+        $unities = Unity::purchaseOrderBy('wording')->get();
 
         $lastPurchaseOrderRegister = PurchaseOrderRegister::latest()->first();
 
@@ -41,7 +39,7 @@ class PurchaseOrderController extends Controller
         $purchaseOrderRegister->save();
 
         return new JsonResponse([
-            'datas' => ['purchaseOrders' => $purchaseOrders, 'providers' => $providers, 'products' => $products, 'unities' => $unities, 'salePoints' => $salePoints]
+            'datas' => ['purchaseOrders' => $purchaseOrders, 'clients' => $clients, 'products' => $products, 'salePoints' => $salePoints, 'unities' => $unities]
         ], 200);
     }
 
@@ -51,7 +49,7 @@ class PurchaseOrderController extends Controller
         if ($lastPurchaseOrderRegister) {
             $code = $this->formateNPosition('BC', $lastPurchaseOrderRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('BC', 1, 8);
+            $code = $this->formateNPosition('BC',  1, 8);
         }
 
         return new JsonResponse([
@@ -64,42 +62,39 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
-                // 'folder' => 'required',
-                'sale_point' => 'required',
-                'provider' => 'required',
-                'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
+                 'sale_point' => 'required',
+                'client' => 'required',
+                'reference' => 'required|unique:purchaseOrders',
+                'purchaseOrder_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:purchaseOrder_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'ordered_product' => 'required',
+                'purchaseOrdered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
-                // 'upload_files' => 'required',
             ],
             [
-                // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
-                'provider.required' => "Le choix du fournisseur est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'purchase_date.required' => "La date du bon est obligatoire.",
-                'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
-                'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
+                'client.required' => "Le choix du client est obligatoire.",
+                'reference.required' => "La référence de la commande est obligatoire.",
+                'reference.unique' => "Cette commande existe déjà.",
+                'purchaseOrder_date.required' => "La date de la commande est obligatoire.",
+                'purchaseOrder_date.date' => "La date de la commande est incorrecte.",
+                'purchaseOrder_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                'purchaseOrder_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
+                'purchaseOrdered_product.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 
@@ -113,48 +108,33 @@ class PurchaseOrderController extends Controller
                 $purchaseOrder->code = $this->formateNPosition('BC', 1, 8);
             }
             $purchaseOrder->reference = $request->reference;
-            $purchaseOrder->purchase_date   = $request->purchase_date;
+            $purchaseOrder->purchaseOrder_date   = $request->purchaseOrder_date;
             $purchaseOrder->delivery_date   = $request->delivery_date;
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
-            $purchaseOrder->provider_id = $request->provider;
+            $purchaseOrder->client_id = $request->client;
             $purchaseOrder->sale_point_id = $request->sale_point;
             $purchaseOrder->save();
 
             $productsPurchaseOrders = [];
-            foreach ($request->ordered_product as $key => $product) {
+
+            foreach ($request->purchaseOrdered_product as $key => $product) {
                 $productPurchaseOrder = new ProductPurchaseOrder();
                 $productPurchaseOrder->quantity = $request->quantities[$key];
                 $productPurchaseOrder->unit_price = $request->unit_prices[$key];
                 $productPurchaseOrder->product_id = $product;
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
                 $productPurchaseOrder->unity_id = $request->unities[$key];
+
+                // $productPurchaseOrder->quantity = $product->quantity;
+                // $productPurchaseOrder->unit_price = $product->unit_price;
+                // $productPurchaseOrder->product_id = $product->product;
+                // $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
+                // $productPurchaseOrder->unity_id = $product->unity;
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
             }
-
-            $savedProductPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
-            if (empty($savedProductPurchaseOrders)||sizeof($savedProductPurchaseOrders)==0) {
-                $purchaseOrder->delete();
-            }
-
-
-
-
-            // $folder = Folder::findOrFail($request->folder);
-
-            // foreach ($request->upload_files as $key => $file) {
-            //     $fileName = $currentFileType->wording . ' - ' . $postulant->last_name . ' ' . $postulant->first_name . '.' . $file->getClientOriginalExtension();
-            //         $path = $file->storeAs($folder->path.'/' . $postulant->last_name . ' ' . $postulant->first_name, $fileName, 'public');
-            //     $uploadFile = new UploadFile();
-            //     $uploadFile->code = Str::random(10);
-            //     $uploadFile->name = $path;
-            //     $uploadFile->personalized_name = $request->personalized_name;
-            //     $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
-            //     $uploadFile->folder_id = $folder->id;
-            //     $uploadFile->save();
-            // }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
@@ -165,7 +145,7 @@ class PurchaseOrderController extends Controller
                 'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -177,7 +157,7 @@ class PurchaseOrderController extends Controller
 
     public function show($id)
     {
-        $purchaseOrder = PurchaseOrder::with('provider')->with('productPurchaseOrders')->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productPurchaseOrders : null; //ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
 
         return new JsonResponse([
@@ -188,14 +168,14 @@ class PurchaseOrderController extends Controller
 
     public function edit($id)
     {
-        $purchaseOrder = PurchaseOrder::with('provider')->with('productPurchaseOrders')->findOrFail($id);
-        $providers = Provider::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
+        $clients = Client::with('person')->get();
+        $products = Product::with('subCategory')->purchaseOrderBy('wording')->get();
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
 
         return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
-            'datas' => ['providers' => $providers, 'products' => $products, 'productsPurchaseOrders' => $productsPurchaseOrders]
+            'datas' => ['clients' => $clients, 'products' => $products, 'productsPurchaseOrders' => $productsPurchaseOrders]
         ], 200);
     }
 
@@ -205,60 +185,54 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
-                // 'folder' => 'required',
                 'sale_point' => 'required',
-                'provider' => 'required',
+                'client' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
+                'purchaseOrder_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:purchaseOrder_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'ordered_product' => 'required',
+                'purchaseOrdered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
-                // 'upload_files' => 'required',
             ],
             [
-                // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
-                'provider.required' => "Le choix du fournisseur est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'purchase_date.required' => "La date du bon est obligatoire.",
-                'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
-                'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
+                'client.required' => "Le choix du client est obligatoire.",
+                'reference.required' => "La référence de la commande est obligatoire.",
+                'purchaseOrder_date.required' => "La date de la commande est obligatoire.",
+                'purchaseOrder_date.date' => "La date de la commande est incorrecte.",
+                'purchaseOrder_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                'purchaseOrder_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
+                'purchaseOrdered_product.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 
         try {
-            // $purchaseOrder = new PurchaseOrder();
             $purchaseOrder->reference = $request->reference;
-            $purchaseOrder->purchase_date   = $request->purchase_date;
+            $purchaseOrder->purchaseOrder_date   = $request->purchaseOrder_date;
             $purchaseOrder->delivery_date   = $request->delivery_date;
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
-            $purchaseOrder->provider_id = $request->provider;
-            $purchaseOrder->sale_point_id = $request->sale_point;
+            $purchaseOrder->client_id = $request->client;
             $purchaseOrder->save();
 
             ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->delete();
 
             $productsPurchaseOrders = [];
-            foreach ($request->ordered_product as $key => $product) {
+            foreach ($request->purchaseOrdered_product as $key => $product) {
                 $productPurchaseOrder = new ProductPurchaseOrder();
                 $productPurchaseOrder->quantity = $request->quantities[$key];
                 $productPurchaseOrder->unit_price = $request->unit_prices[$key];
@@ -268,11 +242,6 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
-            }
-
-            $savedProductPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
-            if (empty($savedProductPurchaseOrders)||sizeof($savedProductPurchaseOrders)==0) {
-                $purchaseOrder->delete();
             }
 
             $success = true;

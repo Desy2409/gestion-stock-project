@@ -18,18 +18,19 @@ class PurchaseOrder extends Model
         'observation'
     ];
 
-    public function provider()
+    
+    public function client()
     {
-        return $this->belongsTo(Provider::class);
-    }
-
-    public function productPurchaseOrders()
-    {
-        return $this->hasMany(ProductPurchaseOrder::class);
+        return $this->belongsTo(Client::class);
     }
 
     public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);
+    }
+
+    public function productOrders()
+    {
+        return $this->hasMany(ProductOrder::class);
     }
 }
