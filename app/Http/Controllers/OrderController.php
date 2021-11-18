@@ -20,6 +20,7 @@ class OrderController extends Controller
 
     public function index()
     {
+        // dd("OrderController");
         $orders = Order::with('provider')->with('productOrders')->orderBy('order_date')->get();
         $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
