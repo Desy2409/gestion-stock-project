@@ -20,7 +20,7 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::with('provider')->with('productOrders')->orderBy('purchase_date')->get();
+        $orders = Order::with('provider')->with('productOrders')->orderBy('order_date')->get();
         $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
@@ -64,11 +64,11 @@ class OrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
+                'order_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'ordered_product' => 'required',
+                'products_of_order' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
@@ -79,17 +79,17 @@ class OrderController extends Controller
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
-                'purchase_date.required' => "La date du bon est obligatoire.",
-                'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
-                'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
+                'order_date.required' => "La date du bon est obligatoire.",
+                'order_date.date' => "La date du bon de commande est incorrecte.",
+                'order_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
+                'order_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
+                'products_of_order.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
@@ -109,7 +109,7 @@ class OrderController extends Controller
                 $order->code = $this->formateNPosition('BC', 1, 8);
             }
             $order->reference = $request->reference;
-            $order->purchase_date   = $request->purchase_date;
+            $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;
@@ -118,7 +118,7 @@ class OrderController extends Controller
             $order->save();
 
             $productsOrders = [];
-            foreach ($request->ordered_product as $key => $product) {
+            foreach ($request->products_of_order as $key => $product) {
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $request->quantities[$key];
                 $productOrder->unit_price = $request->unit_prices[$key];
@@ -129,6 +129,7 @@ class OrderController extends Controller
 
                 array_push($productsOrders, $productOrder);
             }
+            dd($productsOrders);
 
             $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
             if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
@@ -205,11 +206,11 @@ class OrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
+                'order_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'ordered_product' => 'required',
+                'products_of_order' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
@@ -220,17 +221,17 @@ class OrderController extends Controller
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'provider.required' => "Le choix du fournisseur est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
-                'purchase_date.required' => "La date du bon est obligatoire.",
-                'purchase_date.date' => "La date du bon de commande est incorrecte.",
-                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
-                'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
+                'order_date.required' => "La date du bon est obligatoire.",
+                'order_date.date' => "La date du bon de commande est incorrecte.",
+                'order_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
+                'order_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
+                'products_of_order.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
@@ -243,7 +244,7 @@ class OrderController extends Controller
         try {
             // $order = new Order();
             $order->reference = $request->reference;
-            $order->purchase_date   = $request->purchase_date;
+            $order->order_date   = $request->order_date;
             $order->delivery_date   = $request->delivery_date;
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;
@@ -254,7 +255,7 @@ class OrderController extends Controller
             ProductOrder::where('order_id', $order->id)->delete();
 
             $productsOrders = [];
-            foreach ($request->ordered_product as $key => $product) {
+            foreach ($request->products_of_order as $key => $product) {
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $request->quantities[$key];
                 $productOrder->unit_price = $request->unit_prices[$key];
@@ -315,6 +316,55 @@ class OrderController extends Controller
         }
     }
 
+    public function validateOrder($id)
+    {
+        $order = Order::findOrFail($id);
+        try {
+            $order->state = 'S';
+            $order->date_of_processing = date('Y-m-d', strtotime(now()));
+            $order->save();
+
+            $success = true;
+            $message = "Demande de transfert validée avec succès.";
+            return new JsonResponse([
+                'order' => $order,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function cancelOrder($id)
+    {
+        $order = Order::findOrFail($id);
+        try {
+            $order->state = 'A';
+            $order->date_of_processing = date('Y-m-d', strtotime(now()));
+            $order->save();
+
+            $success = true;
+            $message = "Commande annulée avec succès.";
+            return new JsonResponse([
+                'order' => $order,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'annulation de la commande.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
 
 
 }

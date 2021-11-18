@@ -139,11 +139,10 @@ class ClientController extends Controller
 
             $client = new Client();
             if ($lastClient) {
-                $client->code = $this->formateNPosition('BC', $lastClient->id + 1, 8);
+                $client->code = $this->formateNPosition('CL', $lastClient->id + 1, 8);
             } else {
-                $client->code = $this->formateNPosition('BC', 1, 8);
+                $client->code = $this->formateNPosition('CL', 1, 8);
             }
-            $client->code = $this->formateNPosition('CL', $lastClient->id + 1, 8);
             $client->reference = $request->reference;
             $client->settings = $request->settings;
             $client->exemption_reference = $request->exemption_reference;
@@ -179,6 +178,7 @@ class ClientController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([

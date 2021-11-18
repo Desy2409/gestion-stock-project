@@ -15,7 +15,9 @@ class PurchaseOrder extends Model
         'purchase_date',
         'delivery_date',
         'total_amount',
-        'observation'
+        'observation',
+        'state',
+        'date_of_processing',
     ];
 
     

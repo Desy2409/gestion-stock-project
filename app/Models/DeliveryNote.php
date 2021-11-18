@@ -17,9 +17,9 @@ class DeliveryNote extends Model
         'place_of_delivery'
     ];
 
-    public function purchaseCoupon()
+    public function coupon()
     {
-        return $this->belongsTo(PurchaseCoupon::class);
+        return $this->belongsTo(Coupon::class);
     }
 
     public function productDeliveryNotes()

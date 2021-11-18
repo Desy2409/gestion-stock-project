@@ -13,7 +13,9 @@ class Order extends Model
         'order_date',
         'delivery_date',
         'total_amount',
-        'observation'
+        'observation',
+        'state',
+        'date_of_processing',
     ];
     public function provider()
     {

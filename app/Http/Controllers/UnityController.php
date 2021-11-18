@@ -26,11 +26,14 @@ class UnityController extends Controller
             $request,
             [
                 'wording' => 'required|unique:unities|max:150',
+                'symbol'=>'required|unique:unities',
                 'description' => 'max:255',
             ],
             [
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.unique' => "Cette unité existe déjà.",
+                'symbol.required' => "Le symbole est obligatoire.",
+                'symbol.unique' => "Ce symbole a déjà été attribué.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
@@ -40,6 +43,7 @@ class UnityController extends Controller
             $unity = new Unity();
             $unity->code = Str::random(10);
             $unity->wording = $request->wording;
+            $unity->symbol = $request->symbol;
             $unity->description = $request->description;
             $unity->save();
 
@@ -69,17 +73,40 @@ class UnityController extends Controller
             $request,
             [
                 'wording' => 'required|max:150',
+                'symbol'=>'required',
                 'description' => 'max:255',
             ],
             [
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'symbol.required' => "Le symbole est obligatoire.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
+        $existingUnitiesOnSymbol = Unity::where('reference', $request->reference)->where('truck_registration', $request->truck_registration)->get();
+        if (!empty($existingUnitiesOnSymbol) && sizeof($existingUnitiesOnSymbol) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'existingUnity' => $existingUnitiesOnSymbol[0],
+                'success' => $success,
+                'message' => "Ce symbole a déjà été attribué."
+            ], 400);
+        }
+
+        $existingUnitiesOnWording = Unity::where('reference', $request->reference)->where('truck_registration', $request->truck_registration)->get();
+        if (!empty($existingUnitiesOnWording) && sizeof($existingUnitiesOnWording) > 1) {
+            $success = false;
+            return new JsonResponse([
+                'existingUnity' => $existingUnitiesOnWording[0],
+                'success' => $success,
+                'message' => "Cette unité existe déjà."
+            ], 400);
+        }
+
         try {
             $unity->wording = $request->wording;
+            $unity->symbol = $request->symbol;
             $unity->description = $request->description;
             $unity->save();
 
