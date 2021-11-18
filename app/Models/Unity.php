@@ -10,6 +10,7 @@ class Unity extends Model
     protected $fillable = [
         'code',
         'wording',
+        'symbol',
         'description'
     ];
 

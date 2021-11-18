@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductPurchaseCoupon extends Model
+class ProductCoupon extends Model
 {
     protected $fillable = [
         'quantity',
@@ -17,9 +17,9 @@ class ProductPurchaseCoupon extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function purchaseCoupon()
+    public function coupon()
     {
-        return $this->belongsTo(PurchaseCoupon::class);
+        return $this->belongsTo(Coupon::class);
     }
     
     public function unity()

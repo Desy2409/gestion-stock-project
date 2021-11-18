@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Product;
 use App\Models\ProductTransferDemandLine;
+use App\Models\ProductTransferLine;
 use App\Models\SalePoint;
+use App\Models\Transfer;
 use App\Models\TransferDemand;
 use App\Models\TransferDemandRegister;
 use DateTime;
@@ -42,12 +44,12 @@ class TransferDemandController extends Controller
     public function showNextCode()
     {
         $lastTransferDemandRegister = TransferDemandRegister::latest()->first();
-        if ( $lastTransferDemandRegister) {
+        if ($lastTransferDemandRegister) {
             $code = $this->formateNPosition('DT', $lastTransferDemandRegister->id + 1, 8);
         } else {
             $code = $this->formateNPosition('DT', 1, 8);
         }
-        
+
         return new JsonResponse([
             'code' => $code
         ], 200);
@@ -113,6 +115,12 @@ class TransferDemandController extends Controller
                     $transferDemandLine->transfer_demand_id = $transferDemand->id;
                     $transferDemandLine->save();
                 }
+            }
+
+
+            $savedProductTransferDemandLine = ProductTransferDemandLine::where('transfer_demand_id', $transferDemand->id)->get();
+            if (empty($savedProductTransferDemandLine) || sizeof($savedProductTransferDemandLine) == 0) {
+                $transferDemand->delete();
             }
 
             $success = true;
@@ -212,6 +220,11 @@ class TransferDemandController extends Controller
                 }
             }
 
+            $savedProductTransferDemandLine = ProductTransferDemandLine::where('transfer_demand_id', $transferDemand->id)->get();
+            if (empty($savedProductTransferDemandLine) || sizeof($savedProductTransferDemandLine) == 0) {
+                $transferDemand->delete();
+            }
+
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
@@ -297,6 +310,60 @@ class TransferDemandController extends Controller
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function transformDemandToTransfer($id)
+    {
+        $transferDemand = TransferDemand::findOrFail($id);
+
+        try {
+            $lastTransfer = Transfer::latest()->first();
+
+            $transfer = new Transfer();
+            if ($lastTransfer) {
+                $transfer->code = $this->formateNPosition('TF', $lastTransfer->id + 1, 8);
+            } else {
+                $transfer->code = $this->formateNPosition('TF', 1, 8);
+            }
+            $transfer->transfer_reason = $transferDemand->request_reason;
+            $transfer->date_of_transfer = date('Ymd');
+            // $transfer->date_of_receipt = $request->date_of_receipt;
+            $transfer->transmitter_id = $transferDemand->receiver_id;
+            $transfer->receiver_id = $transferDemand->transmitter_id;
+            // $transfer->save();
+
+            $productTransferDemandLines = ProductTransferDemandLine::where('transfer_demand_id', $transferDemand->id)->get();
+
+            $productTransferLines = [];
+            if (!empty($productTransferDemandLines) && sizeof($productTransferDemandLines) > 0) {
+                foreach ($productTransferDemandLines as $key => $productTransferDemandLine) {
+                    $productTransferLine = new ProductTransferLine();
+                    $productTransferLine->quantity = $productTransferDemandLine->quantity;
+                    $productTransferLine->unit_price = $productTransferDemandLine->unit_price;
+                    $productTransferLine->product_id = $productTransferDemandLine->product_id;
+                    // $productTransferLine->transfer_id = $transfer->id;
+
+                    array_push($productTransferLines, $productTransferLine);
+                }
+            }
+
+            $success = true;
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'transferDemand' => $transferDemand,
+                'transfer' => $transfer,
+                'success' => $success,
+                'message' => $message,
+                'datas' => ['productTransferLines' => $productTransferLines]
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la transformation de la demande de transfert en transfert.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

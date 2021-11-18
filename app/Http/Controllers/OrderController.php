@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
-use App\Models\Client;
 use App\Models\Order;
 use App\Models\OrderRegister;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\Provider;
 use App\Models\SalePoint;
 use App\Models\Unity;
 use Exception;
@@ -20,11 +20,11 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::with('client')->with('salePoint')->with('productOrders')->orderBy('order_date')->get();
-        $clients = Client::with('person')->get();
+        $orders = Order::with('provider')->with('productOrders')->orderBy('purchase_date')->get();
+        $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
-        $salePoints = SalePoint::orderBy('social_reason')->get();
         $unities = Unity::orderBy('wording')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
 
         $lastOrderRegister = OrderRegister::latest()->first();
 
@@ -37,7 +37,7 @@ class OrderController extends Controller
         $orderRegister->save();
 
         return new JsonResponse([
-            'datas' => ['orders' => $orders, 'clients' => $clients, 'products' => $products, 'salePoints' => $salePoints, 'unities' => $unities]
+            'datas' => ['orders' => $orders, 'providers' => $providers, 'products' => $products, 'unities' => $unities, 'salePoints' => $salePoints]
         ], 200);
     }
 
@@ -47,7 +47,7 @@ class OrderController extends Controller
         if ($lastOrderRegister) {
             $code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('BC',  1, 8);
+            $code = $this->formateNPosition('BC', 1, 8);
         }
 
         return new JsonResponse([
@@ -60,31 +60,33 @@ class OrderController extends Controller
         $this->validate(
             $request,
             [
-                 'sale_point' => 'required',
-                'client' => 'required',
-                'reference' => 'required|unique:orders',
-                'order_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
+                // 'folder' => 'required',
+                'sale_point' => 'required',
+                'provider' => 'required',
+                'reference' => 'required',
+                'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
+                // 'upload_files' => 'required',
             ],
             [
+                // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
-                'client.required' => "Le choix du client est obligatoire.",
-                'reference.required' => "La référence de la commande est obligatoire.",
-                'reference.unique' => "Cette commande existe déjà.",
-                'order_date.required' => "La date de la commande est obligatoire.",
-                'order_date.date' => "La date de la commande est incorrecte.",
-                'order_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'order_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
+                'provider.required' => "Le choix du fournisseur est obligatoire.",
+                'reference.required' => "La référence du bon est obligatoire.",
+                'purchase_date.required' => "La date du bon est obligatoire.",
+                'purchase_date.date' => "La date du bon de commande est incorrecte.",
+                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
+                'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
@@ -93,6 +95,7 @@ class OrderController extends Controller
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 
@@ -106,16 +109,15 @@ class OrderController extends Controller
                 $order->code = $this->formateNPosition('BC', 1, 8);
             }
             $order->reference = $request->reference;
-            $order->order_date   = $request->order_date;
+            $order->purchase_date   = $request->purchase_date;
             $order->delivery_date   = $request->delivery_date;
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;
-            $order->client_id = $request->client;
+            $order->provider_id = $request->provider;
             $order->sale_point_id = $request->sale_point;
             $order->save();
 
             $productsOrders = [];
-
             foreach ($request->ordered_product as $key => $product) {
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $request->quantities[$key];
@@ -123,16 +125,32 @@ class OrderController extends Controller
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
                 $productOrder->unity_id = $request->unities[$key];
-
-                // $productOrder->quantity = $product->quantity;
-                // $productOrder->unit_price = $product->unit_price;
-                // $productOrder->product_id = $product->product;
-                // $productOrder->order_id = $order->id;
-                // $productOrder->unity_id = $product->unity;
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
             }
+
+            $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
+            if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
+                $order->delete();
+            }
+
+
+
+
+            // $folder = Folder::findOrFail($request->folder);
+
+            // foreach ($request->upload_files as $key => $file) {
+            //     $fileName = $currentFileType->wording . ' - ' . $postulant->last_name . ' ' . $postulant->first_name . '.' . $file->getClientOriginalExtension();
+            //         $path = $file->storeAs($folder->path.'/' . $postulant->last_name . ' ' . $postulant->first_name, $fileName, 'public');
+            //     $uploadFile = new UploadFile();
+            //     $uploadFile->code = Str::random(10);
+            //     $uploadFile->name = $path;
+            //     $uploadFile->personalized_name = $request->personalized_name;
+            //     $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
+            //     $uploadFile->folder_id = $folder->id;
+            //     $uploadFile->save();
+            // }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
@@ -143,7 +161,7 @@ class OrderController extends Controller
                 'datas' => ['productsOrders' => $productsOrders],
             ], 200);
         } catch (Exception $e) {
-            // dd($e);
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -155,7 +173,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with('client')->with('salePoint')->with('productOrders')->findOrFail($id);
+        $order = Order::with('provider')->with('productOrders')->findOrFail($id);
         $productsOrders = $order ? $order->productOrders : null; //ProductOrder::where('order_id', $order->id)->get();
 
         return new JsonResponse([
@@ -166,14 +184,14 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = Order::with('client')->with('salePoint')->with('productOrders')->findOrFail($id);
-        $clients = Client::with('person')->get();
+        $order = Order::with('provider')->with('productOrders')->findOrFail($id);
+        $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $productsOrders = $order ? $order->productsOrders : null;
 
         return new JsonResponse([
             'order' => $order,
-            'datas' => ['clients' => $clients, 'products' => $products, 'productsOrders' => $productsOrders]
+            'datas' => ['providers' => $providers, 'products' => $products, 'productsOrders' => $productsOrders]
         ], 200);
     }
 
@@ -183,30 +201,33 @@ class OrderController extends Controller
         $this->validate(
             $request,
             [
+                // 'folder' => 'required',
                 'sale_point' => 'required',
-                'client' => 'required',
+                'provider' => 'required',
                 'reference' => 'required',
-                'order_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
+                'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'ordered_product' => 'required',
                 'quantities' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
+                // 'upload_files' => 'required',
             ],
             [
+                // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
                 'sale_point.required' => "Le choix du point de vente est obligatoire.",
-                'client.required' => "Le choix du client est obligatoire.",
-                'reference.required' => "La référence de la commande est obligatoire.",
-                'order_date.required' => "La date de la commande est obligatoire.",
-                'order_date.date' => "La date de la commande est incorrecte.",
-                'order_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'order_date.before' => "La date de la commande doit être antérieure ou égale à aujourd'hui.",
+                'provider.required' => "Le choix du fournisseur est obligatoire.",
+                'reference.required' => "La référence du bon est obligatoire.",
+                'purchase_date.required' => "La date du bon est obligatoire.",
+                'purchase_date.date' => "La date du bon de commande est incorrecte.",
+                'purchase_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
+                'purchase_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
+                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
@@ -215,16 +236,19 @@ class OrderController extends Controller
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 
         try {
+            // $order = new Order();
             $order->reference = $request->reference;
-            $order->order_date   = $request->order_date;
+            $order->purchase_date   = $request->purchase_date;
             $order->delivery_date   = $request->delivery_date;
             $order->total_amount = $request->total_amount;
             $order->observation = $request->observation;
-            $order->client_id = $request->client;
+            $order->provider_id = $request->provider;
+            $order->sale_point_id = $request->sale_point;
             $order->save();
 
             ProductOrder::where('order_id', $order->id)->delete();
@@ -240,6 +264,11 @@ class OrderController extends Controller
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
+            }
+
+            $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
+            if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
+                $order->delete();
             }
 
             $success = true;
@@ -285,4 +314,7 @@ class OrderController extends Controller
             ], 400);
         }
     }
+
+
+
 }
