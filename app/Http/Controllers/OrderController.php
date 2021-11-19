@@ -93,14 +93,14 @@ class OrderController extends Controller
         );
         //dd ($request->productOrders[0]['quantity']);
 
-        if (sizeof($request->products_of_order)!=sizeof($request->quantities)||sizeof($request->products_of_order)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
-            $success=false;
-            $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-            return new JsonResponse([
-                'success'=>$success,
-                'message'=>$message,
-            ]);
-        }
+        // if (sizeof($request->productOrders)!=sizeof($request->quantities)||sizeof($request->productOrders)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
+        //     $success=false;
+        //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+        //     return new JsonResponse([
+        //         'success'=>$success,
+        //         'message'=>$message,
+        //     ]);
+        // }
 
         try {
             $lastOrder = Order::latest()->first();
@@ -244,7 +244,7 @@ class OrderController extends Controller
             ]
         );
 
-        if (sizeof($request->products_of_order)!=sizeof($request->quantities)||sizeof($request->products_of_order)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
+        if (sizeof($request->productOrders)!=sizeof($request->quantities)||sizeof($request->productOrders)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
             $success=false;
             $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
             return new JsonResponse([
