@@ -26,13 +26,18 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);
     }
 
-    public function productOrders()
+    public function productPurchaseOrders()
     {
-        return $this->hasMany(ProductOrder::class);
+        return $this->hasMany(ProductPurchaseOrder::class);
     }
 }

@@ -22,6 +22,11 @@ class ClientDeliveryNote extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
+    }
+
     public function productClientDeliveryNotes()
     {
         return $this->hasMany(ProductClientDeliveryNote::class);

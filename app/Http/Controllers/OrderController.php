@@ -99,6 +99,15 @@ class OrderController extends Controller
             ]
         );
 
+        if (sizeof($request->products_of_order)!=sizeof($request->quantities)||sizeof($request->products_of_order)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
+            $success=false;
+            $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            return new JsonResponse([
+                'success'=>$success,
+                'message'=>$message,
+            ]);
+        }
+
         try {
             $lastOrder = Order::latest()->first();
 
@@ -129,7 +138,7 @@ class OrderController extends Controller
 
                 array_push($productsOrders, $productOrder);
             }
-            dd($productsOrders);
+            // dd($productsOrders);
 
             $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
             if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
@@ -240,6 +249,15 @@ class OrderController extends Controller
                 // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
+
+        if (sizeof($request->products_of_order)!=sizeof($request->quantities)||sizeof($request->products_of_order)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
+            $success=false;
+            $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            return new JsonResponse([
+                'success'=>$success,
+                'message'=>$message,
+            ]);
+        }
 
         try {
             // $order = new Order();

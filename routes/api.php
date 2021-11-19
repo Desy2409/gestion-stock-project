@@ -25,7 +25,7 @@ use App\Http\Controllers\OperationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageOperationController;
 use App\Http\Controllers\ProviderTypeController;
-use App\Http\Controllers\CouponController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
@@ -130,18 +130,13 @@ Route::get('/order/{id}/show', [OrderController::class, 'show']);
 Route::patch('/order/{id}/update', [OrderController::class, 'update']);
 Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
 
-// Purchase coupon routes
-Route::get('/coupon/{couponType}', [CouponController::class, 'index']);
-Route::get('/coupon-code', [CouponController::class, 'showNextCode']);
-Route::post('/coupon/{couponType}', [CouponController::class, 'store']);
-// Route::get('/coupon-from-purchase-order', [CouponController::class, 'indexFromPurchaseOrder']);
-// Route::post('/coupon-from-purchase-order', [CouponController::class, 'storeFromPurchaseOrder']);
-Route::get('/coupon/{id}/show', [CouponController::class, 'show']);
-// Route::get('/coupon/{id}/update', [CouponController::class, 'edit']);
-Route::patch('/coupon/{id}/{couponType}/update', [CouponController::class, 'update']);
-// Route::get('/coupon-from-purchase-order/{id}/update', [CouponController::class, 'editFromPurchaseOrder']);
-// Route::patch('/coupon-from-purchase-order/{id}/update', [CouponController::class, 'updateFromPurchaseOrder']);
-Route::delete('/coupon/{id}/destroy', [CouponController::class, 'destroy']);
+// Purchase routes
+Route::get('/purchase/{purchaseType}', [PurchaseController::class, 'index']);
+Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
+Route::post('/purchase/{purchaseType}', [PurchaseController::class, 'store']);
+Route::get('/purchase/{id}/show', [PurchaseController::class, 'show']);
+Route::patch('/purchase/{id}/{purchaseType}/update', [PurchaseController::class, 'update']);
+Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
 
 // Delivery note routes
 Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
