@@ -69,10 +69,7 @@ class OrderController extends Controller
                 // 'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'products_of_order' => 'required',
-                'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
-                'unities' => 'required',
+                'productOrders' => 'required',
                 // 'upload_files' => 'required',
             ],
             [
@@ -90,15 +87,11 @@ class OrderController extends Controller
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'products_of_order.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
+                'productOrders.required' => "Vous devez ajouter au moins un produit au panier.",
+                // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.", Ok testons Amdi !!! tu parles trop !! Viens tester !! eeeeeh Dieu h
             ]
         );
+        //dd ($request->productOrders[0]['quantity']);
 
         try {
             $lastOrder = Order::latest()->first();
@@ -119,23 +112,23 @@ class OrderController extends Controller
             $order->save();
 
             $productsOrders = [];
-            foreach ($request->products_of_order as $key => $product) {
+            foreach ($request->productOrders as $key => $productOrderLine) {
                 $productOrder = new ProductOrder();
-                $productOrder->quantity = $request->quantities[$key];
-                $productOrder->unit_price = $request->unit_prices[$key];
-                $productOrder->product_id = $product;
+                $productOrder->quantity = $productOrderLine['quantity'];
+                $productOrder->unit_price = $productOrderLine['unit_price'];
+                $productOrder->product_id = $productOrderLine['product'];;
                 $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $request->unities[$key];
+                $productOrder->unity_id = $productOrderLine['unity'];;
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
             }
-            dd($productsOrders);
+            // dd($productsOrders);
 
-            $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
+            /*$savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
             if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
                 $order->delete();
-            }
+            }*/
 
 
 
@@ -211,8 +204,8 @@ class OrderController extends Controller
                 'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'products_of_order' => 'required',
-                'quantities' => 'required|min:0',
+                'productOrders' => 'required',
+                'quantity' => 'required|min:0',
                 'unit_prices' => 'required|min:0',
                 'unities' => 'required',
                 // 'upload_files' => 'required',
@@ -232,9 +225,9 @@ class OrderController extends Controller
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'products_of_order.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                'productOrders.required' => "Vous devez ajouter au moins un produit au panier.",
+                'quantity.required' => "Les quantités sont obligatoires.",
+                'quantity.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
                 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
@@ -256,9 +249,9 @@ class OrderController extends Controller
             ProductOrder::where('order_id', $order->id)->delete();
 
             $productsOrders = [];
-            foreach ($request->products_of_order as $key => $product) {
+            foreach ($request->productOrders as $key => $product) {
                 $productOrder = new ProductOrder();
-                $productOrder->quantity = $request->quantities[$key];
+                $productOrder->quantity = $request->quantity[$key];
                 $productOrder->unit_price = $request->unit_prices[$key];
                 $productOrder->product_id = $product;
                 $productOrder->order_id = $order->id;
