@@ -57,9 +57,9 @@ class SalePoint extends Model
         return $this->hasMany(PurchaseOrder::class);
     }
 
-    public function coupons()
+    public function purchases()
     {
-        return $this->hasMany(Coupon::class);
+        return $this->hasMany(Purchase::class);
     }
 
     public function goodToRemoves()

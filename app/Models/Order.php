@@ -27,6 +27,11 @@ class Order extends Model
         return $this->hasMany(ProductOrder::class);
     }
 
+    public function purchases()
+    {
+        return $this->belongsTo(Purchase::class);
+    }
+
     public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);

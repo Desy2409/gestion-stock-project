@@ -19,9 +19,9 @@ class Unity extends Model
         return $this->hasMany(ProductPurchaseOrder::class);
     }
 
-    public function productCoupons()
+    public function productPurchases()
     {
-        return $this->hasMany(ProductCoupon::class);
+        return $this->hasMany(ProductPurchase::class);
     }
 
     public function productDeliveryNotes()

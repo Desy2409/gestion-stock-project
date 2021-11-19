@@ -7,8 +7,11 @@ use App\Models\Client;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\ProductPurchaseOrder;
 use App\Models\ProductSale;
+use App\Models\PurchaseOrder;
 use App\Models\Sale;
+use App\Models\SalePoint;
 use App\Models\SaleRegister;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,37 +19,52 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    use UtilityTrait;
-
-    public function index()
+    public function index($saleType)
     {
-        $sales = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
-        $clients = Client::with('person')->get();
-
+        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition('BA', $lastSaleRegister->id + 1, 8);
         } else {
-            $saleRegister->code = $this->formateNPosition('VT', 1, 8);
+            $saleRegister->code = $this->formateNPosition('BA', 1, 8);
         }
         $saleRegister->save();
-        // dd( $saleRegister);
+
+        if ($saleType == "Vente directe") {
+            $clients = Client::with('person')->get();
+            $salePoints = SalePoint::orderBy('social_reason')->get();
+            $products = Product::with('subCategory')->get();
+
+            return new JsonResponse([
+                'datas' => ['clients' => $clients, 'salePoints' => $salePoints, 'products' => $products, 'sales' => $sales]
+            ]);
+        } else {
+            $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->orderBy('code')->get();
+            return new JsonResponse([
+                'datas' => ['purchaseOrders' => $purchaseOrders, 'sales' => $sales]
+            ]);
+        }
+    }
+
+    public function productFromPurchaseOrder($id)
+    {
+        $order = PurchaseOrder::findOrFail($id);
+        $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $order->id)->pluck('product_id')->toArray();
+        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
-            'datas' => ['sales' => $sales, 'clients' => $clients, 'products' => $products]
+            'datas' => ['products' => $products]
         ], 200);
     }
 
     public function showNextCode()
     {
         $lastSaleRegister = SaleRegister::latest()->first();
-        // dd($lastSaleRegister);
         if ($lastSaleRegister) {
-            $code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+            $code = $this->formateNPosition('BA', $lastSaleRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('VT', 1, 8);
+            $code = $this->formateNPosition('BA', 1, 8);
         }
 
         return new JsonResponse([
@@ -54,203 +72,10 @@ class SaleController extends Controller
         ], 200);
     }
 
-    public function indexFromOrder($id)
-    {
-        $orders = Order::with('provider')->with('productOrders')->orderBy('sale_date')->get();
-        $sales = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->orderBy('sale_date')->get();
-        $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
-        return new JsonResponse([
-            'datas' => ['sales' => $sales,  'orders' => $orders, 'products' => $products]
-        ], 200);
-    }
-
-    public function showProductOfOrder($id)
-    {
-        $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
-        return new JsonResponse([
-            'datas' => ['products' => $products]
-        ], 200);
-    }
-
-    public function store(Request $request)
-    {
-        $this->validate(
-            $request,
-            [
-                'client' => 'required',
-                'reference' => 'required|unique:sales',
-                'sale_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:sale_date',
-                'total_amount' => 'required',
-                'observation' => 'max:255',
-                'ordered_product' => 'required',
-                'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
-            ],
-            [
-                'client.required' => "Le choix du fournisseur est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'reference.unique' => "Cette vente existe déjà.",
-                'sale_date.required' => "La date du bon est obligatoire.",
-                'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : Année Mois Jour.",
-                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
-                'total_amount.required' => "Le montant total est obligatoire.",
-                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-            ]
-        );
-
-        try {
-            $lastSale = Sale::latest()->first();
-
-            $sale = new Sale();
-            if ($lastSale) {
-                $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
-            } else {
-                $sale->code = $this->formateNPosition('VT', 1, 8);
-            }
-            $sale->reference = $request->reference;
-            $sale->sale_date   = $request->sale_date;
-            $sale->delivery_date   = $request->delivery_date;
-            $sale->total_amount = $request->total_amount;
-            $sale->observation = $request->observation;
-            $sale->client_id = $request->client;
-            $sale->save();
-
-            $productSales = [];
-            foreach ($request->ordered_product as $key => $product) {
-                $productSale = new ProductSale();
-                $productSale->quantity = $request->quantities[$key];
-                $productSale->unit_price = $request->unit_prices[$key];
-                $productSale->product_id = $product;
-                $productSale->sale_id = $sale->id;
-                $productSale->save();
-
-                array_push($productSales, $productSale);
-            }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'sale' => $sale,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productSales' => $productSales],
-            ], 200);
-        } catch (Exception $e) {
-            // dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de l'enregistrement.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
-
-    public function storeFromOrder(Request $request)
-    {
-        $this->validate(
-            $request,
-            [
-                'order' => 'required',
-                'reference' => 'required|unique:sales',
-                'sale_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:sale_date',
-                'total_amount' => 'required',
-                'observation' => 'max:255',
-                'ordered_product' => 'required',
-                'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
-            ],
-            [
-                'order.required' => "Le choix d'un bon de commande est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'reference.unique' => "Cette vente existe déjà.",
-                'sale_date.required' => "La date du bon est obligatoire.",
-                'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : Année Mois Jour.",
-                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
-                'total_amount.required' => "Le montant total est obligatoire.",
-                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-            ]
-        );
-
-        try {
-            $order = Order::findOrFail($request->order);
-
-            $lastSale = Sale::latest()->first();
-
-            $sale = new Sale();
-            if ($lastSale) {
-                $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
-            } else {
-                $sale->code = $this->formateNPosition('VT', 1, 8);
-            }
-            $sale->reference = $request->reference;
-            $sale->sale_date   = $request->sale_date;
-            $sale->delivery_date   = $request->delivery_date;
-            $sale->total_amount = $request->total_amount;
-            $sale->observation = $request->observation;
-            $sale->order_id = $order->id;
-            $sale->client_id = $order->client->id;
-            $sale->save();
-
-            $productSales = [];
-            foreach ($request->ordered_product as $key => $product) {
-                $productSale = new ProductSale();
-                $productSale->quantity = $request->quantities[$key];
-                $productSale->unit_price = $request->unit_prices[$key];
-                $productSale->product_id = $product;
-                $productSale->order_id = $order->id;
-                $productSale->save();
-
-                array_push($productSales, $productSale);
-            }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'sale' => $sale,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productSales' => $productSales],
-            ], 200);
-        } catch (Exception $e) {
-            dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de l'enregistrement.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
-
     public function show($id)
     {
-        $sale = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
-        $productSales = $sale ? $sale->productSales : null; //ProductSale::where('order_id', $order->id)->get();
+        $sale = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->findOrFail($id);
+        $productSales = $sale ? $sale->productSales : null; //ProductPurchase::where('order_id', $sale->id)->get();
 
         return new JsonResponse([
             'sale' => $sale,
@@ -258,197 +83,396 @@ class SaleController extends Controller
         ], 200);
     }
 
-    public function edit($id)
+    public function store(Request $request, $saleType)
     {
-        $sale = Sale::with('client')->with('deliveryNotes')->with('productSales')->findOrFail($id);
-        $clients = Client::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productSales = $sale ? $sale->productSales : null;
-
-        return new JsonResponse([
-            'sale' => $sale,
-            'datas' => ['clients' => $clients, 'productSales' => $productSales, 'products' => $products]
-        ], 200);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $sale = Sale::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'client' => 'required',
-                'reference' => 'required',
-                'sale_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:sale_date',
-                'total_amount' => 'required',
-                'observation' => 'max:255',
-                'ordered_product' => 'required',
-                'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
-                'unities' => 'required',
-            ],
-            [
-                'client.required' => "Le choix du fournisseur est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'sale_date.required' => "La date de la vente est obligatoire.",
-                'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : Année Mois Jour.",
-                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
-                'total_amount.required' => "Le montant total est obligatoire.",
-                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-            ]
-        );
-
-        try {
-            $sale->reference = $request->reference;
-            $sale->sale_date   = $request->sale_date;
-            $sale->delivery_date   = $request->delivery_date;
-            $sale->total_amount = $request->total_amount;
-            $sale->observation = $request->observation;
-            $sale->client_id = $request->client;
-            $sale->save();
-
-            ProductSale::where('sale_id', $sale->id)->delete();
-
-            $productSales = [];
-            foreach ($request->ordered_product as $key => $product) {
-                $productSale = new ProductSale();
-                $productSale->quantity = $request->quantities[$key];
-                $productSale->unit_price = $request->unit_prices[$key];
-                $productSale->product_id = $product;
-                $productSale->sale_id = $sale->id;
-                $productSale->unity_id = $request->unities[$key];
-                $productSale->save();
-
-                array_push($productSales, $productSale);
+        if ($saleType == "Vente directe") {
+            $this->validate(
+                $request,
+                [
+                    'reference' => 'required|unique:sales',
+                    'sale_date' => 'required|date|before:today', //|date_format:Ymd
+                    'observation' => 'max:255',
+                    'products_of_sale' => 'required',
+                    'quantities' => 'required|min:0',
+                    'unit_prices' => 'required|min:0',
+                    'unities' => 'required',
+                ],
+                [
+                    'reference.required' => "La référence du bon est obligatoire.",
+                    'reference.unique' => "Cette vente existe déjà.",
+                    'sale_date.required' => "La date du bon est obligatoire.",
+                    'sale_date.date' => "La date de la vente est incorrecte.",
+                    'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
+                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                    'products_of_sale.required' => "Vous devez ajouter au moins un produit au panier.",
+                    'quantities.required' => "Les quantités sont obligatoires.",
+                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                ]
+            );
+            if (sizeof($request->products_of_sale) != sizeof($request->quantities) || sizeof($request->products_of_sale) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+                $success = false;
+                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ]);
             }
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'sale' => $sale,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productSales' => $productSales],
-            ], 200);
-        } catch (Exception $e) {
-            dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de la modification.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
+            try {
+                $totalAmount = 0;
+
+                $lastSale = Sale::latest()->first();
+
+                $sale = new Sale();
+                if ($lastSale) {
+                    $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
+                } else {
+                    $sale->code = $this->formateNPosition('VT', 1, 8);
+                }
+                $sale->reference = $request->reference;
+                $sale->sale_date   = $request->sale_date;
+                foreach ($request->unit_prices as $key => $unitPrice) {
+                    $totalAmount += $unitPrice;
+                }
+                $sale->amount_gross = $totalAmount;
+                $sale->ht_amount = $totalAmount;
+                $sale->discount = $request->discount;
+                $sale->amount_token = $request->amount_token;
+                $sale->observation = $request->observation;
+                $sale->client_id = $request->client;
+                $sale->save();
+
+                $productSales = [];
+                foreach ($request->products_of_sale as $key => $product) {
+                    $productSale = new ProductSale();
+                    $productSale->quantity = $request->quantities[$key];
+                    $productSale->unit_price = $request->unit_prices[$key];
+                    $productSale->unity_id = $request->unities[$key];
+                    $productSale->product_id = $product;
+                    $productSale->sale_id = $sale->id;
+                    $productSale->save();
+
+                    array_push($productSales, $productSale);
+                }
+
+                $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
+                if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
+                    $sale->delete();
+                }
+
+                $success = true;
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'sale' => $sale,
+                    'success' => $success,
+                    'message' => $message,
+                    'datas' => ['productSales' => $productSales],
+                ], 200);
+            } catch (Exception $e) {
+                // dd($e);
+                $success = false;
+                $message = "Erreur survenue lors de l'enregistrement.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ], 400);
+            }
+        } else {
+            $this->validate(
+                $request,
+                [
+                    'purchase_order' => 'required',
+                    'reference' => 'required|unique:sales',
+                    'sale_date' => 'required|date|before:today',//|date_format:Ymd
+                    'observation' => 'max:255',
+                    'products_of_sale' => 'required',
+                    'quantities' => 'required|min:0',
+                    'unit_prices' => 'required|min:0',
+                    'unities' => 'required',
+                ],
+                [
+                    'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
+                    'reference.required' => "La référence du bon est obligatoire.",
+                    'reference.unique' => "Cette vente existe déjà.",
+                    'sale_date.required' => "La date du bon est obligatoire.",
+                    'sale_date.date' => "La date de la vente est incorrecte.",
+                    'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
+                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                    'products_of_sale.required' => "Vous devez ajouter au moins un produit au panier.",
+                    'quantities.required' => "Les quantités sont obligatoires.",
+                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                ]
+            );
+
+            if (sizeof($request->products_of_sale) != sizeof($request->quantities) || sizeof($request->products_of_sale) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+                $success = false;
+                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ]);
+            }
+
+            try {
+                $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order);
+
+                $lastSale = Sale::latest()->first();
+
+                $sale = new Sale();
+                if ($lastSale) {
+                    $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
+                } else {
+                    $sale->code = $this->formateNPosition('VT', 1, 8);
+                }
+                $sale->reference = $request->reference;
+                $sale->sale_date   = $request->sale_date;
+                // $sale->delivery_date   = $request->delivery_date;
+                $sale->amount_gross = $purchaseOrder->total_amount;
+                $sale->ht_amount = $purchaseOrder->total_amount;
+                $sale->discount = $request->discount;
+                $sale->amount_token = $request->amount_token;
+                $sale->observation = $request->observation;
+                $sale->order_id = $purchaseOrder->id;
+                $sale->client_id = $purchaseOrder->client->id;
+                $sale->sale_point_id = $purchaseOrder->salePoint->id;
+                $sale->save();
+
+                $productSales = [];
+                foreach ($request->products_of_sale as $key => $product) {
+                    $productSale = new ProductSale();
+                    $productSale->quantity = $request->quantities[$key];
+                    $productSale->unit_price = $request->unit_prices[$key];
+                    $productSale->unity_id = $request->unities[$key];
+                    $productSale->product_id = $product;
+                    $productSale->sale_id = $sale->id;
+                    $productSale->save();
+
+                    array_push($productSales, $productSale);
+                }
+
+                $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
+                if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
+                    $sale->delete();
+                }
+
+                $success = true;
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'sale' => $sale,
+                    'success' => $success,
+                    'message' => $message,
+                    'datas' => ['productSales' => $productSales],
+                ], 200);
+            } catch (Exception $e) {
+                dd($e);
+                $success = false;
+                $message = "Erreur survenue lors de l'enregistrement.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ], 400);
+            }
         }
     }
 
-    public function editFromOrder($id)
-    {
-        $orders = Order::with('provider')->with('productOrders')->orderBy('sale_date')->get();
-        $sale = Sale::with('client')->with('order')->with('deliveryNotes')->with('productSales')->findOrFail($id);
-        $idOfProducts = ProductOrder::where('order_id', $id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
-        $productSales = $sale ? $sale->productSales : null;
 
-        return new JsonResponse([
-            'sale' => $sale,
-            'datas' => ['productSales' => $productSales, 'orders' => $orders, 'products' => $products]
-        ], 200);
-    }
 
-    public function updateFromOrder(Request $request, $id)
+
+    public function update(Request $request, $id, $saleType)
     {
         $sale = Sale::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'order' => 'required',
-                'reference' => 'required',
-                'sale_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:sale_date',
-                'total_amount' => 'required',
-                'observation' => 'max:255',
-                'ordered_product' => 'required',
-                'quantities' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
-                'unities' => 'required',
-            ],
-            [
-                'order.required' => "Le choix d'un bon de commande est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'sale_date.required' => "La date du bon est obligatoire.",
-                'sale_date.date' => "La date de la vente est incorrecte.",
-                'sale_date.date_format' => "La date de la vente doit être sous le format : Année Mois Jour.",
-                'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date de la vente.",
-                'total_amount.required' => "Le montant total est obligatoire.",
-                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-            ]
-        );
+        if ($saleType == "Vente directe") {
+            $this->validate(
+                $request,
+                [
+                    'reference' => 'required|unique:sales',
+                    'sale_date' => 'required|date|before:today', //|date_format:Ymd
+                    'observation' => 'max:255',
+                    'products_of_sale' => 'required',
+                    'quantities' => 'required|min:0',
+                    'unit_prices' => 'required|min:0',
+                    'unities' => 'required',
+                ],
+                [
+                    'reference.required' => "La référence du bon est obligatoire.",
+                    'reference.unique' => "Cette vente existe déjà.",
+                    'sale_date.required' => "La date du bon est obligatoire.",
+                    'sale_date.date' => "La date de la vente est incorrecte.",
+                    'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
+                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                    'products_of_sale.required' => "Vous devez ajouter au moins un produit au panier.",
+                    'quantities.required' => "Les quantités sont obligatoires.",
+                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                ]
+            );
 
-        try {
-            $order = Order::findOrFail($request->order);
-
-            $sale->reference = $request->reference;
-            $sale->sale_date   = $request->sale_date;
-            $sale->delivery_date   = $request->delivery_date;
-            $sale->total_amount = $request->total_amount;
-            $sale->observation = $request->observation;
-            $sale->order_id = $order->id;
-            $sale->client_id = $order->client->id;
-            $sale->save();
-
-            ProductSale::where('order_id', $order->id)->delete();
-
-            $productSales = [];
-            foreach ($request->ordered_product as $key => $product) {
-                $productSale = new ProductSale();
-                $productSale->quantity = $request->quantities[$key];
-                $productSale->unit_price = $request->unit_prices[$key];
-                $productSale->product_id = $product;
-                $productSale->order_id = $order->id;
-                $productSale->unity_id = $request->unities[$key];
-                $productSale->save();
-
-                array_push($productSales, $productSale);
+            if (sizeof($request->products_of_sale) != sizeof($request->quantities) || sizeof($request->products_of_sale) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+                $success = false;
+                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ]);
             }
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'sale' => $sale,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productSales' => $productSales],
-            ], 200);
-        } catch (Exception $e) {
-            dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de la modification.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
+            try {
+                $totalAmount = 0;
+
+                $sale->reference = $request->reference;
+                $sale->sale_date   = $request->sale_date;
+                foreach ($request->unit_prices as $key => $unitPrice) {
+                    $totalAmount += $unitPrice;
+                }
+                $sale->amount_gross = $totalAmount;
+                $sale->ht_amount = $totalAmount;
+                $sale->discount = $request->discount;
+                $sale->amount_token = $request->amount_token;
+                $sale->observation = $request->observation;
+                $sale->client_id = $request->client;
+                $sale->save();
+
+                ProductSale::where('sale_id', $sale->id)->delete();
+
+                $productSales = [];
+                foreach ($request->products_of_sale as $key => $product) {
+                    $productSale = new ProductSale();
+                    $productSale->quantity = $request->quantities[$key];
+                    $productSale->unit_price = $request->unit_prices[$key];
+                    $productSale->unity_id = $request->unities[$key];
+                    $productSale->product_id = $product;
+                    $productSale->sale_id = $sale->id;
+                    $productSale->save();
+
+                    array_push($productSales, $productSale);
+                }
+
+                $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
+                if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
+                    $sale->delete();
+                }
+
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'sale' => $sale,
+                    'success' => $success,
+                    'message' => $message,
+                    'datas' => ['productSales' => $productSales],
+                ], 200);
+            } catch (Exception $e) {
+                $success = false;
+                $message = "Erreur survenue lors de la modification.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ], 400);
+            }
+        } else {
+            $this->validate(
+                $request,
+                [
+                    'purchase_order' => 'required',
+                    'reference' => 'required|unique:sales',
+                    'sale_date' => 'required|date|before:today', //|date_format:Ymd
+                    'observation' => 'max:255',
+                    'products_of_sale' => 'required',
+                    'quantities' => 'required|min:0',
+                    'unit_prices' => 'required|min:0',
+                    'unities' => 'required',
+                ],
+                [
+                    'purchase_order.required'=>"Le choix d'un bon de commande est obligatoire.",
+                    'reference.required' => "La référence du bon est obligatoire.",
+                    'reference.unique' => "Cette vente existe déjà.",
+                    'sale_date.required' => "La date du bon est obligatoire.",
+                    'sale_date.date' => "La date de la vente est incorrecte.",
+                    'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
+                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                    'products_of_sale.required' => "Vous devez ajouter au moins un produit au panier.",
+                    'quantities.required' => "Les quantités sont obligatoires.",
+                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                ]
+            );
+            if (sizeof($request->products_of_sale) != sizeof($request->quantities) || sizeof($request->products_of_sale) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+                $success = false;
+                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ]);
+            }
+
+            if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+                $success = false;
+                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ]);
+            }
+
+            try {
+                $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order);
+
+                $sale->reference = $request->reference;
+                $sale->sale_date   = $request->sale_date;
+                $sale->amount_gross = $purchaseOrder->total_amount;
+                $sale->ht_amount = $purchaseOrder->total_amount;
+                $sale->discount = $request->discount;
+                $sale->amount_token = $request->amount_token;
+                $sale->observation = $request->observation;
+                $sale->order_id = $purchaseOrder->id;
+                $sale->client_id = $purchaseOrder->client->id;
+                $sale->sale_point_id = $purchaseOrder->salePoint->id;
+                $sale->save();
+
+                $productSales = [];
+                foreach ($request->products_of_sale as $key => $product) {
+                    $productSale = new ProductSale();
+                    $productSale->quantity = $request->quantities[$key];
+                    $productSale->unit_price = $request->unit_prices[$key];
+                    $productSale->unity_id = $request->unities[$key];
+                    $productSale->product_id = $product;
+                    $productSale->sale_id = $sale->id;
+                    $productSale->save();
+
+                    array_push($productSales, $productSale);
+                }
+
+                $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
+                if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
+                    $sale->delete();
+                }
+
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'sale' => $sale,
+                    'success' => $success,
+                    'message' => $message,
+                    'datas' => ['productSales' => $productSales],
+                ], 200);
+            } catch (Exception $e) {
+                dd($e);
+                $success = false;
+                $message = "Erreur survenue lors de la modification.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ], 400);
+            }
         }
     }
 
