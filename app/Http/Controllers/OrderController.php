@@ -250,13 +250,8 @@ class OrderController extends Controller
             ]
         );
 
-<<<<<<< HEAD
-        if (sizeof($request->productOrders)!=sizeof($request->quantities)||sizeof($request->productOrders)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
-            $success=false;
-=======
         if (sizeof($request->productOrders) != sizeof($request->quantities) || sizeof($request->productOrders) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
             $success = false;
->>>>>>> origin/main
             $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
             return new JsonResponse([
                 'success' => $success,
