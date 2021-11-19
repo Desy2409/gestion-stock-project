@@ -58,6 +58,8 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+        // dd('Order store');
         $this->validate(
             $request,
             [
@@ -91,18 +93,20 @@ class OrderController extends Controller
                 // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.", Ok testons Amdi !!! tu parles trop !! Viens tester !! eeeeeh Dieu h
             ]
         );
-        //dd ($request->productOrders[0]['quantity']);
+        // dd($request->productOrders[0]['quantity']);
+        // dd('after Order store');
 
-        // if (sizeof($request->productOrders)!=sizeof($request->quantities)||sizeof($request->productOrders)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
-        //     $success=false;
+        // if (sizeof($request->productOrders) != sizeof($request->quantities) || sizeof($request->productOrders) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+        //     $success = false;
         //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
         //     return new JsonResponse([
-        //         'success'=>$success,
-        //         'message'=>$message,
+        //         'success' => $success,
+        //         'message' => $message,
         //     ]);
         // }
 
         try {
+
             $lastOrder = Order::latest()->first();
 
             $order = new Order();
@@ -120,8 +124,10 @@ class OrderController extends Controller
             $order->sale_point_id = $request->sale_point;
             $order->save();
 
+
             $productsOrders = [];
             foreach ($request->productOrders as $key => $productOrderLine) {
+                // dd($productOrderLine);
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $productOrderLine['quantity'];
                 $productOrder->unit_price = $productOrderLine['unit_price'];
@@ -244,12 +250,17 @@ class OrderController extends Controller
             ]
         );
 
+<<<<<<< HEAD
         if (sizeof($request->productOrders)!=sizeof($request->quantities)||sizeof($request->productOrders)!=sizeof($request->unit_prices)||sizeof($request->unit_prices)!=sizeof($request->quantities)) {
             $success=false;
+=======
+        if (sizeof($request->productOrders) != sizeof($request->quantities) || sizeof($request->productOrders) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            $success = false;
+>>>>>>> origin/main
             $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
             return new JsonResponse([
-                'success'=>$success,
-                'message'=>$message,
+                'success' => $success,
+                'message' => $message,
             ]);
         }
 
@@ -280,7 +291,7 @@ class OrderController extends Controller
             }
 
             $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
-            if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
+            if (empty($savedProductOrders) || sizeof($savedProductOrders) == 0) {
                 $order->delete();
             }
 
@@ -377,6 +388,4 @@ class OrderController extends Controller
             ], 400);
         }
     }
-
-
 }
