@@ -20,6 +20,7 @@ class OrderController extends Controller
 
     public function index()
     {
+        // dd("OrderController");
         $orders = Order::with('provider')->with('productOrders')->orderBy('order_date')->get();
         $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
@@ -64,8 +65,8 @@ class OrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'order_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
+                // 'order_date' => 'required|date|date_format:Ymd|before:today',
+                // 'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'products_of_order' => 'required',

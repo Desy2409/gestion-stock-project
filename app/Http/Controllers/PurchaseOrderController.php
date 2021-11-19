@@ -17,11 +17,12 @@ use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
 {
-    
+
     use UtilityTrait;
 
     public function index()
     {
+        // dd("PurchaseOrderController");
         $purchaseOrders = PurchaseOrder::with('provider')->with('salePoint')->with('productPurchaseOrders')->purchaseOrderBy('purchase_date')->get();
         $clients = Client::with('person')->get();
         $products = Product::with('subCategory')->purchaseOrderBy('wording')->get();
@@ -288,7 +289,7 @@ class PurchaseOrderController extends Controller
         }
     }
 
-    
+
     public function validateOrder($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
