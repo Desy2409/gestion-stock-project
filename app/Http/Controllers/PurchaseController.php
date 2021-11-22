@@ -22,7 +22,7 @@ class PurchaseController extends Controller
 
     public function purchaseOnOrder()
     {
-        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->where('order_id','!=',null)->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
@@ -42,7 +42,8 @@ class PurchaseController extends Controller
 
     public function directPurchase()
     {
-        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id', null)->orderBy('code')->orderBy('purchase_date')->get();
+
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
         $purchaseRegister = new PurchaseRegister();
@@ -111,9 +112,9 @@ class PurchaseController extends Controller
                     // 'total_amount' => 'required',
                     'observation' => 'max:255',
                     'purchaseProducts' => 'required',
-                    'quantities' => 'required|min:0',
-                    'unit_prices' => 'required|min:0',
-                    'unities' => 'required'
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                    // 'unities' => 'required'
                 ],
                 [
                     'sale_point.required' => "Le choix du point de vente est obligatoire.",
@@ -131,12 +132,12 @@ class PurchaseController extends Controller
                     // 'total_amount.required' => "Le montant total est obligatoire.",
                     'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                     'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                    'quantities.required' => "Les quantités sont obligatoires.",
-                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 ]
             );
 
@@ -150,8 +151,6 @@ class PurchaseController extends Controller
             // }
 
             try {
-                $totalAmount = 0;
-
                 $lastPurchase = Purchase::latest()->first();
 
                 $purchase = new Purchase();
@@ -163,13 +162,12 @@ class PurchaseController extends Controller
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
-                foreach ($request->unit_prices as $key => $unitPrice) {
-                    $totalAmount += $unitPrice;
-                }
-                $purchase->amount_gross = $totalAmount;
-                $purchase->ht_amount = $totalAmount;
+                $purchase->total_amount = $request->total_amount;
+                $purchase->amount_gross = $request->amount_gross;
+                $purchase->ht_amount = $request->ht_amount;
                 $purchase->discount = $request->discount;
                 $purchase->amount_token = $request->amount_token;
+                $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->provider_id = $request->provider;
                 $purchase->sale_point_id = $request->sale_point;
@@ -272,10 +270,12 @@ class PurchaseController extends Controller
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
+                $purchase->total_amount = $order->total_amount;
                 $purchase->amount_gross = $order->total_amount;
-                $purchase->ht_amount = $order->total_amount;
+                $purchase->ht_amount = $request->ht_amount;
                 $purchase->discount = $request->discount;
                 $purchase->amount_token = $request->amount_token;
+                $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->order_id = $order->id;
                 $purchase->provider_id = $order->provider->id;
@@ -374,18 +374,15 @@ class PurchaseController extends Controller
             // }
 
             try {
-                $totalAmount = 0;
-
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
-                foreach ($request->unit_prices as $key => $unitPrice) {
-                    $totalAmount += $unitPrice;
-                }
-                $purchase->amount_gross = $totalAmount;
-                $purchase->ht_amount = $totalAmount;
+                $purchase->total_amount = $request->total_amount;
+                $purchase->amount_gross = $request->amount_gross;
+                $purchase->ht_amount = $request->ht_amount;
                 $purchase->discount = $request->discount;
                 $purchase->amount_token = $request->amount_token;
+                $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->provider_id = $request->provider;
                 $purchase->sale_point_id = $request->salePoint->id;
@@ -481,10 +478,12 @@ class PurchaseController extends Controller
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
+                $purchase->total_amount = $order->total_amount;
                 $purchase->amount_gross = $order->total_amount;
-                $purchase->ht_amount = $order->total_amount;
+                $purchase->ht_amount = $request->ht_amount;
                 $purchase->discount = $request->discount;
                 $purchase->amount_token = $request->amount_token;
+                $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->order_id = $order->id;
                 $purchase->provider_id = $order->provider->id;
