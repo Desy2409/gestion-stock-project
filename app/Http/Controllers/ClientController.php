@@ -67,7 +67,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|after:yesterday|date_format:Ymd'
+                    // 'limit_date_exemption' => 'required|date|after:yesterday|date_format:Ymd'
                 ],
                 [
                     'last_name.required' => "Le nom est obligatoire.",
@@ -97,7 +97,7 @@ class ClientController extends Controller
                     'email' => 'email',
                     'phone_number' => 'required',
                     'exemption_reference' => 'required',
-                    'limit_date_exemption' => 'required|date|after:yesterday|date_format:Ymd'
+                    // 'limit_date_exemption' => 'required|date|after:yesterday|date_format:Ymd'
                 ],
                 [
                     'rccm_number.required' => "Le numéro RRCM est obligatoire.",

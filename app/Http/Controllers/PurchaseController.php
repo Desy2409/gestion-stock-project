@@ -11,6 +11,7 @@ use App\Models\Purchase;
 use App\Models\PurchaseRegister;
 use App\Models\Order;
 use App\Models\SalePoint;
+use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -56,9 +57,9 @@ class PurchaseController extends Controller
         $providers = Provider::with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
         $products = Product::with('subCategory')->get();
-
+        $unities = Unity::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'purchases' => $purchases]
+            'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'purchases' => $purchases, 'unities' => $unities]
         ]);
     }
 
@@ -163,8 +164,8 @@ class PurchaseController extends Controller
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
-                foreach ($request->unit_prices as $key => $unitPrice) {
-                    $totalAmount += $unitPrice;
+                foreach ($request->purchaseProducts as $key => $product) {
+                    $totalAmount += $product["unit_price"];
                 }
                 $purchase->amount_gross = $totalAmount;
                 $purchase->ht_amount = $totalAmount;
