@@ -10,6 +10,7 @@ use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\SalePoint;
 use App\Models\StockType;
+use App\Models\Transfer;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,6 +36,8 @@ class GoodToRemoveController extends Controller
         $stockTypes = StockType::orderBy('wording')->get();
         $clients = Client::with('person.address')->get();
 
+        $transfers = Transfer::orderBy('code')->get();
+
         $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
 
         $goodToRemoveRegister = new GoodToRemoveRegister();
@@ -50,11 +53,12 @@ class GoodToRemoveController extends Controller
                 'goodToRemoves' => $goodToRemoves, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
-                'stockTypes' => $stockTypes, 'clients' => $clients
+                'stockTypes' => $stockTypes, 'clients' => $clients,
+                'transfers' => $transfers
             ]
         ], 200);
     }
-    
+
     public function showNextCode()
     {
         $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
@@ -63,10 +67,19 @@ class GoodToRemoveController extends Controller
         } else {
             $code = $this->formateNPosition('BE', 1, 8);
         }
-        
+
         return new JsonResponse([
             'code' => $code
         ], 200);
+    }
+
+    public function salePointsFromTransfer($id)
+    {
+        $transfer = Transfer::findOrFail($id);
+        $transmitter = SalePoint::findOrFail($transfer->transmitter_id);
+        $receiver = SalePoint::findOrFail($transfer->receiver_id);
+
+        return new JsonResponse(['transmitter' => $transmitter, 'receiver' => $receiver]);
     }
 
     public function store(Request $request)
@@ -74,8 +87,8 @@ class GoodToRemoveController extends Controller
         $this->validate(
             $request,
             [
-                'client'=>'required',
-                'stock_type'=>'required',
+                'client' => 'required',
+                'stock_type' => 'required',
                 'reference' => 'required|unique:good_to_removes',
                 'voucher_date' => 'required|date|date_format:Ymd|date_equals:today',
                 'delivery_date_wished' => 'required|date|date_format:Ymd|after:voucher_date',
@@ -85,8 +98,8 @@ class GoodToRemoveController extends Controller
                 'carrier' => 'required',
             ],
             [
-                'stock_type'=>"Le choix du client est obligatoire.",
-                'stock_type'=>"Le choix du type de stock est obligatoire.",
+                'stock_type' => "Le choix du client est obligatoire.",
+                'stock_type' => "Le choix du type de stock est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",
                 'voucher_date.required' => "La date du bon à enlever est obligatoire.",
@@ -112,7 +125,7 @@ class GoodToRemoveController extends Controller
                 $goodToRemove->code = $this->formateNPosition('BE', $lastGoodToRemove->id + 1, 8);
             } else {
                 $goodToRemove->code = $this->formateNPosition('BE', 1, 8);
-            }            
+            }
             $goodToRemove->reference = $request->reference;
             $goodToRemove->voucher_date = $request->voucher_date;
             $goodToRemove->delivery_date_wished = $request->delivery_date_wished;
@@ -166,8 +179,8 @@ class GoodToRemoveController extends Controller
         $this->validate(
             $request,
             [
-                'client'=>'required',
-                'stock_type'=>'required',
+                'client' => 'required',
+                'stock_type' => 'required',
                 'reference' => 'required|unique:good_to_removes',
                 'voucher_date' => 'required|date|date_format:Ymd|date_equals:today',
                 'delivery_date_wished' => 'required|date|date_format:Ymd|after:voucher_date',
@@ -177,8 +190,8 @@ class GoodToRemoveController extends Controller
                 'carrier' => 'required',
             ],
             [
-                'stock_type'=>"Le choix du client est obligatoire.",
-                'stock_type'=>"Le choix du type de stock est obligatoire.",
+                'stock_type' => "Le choix du client est obligatoire.",
+                'stock_type' => "Le choix du type de stock est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",
                 'voucher_date.required' => "La date du bon à enlever est obligatoire.",

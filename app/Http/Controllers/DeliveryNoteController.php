@@ -7,10 +7,8 @@ use App\Models\DeliveryNote;
 use App\Models\DeliveryNoteRegister;
 use App\Models\Product;
 use App\Models\ProductDeliveryNote;
-use App\Models\ProductCoupon;
-use App\Models\ProductPurchaseOrder;
-use App\Models\Coupon;
-use App\Models\PurchaseOrder;
+use App\Models\ProductPurchase;
+use App\Models\Purchase;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,8 +19,8 @@ class DeliveryNoteController extends Controller
 
     public function index()
     {
-        $deliveryNotes = DeliveryNote::with('coupon')->with('productDeliveryNotes')->orderBy('code')->orderBy('purchase_date')->get();
-        $purchaseOrders = PurchaseOrder::with('provider')->with('purchaseOrder')->orderBy('code')->orderBy('purchase_date')->get();
+        $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('purchase')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 
@@ -35,7 +33,7 @@ class DeliveryNoteController extends Controller
         $deliveryNoteRegister->save();
 
         return new JsonResponse([
-            'datas' => ['deliveryNotes' => $deliveryNotes, 'purchaseOrders' => $purchaseOrders]
+            'datas' => ['deliveryNotes' => $deliveryNotes, 'purchases' => $purchases]
         ], 200);
     }
 
@@ -54,9 +52,9 @@ class DeliveryNoteController extends Controller
         ], 200);
     }
 
-    public function productFromPurchaseOrder($id)
+    public function productFromPurchase($id)
     {
-        $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $id)->pluck('product_id')->toArray();
+        $idOfProducts = ProductPurchase::where('purchase_id', $id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
             'datas' => ['products' => $products]
@@ -68,7 +66,7 @@ class DeliveryNoteController extends Controller
         $this->validate(
             $request,
             [
-                'purchase_order' => 'required',
+                'purchase' => 'required',
                 'reference' => 'required|unique:delivery_notes',
                 'purchase_date' => 'required|date|date_format:Ymd|before:today',
                 'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
@@ -79,7 +77,7 @@ class DeliveryNoteController extends Controller
                 'unities' => 'required',
             ],
             [
-                'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
+                'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'reference.unique' => "Ce bon de livraison existe déjà.",
                 'purchase_date.required' => "La date du bon de livraison  est obligatoire.",
@@ -101,7 +99,7 @@ class DeliveryNoteController extends Controller
 
         try {
 
-            $coupon = Coupon::where('purchase_order_id',$request->purchase_order)->first();
+            $purchase = Purchase::where('purchase_id',$request->purchase)->first();
 
             $lastDeliveryNote = DeliveryNote::latest()->first();
 
@@ -117,7 +115,7 @@ class DeliveryNoteController extends Controller
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;
             $deliveryNote->place_of_delivery = $request->place_of_delivery;
-            $deliveryNote->coupon_id = $coupon->id;
+            $deliveryNote->purchase_id = $purchase->id;
             $deliveryNote->save();
 
             $productDeliveryNotes = [];
@@ -125,14 +123,14 @@ class DeliveryNoteController extends Controller
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $request->quantities[$key];
                 $productDeliveryNote->product_id = $product;
-                $productDeliveryNote->purchase_order_id = $deliveryNote->id;
+                $productDeliveryNote->purchase_id = $purchase->id;
                 $productDeliveryNote->unity_id = $request->unities[$key];
                 $productDeliveryNote->save();
 
                 array_push($productDeliveryNotes, $productDeliveryNote);
             }
 
-            $savedProductDeliveryNotes = ProductDeliveryNote::where('coupon_id', $deliveryNote->id)->get();
+            $savedProductDeliveryNotes = ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
             if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
                 $deliveryNote->delete();
             }
@@ -158,8 +156,8 @@ class DeliveryNoteController extends Controller
 
     public function show($id)
     {
-        $deliveryNote = DeliveryNote::with('coupon')->with('productDeliveryNotes')->findOrFail($id);
-        $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null; //ProductDeliveryNote::where('purchase_order_id', $deliveryNote->id)->get();
+        $deliveryNote = DeliveryNote::with('purchase')->with('productDeliveryNotes')->findOrFail($id);
+        $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null; //ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
 
         return new JsonResponse([
             'deliveryNote' => $deliveryNote,
@@ -173,7 +171,7 @@ class DeliveryNoteController extends Controller
         $this->validate(
             $request,
             [
-                'purchase_order' => 'required',
+                'purchase' => 'required',
                 'reference' => 'required',
                 'purchase_date' => 'required|date|date_format:Ymd|before:today',
                 'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
@@ -184,7 +182,7 @@ class DeliveryNoteController extends Controller
                 'unities' => 'required',
             ],
             [
-                'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
+                'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'purchase_date.required' => "La date du bon est obligatoire.",
                 'purchase_date.date' => "La date du bon de livraison est incorrecte.",
@@ -204,7 +202,7 @@ class DeliveryNoteController extends Controller
         );
 
         try {
-            $coupon = Coupon::where('purchase_order_id',$request->purchase_order)->first();
+            $purchase = Purchase::where('purchase_id',$request->purchase)->first();
 
             $deliveryNote->reference = $request->reference;
             $deliveryNote->purchase_date   = $request->purchase_date;
@@ -212,24 +210,24 @@ class DeliveryNoteController extends Controller
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;
             $deliveryNote->place_of_delivery = $request->place_of_delivery;
-            $deliveryNote->coupon_id = $coupon->id;
+            $deliveryNote->purchase_id = $purchase->id;
             $deliveryNote->save();
 
-            ProductDeliveryNote::where('purchase_order_id', $deliveryNote->id)->delete();
+            ProductDeliveryNote::where('purchase_id', $purchase->id)->delete();
 
             $productDeliveryNotes = [];
             foreach ($request->products_of_delivery_note as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $request->quantities[$key];
                 $productDeliveryNote->product_id = $product;
-                $productDeliveryNote->purchase_order_id = $deliveryNote->id;
+                $productDeliveryNote->purchase_id = $purchase->id;
                 $productDeliveryNote->unity_id = $request->unities[$key];
                 $productDeliveryNote->save();
 
                 array_push($productDeliveryNotes, $productDeliveryNote);
             }
 
-            $savedProductDeliveryNotes = ProductDeliveryNote::where('coupon_id', $deliveryNote->id)->get();
+            $savedProductDeliveryNotes = ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
             if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
                 $deliveryNote->delete();
             }

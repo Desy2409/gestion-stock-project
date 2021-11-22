@@ -131,11 +131,12 @@ Route::patch('/order/{id}/update', [OrderController::class, 'update']);
 Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
 
 // Purchase routes
-Route::get('/purchase/{purchaseType}', [PurchaseController::class, 'index']);
+Route::get('/purchase-on-order', [PurchaseController::class, 'purchaseOnOrder']);
+Route::get('/purchase-direct', [PurchaseController::class, 'directPurchase']);
 Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
-Route::post('/purchase/{purchaseType}', [PurchaseController::class, 'store']);
+Route::post('/purchase', [PurchaseController::class, 'store']);
 Route::get('/purchase/{id}/show', [PurchaseController::class, 'show']);
-Route::patch('/purchase/{id}/{purchaseType}/update', [PurchaseController::class, 'update']);
+Route::patch('/purchase/{id}/update', [PurchaseController::class, 'update']);
 Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
 
 // Delivery note routes
