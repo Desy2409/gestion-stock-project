@@ -20,9 +20,10 @@ class PurchaseController extends Controller
 {
     use UtilityTrait;
 
-    public function index($purchaseType)
+    public function purchaseOnOrder()
     {
-        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->where('order_id','!=',null)->orderBy('code')->orderBy('purchase_date')->get();
+
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
         $purchaseRegister = new PurchaseRegister();
@@ -33,20 +34,32 @@ class PurchaseController extends Controller
         }
         $purchaseRegister->save();
 
-        if ($purchaseType == "Achat direct") {
-            $providers = Provider::with('person')->get();
-            $salePoints = SalePoint::orderBy('social_reason')->get();
-            $products = Product::with('subCategory')->get();
+        $orders = Order::with('provider')->with('salePoint')->orderBy('code')->get();
+        return new JsonResponse([
+            'datas' => ['orders' => $orders, 'purchases' => $purchases]
+        ]);
+    }
 
-            return new JsonResponse([
-                'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'purchases' => $purchases]
-            ]);
+    public function directPurchase()
+    {
+        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->orderBy('code')->orderBy('purchase_date')->get();
+        $lastPurchaseRegister = PurchaseRegister::latest()->first();
+
+        $purchaseRegister = new PurchaseRegister();
+        if ($lastPurchaseRegister) {
+            $purchaseRegister->code = $this->formateNPosition('BA', $lastPurchaseRegister->id + 1, 8);
         } else {
-            $orders = Order::with('provider')->with('salePoint')->orderBy('code')->get();
-            return new JsonResponse([
-                'datas' => ['orders' => $orders, 'purchases' => $purchases]
-            ]);
+            $purchaseRegister->code = $this->formateNPosition('BA', 1, 8);
         }
+        $purchaseRegister->save();
+
+        $providers = Provider::with('person')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
+        $products = Product::with('subCategory')->get();
+
+        return new JsonResponse([
+            'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'purchases' => $purchases]
+        ]);
     }
 
     public function productFromOrder($id)
@@ -84,23 +97,23 @@ class PurchaseController extends Controller
         ], 200);
     }
 
-    public function store(Request $request, $purchaseType)
+    public function store(Request $request)
     {
-        if ($purchaseType == "Achat direct") {
+        if ($request->purchase_type == "Achat direct") {
             $this->validate(
                 $request,
                 [
                     'sale_point' => 'required',
                     'provider' => 'required',
                     'reference' => 'required|unique:purchases',
-                    'purchase_date' => 'required|date|before:today',//|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date',//|date_format:Ymd
+                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                     // 'total_amount' => 'required',
                     'observation' => 'max:255',
-                    'products_of_purchase' => 'required',
+                    'purchaseProducts' => 'required',
                     'quantities' => 'required|min:0',
                     'unit_prices' => 'required|min:0',
-                    'unities'=>'required'
+                    'unities' => 'required'
                 ],
                 [
                     'sale_point.required' => "Le choix du point de vente est obligatoire.",
@@ -117,7 +130,7 @@ class PurchaseController extends Controller
                     'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
                     // 'total_amount.required' => "Le montant total est obligatoire.",
                     'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'products_of_purchase.required' => "Vous devez ajouter au moins un produit au panier.",
+                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
                     'quantities.required' => "Les quantités sont obligatoires.",
                     'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                     'unit_prices.required' => "Les prix unitaires sont obligatoires.",
@@ -127,14 +140,14 @@ class PurchaseController extends Controller
                 ]
             );
 
-            if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
+            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
 
             try {
                 $totalAmount = 0;
@@ -163,22 +176,22 @@ class PurchaseController extends Controller
                 $purchase->save();
 
                 $productPurchases = [];
-                foreach ($request->products_of_purchase as $key => $product) {
+                foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->quantities[$key];
-                    $productPurchase->unit_price = $request->unit_prices[$key];
+                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
+                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
+                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
                     $productPurchase->product_id = $product;
-                    $productPurchase->unity_id = $request->unities[$key];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
                     array_push($productPurchases, $productPurchase);
                 }
 
-                $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                    $purchase->delete();
-                }
+                // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+                // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
+                //     $purchase->delete();
+                // }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
@@ -203,14 +216,14 @@ class PurchaseController extends Controller
                 [
                     'order' => 'required',
                     'reference' => 'required|unique:purchases',
-                    'purchase_date' => 'required|date|before:today',//|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date',//|date_format:Ymd
+                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                     // 'total_amount' => 'required',
                     'observation' => 'max:255',
-                    'products_of_purchase' => 'required',
-                    'quantities' => 'required|min:0',
-                    'unit_prices' => 'required|min:0',
-                    'unities'=>'required'
+                    'purchaseProducts' => 'required',
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                    // 'unities' => 'required'
                 ],
                 [
                     'order.required' => "Le choix d'une commande est obligatoire.",
@@ -226,24 +239,24 @@ class PurchaseController extends Controller
                     'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
                     // 'total_amount.required' => "Le montant total est obligatoire.",
                     'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'products_of_purchase.required' => "Vous devez ajouter au moins un produit au panier.",
-                    'quantities.required' => "Les quantités sont obligatoires.",
-                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 ]
             );
 
-            if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
+            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
 
             try {
                 $order = Order::findOrFail($request->order);
@@ -270,22 +283,22 @@ class PurchaseController extends Controller
                 $purchase->save();
 
                 $productPurchases = [];
-                foreach ($request->products_of_purchase as $key => $product) {
+                foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->quantities[$key];
-                    $productPurchase->unit_price = $request->unit_prices[$key];
+                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
+                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
+                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
                     $productPurchase->product_id = $product;
-                    $productPurchase->unity_id = $request->unities[$key];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
                     array_push($productPurchases, $productPurchase);
                 }
 
-                $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                    $purchase->delete();
-                }
+                // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+                // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
+                //     $purchase->delete();
+                // }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
@@ -307,24 +320,24 @@ class PurchaseController extends Controller
         }
     }
 
-    public function update(Request $request, $id, $purchaseType)
+    public function update(Request $request, $id)
     {
         $purchase = Purchase::findOrFail($id);
-        if ($purchaseType == "Achat direct") {
+        if ($request->purchase_type == "Achat direct") {
             $this->validate(
                 $request,
                 [
                     'sale_point' => 'required',
                     'provider' => 'required',
                     'reference' => 'required|unique:purchases',
-                    'purchase_date' => 'required|date|before:today',//|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date',//|date_format:Ymd
+                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                     // 'total_amount' => 'required',
                     'observation' => 'max:255',
-                    'products_of_purchase' => 'required',
-                    'quantities' => 'required|min:0',
-                    'unit_prices' => 'required|min:0',
-                    'unities'=>'required'
+                    'purchaseProducts' => 'required',
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                    // 'unities' => 'required'
                 ],
                 [
                     'sale_point.required' => "Le choix du point de vente est obligatoire.",
@@ -341,24 +354,24 @@ class PurchaseController extends Controller
                     'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
                     // 'total_amount.required' => "Le montant total est obligatoire.",
                     'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'products_of_purchase.required' => "Vous devez ajouter au moins un produit au panier.",
-                    'quantities.required' => "Les quantités sont obligatoires.",
-                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 ]
             );
 
-            if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
+            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
 
             try {
                 $totalAmount = 0;
@@ -381,22 +394,22 @@ class PurchaseController extends Controller
                 ProductPurchase::where('purchase_id', $purchase->id)->delete();
 
                 $productPurchases = [];
-                foreach ($request->products_of_purchase as $key => $product) {
+                foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->quantities[$key];
-                    $productPurchase->unit_price = $request->unit_prices[$key];
+                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
+                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
+                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
                     $productPurchase->product_id = $product;
-                    $productPurchase->unity_id = $request->unities[$key];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
                     array_push($productPurchases, $productPurchase);
                 }
 
-                $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                    $purchase->delete();
-                }
+                // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+                // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
+                //     $purchase->delete();
+                // }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
@@ -420,14 +433,14 @@ class PurchaseController extends Controller
                 [
                     'order' => 'required',
                     'reference' => 'required|unique:purchases',
-                    'purchase_date' => 'required|date|before:today',//|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date',//|date_format:Ymd
+                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                     // 'total_amount' => 'required',
                     'observation' => 'max:255',
-                    'products_of_purchase' => 'required',
-                    'quantities' => 'required|min:0',
-                    'unit_prices' => 'required|min:0',
-                    'unities'=>'required'
+                    'purchaseProducts' => 'required',
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                    // 'unities' => 'required'
                 ],
                 [
                     'order.required' => "Le choix d'une commande est obligatoire.",
@@ -443,24 +456,24 @@ class PurchaseController extends Controller
                     'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
                     // 'total_amount.required' => "Le montant total est obligatoire.",
                     'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'products_of_purchase.required' => "Vous devez ajouter au moins un produit au panier.",
-                    'quantities.required' => "Les quantités sont obligatoires.",
-                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 ]
             );
 
-            if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
+            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
 
             try {
                 $order = Order::findOrFail($request->order);
@@ -481,12 +494,12 @@ class PurchaseController extends Controller
                 ProductPurchase::where('purchase_id', $purchase->id)->delete();
 
                 $productPurchases = [];
-                foreach ($request->products_of_purchase as $key => $product) {
+                foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->quantities[$key];
-                    $productPurchase->unit_price = $request->unit_prices[$key];
+                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
+                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
+                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
                     $productPurchase->product_id = $product;
-                    $productPurchase->unity_id = $request->unities[$key];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
