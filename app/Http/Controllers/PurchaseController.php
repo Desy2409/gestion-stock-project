@@ -105,7 +105,7 @@ class PurchaseController extends Controller
             $this->validate(
                 $request,
                 [
-                    'sale_point' => 'required',
+                    'salePoint' => 'required',
                     'provider' => 'required',
                     'reference' => 'required|unique:purchases',
                     'purchase_date' => 'required|date|before:today', //|date_format:Ymd
@@ -118,7 +118,7 @@ class PurchaseController extends Controller
                     // 'unities' => 'required'
                 ],
                 [
-                    'sale_point.required' => "Le choix du point de vente est obligatoire.",
+                    'salePoint.required' => "Le choix du point de vente est obligatoire.",
                     'provider.required' => "Le choix du fournisseur est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Ce bon d'achat existe déjà.",
@@ -171,16 +171,16 @@ class PurchaseController extends Controller
                 $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->sale_point;
+                $purchase->sale_point_id = $request->salePoint;
                 $purchase->save();
 
                 $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
-                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
-                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
-                    $productPurchase->product_id = $product;
+                    $productPurchase->quantity = $product["quantity"];
+                    $productPurchase->unit_price = $product["unit_price"];
+                    $productPurchase->unity_id = $product["unity"];
+                    $productPurchase->product_id = $product["product"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
@@ -328,7 +328,7 @@ class PurchaseController extends Controller
             $this->validate(
                 $request,
                 [
-                    'sale_point' => 'required',
+                    'salePoint' => 'required',
                     'provider' => 'required',
                     'reference' => 'required|unique:purchases',
                     'purchase_date' => 'required|date|before:today', //|date_format:Ymd
@@ -341,7 +341,7 @@ class PurchaseController extends Controller
                     // 'unities' => 'required'
                 ],
                 [
-                    'sale_point.required' => "Le choix du point de vente est obligatoire.",
+                    'salePoint.required' => "Le choix du point de vente est obligatoire.",
                     'provider.required' => "Le choix du fournisseur est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Ce bon d'achat existe déjà.",
