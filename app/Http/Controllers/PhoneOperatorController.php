@@ -2,68 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Driver;
-use App\Models\EmailChannelParam;
-use App\Models\Host;
-use App\Models\Role;
+use App\Models\PhoneOperator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class DriverController extends Controller
+class PhoneOperatorController extends Controller
 {
     public function index()
     {
-        $this->authorize('ROLE_DRIVER_READ', Driver::class);
-        $drivers = Driver::with('hosts')->orderBy('wording')->get();
+        $phoneOperators = PhoneOperator::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['drivers' => $drivers],
+            'datas' => ['phoneOperators' => $phoneOperators]
         ], 200);
     }
 
-    public function hostsOfDriver($id)
-    {
-        $hosts = Host::where('driver_id', $id)->get();
-        return new JsonResponse(['datas' => ['hosts' => $hosts]]);
-    }
-
-    public function emailChannelParamsOfDriver($id)
-    {
-        $emailChannelParamss = EmailChannelParam::where('driver_id', $id)->get();
-        return new JsonResponse(['datas' => ['emailChannelParamss' => $emailChannelParamss]]);
-    }
-
-    // Enregistrement d'une nouvelle donnée driver
     public function store(Request $request)
     {
-        $this->authorize('ROLE_DRIVER_CREATE');
         $this->validate(
             $request,
             [
-                'wording' => 'required|unique:drivers|max:150',
+                'wording' => 'required|unique:phone_operators|max:150',
                 'description' => 'max:255',
             ],
             [
                 'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce driver existe déjà.",
+                'wording.unique' => "Cet opérateur téléphonique existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères."
             ]
         );
 
         try {
-            $driver = new Driver();
-            $driver->code = Str::random(10);
-            $driver->wording = $request->wording;
-            $driver->description = $request->description;
-            $driver->save();
+            $phoneOperator = new PhoneOperator();
+            $phoneOperator->code = Str::random(10);
+            $phoneOperator->wording = $request->wording;
+            $phoneOperator->description = $request->description;
+            $phoneOperator->save();
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'driver' => $driver,
+                'phoneOperator' => $phoneOperator,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -77,12 +58,9 @@ class DriverController extends Controller
         }
     }
 
-
-    // Mise à jour d'une donnée driver
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_DRIVER_UPDATE');
-        $driver = Driver::findOrFail($id);
+        $phoneOperator = PhoneOperator::findOrFail($id);
         $this->validate(
             $request,
             [
@@ -96,25 +74,15 @@ class DriverController extends Controller
             ]
         );
 
-        $existingDrivers = Driver::where('wording', $request->wording)->get();
-        if (!empty($existingDrivers) && sizeof($existingDrivers) >= 1) {
-            $success = false;
-            return new JsonResponse([
-                'success' => $success,
-                'existingDriver' => $existingDrivers[0],
-                'message' => "Le driver " . $existingDrivers[0]->wording . " existe déjà"
-            ], 200);
-        }
-
         try {
-            $driver->wording = $request->wording;
-            $driver->description = $request->description;
-            $driver->save();
+            $phoneOperator->wording = $request->wording;
+            $phoneOperator->description = $request->description;
+            $phoneOperator->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'driver' => $driver,
+                'phoneOperator' => $phoneOperator,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -128,18 +96,15 @@ class DriverController extends Controller
         }
     }
 
-
-    // Suppression d'une donnée driver
     public function destroy($id)
     {
-        $this->authorize('ROLE_DRIVER_DELETE');
-        $driver = Driver::findOrFail($id);
+        $phoneOperator = PhoneOperator::findOrFail($id);
         try {
-            $driver->delete();
+            $phoneOperator->delete();
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'driver' => $driver,
+                'phoneOperator' => $phoneOperator,
                 'success' => $success,
                 'message' => $message,
             ], 200);

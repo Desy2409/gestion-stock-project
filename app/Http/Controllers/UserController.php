@@ -167,4 +167,56 @@ class UserController extends Controller
             ], 400);
         }
     }
+
+    public function userTypeConfiguration(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $userType = UserType::findOrFail($request->user_type);
+
+        try {
+            $user->user_type_id = $userType->id;
+            $user->roles = $userType->roles;
+            $user->save();
+
+            $success = true;
+            $message = "Type d'utilisateur attribué avec succès.";
+            return new JsonResponse([
+                'user' => $user,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'attribution d'un type à l'utilisateur.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function rolesConfiguration(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        try {
+            $user->roles = $request->roles;
+            $user->save();
+
+            $success = true;
+            $message = "Rôle(s) affecté(s) avec succès.";
+            return new JsonResponse([
+                'user' => $user,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'affectation des rôles à l'utilisateur.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
 }

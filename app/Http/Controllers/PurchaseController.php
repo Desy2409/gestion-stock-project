@@ -63,13 +63,15 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function productFromOrder($id)
+    public function datasFromOrder($id)
     {
         $order = Order::findOrFail($id);
+        $provider = $order ? $order->provider : null;
+        $salePoint = $order ? $order->salePoint : null;
         $idOfProducts = ProductOrder::where('order_id', $order->id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
-            'datas' => ['products' => $products]
+            'provider' => $provider, 'salePoint' => $salePoint, 'datas' => ['products' => $products]
         ], 200);
     }
 
@@ -285,9 +287,9 @@ class PurchaseController extends Controller
                 $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
-                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
-                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
+                    $productPurchase->quantity = $product["quantity"];
+                    $productPurchase->unit_price = $product["unit_price"];
+                    $productPurchase->unity_id = $product["unity"];
                     $productPurchase->product_id = $product;
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
@@ -393,9 +395,9 @@ class PurchaseController extends Controller
                 $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
-                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
-                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
+                    $productPurchase->quantity = $product["quantity"];
+                    $productPurchase->unit_price = $product["unit_price"];
+                    $productPurchase->unity_id = $product["unity"];
                     $productPurchase->product_id = $product;
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
@@ -495,9 +497,9 @@ class PurchaseController extends Controller
                 $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
                     $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $request->purchaseProducts["quantity"];
-                    $productPurchase->unit_price = $request->purchaseProducts["unit_price"];
-                    $productPurchase->unity_id = $request->purchaseProducts["unity"];
+                    $productPurchase->quantity = $product["quantity"];
+                    $productPurchase->unit_price = $product["unit_price"];
+                    $productPurchase->unity_id = $product["unity"];
                     $productPurchase->product_id = $product;
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
