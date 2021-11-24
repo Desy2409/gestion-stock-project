@@ -10,6 +10,7 @@ class ProductPurchase extends Model
     protected $fillable = [
         'quantity',
         'unit_price',
+        'unity',
     ];
 
     public function product()
@@ -21,7 +22,7 @@ class ProductPurchase extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
-    
+
     public function unity()
     {
         return $this->belongsTo(Unity::class);

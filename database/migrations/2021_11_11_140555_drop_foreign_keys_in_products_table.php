@@ -16,8 +16,8 @@ class DropForeignKeysInProductsTable extends Migration
 
         if (Schema::hasColumn('products', 'stock_type_id')) {
             Schema::table('products', function (Blueprint $table) {
-                // $table->dropForeign(['stock_type_id']);
-                // $table->dropColumn('stock_type_id');
+                $table->dropForeign(['stock_type_id']);
+                $table->dropColumn('stock_type_id');
                 $table->dropForeign(['unity_id']);
                 $table->dropColumn('unity_id');
             });
