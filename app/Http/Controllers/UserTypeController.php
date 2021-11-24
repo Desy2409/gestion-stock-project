@@ -23,13 +23,14 @@ class UserTypeController extends Controller
 
     public function store(Request $request)
     {
+        // dd(array($request->checkedRoles));
         $this->validate(
             $request,
             [
                 'code' => 'required|unique:user_types',
                 'wording' => 'required|unique:user_types|max:150',
                 'description' => 'max:255',
-                'checked_roles' => 'required',
+                'checkedRoles' => 'required',
             ],
             [
                 'code.required' => "Le code est obligatoire.",
@@ -38,7 +39,7 @@ class UserTypeController extends Controller
                 'wording.unique' => "Ce type existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'checked_roles' => "Le choix d'au moins un rôle est obligatoire.",
+                'checkedRoles' => "Le choix d'au moins un rôle est obligatoire.",
             ]
         );
 
@@ -47,9 +48,7 @@ class UserTypeController extends Controller
             $userType->code = strtoupper(str_replace(' ', '_', $request->code));
             $userType->wording = $request->wording;
             $userType->description = $request->description;
-            if (!empty($request->checked_roles) && sizeof($request->checked_roles) > 0) {
-                $userType->roles = implode(',', $request->checked_roles);
-            }
+            $userType->roles = $request->checkedRoles;
             $userType->save();
 
 
@@ -81,14 +80,14 @@ class UserTypeController extends Controller
                 'code' => 'required',
                 'wording' => 'required|max:150',
                 'description' => 'max:255',
-                'checked_roles' => 'required',
+                'checkedRoles' => 'required',
             ],
             [
                 'code.required' => "Le code est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'checked_roles' => "Le choix d'au moins un rôle est obligatoire.",
+                'checkedRoles' => "Le choix d'au moins un rôle est obligatoire.",
             ]
         );
 
@@ -116,15 +115,13 @@ class UserTypeController extends Controller
             $userType->code = strtoupper(str_replace(' ', '_', $request->code));
             $userType->wording = $request->wording;
             $userType->description = $request->description;
-            if (!empty($request->checked_roles) && sizeof($request->checked_roles) > 0) {
-                $userType->roles = implode(',', $request->checked_roles);
-            }
+            $userType->roles = $request->checkedRoles;
             $userType->save();
 
             $usersOfThisType = User::where('user_type_id', $userType)->get();
             if (!empty($usersOfThisType) && sizeof($usersOfThisType) > 0) {
                 foreach ($usersOfThisType as $key => $user) {
-                    $user->roles = implode(',', $request->checked_roles);
+                    $user->roles = $request->checkedRoles;
                     $user->save();
                 }
             }

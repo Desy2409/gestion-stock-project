@@ -11,4 +11,8 @@ class UserType extends Model
         'wording',
         'description'
     ];
+
+    protected $casts=[
+        'roles'=>'array',
+    ];
 }

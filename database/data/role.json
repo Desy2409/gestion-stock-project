@@ -454,98 +454,98 @@
         "page_operation_id": 13
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_READ",
-        "wording": "Consultation des bons de commande",
-        "description": "Consultation des bons de commande",
+        "code": "ROLE_ORDER_READ",
+        "wording": "Consultation des commandes",
+        "description": "Consultation des commandes",
         "operation_id": 1,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_CREATE",
-        "wording": "Création d'un nouveau bon de commande",
-        "description": "Création d'un nouveau bon de commande",
+        "code": "ROLE_ORDER_CREATE",
+        "wording": "Création d'une nouvelle commande",
+        "description": "Création d'une nouvelle commande",
         "operation_id": 2,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_UPDATE",
-        "wording": "Mise à jour d'un bon de commande",
-        "description": "Mise à jour d'un bon de commande",
+        "code": "ROLE_ORDER_UPDATE",
+        "wording": "Mise à jour d'une commande",
+        "description": "Mise à jour d'une commande",
         "operation_id": 3,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_DELETE",
-        "wording": "Suppression d'un bon de commande",
-        "description": "Suppression d'un bon de commande",
+        "code": "ROLE_ORDER_DELETE",
+        "wording": "Suppression d'une commande",
+        "description": "Suppression d'une commande",
         "operation_id": 4,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_PRINT",
-        "wording": "Impression de bons de commande",
-        "description": "Impression de bons de commande",
+        "code": "ROLE_ORDER_PRINT",
+        "wording": "Impressionde de commandes",
+        "description": "Impressionde de commandes",
         "operation_id": 5,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_VALIDATE",
-        "wording": "Validation d'un bon de commande",
-        "description": "Validation d'un bon de commande",
+        "code": "ROLE_ORDER_VALIDATE",
+        "wording": "Validation d'une commande",
+        "description": "Validation d'une commande",
         "operation_id": 6,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_ORDER_REJECT",
-        "wording": "Rejet d'un bon de commande",
-        "description": "Rejet d'un bon de commande",
+        "code": "ROLE_ORDER_REJECT",
+        "wording": "Rejet d'une commande",
+        "description": "Rejet d'une commande",
         "operation_id": 7,
-        "page_operation_id": 14
+        "page_operation_id": 17
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_READ",
+        "code": "ROLE_PURCHASE_READ",
         "wording": "Consultation des bons d'achat",
         "description": "Consultation des bons d'achat",
         "operation_id": 1,
         "page_operation_id": 15
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_CREATE",
+        "code": "ROLE_PURCHASE_CREATE",
         "wording": "Création d'un nouveau bon d'achat",
         "description": "Création d'un nouveau bon d'achat",
         "operation_id": 2,
         "page_operation_id": 15
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_UPDATE",
+        "code": "ROLE_PURCHASE_UPDATE",
         "wording": "Mise à jour d'un bon d'achat",
         "description": "Mise à jour d'un bon d'achat",
         "operation_id": 3,
         "page_operation_id": 15
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_DELETE",
+        "code": "ROLE_PURCHASE_DELETE",
         "wording": "Suppression d'un bon d'achat",
         "description": "Suppression d'un bon d'achat",
         "operation_id": 4,
         "page_operation_id": 15
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_PRINT",
+        "code": "ROLE_PURCHASE_PRINT",
         "wording": "Impression de bons d'achat",
         "description": "Impression de bons d'achat",
         "operation_id": 5,
         "page_operation_id": 15
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_VALIDATE",
+        "code": "ROLE_PURCHASE_VALIDATE",
         "wording": "Validation d'un bon d'achat",
         "description": "Validation d'un bon d'achat",
         "operation_id": 6,
         "page_operation_id": 15
     },
     {
-        "code": "ROLE_PURCHASE_COUPON_REJECT",
+        "code": "ROLE_PURCHASE_REJECT",
         "wording": "Rejet d'un bon d'achat",
         "description": "Rejet d'un bon d'achat",
         "operation_id": 7,
@@ -601,53 +601,53 @@
         "page_operation_id": 16
     },
     {
-        "code": "ROLE_ORDER_READ",
-        "wording": "Consultation des commandes",
-        "description": "Consultation des commandes",
+        "code": "ROLE_PURCHASE_ORDER_READ",
+        "wording": "Consultation des bons de commande",
+        "description": "Consultation des bons de commande",
         "operation_id": 1,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
-        "code": "ROLE_ORDER_CREATE",
-        "wording": "Création d'une nouvelle commande",
-        "description": "Création d'une nouvelle commande",
+        "code": "ROLE_PURCHASE_ORDER_CREATE",
+        "wording": "Création d'un nouveau bon de commande",
+        "description": "Création d'un nouveau bon de commande",
         "operation_id": 2,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
-        "code": "ROLE_ORDER_UPDATE",
-        "wording": "Mise à jour d'une commande",
-        "description": "Mise à jour d'une commande",
+        "code": "ROLE_PURCHASE_ORDER_UPDATE",
+        "wording": "Mise à jour d'un bon de commande",
+        "description": "Mise à jour d'un bon de commande",
         "operation_id": 3,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
-        "code": "ROLE_ORDER_DELETE",
-        "wording": "Suppression d'une commande",
-        "description": "Suppression d'une commande",
+        "code": "ROLE_PURCHASE_ORDER_DELETE",
+        "wording": "Suppression d'un bon de commande",
+        "description": "Suppression d'un bon de commande",
         "operation_id": 4,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
-        "code": "ROLE_ORDER_PRINT",
-        "wording": "Impressionde de commandes",
-        "description": "Impressionde de commandes",
+        "code": "ROLE_PURCHASE_ORDER_PRINT",
+        "wording": "Impression de bons de commande",
+        "description": "Impression de bons de commande",
         "operation_id": 5,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
-        "code": "ROLE_ORDER_VALIDATE",
-        "wording": "Validation d'une commande",
-        "description": "Validation d'une commande",
+        "code": "ROLE_PURCHASE_ORDER_VALIDATE",
+        "wording": "Validation d'un bon de commande",
+        "description": "Validation d'un bon de commande",
         "operation_id": 6,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
-        "code": "ROLE_ORDER_REJECT",
-        "wording": "Rejet d'une commande",
-        "description": "Rejet d'une commande",
+        "code": "ROLE_PURCHASE_ORDER_REJECT",
+        "wording": "Rejet d'un bon de commande",
+        "description": "Rejet d'un bon de commande",
         "operation_id": 7,
-        "page_operation_id": 17
+        "page_operation_id": 14
     },
     {
         "code": "ROLE_SALE_READ",
@@ -1007,49 +1007,49 @@
         "page_operation_id": 26
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_READ",
+        "code": "ROLE_TRANSFER_DEMAND_READ",
         "wording": "Consultation des demandes de transfert",
         "description": "Consultation des demandes de transfert",
         "operation_id": 1,
         "page_operation_id": 27
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_CREATE",
+        "code": "ROLE_TRANSFER_DEMAND_CREATE",
         "wording": "Création d'un nouvelle demande de transfert",
         "description": "Création d'un nouvelle demande de transfert",
         "operation_id": 2,
         "page_operation_id": 27
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_UPDATE",
+        "code": "ROLE_TRANSFER_DEMAND_UPDATE",
         "wording": "Mise à jour d'une demande de transfert",
         "description": "Mise à jour d'une demande de transfert",
         "operation_id": 3,
         "page_operation_id": 27
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_DELETE",
+        "code": "ROLE_TRANSFER_DEMAND_DELETE",
         "wording": "Suppression d'une demande de transfert",
         "description": "Suppression d'une demande de transfert",
         "operation_id": 4,
         "page_operation_id": 27
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_PRINT",
+        "code": "ROLE_TRANSFER_DEMAND_PRINT",
         "wording": "Impression de demandes de transfert",
         "description": "Impression de demandes de transfert",
         "operation_id": 5,
         "page_operation_id": 27
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_VALIDATE",
+        "code": "ROLE_TRANSFER_DEMAND_VALIDATE",
         "wording": "Validation d'une demande de transfert",
         "description": "Validation d'une demande de transfert",
         "operation_id": 6,
         "page_operation_id": 27
     },
     {
-        "code": "ROLE_TRANSFER_DEMANDE_REJECT",
+        "code": "ROLE_TRANSFER_DEMAND_REJECT",
         "wording": "Rejet d'une demande de transfert",
         "description": "Rejet d'une demande de transfert",
         "operation_id": 7,

@@ -56,7 +56,14 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
-Route::get('/products', [ProductController::class, 'index']);
+
+
+// Protected routes
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthUserController::class, 'logout']);
+    Route::get('/products', [ProductController::class, 'index']);
 Route::get('/product/{$name}/search', [ProductController::class, 'search']);
 
 // Category routes
@@ -132,6 +139,7 @@ Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
 
 // Purchase routes
 Route::get('/purchase-on-order', [PurchaseController::class, 'purchaseOnOrder']);
+Route::get('/purchase-on-order-datas', [PurchaseController::class, 'datasFromOrder']);
 Route::get('/purchase-direct', [PurchaseController::class, 'directPurchase']);
 Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
 Route::post('/purchase', [PurchaseController::class, 'store']);
@@ -280,19 +288,19 @@ Route::delete('/folder/{id}/destroy', [FolderController::class, 'destroy']);
 Route::prefix('user')->group(function () {
     // Operation routes
     Route::get('/operation', [OperationController::class, 'index']);
-    Route::post('/operation', [OperationController::class, 'store']);
-    Route::get('/operation/{id}/show', [OperationController::class, 'show']);
+    // Route::post('/operation', [OperationController::class, 'store']);
+    // Route::get('/operation/{id}/show', [OperationController::class, 'show']);
     Route::get('/operation/{id}/roles', [OperationController::class, 'rolesOfOperation']);
-    Route::patch('/operation/{id}/update', [OperationController::class, 'update']);
-    Route::delete('/operation/{id}/destroy', [OperationController::class, 'destroy']);
+    // Route::patch('/operation/{id}/update', [OperationController::class, 'update']);
+    // Route::delete('/operation/{id}/destroy', [OperationController::class, 'destroy']);
 
     // Page operation routes
     Route::get('/page-operation', [PageOperationController::class, 'index']);
-    Route::post('/page-operation', [PageOperationController::class, 'store']);
-    Route::get('/page-operation/{id}/show', [PageOperationController::class, 'show']);
+    // Route::post('/page-operation', [PageOperationController::class, 'store']);
+    // Route::get('/page-operation/{id}/show', [PageOperationController::class, 'show']);
     Route::get('/page-operation/{id}/roles', [PageOperationController::class, 'rolesOfPageOperation']);
-    Route::patch('/page-operation/{id}/update', [PageOperationController::class, 'update']);
-    Route::delete('/page-operation/{id}/destroy', [PageOperationController::class, 'destroy']);
+    // Route::patch('/page-operation/{id}/update', [PageOperationController::class, 'update']);
+    // Route::delete('/page-operation/{id}/destroy', [PageOperationController::class, 'destroy']);
 
     // User type routes
     Route::get('/user-type', [UserTypeController::class, 'index']);
@@ -302,11 +310,11 @@ Route::prefix('user')->group(function () {
     Route::delete('/user-type/{id}/destroy', [UserTypeController::class, 'destroy']);
 
     // Employee function routes
-    Route::get('/employee-function', [EmployeeFunctionController::class, 'index']);
-    Route::post('/employee-function', [EmployeeFunctionController::class, 'store']);
-    Route::get('/employee-function/{id}/show', [EmployeeFunctionController::class, 'show']);
-    Route::patch('/employee-function/{id}/update', [EmployeeFunctionController::class, 'update']);
-    Route::delete('/employee-function/{id}/destroy', [EmployeeFunctionController::class, 'destroy']);
+    // Route::get('/employee-function', [EmployeeFunctionController::class, 'index']);
+    // Route::post('/employee-function', [EmployeeFunctionController::class, 'store']);
+    // Route::get('/employee-function/{id}/show', [EmployeeFunctionController::class, 'show']);
+    // Route::patch('/employee-function/{id}/update', [EmployeeFunctionController::class, 'update']);
+    // Route::delete('/employee-function/{id}/destroy', [EmployeeFunctionController::class, 'destroy']);
 
     // Role routes
     Route::get('/role', [RoleController::class, 'index']);
@@ -325,7 +333,7 @@ Route::prefix('user')->group(function () {
 
 // Driver routes
 Route::get('/driver', [DriverController::class, 'index']);
-Route::get('/driver', [DriverController::class, 'hostsOfDriver']);
+Route::get('/driver/{id}/hosts', [DriverController::class, 'hostsOfDriver']);
 Route::post('/driver', [DriverController::class, 'store']);
 Route::get('/driver/{id}/show', [DriverController::class, 'show']);
 Route::patch('/driver/{id}/update', [DriverController::class, 'update']);
@@ -346,19 +354,4 @@ Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::c
 Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
 
 
-
-// Protected routes
-Route::group(
-    [
-        'middleware' => 'api',
-        'namespace' => 'App\Http\Controllers',
-        'prefix' => 'auth'
-    ],
-    function ($router) {
-        Route::post('/logout', [AuthUserController::class, 'logout']);
-    }
-);
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+});
