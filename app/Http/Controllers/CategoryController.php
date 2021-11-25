@@ -68,7 +68,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200);
+            ], 400);
         }
     }
 
@@ -121,7 +121,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200);
+            ], 400);
         }
     }
 
@@ -146,7 +146,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 200);
+            ], 400);
         }
     }
 

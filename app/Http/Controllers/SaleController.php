@@ -525,7 +525,7 @@ class SaleController extends Controller
             ], 400);
         }
     }
-    
+
     public function validateSale($id)
     {
         $this->authorize('ROLE_SALE_VALIDATE', Sale::class);

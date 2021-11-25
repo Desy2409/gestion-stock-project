@@ -315,7 +315,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
     Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
     Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
-    
+
     // Driver routes
     Route::get('/driver', [DriverController::class, 'index']);
     Route::get('/driver/{id}/hosts', [DriverController::class, 'hostsOfDriver']);

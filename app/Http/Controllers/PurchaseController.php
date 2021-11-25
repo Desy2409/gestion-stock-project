@@ -23,8 +23,7 @@ class PurchaseController extends Controller
 
     public function purchaseOnOrder()
     {
-        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
-        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->where('order_id','!=', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
@@ -44,8 +43,7 @@ class PurchaseController extends Controller
 
     public function directPurchase()
     {
-        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
-        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id', null)->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id','=', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
