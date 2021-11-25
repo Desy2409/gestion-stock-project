@@ -19,6 +19,7 @@ class TransferController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $transfers = Transfer::with('transferDemand')->with('productsTransfersLines')->where('')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
@@ -41,6 +42,7 @@ class TransferController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $lastTransferRegister = TransferRegister::latest()->first();
         if ($lastTransferRegister) {
             $code = $this->formateNPosition('TF', $lastTransferRegister->id + 1, 8);
@@ -56,6 +58,7 @@ class TransferController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_TRANSFER_CREATE', Transfer::class);
         $this->validate(
             $request,
             [
@@ -141,6 +144,7 @@ class TransferController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $transfer = Transfer::with('productsTransfersLines')->findOrFail($id);
         $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
 
@@ -152,6 +156,7 @@ class TransferController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $transfer = Transfer::with('productsTransfersLines')->findOrFail($id);
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
@@ -164,6 +169,7 @@ class TransferController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_TRANSFER_UPDATE', Transfer::class);
         $transfer = Transfer::findOrFail($id);
         $this->validate(
             $request,
@@ -245,6 +251,7 @@ class TransferController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_TRANSFER_DELETE', Transfer::class);
         $transfer = Transfer::findOrFail($id);
         // $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
         try {

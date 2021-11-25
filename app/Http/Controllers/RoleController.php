@@ -143,4 +143,12 @@ class RoleController extends Controller
             ], 400);
         }
     }
+
+    public function show($id)
+    {
+        $role = Role::findOrFail($id);
+        return new JsonResponse([
+            'role' => $role
+        ], 200);
+    }
 }

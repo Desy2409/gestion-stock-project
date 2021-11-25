@@ -12,6 +12,7 @@ class FolderController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_FOLDER_READ', Folder::class);
         $folders = Folder::with('parent')->with('children')->orderBy('name')->get();
         // $folders = Folder::orderBy('name')->get();
         return new JsonResponse([
@@ -21,6 +22,7 @@ class FolderController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_FOLDER_CREATE', Folder::class);
         $this->validate(
             $request,
             [
@@ -118,6 +120,7 @@ class FolderController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_FOLDER_UPDATE', Folder::class);
         $folder = Folder::findOrfail($id);
         $parentFolder = $folder ? $folder->parent : null;
         $this->validate(
@@ -294,6 +297,7 @@ class FolderController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_FOLDER_DELETE', Folder::class);
         $folder = Folder::findOrFail($id);
         // dd($folder->name);
         try {
@@ -321,5 +325,14 @@ class FolderController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_FOLDER_READ', Folder::class);
+        $folder = Folder::findOrFail($id);
+        return new JsonResponse([
+            'folder' => $folder
+        ], 200);
     }
 }

@@ -12,6 +12,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_CATEGORY_READ', Category::class);
         $categories = Category::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories]
@@ -20,13 +21,15 @@ class CategoryController extends Controller
 
     public function subCategoriesOfCategory($id)
     {
-        $subCategories = SubCategory::where('category_id',$id)->get();
+        $this->authorize('ROLE_CATEGORY_READ', Category::class);
+        $subCategories = SubCategory::where('category_id', $id)->get();
         return new JsonResponse(['subCategories' => $subCategories]);
     }
 
     // Enregistrement d'une nouvelle catégorie
     public function store(Request $request)
     {
+        $this->authorize('ROLE_CATEGORY_CREATE', Category::class);
         $this->validate(
             $request,
             [
@@ -72,7 +75,7 @@ class CategoryController extends Controller
     // Mise à jour d'une catégorie
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_CATEGORY_UPDATE', Category::class);
         $category = Category::findOrFail($id);
         $this->validate(
             $request,
@@ -125,6 +128,7 @@ class CategoryController extends Controller
     // Suppression d'une catégorie
     public function destroy($id)
     {
+        $this->authorize('ROLE_CATEGORY_DELETE', Category::class);
         $category = Category::findOrFail($id);
         try {
             $category->delete();
@@ -148,6 +152,7 @@ class CategoryController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_CATEGORY_READ', Category::class);
         $category = Category::with('subCategories')->findOrFail($id);
         return new JsonResponse([
             'category' => $category

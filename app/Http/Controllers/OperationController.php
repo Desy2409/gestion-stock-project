@@ -13,6 +13,7 @@ class OperationController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_OPERATION_READ', Operation::class);
         $operations = Operation::with('roles')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['operations' => $operations]
@@ -21,6 +22,7 @@ class OperationController extends Controller
     
     public function rolesOfOperation($id)
     {
+        $this->authorize('ROLE_OPERATION_READ', Operation::class);
         $roles = Role::where('operation_id', $id)->get();
         return new JsonResponse(['roles' => $roles]);
     }

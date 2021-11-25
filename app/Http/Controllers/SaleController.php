@@ -24,14 +24,15 @@ class SaleController extends Controller
 
     public function saleOnPurchaseOrder()
     {
-        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->orderBy('code')->orderBy('sale_date')->get();
+        $this->authorize('ROLE_SALE_READ', Sale::class);
+        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->where('purchase_order_id','!=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition('BA', $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
         } else {
-            $saleRegister->code = $this->formateNPosition('BA', 1, 8);
+            $saleRegister->code = $this->formateNPosition('VT', 1, 8);
         }
         $saleRegister->save();
 
@@ -43,14 +44,15 @@ class SaleController extends Controller
 
     public function directSale()
     {
-        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_id', null)->orderBy('code')->orderBy('sale_date')->get();
+        $this->authorize('ROLE_SALE_READ', Sale::class);
+        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_order_id','=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition('BA', $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
         } else {
-            $saleRegister->code = $this->formateNPosition('BA', 1, 8);
+            $saleRegister->code = $this->formateNPosition('VT', 1, 8);
         }
         $saleRegister->save();
 
@@ -64,24 +66,28 @@ class SaleController extends Controller
         ]);
     }
 
-    public function productFromPurchaseOrder($id)
+    public function datasFromPurchaseOrder($id)
     {
-        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->orderBy('code')->orderBy('sale_date')->get();
-        $order = PurchaseOrder::findOrFail($id);
-        $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $order->id)->pluck('product_id')->toArray();
+        $this->authorize('ROLE_SALE_READ', Sale::class);
+        // $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->orderBy('code')->orderBy('sale_date')->get();
+        $purChaserder = PurchaseOrder::findOrFail($id);
+        $client = $purChaserder ? $purChaserder->client : null;
+        $salePoint = $purChaserder ? $purChaserder->salePoint : null;
+        $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $purChaserder->id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
-            'datas' => ['products' => $products]
+            'client' => $client, 'salePoint' => $salePoint, 'datas' => ['products' => $products]
         ], 200);
     }
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_SALE_READ', Sale::class);
         $lastSaleRegister = SaleRegister::latest()->first();
         if ($lastSaleRegister) {
-            $code = $this->formateNPosition('BA', $lastSaleRegister->id + 1, 8);
+            $code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('BA', 1, 8);
+            $code = $this->formateNPosition('VT', 1, 8);
         }
 
         return new JsonResponse([
@@ -91,6 +97,7 @@ class SaleController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_SALE_READ', Sale::class);
         $sale = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->findOrFail($id);
         $productSales = $sale ? $sale->productSales : null; //ProductPurchase::where('order_id', $sale->id)->get();
 
@@ -102,6 +109,7 @@ class SaleController extends Controller
 
     public function store(Request $request, $saleType)
     {
+        $this->authorize('ROLE_SALE_CREATE', Sale::class);
         if ($saleType == "Vente directe") {
             $this->validate(
                 $request,
@@ -157,14 +165,15 @@ class SaleController extends Controller
                 $sale->tva = $request->tva;
                 $sale->observation = $request->observation;
                 $sale->client_id = $request->client;
+                $sale->sale_point_id = $request->SalePoint;
                 $sale->save();
 
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $product) {
                     $productSale = new ProductSale();
-                    $productSale->quantity = $request->saleProducts["quantity"];
-                    $productSale->unit_price = $request->saleProducts["unit_price"];
-                    $productSale->unity_id = $request->saleProducts["unity"];
+                    $productSale->quantity = $product["quantity"];
+                    $productSale->unit_price = $product["unit_price"];
+                    $productSale->unity_id = $product["unity"];
                     $productSale->product_id = $product;
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
@@ -262,9 +271,9 @@ class SaleController extends Controller
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $product) {
                     $productSale = new ProductSale();
-                    $productSale->quantity = $request->saleProducts["quantity"];
-                    $productSale->unit_price = $request->saleProducts["unit_price"];
-                    $productSale->unity_id = $request->saleProducts["unity"];
+                    $productSale->quantity = $product["quantity"];
+                    $productSale->unit_price = $product["unit_price"];
+                    $productSale->unity_id = $product["unity"];
                     $productSale->product_id = $product;
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
@@ -297,11 +306,9 @@ class SaleController extends Controller
         }
     }
 
-
-
-
     public function update(Request $request, $id, $saleType)
     {
+        $this->authorize('ROLE_SALE_UPDATE', Sale::class);
         $sale = Sale::findOrFail($id);
         if ($saleType == "Vente directe") {
             $this->validate(
@@ -331,14 +338,14 @@ class SaleController extends Controller
                 ]
             );
 
-            if (sizeof($request->saleProducts) != sizeof($request->quantities) || sizeof($request->saleProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
+            // if (sizeof($request->saleProducts) != sizeof($request->quantities) || sizeof($request->saleProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
 
             try {
                 $sale->reference = $request->reference;
@@ -351,6 +358,7 @@ class SaleController extends Controller
                 $sale->tva = $request->tva;
                 $sale->observation = $request->observation;
                 $sale->client_id = $request->client;
+                $sale->sale_point_id = $request->salePoint;
                 $sale->save();
 
                 ProductSale::where('sale_id', $sale->id)->delete();
@@ -358,9 +366,9 @@ class SaleController extends Controller
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $product) {
                     $productSale = new ProductSale();
-                    $productSale->quantity = $request->saleProducts["quantity"];
-                    $productSale->unit_price = $request->saleProducts["unit_price"];
-                    $productSale->unity_id = $request->saleProducts["unity"];
+                    $productSale->quantity = $product["quantity"];
+                    $productSale->unit_price = $product["unit_price"];
+                    $productSale->unity_id = $product["unity"];
                     $productSale->product_id = $product;
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
@@ -368,10 +376,10 @@ class SaleController extends Controller
                     array_push($productSales, $productSale);
                 }
 
-                $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
-                if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
-                    $sale->delete();
-                }
+                // $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
+                // if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
+                //     $sale->delete();
+                // }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
@@ -418,23 +426,24 @@ class SaleController extends Controller
                     'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 ]
             );
-            if (sizeof($request->saleProducts) != sizeof($request->quantities) || sizeof($request->saleProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
 
-            if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-                $success = false;
-                $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-                return new JsonResponse([
-                    'success' => $success,
-                    'message' => $message,
-                ]);
-            }
+            // if (sizeof($request->saleProducts) != sizeof($request->quantities) || sizeof($request->saleProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
+
+            // if (sizeof($request->products_of_purchase) != sizeof($request->quantities) || sizeof($request->products_of_purchase) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+            //     $success = false;
+            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+            //     return new JsonResponse([
+            //         'success' => $success,
+            //         'message' => $message,
+            //     ]);
+            // }
 
             try {
                 $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order);
@@ -456,9 +465,9 @@ class SaleController extends Controller
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $product) {
                     $productSale = new ProductSale();
-                    $productSale->quantity = $request->saleProducts["quantity"];
-                    $productSale->unit_price = $request->saleProducts["unit_price"];
-                    $productSale->unity_id = $request->saleProducts["unity"];
+                    $productSale->quantity = $product["quantity"];
+                    $productSale->unit_price = $product["unit_price"];
+                    $productSale->unity_id = $product["unity"];
                     $productSale->product_id = $product;
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
@@ -466,10 +475,10 @@ class SaleController extends Controller
                     array_push($productSales, $productSale);
                 }
 
-                $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
-                if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
-                    $sale->delete();
-                }
+                // $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
+                // if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
+                //     $sale->delete();
+                // }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
@@ -493,6 +502,7 @@ class SaleController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_SALE_DELETE', Sale::class);
         $sale = Sale::findOrFail($id);
         $productSales = $sale ? $sale->productSales : null;
         try {
@@ -509,6 +519,58 @@ class SaleController extends Controller
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function validateSale($id)
+    {
+        $this->authorize('ROLE_SALE_VALIDATE', Sale::class);
+        $sale = Sale::findOrFail($id);
+        try {
+            $sale->state = 'S';
+            $sale->date_of_processing = date('Y-m-d', strtotime(now()));
+            $sale->save();
+
+            $success = true;
+            $message = "Vente validée avec succès.";
+            return new JsonResponse([
+                'sale' => $sale,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la validation de la vente.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function rejectSale($id)
+    {
+        $this->authorize('ROLE_SALE_REJECT', Sale::class);
+        $sale = Sale::findOrFail($id);
+        try {
+            $sale->state = 'A';
+            $sale->date_of_processing = date('Y-m-d', strtotime(now()));
+            $sale->save();
+
+            $success = true;
+            $message = "Vente annulée avec succès.";
+            return new JsonResponse([
+                'sale' => $sale,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'annulation de la vente.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

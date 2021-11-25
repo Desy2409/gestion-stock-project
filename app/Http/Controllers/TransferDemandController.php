@@ -22,6 +22,7 @@ class TransferDemandController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
         $salesPoints = SalePoint::orderBy('social_reason')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
         $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
@@ -43,6 +44,7 @@ class TransferDemandController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
         $lastTransferDemandRegister = TransferDemandRegister::latest()->first();
         if ($lastTransferDemandRegister) {
             $code = $this->formateNPosition('DT', $lastTransferDemandRegister->id + 1, 8);
@@ -56,6 +58,7 @@ class TransferDemandController extends Controller
     }
     public function store(Request $request)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_CREATE', TransferDemand::class);
         $this->validate(
             $request,
             [
@@ -142,6 +145,7 @@ class TransferDemandController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
         $transferDemand = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->findOrFail($id);
         $productsTransferDemands = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
 
@@ -153,6 +157,7 @@ class TransferDemandController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
         $transferDemand = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->findOrFail($id);
         $products = Product::orderBy('wording')->get();
         $productsTransferDemands = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
@@ -165,6 +170,7 @@ class TransferDemandController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_UPDATE', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);
         $this->validate(
             $request,
@@ -245,6 +251,7 @@ class TransferDemandController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_DELETE', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);
         // $productsTransfersDemandsLines = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
         try {
@@ -269,6 +276,7 @@ class TransferDemandController extends Controller
 
     public function validateTransferDemand($id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_VALIDATE', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);
         try {
             $transferDemand->state = 'S';
@@ -294,6 +302,7 @@ class TransferDemandController extends Controller
 
     public function cancelTransferDemand($id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_REJECT', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);
         try {
             $transferDemand->state = 'A';
@@ -319,6 +328,7 @@ class TransferDemandController extends Controller
 
     public function transformDemandToTransfer($id)
     {
+        $this->authorize('ROLE_TRANSFER_DEMAND_TRANSFORM', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);
 
         try {

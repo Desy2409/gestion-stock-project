@@ -11,6 +11,7 @@ class InstitutionController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
         $institutions = Institution::with('salesPoints')->orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['institutions' => $institutions]
@@ -19,6 +20,7 @@ class InstitutionController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_INSTITUTION_CREATE', Institution::class);
         $this->validate(
             $request,
             [
@@ -82,6 +84,7 @@ class InstitutionController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
         $institution = Institution::with('salesPoints')->findOrFail($id);
         return new JsonResponse([
             'institution' => $institution
@@ -90,6 +93,7 @@ class InstitutionController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
         $institution = Institution::with('salesPoints')->findOrFail($id);
         return new JsonResponse([
             'institution' => $institution,
@@ -98,6 +102,7 @@ class InstitutionController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_INSTITUTION_UPDATE', Institution::class);
         $institution = Institution::findOrFail($id);
         $this->validate(
             $request,
@@ -161,6 +166,7 @@ class InstitutionController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_INSTITUTION_DELETE', Institution::class);
         $institution = Institution::findOrFail($id);
         try {
             $institution->delete();

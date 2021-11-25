@@ -11,6 +11,7 @@ class CompartmentController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
         $compartments = Compartment::orderBy('reference')->get();
         return new JsonResponse([
             'datas' => ['compartments' => $compartments]
@@ -20,6 +21,7 @@ class CompartmentController extends Controller
     // Enregistrement d'un nouveau compartiment
     public function store(Request $request)
     {
+        $this->authorize('ROLE_COMPARTMENT_CREATE', Compartment::class);
         $this->validate(
             $request,
             [
@@ -62,7 +64,7 @@ class CompartmentController extends Controller
     // Mise à jour d'un compartiment
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_COMPARTMENT_UPDATE', Compartment::class);
         $compartment = Compartment::findOrFail($id);
         $this->validate(
             $request,
@@ -87,7 +89,7 @@ class CompartmentController extends Controller
                 'message' => "Ce camion existe déjà."
             ], 400);
         }
-        
+
         try {
             $compartment->reference = $request->reference;
             $compartment->number = $request->number;
@@ -114,6 +116,7 @@ class CompartmentController extends Controller
     // Suppression d'un compartiment
     public function destroy($id)
     {
+        $this->authorize('ROLE_COMPARTMENT_DELETE', Compartment::class);
         $compartment = Compartment::findOrFail($id);
         try {
             $compartment->delete();
@@ -137,6 +140,7 @@ class CompartmentController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
         $compartment = Compartment::findOrFail($id);
         return new JsonResponse([
             'compartment' => $compartment

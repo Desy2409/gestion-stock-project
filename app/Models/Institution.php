@@ -21,4 +21,9 @@ class Institution extends Model
     {
         return $this->hasMany(SalePoint::class);
     }
+
+    public function deliveryPoints()
+    {
+        return $this->hasMany(DeliveryPoint::class);
+    }
 }

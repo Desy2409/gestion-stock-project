@@ -16,13 +16,14 @@ class TankTruckController extends Controller
 {
     private function tankTruckAuthorizedFiles()
     {
-        // dd('enter');
+        $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         $tankTruckAuthorizedFiles = FileType::where('code', 'CJ')->first();
         return $tankTruckAuthorizedFiles;
     }
 
     public function index()
     {
+        $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         $tankTrucks = TankTruck::orderBy('validity_date', 'desc')->get();
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();
@@ -31,6 +32,7 @@ class TankTruckController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_TANK_TRUCK_CREATE', TankTruck::class);
         $this->validate(
             $request,
             [
@@ -80,6 +82,7 @@ class TankTruckController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_TANK_TRUCK_UPDATE', TankTruck::class);
         $tankTruck = TankTruck::findOrFail($id);
         $this->validate(
             $request,
@@ -108,7 +111,7 @@ class TankTruckController extends Controller
             // $tankTruck->gauging_certificate = $request->gauging_certificate;
             $tankTruck->validity_date = $request->validity_date;
             $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->gauging_certificate->getClientOriginalExtension();
-            $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/' , $fileName, 'public');
+            $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
             $tankTruck->save();
 
             $uploadFile = new UploadFile();
@@ -138,6 +141,7 @@ class TankTruckController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_TANK_TRUCK_DELETE', TankTruck::class);
         $tankTruck = TankTruck::findOrFail($id);
         try {
             $tankTruck->delete();
@@ -156,5 +160,14 @@ class TankTruckController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
+        $tankTruck = TankTruck::findOrFail($id);
+        return new JsonResponse([
+            'tankTruck' => $tankTruck
+        ], 200);
     }
 }

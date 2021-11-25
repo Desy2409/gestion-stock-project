@@ -24,7 +24,8 @@ class UsersTableSeeder extends Seeder
                 User::create([
                     'name' => $user->name,
                     'email' => $user->email,
-                    'password' => Hash::make($user->password)
+                    'password' => Hash::make($user->password),
+                    'roles' => $user->roles
                 ]);
             }
         }

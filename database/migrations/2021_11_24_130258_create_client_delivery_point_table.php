@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStartNumbersTable extends Migration
+class CreateClientDeliveryPointTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateStartNumbersTable extends Migration
      */
     public function up()
     {
-        Schema::create('start_numbers', function (Blueprint $table) {
+        Schema::create('client_delivery_point', function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
-            $table->foreignId('phone_operator_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('delivery_point_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateStartNumbersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('start_numbers');
+        Schema::dropIfExists('client_delivery_point');
     }
 }

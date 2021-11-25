@@ -14,6 +14,7 @@ class ProviderTypeController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_PROVIDER_TYPE_READ', ProviderType::class);
         $listTypes = $this->types;
         $providerTypes = ProviderType::with('providers')->orderBy('wording')->get();
         return new JsonResponse([
@@ -24,6 +25,7 @@ class ProviderTypeController extends Controller
     // Enregistrement d'une nouvelle sous-catégorie
     public function store(Request $request)
     {
+        $this->authorize('ROLE_PROVIDER_TYPE_CREATE', ProviderType::class);
         $this->validate(
             $request,
             [
@@ -71,6 +73,7 @@ class ProviderTypeController extends Controller
     // Mise à jour d'une sous-catégorie
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_PROVIDER_TYPE_UPDATE', ProviderType::class);
         $providerType = ProviderType::findOrFail($id);
         $this->validate(
             $request,
@@ -116,6 +119,7 @@ class ProviderTypeController extends Controller
     // Suppression d'une sous-catégorie
     public function destroy($id)
     {
+        $this->authorize('ROLE_PROVIDER_TYPE_DELETE', ProviderType::class);
         $providerType = ProviderType::findOrFail($id);
         try {
             $providerType->delete();
@@ -146,6 +150,7 @@ class ProviderTypeController extends Controller
      */
     public function show($id)
     {
+        $this->authorize('ROLE_PROVIDER_TYPE_READ', ProviderType::class);
         $providerType = ProviderType::findOrFail($id);
         return new JsonResponse([
             'providerType' => $providerType

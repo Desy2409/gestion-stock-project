@@ -13,6 +13,7 @@ class UserTypeController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         // $roles = Role::with('operation')->with('pageOperation')->get();
         $roles = Role::all();
         $userTypes = UserType::orderBy('wording')->get();
@@ -23,6 +24,7 @@ class UserTypeController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_USER_TYPE_CREATE', UserType::class);
         // dd(array($request->checkedRoles));
         $this->validate(
             $request,
@@ -72,7 +74,7 @@ class UserTypeController extends Controller
 
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_USER_TYPE_UPDATE', UserType::class);
         $userType = UserType::findOrFail($id);
         $this->validate(
             $request,
@@ -145,6 +147,7 @@ class UserTypeController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_USER_TYPE_DELETE', UserType::class);
         $userType = UserType::findOrFail($id);
         try {
             $userType->delete();
@@ -163,5 +166,14 @@ class UserTypeController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
+        $userType = UserType::findOrFail($id);
+        return new JsonResponse([
+            'userType' => $userType
+        ], 200);
     }
 }

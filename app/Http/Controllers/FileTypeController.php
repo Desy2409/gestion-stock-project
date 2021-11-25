@@ -13,6 +13,7 @@ class FileTypeController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_FILE_TYPE_READ', FileType::class);
         $fileTypes = FileType::orderBy('wording')->get();
         $extensions = Extension::orderBy('extension')->get();
         return new JsonResponse(['datas' => ['fileTypes' => $fileTypes, 'extensions' => $extensions]], 200);
@@ -20,6 +21,7 @@ class FileTypeController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_FILE_TYPE_CREATE', FileType::class);
         $this->validate(
             $request,
             [
@@ -64,6 +66,7 @@ class FileTypeController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_FILE_TYPE_UPDATE', FileType::class);
         $fileType = FileType::findOrFail($id);
         $this->validate(
             $request,
@@ -106,6 +109,7 @@ class FileTypeController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_FILE_TYPE_DELETE', FileType::class);
         $fileType = FileType::findOrFail($id);
         try {
             $fileType->delete();
@@ -124,5 +128,14 @@ class FileTypeController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_FILE_TYPE_READ', FileType::class);
+        $fileType = FileType::findOrFail($id);
+        return new JsonResponse([
+            'fileType' => $fileType
+        ], 200);
     }
 }

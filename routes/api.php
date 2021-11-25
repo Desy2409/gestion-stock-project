@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientDeliveryNoteController;
 use App\Http\Controllers\CompartmentController;
 use App\Http\Controllers\DeliveryNoteController;
+use App\Http\Controllers\DeliveryPointController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\EmailChannelParamController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\JuridicPersonalityController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageOperationController;
+use App\Http\Controllers\PhoneOperatorController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
@@ -136,24 +138,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/order/{id}/show', [OrderController::class, 'show']);
     Route::patch('/order/{id}/update', [OrderController::class, 'update']);
     Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
+    Route::patch('/order/{id}/validate', [OrderController::class, 'validateOrder']);
+    Route::patch('/order/{id}/reject', [OrderController::class, 'rejectOrder']);
 
     // Purchase routes
     Route::get('/purchase-on-order', [PurchaseController::class, 'purchaseOnOrder']);
-    Route::get('/purchase-on-order-datas/{id}', [PurchaseController::class, 'datasFromOrder']);
+    Route::get('/purchase-on-order-datas', [PurchaseController::class, 'datasFromOrder']);
     Route::get('/purchase-direct', [PurchaseController::class, 'directPurchase']);
     Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
     Route::post('/purchase', [PurchaseController::class, 'store']);
     Route::get('/purchase/{id}/show', [PurchaseController::class, 'show']);
     Route::patch('/purchase/{id}/update', [PurchaseController::class, 'update']);
     Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
+    Route::patch('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase']);
+    Route::patch('/purchase/{id}/reject', [PurchaseController::class, 'rejectPurchase']);
 
     // Delivery note routes
     Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
     Route::get('/delivery-note-code', [DeliveryNoteController::class, 'showNextCode']);
+    Route::get('/delivery-note-order-select', [DeliveryNoteController::class, 'datasOnSelectOrder']);
     Route::post('/delivery-note', [DeliveryNoteController::class, 'store']);
     Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
     Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
     Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
+    Route::patch('/delivery-note/{id}/validate', [DeliveryNoteController::class, 'validateDeliveryNote']);
+    Route::patch('/delivery-note/{id}/reject', [DeliveryNoteController::class, 'rejectDeliveryNote']);
 
     // Purchase order routes
     Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
@@ -162,23 +171,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
     Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
+    Route::patch('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder']);
+    Route::patch('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder']);
 
     // Sale routes
     Route::get('/sale-on-purchase-order', [SaleController::class, 'saleOnPurchaseOrder']);
+    Route::get('/sale-on-purchase-order/{id}', [SaleController::class, 'datasFromPurchaseOrder']);
     Route::get('/sale-direct', [SaleController::class, 'directSale']);
     Route::get('/sale-code', [SaleController::class, 'showNextCode']);
     Route::post('/sale', [SaleController::class, 'store']);
     Route::get('/sale/{id}/show', [SaleController::class, 'show']);
     Route::patch('/sale/{id}/update', [SaleController::class, 'update']);
     Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
+    Route::patch('/sale/{id}/validate', [SaleController::class, 'validateSale']);
+    Route::patch('/sale/{id}/reject', [SaleController::class, 'rejectSale']);
 
     // Client delivery note routes
     Route::get('/client-delivery-note', [ClientDeliveryNoteController::class, 'index']);
     Route::get('/client-delivery-note-code', [ClientDeliveryNoteController::class, 'showNextCode']);
+    Route::get('/client-delivery-note-purchase-order-select', [ClientDeliveryNoteController::class, 'datasOnSelectPurchaseOrder']);
     Route::post('/client-delivery-note', [ClientDeliveryNoteController::class, 'store']);
     Route::get('/client-delivery-note/{id}/show', [ClientDeliveryNoteController::class, 'show']);
     Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
     Route::delete('/client-delivery-note/{id}/destroy', [ClientDeliveryNoteController::class, 'destroy']);
+    Route::patch('/client-delivery-note/{id}/validate', [ClientDeliveryNoteController::class, 'validateDeliveryNote']);
+    Route::patch('/client-delivery-note/{id}/reject', [ClientDeliveryNoteController::class, 'rejectDeliveryNote']);
 
     // Institution routes
     Route::get('/institution', [InstitutionController::class, 'index']);
@@ -285,6 +302,42 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/folder/{id}/update', [FolderController::class, 'update']);
     Route::delete('/folder/{id}/destroy', [FolderController::class, 'destroy']);
 
+    // PhoneOperator routes
+    Route::get('/phone-operator', [PhoneOperatorController::class, 'index']);
+    Route::post('/phone-operator', [PhoneOperatorController::class, 'store']);
+    Route::get('/phone-operator/{id}/show', [PhoneOperatorController::class, 'show']);
+    Route::patch('/phone-operator/{id}/update', [PhoneOperatorController::class, 'update']);
+    Route::delete('/phone-operator/{id}/destroy', [PhoneOperatorController::class, 'destroy']);
+
+    // DeliveryPoint routes
+    Route::get('/delivery-point', [DeliveryPointController::class, 'index']);
+    Route::post('/delivery-point', [DeliveryPointController::class, 'store']);
+    Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
+    Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
+    Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
+
+    // Driver routes
+    Route::get('/driver', [DriverController::class, 'index']);
+    Route::get('/driver/{id}/hosts', [DriverController::class, 'hostsOfDriver']);
+    Route::post('/driver', [DriverController::class, 'store']);
+    Route::get('/driver/{id}/show', [DriverController::class, 'show']);
+    Route::patch('/driver/{id}/update', [DriverController::class, 'update']);
+    Route::delete('/driver/{id}/destroy', [DriverController::class, 'destroy']);
+
+    // Host routes
+    Route::get('/host', [HostController::class, 'index']);
+    Route::post('/host', [HostController::class, 'store']);
+    Route::get('/host/{id}/show', [HostController::class, 'show']);
+    Route::patch('/host/{id}/update', [HostController::class, 'update']);
+    Route::delete('/host/{id}/destroy', [HostController::class, 'destroy']);
+
+    // Email channel param routes
+    Route::get('/email-channel-param', [EmailChannelParamController::class, 'index']);
+    Route::post('/email-channel-param', [EmailChannelParamController::class, 'store']);
+    Route::get('/email-channel-param/{id}/show', [EmailChannelParamController::class, 'show']);
+    Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::class, 'update']);
+    Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
+
     Route::prefix('user')->group(function () {
         // Operation routes
         Route::get('/operation', [OperationController::class, 'index']);
@@ -331,25 +384,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{id}/destroy', [RoleController::class, 'destroy']);
     });
 
-    // Driver routes
-    Route::get('/driver', [DriverController::class, 'index']);
-    Route::get('/driver/{id}/hosts', [DriverController::class, 'hostsOfDriver']);
-    Route::post('/driver', [DriverController::class, 'store']);
-    Route::get('/driver/{id}/show', [DriverController::class, 'show']);
-    Route::patch('/driver/{id}/update', [DriverController::class, 'update']);
-    Route::delete('/driver/{id}/destroy', [DriverController::class, 'destroy']);
-
-    // Host routes
-    Route::get('/host', [HostController::class, 'index']);
-    Route::post('/host', [HostController::class, 'store']);
-    Route::get('/host/{id}/show', [HostController::class, 'show']);
-    Route::patch('/host/{id}/update', [HostController::class, 'update']);
-    Route::delete('/host/{id}/destroy', [HostController::class, 'destroy']);
-
-    // Email channel param routes
-    Route::get('/email-channel-param', [EmailChannelParamController::class, 'index']);
-    Route::post('/email-channel-param', [EmailChannelParamController::class, 'store']);
-    Route::get('/email-channel-param/{id}/show', [EmailChannelParamController::class, 'show']);
-    Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::class, 'update']);
-    Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
 });
