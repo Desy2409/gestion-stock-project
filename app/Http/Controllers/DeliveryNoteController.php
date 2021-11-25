@@ -22,7 +22,7 @@ class DeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('purchase_date')->get();
-        $orders = Order::with('provider')->with('purchase')->orderBy('code')->orderBy('purchase_date')->get();
+        $orders = Order::with('provider')->with('purchases')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 
@@ -55,14 +55,15 @@ class DeliveryNoteController extends Controller
         ], 200);
     }
 
-    public function productFromPurchase($id)
+    public function datasOnSelectOrder($id)
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
-        // $order = 
-        $idOfProducts = ProductPurchase::where('purchase_id', $id)->pluck('product_id')->toArray();
+        $order = Order::findOrFail($id);
+        $purchase = Purchase::where('order_id', $order->id)->first();
+        $idOfProducts = ProductPurchase::where('purchase_id', $purchase->id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
-            'datas' => ['products' => $products]
+            'purchase' => $purchase, 'datas' => ['products' => $products]
         ], 200);
     }
 
