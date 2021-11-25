@@ -16,7 +16,7 @@ class DriverController extends Controller
 {
     public function index()
     {
-        $this->authorize('ROLE_DRIVER_READ', Driver::class);
+        // $this->authorize('ROLE_DRIVER_READ', Driver::class);
         $drivers = Driver::with('hosts')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['drivers' => $drivers],
@@ -38,7 +38,7 @@ class DriverController extends Controller
     // Enregistrement d'une nouvelle donnée driver
     public function store(Request $request)
     {
-        $this->authorize('ROLE_DRIVER_CREATE');
+        // $this->authorize('ROLE_DRIVER_CREATE');
         $this->validate(
             $request,
             [
@@ -81,7 +81,7 @@ class DriverController extends Controller
     // Mise à jour d'une donnée driver
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_DRIVER_UPDATE');
+        // $this->authorize('ROLE_DRIVER_UPDATE');
         $driver = Driver::findOrFail($id);
         $this->validate(
             $request,
@@ -132,7 +132,7 @@ class DriverController extends Controller
     // Suppression d'une donnée driver
     public function destroy($id)
     {
-        $this->authorize('ROLE_DRIVER_DELETE');
+        // $this->authorize('ROLE_DRIVER_DELETE');
         $driver = Driver::findOrFail($id);
         try {
             $driver->delete();

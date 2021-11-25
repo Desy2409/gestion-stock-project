@@ -83,7 +83,7 @@ class AuthUserController extends Controller
             ];
 
             return response($response, 201);
-            
+
         }else{
             return response([
                 'message'=>'Email ou mot de passe incorrect.'

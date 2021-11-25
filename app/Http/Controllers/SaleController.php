@@ -20,6 +20,8 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
+    use UtilityTrait;
+
     public function saleOnPurchaseOrder()
     {
         $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->orderBy('code')->orderBy('sale_date')->get();
@@ -41,7 +43,7 @@ class SaleController extends Controller
 
     public function directSale()
     {
-        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_id',null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_id', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -58,7 +60,7 @@ class SaleController extends Controller
         $unities = Unity::orderBy('wording')->get();
 
         return new JsonResponse([
-            'datas' => ['clients' => $clients, 'salePoints' => $salePoints, 'products' => $products, 'sales' => $sales,'unities'=>$unities]
+            'datas' => ['clients' => $clients, 'salePoints' => $salePoints, 'products' => $products, 'sales' => $sales, 'unities' => $unities]
         ]);
     }
 
