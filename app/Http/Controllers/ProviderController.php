@@ -18,6 +18,7 @@ class ProviderController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_PROVIDER_READ', Provider::class);
         $providers = Provider::with(['person.address'])->with('providerType')->get();
         $providerTypes = ProviderType::orderBy('wording')->get();
 
@@ -38,6 +39,7 @@ class ProviderController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_PROVIDER_READ', Provider::class);
         $lastProviderRegister = ProviderRegister::latest()->first();
         if ($lastProviderRegister) {
             $code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
@@ -53,6 +55,7 @@ class ProviderController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_PROVIDER_CREATE', Provider::class);
         $this->validate(
             $request,
             [
@@ -138,18 +141,21 @@ class ProviderController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_PROVIDER_READ', Provider::class);
         $provider = Provider::with('person.address')->where('id', $id)->first();
         return new JsonResponse(['provider' => $provider], 200);
     }
 
     public function edit($id)
     {
+        $this->authorize('ROLE_PROVIDER_READ', Provider::class);
         $provider = Provider::with('person.address')->where('id', $id)->first();
         return new JsonResponse(['provider' => $provider], 200);
     }
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_PROVIDER_UPDATE', Provider::class);
         $provider = Provider::findOrFail($id);
         $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
         $address = $person ? $person->address : null;
@@ -240,6 +246,7 @@ class ProviderController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_PROVIDER_DELETE', Provider::class);
         $provider = Provider::findOrFail($id);
         $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
         try {

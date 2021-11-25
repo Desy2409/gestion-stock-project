@@ -20,6 +20,7 @@ class ProductController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $products = Product::with('subCategory')->orderBy('wording')->get();
         // $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
@@ -42,6 +43,7 @@ class ProductController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $lastProductRegister = ProductRegister::latest()->first();
         if ($lastProductRegister) {
             $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
@@ -56,6 +58,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_PRODUCT_CREATE', Product::class);
         $request->validate(
             [
                 'sub_category' => 'required',
@@ -108,12 +111,14 @@ class ProductController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
         return new JsonResponse(['product' => $product], 200);
     }
 
     public function edit($id)
     {
+        $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
         $subCategories = SubCategory::orderBy('wording')->get();
         return new JsonResponse([
@@ -123,6 +128,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_PRODUCT_UPDATE', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
         $request->validate(
             [
@@ -186,6 +192,7 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_PRODUCT_DELETE', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
         try {
             $product->delete();

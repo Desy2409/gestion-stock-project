@@ -21,6 +21,7 @@ class OrderController extends Controller
     public function index()
     {
         // dd("OrderController");
+        $this->authorize('ROLE_ORDER_READ', Order::class);
         $orders = Order::with('provider')->with('productOrders')->orderBy('order_date')->get();
         $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
@@ -44,6 +45,7 @@ class OrderController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_ORDER_READ', Order::class);
         $lastOrderRegister = OrderRegister::latest()->first();
         if ($lastOrderRegister) {
             $code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
@@ -58,6 +60,7 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_ORDER_CREATE', Order::class);
         // dd($request->all());
         // dd('Order store');
         $this->validate(
@@ -183,6 +186,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_ORDER_READ', Order::class);
         $order = Order::with('provider')->with('productOrders')->findOrFail($id);
         $productsOrders = $order ? $order->productOrders : null; //ProductOrder::where('order_id', $order->id)->get();
 
@@ -194,6 +198,7 @@ class OrderController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_ORDER_READ', Order::class);
         $order = Order::with('provider')->with('productOrders')->findOrFail($id);
         $providers = Provider::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
@@ -207,6 +212,7 @@ class OrderController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_ORDER_UPDATE', Order::class);
         $order = Order::findOrFail($id);
         $this->validate(
             $request,
@@ -311,6 +317,7 @@ class OrderController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_ORDER_DELETE', Order::class);
         $order = Order::findOrFail($id);
         $productsOrders = $order ? $order->productsOrders : null;
         try {
@@ -336,6 +343,7 @@ class OrderController extends Controller
 
     public function validateOrder($id)
     {
+        $this->authorize('ROLE_ORDER_VALIDATE', Order::class);
         $order = Order::findOrFail($id);
         try {
             $order->state = 'S';
@@ -343,7 +351,7 @@ class OrderController extends Controller
             $order->save();
 
             $success = true;
-            $message = "Demande de transfert validée avec succès.";
+            $message = "Bon de commande validé avec succès.";
             return new JsonResponse([
                 'order' => $order,
                 'success' => $success,
@@ -351,7 +359,7 @@ class OrderController extends Controller
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            $message = "Erreur survenue lors de la validation du bon de commande.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
@@ -359,8 +367,9 @@ class OrderController extends Controller
         }
     }
 
-    public function cancelOrder($id)
+    public function rejectOrder($id)
     {
+        $this->authorize('ROLE_ORDER_REJECT', Order::class);
         $order = Order::findOrFail($id);
         try {
             $order->state = 'A';
@@ -368,7 +377,7 @@ class OrderController extends Controller
             $order->save();
 
             $success = true;
-            $message = "Commande annulée avec succès.";
+            $message = "Bon de commande annulé avec succès.";
             return new JsonResponse([
                 'order' => $order,
                 'success' => $success,
@@ -376,7 +385,7 @@ class OrderController extends Controller
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de l'annulation de la commande.";
+            $message = "Erreur survenue lors de l'annulation du bon de commande.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

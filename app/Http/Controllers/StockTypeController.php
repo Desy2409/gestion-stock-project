@@ -12,6 +12,7 @@ class StockTypeController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_STOCK_TYPE_READ', StockType::class);
         $stockTypes = StockType::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['stockTypes' => $stockTypes]
@@ -21,6 +22,7 @@ class StockTypeController extends Controller
     // Enregistrement d'un nouveau type de stock
     public function store(Request $request)
     {
+        $this->authorize('ROLE_STOCK_TYPE_CREATE', StockType::class);
         $this->validate(
             $request,
             [
@@ -62,6 +64,7 @@ class StockTypeController extends Controller
     // Mise à jour d'un type de stock
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_STOCK_TYPE_UPDATE', StockType::class);
         $stockType = StockType::findOrFail($id);
         $this->validate(
             $request,
@@ -101,6 +104,7 @@ class StockTypeController extends Controller
     // Suppression d'un type de stock
     public function destroy($id)
     {
+        $this->authorize('ROLE_STOCK_TYPE_DELETE', StockType::class);
         $stockType = StockType::findOrFail($id);
         try {
             $stockType->delete();
@@ -124,6 +128,7 @@ class StockTypeController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_STOCK_TYPE_READ', StockType::class);
         $stockType = StockType::findOrFail($id);
         return new JsonResponse([
             'stockType' => $stockType

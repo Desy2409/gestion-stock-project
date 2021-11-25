@@ -22,6 +22,7 @@ class PurchaseController extends Controller
 
     public function purchaseOnOrder()
     {
+        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
         $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
@@ -42,6 +43,7 @@ class PurchaseController extends Controller
 
     public function directPurchase()
     {
+        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
         $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
@@ -65,6 +67,7 @@ class PurchaseController extends Controller
 
     public function datasFromOrder($id)
     {
+        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
         $order = Order::findOrFail($id);
         $provider = $order ? $order->provider : null;
         $salePoint = $order ? $order->salePoint : null;
@@ -77,6 +80,7 @@ class PurchaseController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
         if ($lastPurchaseRegister) {
             $code = $this->formateNPosition('BA', $lastPurchaseRegister->id + 1, 8);
@@ -91,6 +95,7 @@ class PurchaseController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
         $purchase = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->findOrFail($id);
         $productPurchases = $purchase ? $purchase->productPurchases : null; //ProductPurchase::where('order_id', $purchase->id)->get();
 
@@ -102,6 +107,7 @@ class PurchaseController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_PURCHASE_CREATE', Purchase::class);
         if ($request->purchase_type == "Achat direct") {
             $this->validate(
                 $request,
@@ -324,6 +330,7 @@ class PurchaseController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_PURCHASE_UPDATE', Purchase::class);
         $purchase = Purchase::findOrFail($id);
         if ($request->purchase_type == "Achat direct") {
             $this->validate(
@@ -534,6 +541,7 @@ class PurchaseController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_PURCHASE_DELETE', Purchase::class);
         $purchase = Purchase::findOrFail($id);
         $productPurchases = $purchase ? $purchase->productPurchases : null;
         try {
@@ -550,6 +558,58 @@ class PurchaseController extends Controller
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function validatePurchase($id)
+    {
+        $this->authorize('ROLE_PURCHASE_VALIDATE', Purchase::class);
+        $purchase = Purchase::findOrFail($id);
+        try {
+            $purchase->state = 'S';
+            $purchase->date_of_processing = date('Y-m-d', strtotime(now()));
+            $purchase->save();
+
+            $success = true;
+            $message = "Bon d'achat validé avec succès.";
+            return new JsonResponse([
+                'purchase' => $purchase,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la validation du bon d'achat.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function rejectPurchase($id)
+    {
+        $this->authorize('ROLE_PURCHASE_REJECT', Purchase::class);
+        $purchase = Purchase::findOrFail($id);
+        try {
+            $purchase->state = 'A';
+            $purchase->date_of_processing = date('Y-m-d', strtotime(now()));
+            $purchase->save();
+
+            $success = true;
+            $message = "Bon d'achat annulé avec succès.";
+            return new JsonResponse([
+                'purchase' => $purchase,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'annulation du bon d'achat.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

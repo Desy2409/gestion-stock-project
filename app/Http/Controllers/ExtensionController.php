@@ -12,6 +12,7 @@ class ExtensionController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_EXTENSION_READ', Extension::class);
         $extensions = Extension::orderBy('extension')->get();
         return new JsonResponse([
             'datas' => ['extensions' => $extensions]
@@ -20,6 +21,7 @@ class ExtensionController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_EXTENSION_CREATE', Extension::class);
         $this->validate(
             $request,
             [
@@ -56,6 +58,7 @@ class ExtensionController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_EXTENSION_UPDATE', Extension::class);
         $extension = Extension::findOrfail($id);
         $this->validate(
             $request,
@@ -91,6 +94,7 @@ class ExtensionController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_EXTENSION_DELETE', Extension::class);
         $extension = Extension::findOrFail($id);
         try {
             $extension->delete();
@@ -109,5 +113,14 @@ class ExtensionController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_EXTENSION_READ', Extension::class);
+        $extension = Extension::findOrFail($id);
+        return new JsonResponse([
+            'extension' => $extension
+        ], 200);
     }
 }

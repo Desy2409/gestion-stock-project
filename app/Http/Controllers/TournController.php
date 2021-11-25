@@ -16,6 +16,7 @@ class TournController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $tourns = Tourn::orderBy('reference')->get();
         $goodToRemoves = GoodToRemove::orderBy('voucher_date')->orderBy('reference')->get();
 
@@ -36,6 +37,7 @@ class TournController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $lastTournRegister = TournRegister::latest()->first();
         if ($lastTournRegister) {
             $code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
@@ -51,6 +53,7 @@ class TournController extends Controller
     // Enregistrement d'une nouvelle tournée
     public function store(Request $request)
     {
+        $this->authorize('ROLE_TOURN_CREATE', Tourn::class);
         $this->validate(
             $request,
             [
@@ -97,7 +100,7 @@ class TournController extends Controller
     // Mise à jour d'une tournée
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_TOURN_UPDATE', Tourn::class);
         $tourn = Tourn::findOrFail($id);
         $this->validate(
             $request,
@@ -146,6 +149,7 @@ class TournController extends Controller
     // Suppression d'une tournée
     public function destroy($id)
     {
+        $this->authorize('ROLE_TOURN_DELETE', Tourn::class);
         $tourn = Tourn::findOrFail($id);
         try {
             $tourn->delete();
@@ -169,6 +173,7 @@ class TournController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $tourn = Tourn::findOrFail($id);
         return new JsonResponse([
             'tourn' => $tourn

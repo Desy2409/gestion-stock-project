@@ -12,6 +12,7 @@ class SalePointController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_SALE_POINT_READ', SalePoint::class);
         // $salesPoints = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
         $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         $institutions = Institution::orderBy('social_reason')->get();
@@ -22,6 +23,7 @@ class SalePointController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_SALE_POINT_CREATE', SalePoint::class);
         $this->validate(
             $request,
             [
@@ -89,6 +91,7 @@ class SalePointController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_SALE_POINT_READ', SalePoint::class);
         // $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
         $salePoint = SalePoint::with('institution')->orderBy('social_reason')->findOrFail($id);
         return new JsonResponse([
@@ -98,6 +101,7 @@ class SalePointController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_SALE_POINT_READ', SalePoint::class);
         // $salePoint = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->findOrFail($id);
         $salePoint = SalePoint::with('institution')->orderBy('social_reason')->findOrFail($id);
         return new JsonResponse([
@@ -107,6 +111,7 @@ class SalePointController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_SALE_POINT_UPDATE', SalePoint::class);
         $salePoint = SalePoint::findOrFail($id);
         $this->validate(
             $request,
@@ -173,6 +178,7 @@ class SalePointController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_SALE_POINT_DELTE', SalePoint::class);
         $salePoint = SalePoint::findOrFail($id);
         try {
             $salePoint->delete();

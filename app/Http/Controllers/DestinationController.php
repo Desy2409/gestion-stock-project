@@ -11,6 +11,7 @@ class DestinationController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_DESTINATION_READ', Destination::class);
         $destinations = Destination::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['destinations' => $destinations]
@@ -20,6 +21,7 @@ class DestinationController extends Controller
     // Enregistrement d'une nouvelle destination
     public function store(Request $request)
     {
+        $this->authorize('ROLE_DESTINATION_CREATE', Destination::class);
         $this->validate(
             $request,
             [
@@ -65,7 +67,7 @@ class DestinationController extends Controller
     // Mise à jour d'une destination
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_DESTINATION_UPDATE', Destination::class);
         $destination = Destination::findOrFail($id);
         $this->validate(
             $request,
@@ -108,6 +110,7 @@ class DestinationController extends Controller
     // Suppression d'une destination
     public function destroy($id)
     {
+        $this->authorize('ROLE_DESTINATION_DELETE', Destination::class);
         $destination = Destination::findOrFail($id);
         try {
             $destination->delete();
@@ -131,6 +134,7 @@ class DestinationController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_DESTINATION_READ', Destination::class);
         $destination = Destination::findOrFail($id);
         return new JsonResponse([
             'destination' => $destination

@@ -17,6 +17,7 @@ class ClientController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_CLIENT_READ', Client::class);
         $corporations = Client::with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne morale');
         })->get();
@@ -42,6 +43,7 @@ class ClientController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_CLIENT_READ', Client::class);
         $lastClientRegister = ClientRegister::latest()->first();
         dd($lastClientRegister);
         if ($lastClientRegister) {
@@ -57,6 +59,7 @@ class ClientController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_CLIENT_CREATE', Client::class);
         if ($request->person_type == "Personne physique") {
             $this->validate(
                 $request,
@@ -190,18 +193,21 @@ class ClientController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_CLIENT_READ', Client::class);
         $client = Client::with('person.address')->where('id', $id)->first();
         return new JsonResponse(['client' => $client], 200);
     }
 
     public function edit($id)
     {
+        $this->authorize('ROLE_CLIENT_UPDATE', Client::class);
         $client = Client::with('person.address')->where('id', $id)->first();
         return new JsonResponse(['client' => $client], 200);
     }
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_CLIENT_UPDATE', Client::class);
         $client = Client::findOrFail($id);
         $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         $address = $person ? $person->address : null;
@@ -329,6 +335,7 @@ class ClientController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_CLIENT_DELETE', Client::class);
         $client = Client::findOrFail($id);
         $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         try {

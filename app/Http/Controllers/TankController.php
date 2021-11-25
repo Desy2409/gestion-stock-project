@@ -14,6 +14,7 @@ class TankController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_TANK_READ', Tank::class);
         $tanks = Tank::orderBy('tank_registration')->get();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
@@ -26,6 +27,7 @@ class TankController extends Controller
     // Enregistrement d'une nouvelle citerne
     public function store(Request $request)
     {
+        $this->authorize('ROLE_TANK_CREATE', Tank::class);
         $this->validate(
             $request,
             [
@@ -73,7 +75,7 @@ class TankController extends Controller
     // Mise à jour d'une citerne
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_TANK_UPDATE', Tank::class);
         $tank = Tank::findOrFail($id);
         $this->validate(
             $request,
@@ -129,6 +131,7 @@ class TankController extends Controller
     // Suppression d'une citerne
     public function destroy($id)
     {
+        $this->authorize('ROLE_TANK_DELETE', Tank::class);
         $tank = Tank::findOrFail($id);
         try {
             $tank->delete();
@@ -152,6 +155,7 @@ class TankController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_TANK_READ', Tank::class);
         $tank = Tank::findOrFail($id);
         return new JsonResponse([
             'tank' => $tank

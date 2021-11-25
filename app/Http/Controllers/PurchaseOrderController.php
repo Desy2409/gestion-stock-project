@@ -22,6 +22,7 @@ class PurchaseOrderController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
         $clients = Client::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
@@ -45,6 +46,7 @@ class PurchaseOrderController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         $lastPurchaseOrderRegister = PurchaseOrderRegister::latest()->first();
         if ($lastPurchaseOrderRegister) {
             $code = $this->formateNPosition('BC', $lastPurchaseOrderRegister->id + 1, 8);
@@ -59,7 +61,7 @@ class PurchaseOrderController extends Controller
 
     public function store(Request $request)
     {
-
+        $this->authorize('ROLE_PURCHASE_ORDER_CREATE', PurchaseOrder::class);
         $this->validate(
             $request,
             [
@@ -168,6 +170,7 @@ class PurchaseOrderController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::with('provider')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productPurchaseOrders : null; //ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
 
@@ -179,6 +182,7 @@ class PurchaseOrderController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::with('provider')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
         $clients = Client::with('person')->get();
         $products = Product::with('subCategory')->orderBy('wording')->get();
@@ -192,6 +196,7 @@ class PurchaseOrderController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_UPDATE', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $this->validate(
             $request,
@@ -285,6 +290,7 @@ class PurchaseOrderController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_DELETE', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
         try {
@@ -309,8 +315,9 @@ class PurchaseOrderController extends Controller
     }
 
 
-    public function validateOrder($id)
+    public function validatePurchaseOrder($id)
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_VALIDATE', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         try {
             $purchaseOrder->state = 'S';
@@ -318,7 +325,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->save();
 
             $success = true;
-            $message = "Demande de transfert validée avec succès.";
+            $message = "Bon de commande validé avec succès.";
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
                 'success' => $success,
@@ -326,7 +333,7 @@ class PurchaseOrderController extends Controller
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de la validation de la demande de transfert.";
+            $message = "Erreur survenue lors de la validation du bon de commande.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
@@ -334,8 +341,9 @@ class PurchaseOrderController extends Controller
         }
     }
 
-    public function cancelOrder($id)
+    public function rejectPurchaseOrder($id)
     {
+        $this->authorize('ROLE_PURCHASE_ORDER_REJECT', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         try {
             $purchaseOrder->state = 'A';
@@ -343,7 +351,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->save();
 
             $success = true;
-            $message = "Commande annulée avec succès.";
+            $message = "Bon de commande annulé avec succès.";
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
                 'success' => $success,
@@ -351,7 +359,7 @@ class PurchaseOrderController extends Controller
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de l'annulation de la commande.";
+            $message = "Erreur survenue lors de l'annulation du bon de commande.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

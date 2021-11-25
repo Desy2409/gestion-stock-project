@@ -25,12 +25,14 @@ class DriverController extends Controller
 
     public function hostsOfDriver($id)
     {
+        $this->authorize('ROLE_DRIVER_READ', Driver::class);
         $hosts = Host::where('driver_id', $id)->get();
         return new JsonResponse(['datas' => ['hosts' => $hosts]]);
     }
 
     public function emailChannelParamsOfDriver($id)
     {
+        $this->authorize('ROLE_DRIVER_READ', Driver::class);
         $emailChannelParamss = EmailChannelParam::where('driver_id', $id)->get();
         return new JsonResponse(['datas' => ['emailChannelParamss' => $emailChannelParamss]]);
     }
@@ -38,7 +40,7 @@ class DriverController extends Controller
     // Enregistrement d'une nouvelle donnée driver
     public function store(Request $request)
     {
-        $this->authorize('ROLE_DRIVER_CREATE');
+        $this->authorize('ROLE_DRIVER_CREATE',Driver::class);
         $this->validate(
             $request,
             [
@@ -81,7 +83,7 @@ class DriverController extends Controller
     // Mise à jour d'une donnée driver
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_DRIVER_UPDATE');
+        $this->authorize('ROLE_DRIVER_UPDATE',Driver::class);
         $driver = Driver::findOrFail($id);
         $this->validate(
             $request,
@@ -132,7 +134,7 @@ class DriverController extends Controller
     // Suppression d'une donnée driver
     public function destroy($id)
     {
-        $this->authorize('ROLE_DRIVER_DELETE');
+        $this->authorize('ROLE_DRIVER_DELETE', Driver::class);
         $driver = Driver::findOrFail($id);
         try {
             $driver->delete();
@@ -151,5 +153,14 @@ class DriverController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_DRIVER_READ', Driver::class);
+        $driver = Driver::findOrFail($id);
+        return new JsonResponse([
+            'driver' => $driver
+        ], 200);
     }
 }

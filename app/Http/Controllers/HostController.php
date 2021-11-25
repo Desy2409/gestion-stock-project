@@ -13,6 +13,7 @@ class HostController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_HOST_READ', Host::class);
         $hosts = Host::with('driver')->orderBy('provider')->get();
         return new JsonResponse([
             'datas' => ['hosts' => $hosts]
@@ -21,6 +22,7 @@ class HostController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_HOST_CREATE', Host::class);
         $this->validate(
             $request,
             [
@@ -67,6 +69,7 @@ class HostController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_HOST_UPDATE', Host::class);
         $host = Host::findOrFail($id);
         $this->validate(
             $request,
@@ -122,6 +125,7 @@ class HostController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_HOST_DELETE', Host::class);
         $host = Host::findOrFail($id);
         try {
             $host->delete();
@@ -140,5 +144,14 @@ class HostController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_HOST_READ', Host::class);
+        $host = Host::findOrFail($id);
+        return new JsonResponse([
+            'host' => $host
+        ], 200);
     }
 }

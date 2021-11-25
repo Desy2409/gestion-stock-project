@@ -13,6 +13,7 @@ class UnityController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_UNITY_READ', Truck::class);
         $unities = Unity::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['unities' => $unities]
@@ -22,6 +23,7 @@ class UnityController extends Controller
     // Enregistrement d'une nouvelle unité
     public function store(Request $request)
     {
+        $this->authorize('ROLE_UNITY_CREATE', Truck::class);
         $this->validate(
             $request,
             [
@@ -67,7 +69,7 @@ class UnityController extends Controller
     // Mise à jour d'une unité
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_UNITY_UPDATE', Truck::class);
         $unity = Unity::findOrFail($id);
         $this->validate(
             $request,
@@ -130,6 +132,7 @@ class UnityController extends Controller
     // Suppression d'une unité
     public function destroy($id)
     {
+        $this->authorize('ROLE_UNITY_DELETE', Truck::class);
         $unity = Unity::findOrFail($id);
         try {
             $unity->delete();
@@ -153,6 +156,7 @@ class UnityController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_UNITY_READ', Truck::class);
         $unity = Unity::findOrFail($id);
         return new JsonResponse([
             'unity' => $unity
