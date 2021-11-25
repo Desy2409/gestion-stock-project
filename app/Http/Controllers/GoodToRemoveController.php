@@ -26,6 +26,7 @@ class GoodToRemoveController extends Controller
     public function index()
     {
 
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
         $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
 
@@ -61,6 +62,7 @@ class GoodToRemoveController extends Controller
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
         $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
         if ($lastGoodToRemoveRegister) {
             $code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
@@ -75,6 +77,7 @@ class GoodToRemoveController extends Controller
 
     public function salePointsFromTransfer($id)
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
         $transfer = Transfer::findOrFail($id);
         $transmitter = SalePoint::findOrFail($transfer->transmitter_id);
         $receiver = SalePoint::findOrFail($transfer->receiver_id);
@@ -84,6 +87,7 @@ class GoodToRemoveController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_CREATE', GoodToRemove::class);
         $this->validate(
             $request,
             [
@@ -159,6 +163,7 @@ class GoodToRemoveController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
         $goodToRemove = GoodToRemove::with('salePoint')->findOrFail($id);
         return new JsonResponse([
             'goodToRemove' => $goodToRemove
@@ -167,6 +172,7 @@ class GoodToRemoveController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
         $goodToRemove = GoodToRemove::with('salePoint')->findOrFail($id);
         return new JsonResponse([
             'goodToRemove' => $goodToRemove,
@@ -175,6 +181,7 @@ class GoodToRemoveController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_UPDATE', GoodToRemove::class);
         $goodToRemove = GoodToRemove::findOrFail($id);
         $this->validate(
             $request,
@@ -253,6 +260,7 @@ class GoodToRemoveController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_GOOD_TO_REMOVE_DELETE', GoodToRemove::class);
         $goodToRemove = GoodToRemove::findOrFail($id);
         try {
             $goodToRemove->delete();

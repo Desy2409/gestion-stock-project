@@ -1056,6 +1056,13 @@
         "page_operation_id": 27
     },
     {
+        "code": "ROLE_TRANSFER_DEMAND_TRANSFORM",
+        "wording": "Transformer une demande de transfert en transfert",
+        "description": "Transformer une demande de transfert en transfert",
+        "operation_id": 7,
+        "page_operation_id": 27
+    },
+    {
         "code": "ROLE_TRANSFER_READ",
         "wording": "Consultation des transferts",
         "description": "Consultation des transferts",
@@ -1103,5 +1110,75 @@
         "description": "Rejet d'un transfert",
         "operation_id": 7,
         "page_operation_id": 28
+    },
+    {
+        "code": "ROLE_PHONE_OPERATOR_READ",
+        "wording": "Consultation de la configuration des hôtes",
+        "description": "Consultation de la configuration des hôtes",
+        "operation_id": 1,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_PHONE_OPERATOR_CREATE",
+        "wording": "Création d'un nouvel hôte",
+        "description": "Création d'un nouvel hôte",
+        "operation_id": 2,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_PHONE_OPERATOR_UPDATE",
+        "wording": "Mise à jour d'un hôte",
+        "description": "Mise à jour d'un hôte",
+        "operation_id": 3,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_PHONE_OPERATOR_DELETE",
+        "wording": "Suppression d'un hôte",
+        "description": "Suppression d'un hôte",
+        "operation_id": 4,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_PHONE_OPERATOR_PRINT",
+        "wording": "Impression d'hôtes",
+        "description": "Impression d'hôtes",
+        "operation_id": 5,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_DELIVERY_POINT_READ",
+        "wording": "Consultation de la configuration des hôtes",
+        "description": "Consultation de la configuration des hôtes",
+        "operation_id": 1,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_DELIVERY_POINT_CREATE",
+        "wording": "Création d'un nouvel hôte",
+        "description": "Création d'un nouvel hôte",
+        "operation_id": 2,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_DELIVERY_POINT_UPDATE",
+        "wording": "Mise à jour d'un hôte",
+        "description": "Mise à jour d'un hôte",
+        "operation_id": 3,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_DELIVERY_POINT_DELETE",
+        "wording": "Suppression d'un hôte",
+        "description": "Suppression d'un hôte",
+        "operation_id": 4,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_DELIVERY_POINT_PRINT",
+        "wording": "Impression d'hôtes",
+        "description": "Impression d'hôtes",
+        "operation_id": 5,
+        "page_operation_id": 2
     }
 ]

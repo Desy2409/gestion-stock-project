@@ -13,6 +13,7 @@ class TruckController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_TRUCK_READ', Truck::class);
         $trucks = Truck::orderBy('truck_registration')->get();
 
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
@@ -25,6 +26,7 @@ class TruckController extends Controller
     // Enregistrement d'un nouveau tracteur
     public function store(Request $request)
     {
+        $this->authorize('ROLE_TRUCK_CREATE', Truck::class);
         $this->validate(
             $request,
             [
@@ -68,7 +70,7 @@ class TruckController extends Controller
     // Mise à jour d'un tracteur
     public function update(Request $request, $id)
     {
-
+        $this->authorize('ROLE_TRUCK_UPDATE', Truck::class);
         $truck = Truck::findOrFail($id);
         $this->validate(
             $request,
@@ -120,6 +122,7 @@ class TruckController extends Controller
     // Suppression d'un tracteur
     public function destroy($id)
     {
+        $this->authorize('ROLE_TRUCK_DELETE', Truck::class);
         $truck = Truck::findOrFail($id);
         try {
             $truck->delete();
@@ -143,6 +146,7 @@ class TruckController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_TRUCK_READ', Truck::class);
         $truck = Truck::findOrFail($id);
         return new JsonResponse([
             'truck' => $truck

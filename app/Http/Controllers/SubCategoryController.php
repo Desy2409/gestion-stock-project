@@ -13,6 +13,7 @@ class SubCategoryController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_SUB_CATEGORY_READ', SubCategory::class);
         $categories = Category::orderBy('wording')->get();
         $subCategories = SubCategory::with('category')->orderBy('wording')->get();
         return new JsonResponse([
@@ -23,6 +24,7 @@ class SubCategoryController extends Controller
     // Enregistrement d'une nouvelle sous-catégorie
     public function store(Request $request)
     {
+        $this->authorize('ROLE_SUB_CATEGORY_CREATE', SubCategory::class);
         $this->validate(
             $request,
             [
@@ -70,6 +72,7 @@ class SubCategoryController extends Controller
     // Mise à jour d'une sous-catégorie
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_SUB_CATEGORY_UPDATE', SubCategory::class);
         $subCategory = SubCategory::findOrFail($id);
         $this->validate(
             $request,
@@ -125,6 +128,7 @@ class SubCategoryController extends Controller
     // Suppression d'une sous-catégorie
     public function destroy($id)
     {
+        $this->authorize('ROLE_SUB_CATEGORY_DELETE', SubCategory::class);
         $subCategory = SubCategory::findOrFail($id);
         try {
             $subCategory->delete();
@@ -155,6 +159,7 @@ class SubCategoryController extends Controller
      */
     public function show($id)
     {
+        $this->authorize('ROLE_SUB_CATEGORY_READ', SubCategory::class);
         $subCategory = SubCategory::findOrFail($id);
         return new JsonResponse([
             'subCategory' => $subCategory

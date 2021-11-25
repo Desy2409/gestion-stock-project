@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             OperationsTableSeeder::class,
             PageOperationsTableSeeder::class,
             RolesTableSeeder::class,
+            RolesTableSeeder::class,
         ]);
     }
 }

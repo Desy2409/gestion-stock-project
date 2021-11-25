@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\DeliveryNote;
 use App\Models\DeliveryNoteRegister;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductDeliveryNote;
 use App\Models\ProductPurchase;
@@ -19,8 +20,9 @@ class DeliveryNoteController extends Controller
 
     public function index()
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('purchase_date')->get();
-        $purchases = Purchase::with('provider')->with('purchase')->orderBy('code')->orderBy('purchase_date')->get();
+        $orders = Order::with('provider')->with('purchase')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 
@@ -33,13 +35,14 @@ class DeliveryNoteController extends Controller
         $deliveryNoteRegister->save();
 
         return new JsonResponse([
-            'datas' => ['deliveryNotes' => $deliveryNotes, 'purchases' => $purchases]
+            'datas' => ['deliveryNotes' => $deliveryNotes, 'orders' => $orders]
         ], 200);
     }
 
 
     public function showNextCode()
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
         if ($lastDeliveryNoteRegister) {
             $code = $this->formateNPosition('BL', $lastDeliveryNoteRegister->id + 1, 8);
@@ -54,6 +57,8 @@ class DeliveryNoteController extends Controller
 
     public function productFromPurchase($id)
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
+        // $order = 
         $idOfProducts = ProductPurchase::where('purchase_id', $id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
@@ -63,6 +68,7 @@ class DeliveryNoteController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_CREATE', DeliveryNote::class);
         $this->validate(
             $request,
             [
@@ -99,7 +105,7 @@ class DeliveryNoteController extends Controller
 
         try {
 
-            $purchase = Purchase::where('purchase_id',$request->purchase)->first();
+            $purchase = Purchase::where('purchase_id', $request->purchase)->first();
 
             $lastDeliveryNote = DeliveryNote::latest()->first();
 
@@ -156,6 +162,7 @@ class DeliveryNoteController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNote = DeliveryNote::with('purchase')->with('productDeliveryNotes')->findOrFail($id);
         $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null; //ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
 
@@ -167,6 +174,7 @@ class DeliveryNoteController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_UPDATE', DeliveryNote::class);
         $deliveryNote = DeliveryNote::findOrFail($id);
         $this->validate(
             $request,
@@ -202,7 +210,7 @@ class DeliveryNoteController extends Controller
         );
 
         try {
-            $purchase = Purchase::where('purchase_id',$request->purchase)->first();
+            $purchase = Purchase::where('purchase_id', $request->purchase)->first();
 
             $deliveryNote->reference = $request->reference;
             $deliveryNote->purchase_date   = $request->purchase_date;
@@ -253,6 +261,7 @@ class DeliveryNoteController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_DELETE', DeliveryNote::class);
         $deliveryNote = DeliveryNote::findOrFail($id);
         $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null;
         try {
@@ -269,6 +278,58 @@ class DeliveryNoteController extends Controller
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la suppression.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function validateDeliveryNote($id)
+    {
+        $this->authorize('ROLE_DELIVERY_NOTE_VALIDATE', DeliveryNote::class);
+        $deliveryNote = DeliveryNote::findOrFail($id);
+        try {
+            $deliveryNote->state = 'S';
+            $deliveryNote->date_of_processing = date('Y-m-d', strtotime(now()));
+            $deliveryNote->save();
+
+            $success = true;
+            $message = "Bon de livraison validé avec succès.";
+            return new JsonResponse([
+                'deliveryNote' => $deliveryNote,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la validation du bon de livraison.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function rejectDeliveryNote($id)
+    {
+        $this->authorize('ROLE_DELIVERY_NOTE_REJECT', DeliveryNote::class);
+        $deliveryNote = DeliveryNote::findOrFail($id);
+        try {
+            $deliveryNote->state = 'A';
+            $deliveryNote->date_of_processing = date('Y-m-d', strtotime(now()));
+            $deliveryNote->save();
+
+            $success = true;
+            $message = "Bon de livraison annulé avec succès.";
+            return new JsonResponse([
+                'deliveryNote' => $deliveryNote,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de l'annulation du bon de livraison.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

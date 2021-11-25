@@ -14,6 +14,7 @@ class EmailChannelParamController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_READ', EmailChannelParam::class);
         $emailChannelParams = EmailChannelParam::with('correspondenceChannel')->with('driver')->orderBy('is_active', 'DESC')->orderBy('created_at', 'DESC')->get();
         return new JsonResponse([
             'datas' => ['emailChannelParams' => $emailChannelParams]
@@ -23,6 +24,7 @@ class EmailChannelParamController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_CREATE', EmailChannelParam::class);
         $this->validate(
             $request,
             [
@@ -220,6 +222,7 @@ class EmailChannelParamController extends Controller
 
     public function edit($id)
     {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_READ', EmailChannelParam::class);
         $emailChannelParam = EmailChannelParam::findOrFail($id);
         $correspondenceChannel = $emailChannelParam->correspondenceChannel;
         $drivers = Driver::orderBy('wording')->get();
@@ -232,6 +235,7 @@ class EmailChannelParamController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_UPDATE', EmailChannelParam::class);
         $emailChannelParam = EmailChannelParam::with('correspondenceChannel')->findOrFail($id);
         // $correspondenceChannel = $emailChannelParam ? $emailChannelParam->correspondenceChannel : null;
         $correspondenceChannel = CorrespondenceChannel::where(['channelable_id' => $id, 'channelable_type' => $emailChannelParam::class])->first();
@@ -438,6 +442,7 @@ class EmailChannelParamController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_DELETE', EmailChannelParam::class);
         $emailChannelParam = EmailChannelParam::findOrFail($id);
         try {
             $emailChannelParam->delete();
@@ -456,5 +461,14 @@ class EmailChannelParamController extends Controller
                 'message' => $message,
             ], 400);
         }
+    }
+
+    public function show($id)
+    {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_READ', EmailChannelParam::class);
+        $emailChannelParam = EmailChannelParam::findOrFail($id);
+        return new JsonResponse([
+            'emailChannelParam' => $emailChannelParam
+        ], 200);
     }
 }
