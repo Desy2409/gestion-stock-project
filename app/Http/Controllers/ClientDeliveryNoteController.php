@@ -8,6 +8,7 @@ use App\Models\ClientDeliveryNoteRegister;
 use App\Models\Product;
 use App\Models\ProductClientDeliveryNote;
 use App\Models\ProductSale;
+use App\Models\PurchaseOrder;
 use App\Models\Sale;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -53,13 +54,15 @@ class ClientDeliveryNoteController extends Controller
         ], 200);
     }
 
-    public function showProductOfSale($id)
+    public function datasOnSelectPurchaseOrder($id)
     {
-        $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
-        $idOfProducts = ProductSale::where('sale_id', $id)->pluck('product_id')->toArray();
+        $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
+        $order = PurchaseOrder::findOrFail($id);
+        $sale = Sale::where('purchase_order_id', $order->id)->first();
+        $idOfProducts = ProductSale::where('sale_id', $sale->id)->pluck('product_id')->toArray();
         $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
         return new JsonResponse([
-            'datas' => ['products' => $products]
+            'sale' => $sale, 'datas' => ['products' => $products]
         ], 200);
     }
 
