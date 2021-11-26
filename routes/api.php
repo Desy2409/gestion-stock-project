@@ -42,6 +42,7 @@ use App\Http\Controllers\UserTypeController;
 use App\Http\Controllers\UnityController;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,6 +59,11 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 // Protected routes
@@ -156,7 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Delivery note routes
     Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
     Route::get('/delivery-note-code', [DeliveryNoteController::class, 'showNextCode']);
-    Route::get('/delivery-note-order-select', [DeliveryNoteController::class, 'datasOnSelectOrder']);
+    Route::get('/delivery-note-order-select/{id}', [DeliveryNoteController::class, 'datasOnSelectOrder']);
     Route::post('/delivery-note', [DeliveryNoteController::class, 'store']);
     Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
     Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
@@ -189,7 +195,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Client delivery note routes
     Route::get('/client-delivery-note', [ClientDeliveryNoteController::class, 'index']);
     Route::get('/client-delivery-note-code', [ClientDeliveryNoteController::class, 'showNextCode']);
-    Route::get('/client-delivery-note-purchase-order-select', [ClientDeliveryNoteController::class, 'datasOnSelectPurchaseOrder']);
+    Route::get('/client-delivery-note-purchase-order-select/{id}', [ClientDeliveryNoteController::class, 'datasOnSelectPurchaseOrder']);
     Route::post('/client-delivery-note', [ClientDeliveryNoteController::class, 'store']);
     Route::get('/client-delivery-note/{id}/show', [ClientDeliveryNoteController::class, 'show']);
     Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
