@@ -71,9 +71,7 @@ class PurchaseController extends Controller
         $provider = $order ? $order->provider : null;
         $salePoint = $order ? $order->salePoint : null;
 
-        $productOrders = ProductOrder::with('product')->where('order_id', $order->id)->get();
-        // $idOfProducts = ProductOrder::where('order_id', $order->id)->pluck('product_id')->toArray();
-        // $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
+        $productOrders = ProductOrder::with('product')->with('unity')->where('order_id', $order->id)->get();
         return new JsonResponse([
             'provider' => $provider, 'salePoint' => $salePoint, 'datas' => ['productOrders' => $productOrders]
         ], 200);

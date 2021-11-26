@@ -57,12 +57,12 @@ class ClientDeliveryNoteController extends Controller
     public function datasOnSelectPurchaseOrder($id)
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
-        $order = PurchaseOrder::findOrFail($id);
-        $sale = Sale::where('purchase_order_id', $order->id)->first();
-        $idOfProducts = ProductSale::where('sale_id', $sale->id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
+        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $sale = Sale::where('purchase_order_id', $purchaseOrder->id)->first();
+
+        $productSales = ProductSale::with('product')->with('unity')->where('sale_id', $sale->id)->get();
         return new JsonResponse([
-            'sale' => $sale, 'datas' => ['products' => $products]
+            'sale' => $sale, 'datas' => ['productSales' => $productSales]
         ], 200);
     }
 

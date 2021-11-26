@@ -69,14 +69,13 @@ class SaleController extends Controller
     public function datasFromPurchaseOrder($id)
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        // $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->orderBy('code')->orderBy('sale_date')->get();
-        $purChaserder = PurchaseOrder::findOrFail($id);
-        $client = $purChaserder ? $purChaserder->client : null;
-        $salePoint = $purChaserder ? $purChaserder->salePoint : null;
-        $idOfProducts = ProductPurchaseOrder::where('purchase_order_id', $purChaserder->id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
+        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $client = $purchaseOrder ? $purchaseOrder->client : null;
+        $salePoint = $purchaseOrder ? $purchaseOrder->salePoint : null;
+
+        $productPurchaseOrders = ProductPurchaseOrder::with('product')->with('unity')->where('purchase_order_id', $purchaseOrder->id)->get();
         return new JsonResponse([
-            'client' => $client, 'salePoint' => $salePoint, 'datas' => ['products' => $products]
+            'client' => $client, 'salePoint' => $salePoint, 'datas' => ['productPurchaseOrders' => $productPurchaseOrders]
         ], 200);
     }
 
