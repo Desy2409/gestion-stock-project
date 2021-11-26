@@ -60,10 +60,10 @@ class DeliveryNoteController extends Controller
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $order = Order::findOrFail($id);
         $purchase = Purchase::where('order_id', $order->id)->first();
-        $idOfProducts = ProductPurchase::where('purchase_id', $purchase->id)->pluck('product_id')->toArray();
-        $products = Product::with('subCategory')->whereIn('id', $idOfProducts)->get();
+
+        $productPurchases = ProductPurchase::with('product')->with('unity')->where('purchase_id', $purchase->id)->get();
         return new JsonResponse([
-            'purchase' => $purchase, 'datas' => ['products' => $products]
+            'purchase' => $purchase, 'datas' => ['productPurchases' => $productPurchases]
         ], 200);
     }
 
