@@ -143,7 +143,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Purchase routes
     Route::get('/purchase-on-order', [PurchaseController::class, 'purchaseOnOrder']);
-    Route::get('/purchase-on-order-datas', [PurchaseController::class, 'datasFromOrder']);
+    Route::get('/purchase-on-order-datas/{id}', [PurchaseController::class, 'datasFromOrder']);
     Route::get('/purchase-direct', [PurchaseController::class, 'directPurchase']);
     Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
     Route::post('/purchase', [PurchaseController::class, 'store']);

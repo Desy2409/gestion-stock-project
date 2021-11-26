@@ -297,7 +297,7 @@ class PurchaseController extends Controller
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
                     $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product;
+                    $productPurchase->product_id = $product["product"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
