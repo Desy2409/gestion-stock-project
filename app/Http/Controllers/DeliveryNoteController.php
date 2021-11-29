@@ -22,7 +22,7 @@ class DeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('purchase_date')->get();
-        $orders = Order::with('provider')->with('purchases')->orderBy('code')->orderBy('purchase_date')->get();
+        $orders = Order::with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 

@@ -71,7 +71,9 @@ class PurchaseController extends Controller
         $provider = $order ? $order->provider : null;
         $salePoint = $order ? $order->salePoint : null;
 
-        $productOrders = ProductOrder::with('product')->with('unity')->where('order_id', $order->id)->get();
+        $productOrders = ProductOrder::where('order_id', $order->id)->with('product')->with('unity')->get();
+        // dd($productOrders);
+        // dd($order);
         return new JsonResponse([
             'provider' => $provider, 'salePoint' => $salePoint, 'datas' => ['productOrders' => $productOrders]
         ], 200);
@@ -264,6 +266,8 @@ class PurchaseController extends Controller
             // }
 
             try {
+                //dd($request->purchaseProducts);
+                //dd(json_encode($request->all()));
                 $order = Order::findOrFail($request->order);
 
                 $lastPurchase = Purchase::latest()->first();
@@ -287,20 +291,31 @@ class PurchaseController extends Controller
                 $purchase->order_id = $order->id;
                 $purchase->provider_id = $order->provider->id;
                 $purchase->sale_point_id = $order->salePoint->id;
-                $purchase->save();
+                // $purchase->save();
 
                 $productPurchases = [];
+                $i=0;
+                dd($request->purchaseProducts);                                        
                 foreach ($request->purchaseProducts as $key => $product) {
+                    // dd($product[1]["unit_price"]);
+                    // dd($product);
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
-                    $productPurchase->unit_price = $product["unit_price"];
+                    // $productPurchase->unit_price = $product["unit_price"];
                     $productPurchase->unity_id = $product["unity"];
                     $productPurchase->product_id = $product["product"];
+                    // $productPurchase->quantity = $product[$i]["quantity"];
+                    // $productPurchase->unit_price = $product[$i]["unit_price"];
+                    // $productPurchase->unity_id = $product[$i]["unity"];
+                    // $productPurchase->product_id = $product[$i]["product"];
                     $productPurchase->purchase_id = $purchase->id;
-                    $productPurchase->save();
+                    // $productPurchase->save();
+                    $i++;
 
                     array_push($productPurchases, $productPurchase);
                 }
+
+                // dd($productPurchases);
 
                 // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
                 // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
