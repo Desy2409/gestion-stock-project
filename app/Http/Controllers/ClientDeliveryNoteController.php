@@ -104,6 +104,7 @@ class ClientDeliveryNoteController extends Controller
         );
 
         try {
+            $sale = Sale::where('purchase_order_id', $request->purchase_order)->first();
             $lastClientDeliveryNote = ClientDeliveryNote::latest()->first();
 
             $clientDeliveryNote = new ClientDeliveryNote();
@@ -118,7 +119,7 @@ class ClientDeliveryNoteController extends Controller
             $clientDeliveryNote->total_amount = $request->total_amount;
             $clientDeliveryNote->observation = $request->observation;
             $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
-            $clientDeliveryNote->sale_id = $request->sale;
+            $clientDeliveryNote->sale_id = $sale->id;
             $clientDeliveryNote->save();
 
             $productClientDeliveryNotes = [];
@@ -215,13 +216,15 @@ class ClientDeliveryNoteController extends Controller
         );
 
         try {
+            $sale = Sale::where('purchase_order_id', $request->purchase_order)->first();
+
             $clientDeliveryNote->reference = $request->reference;
             $clientDeliveryNote->delivery_note_date   = $request->delivery_note_date;
             $clientDeliveryNote->delivery_date   = $request->delivery_date;
             $clientDeliveryNote->total_amount = $request->total_amount;
             $clientDeliveryNote->observation = $request->observation;
             $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
-            $clientDeliveryNote->sale_id = $request->sale;
+            $clientDeliveryNote->sale_id = $sale->id;
             $clientDeliveryNote->save();
 
             ProductClientDeliveryNote::where('purchase_order_id', $clientDeliveryNote->id)->delete();

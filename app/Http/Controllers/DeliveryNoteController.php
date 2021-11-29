@@ -79,7 +79,7 @@ class DeliveryNoteController extends Controller
                 'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'products_of_delivery_note' => 'required',
+                'deliveryNoteProducts' => 'required',
                 'quantities' => 'required|min:0',
                 'unities' => 'required',
             ],
@@ -97,7 +97,7 @@ class DeliveryNoteController extends Controller
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'products_of_delivery_note.required' => "Vous devez ajouter au moins un produit au panier.",
+                'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
@@ -106,7 +106,7 @@ class DeliveryNoteController extends Controller
 
         try {
 
-            $purchase = Purchase::where('purchase_id', $request->purchase)->first();
+            $purchase = Purchase::where('order_id', $request->order)->first();
 
             $lastDeliveryNote = DeliveryNote::latest()->first();
 
@@ -126,21 +126,22 @@ class DeliveryNoteController extends Controller
             $deliveryNote->save();
 
             $productDeliveryNotes = [];
-            foreach ($request->products_of_delivery_note as $key => $product) {
+            foreach ($request->deliveryNoteProducts as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
-                $productDeliveryNote->quantity = $request->quantities[$key];
-                $productDeliveryNote->product_id = $product;
-                $productDeliveryNote->purchase_id = $purchase->id;
-                $productDeliveryNote->unity_id = $request->unities[$key];
+                $productDeliveryNote->quantity = $product["quantity"];
+                $productDeliveryNote->unit_price = $product["unit_price"];
+                $productDeliveryNote->unity_id = $product["unity"];
+                $productDeliveryNote->product_id = $product["product"];
+                $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                 $productDeliveryNote->save();
 
                 array_push($productDeliveryNotes, $productDeliveryNote);
             }
 
-            $savedProductDeliveryNotes = ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
-            if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
-                $deliveryNote->delete();
-            }
+            // $savedProductDeliveryNotes = ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
+            // if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
+            //     $deliveryNote->delete();
+            // }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
@@ -186,7 +187,7 @@ class DeliveryNoteController extends Controller
                 'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'products_of_delivery_note' => 'required',
+                'deliveryNoteProducts' => 'required',
                 'quantities' => 'required|min:0',
                 'unities' => 'required',
             ],
@@ -203,7 +204,7 @@ class DeliveryNoteController extends Controller
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'products_of_delivery_note.required' => "Vous devez ajouter au moins un produit au panier.",
+                'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
                 'quantities.required' => "Les quantités sont obligatoires.",
                 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
                 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
@@ -211,7 +212,7 @@ class DeliveryNoteController extends Controller
         );
 
         try {
-            $purchase = Purchase::where('purchase_id', $request->purchase)->first();
+            $purchase = Purchase::where('order_id', $request->order)->first();
 
             $deliveryNote->reference = $request->reference;
             $deliveryNote->purchase_date   = $request->purchase_date;
@@ -222,24 +223,25 @@ class DeliveryNoteController extends Controller
             $deliveryNote->purchase_id = $purchase->id;
             $deliveryNote->save();
 
-            ProductDeliveryNote::where('purchase_id', $purchase->id)->delete();
+            ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
 
             $productDeliveryNotes = [];
-            foreach ($request->products_of_delivery_note as $key => $product) {
+            foreach ($request->deliveryNoteProducts as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
-                $productDeliveryNote->quantity = $request->quantities[$key];
-                $productDeliveryNote->product_id = $product;
-                $productDeliveryNote->purchase_id = $purchase->id;
-                $productDeliveryNote->unity_id = $request->unities[$key];
+                $productDeliveryNote->quantity = $product["quantity"];
+                $productDeliveryNote->unit_price = $product["unit_price"];
+                $productDeliveryNote->unity_id = $product["unity"];
+                $productDeliveryNote->product_id = $product["product"];
+                $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                 $productDeliveryNote->save();
 
                 array_push($productDeliveryNotes, $productDeliveryNote);
             }
 
-            $savedProductDeliveryNotes = ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
-            if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
-                $deliveryNote->delete();
-            }
+            // $savedProductDeliveryNotes = ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
+            // if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
+            //     $deliveryNote->delete();
+            // }
 
             $success = true;
             $message = "Modification effectuée avec succès.";
