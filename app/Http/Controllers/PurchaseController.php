@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\DeliveryNote;
 use App\Models\Product;
 use App\Models\ProductPurchase;
 use App\Models\ProductOrder;
@@ -10,6 +11,7 @@ use App\Models\Provider;
 use App\Models\Purchase;
 use App\Models\PurchaseRegister;
 use App\Models\Order;
+use App\Models\ProductDeliveryNote;
 use App\Models\SalePoint;
 use App\Models\Unity;
 use Exception;
@@ -21,9 +23,12 @@ class PurchaseController extends Controller
 {
     use UtilityTrait;
 
+    private $directPurchase = "Achat direct";
+    private $purchaseOnOrder = "Achat sur commande";
+
     public function purchaseOnOrder()
     {
-        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->where('order_id','!=', null)->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->where('order_id', '!=', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
@@ -43,7 +48,7 @@ class PurchaseController extends Controller
 
     public function directPurchase()
     {
-        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id','=', null)->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id', '=', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
@@ -107,7 +112,7 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_PURCHASE_CREATE', Purchase::class);
-        if ($request->purchase_type == "Achat direct") {
+        if ($request->purchaseType == "Achat direct") {
             $this->validate(
                 $request,
                 [
@@ -158,6 +163,7 @@ class PurchaseController extends Controller
             // }
 
             try {
+                // Enregistrement de l'achat direct avec les produits qui y sont liés
                 $lastPurchase = Purchase::latest()->first();
 
                 $purchase = new Purchase();
@@ -193,6 +199,37 @@ class PurchaseController extends Controller
                     array_push($productPurchases, $productPurchase);
                 }
 
+                // Enregistrement de la livraison affiliée à l'achat direct
+                $lastDeliveryNote = DeliveryNote::latest()->first();
+
+                $deliveryNote = new DeliveryNote();
+                if ($lastDeliveryNote) {
+                    $deliveryNote->code = $this->formateNPosition('BL', $lastDeliveryNote->id + 1, 8);
+                } else {
+                    $deliveryNote->code = $this->formateNPosition('BL', 1, 8);
+                }
+                $deliveryNote->reference = $request->reference;
+                $deliveryNote->purchase_date   = $request->purchase_date;
+                $deliveryNote->delivery_date   = $request->delivery_date;
+                $deliveryNote->total_amount = $request->total_amount;
+                $deliveryNote->observation = $request->observation;
+                $deliveryNote->place_of_delivery = $request->place_of_delivery;
+                $deliveryNote->purchase_id = $purchase->id;
+                $deliveryNote->save();
+
+                $productDeliveryNotes = [];
+                foreach ($request->purchaseProducts as $key => $product) {
+                    $productDeliveryNote = new ProductDeliveryNote();
+                    $productDeliveryNote->quantity = $product["quantity"];
+                    $productDeliveryNote->unit_price = $product["unit_price"];
+                    $productDeliveryNote->unity_id = $product["unity"];
+                    $productDeliveryNote->product_id = $product["product"];
+                    $productDeliveryNote->delivery_note_id = $deliveryNote->id;
+                    $productDeliveryNote->save();
+
+                    array_push($productDeliveryNotes, $productDeliveryNote);
+                }
+
                 // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
                 // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
                 //     $purchase->delete();
@@ -215,7 +252,7 @@ class PurchaseController extends Controller
                     'message' => $message,
                 ], 400);
             }
-        } else {
+        } elseif ($request->purchaseType == "Achat sur commande") {
             $this->validate(
                 $request,
                 [
@@ -331,7 +368,7 @@ class PurchaseController extends Controller
     {
         $this->authorize('ROLE_PURCHASE_UPDATE', Purchase::class);
         $purchase = Purchase::findOrFail($id);
-        if ($request->purchase_type == "Achat direct") {
+        if ($request->purchaseType == "Achat direct") {
             $this->validate(
                 $request,
                 [
@@ -411,6 +448,33 @@ class PurchaseController extends Controller
                     array_push($productPurchases, $productPurchase);
                 }
 
+                $deliveryNote = $purchase ? $purchase->deliveryNote : null;
+                if ($deliveryNote) {
+                    $deliveryNote->reference = $request->reference;
+                    $deliveryNote->purchase_date   = $request->purchase_date;
+                    $deliveryNote->delivery_date   = $request->delivery_date;
+                    $deliveryNote->total_amount = $request->total_amount;
+                    $deliveryNote->observation = $request->observation;
+                    $deliveryNote->place_of_delivery = $request->place_of_delivery;
+                    $deliveryNote->purchase_id = $purchase->id;
+                    $deliveryNote->save();
+
+                    ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
+
+                    $productDeliveryNotes = [];
+                    foreach ($request->deliveryNoteProducts as $key => $product) {
+                        $productDeliveryNote = new ProductDeliveryNote();
+                        $productDeliveryNote->quantity = $product["quantity"];
+                        $productDeliveryNote->unit_price = $product["unit_price"];
+                        $productDeliveryNote->unity_id = $product["unity"];
+                        $productDeliveryNote->product_id = $product["product"];
+                        $productDeliveryNote->delivery_note_id = $deliveryNote->id;
+                        $productDeliveryNote->save();
+
+                        array_push($productDeliveryNotes, $productDeliveryNote);
+                    }
+                }
+
                 // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
                 // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
                 //     $purchase->delete();
@@ -432,7 +496,7 @@ class PurchaseController extends Controller
                     'message' => $message,
                 ], 400);
             }
-        } else {
+        } elseif ($request->purchaseType == "Achat sur commande") {
             $this->validate(
                 $request,
                 [
