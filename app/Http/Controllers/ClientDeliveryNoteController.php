@@ -74,13 +74,13 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale' => 'required',
                 'reference' => 'required|unique:client_delivery_notes',
-                'delivery_note_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:delivery_note_date',
+                'delivery_note_date' => 'required|date|before:today',//|date_format:Ymd
+                'delivery_date' => 'required|date|after:delivery_note_date',//|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'ordered_product' => 'required',
-                'quantities' => 'required|min:0',
-                'unities' => 'required',
+                'clientDeliveryNoteProducts' => 'required',
+                // 'quantities' => 'required|min:0',
+                // 'unities' => 'required',
             ],
             [
                 'sale.required' => "Le choix d'un bon de vente est obligatoire.",
@@ -88,18 +88,18 @@ class ClientDeliveryNoteController extends Controller
                 'reference.unique' => "Ce bon de livraison existe déjà.",
                 'delivery_note_date.required' => "La date du bon de livraison  est obligatoire.",
                 'delivery_note_date.date' => "La date du bon de livraison est incorrecte.",
-                'delivery_note_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'delivery_note_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_note_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                'clientDeliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                // 'quantities.required' => "Les quantités sont obligatoires.",
+                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -114,7 +114,6 @@ class ClientDeliveryNoteController extends Controller
                 $clientDeliveryNote->code = $this->formateNPosition('BL', 1, 8);
             }
             $clientDeliveryNote->reference = $request->reference;
-            $clientDeliveryNote->delivery_note_date   = $request->delivery_note_date;
             $clientDeliveryNote->delivery_date   = $request->delivery_date;
             $clientDeliveryNote->total_amount = $request->total_amount;
             $clientDeliveryNote->observation = $request->observation;
@@ -123,12 +122,12 @@ class ClientDeliveryNoteController extends Controller
             $clientDeliveryNote->save();
 
             $productClientDeliveryNotes = [];
-            foreach ($request->ordered_product as $key => $product) {
+            foreach ($request->clientDeliveryNoteProducts as $key => $product) {
                 $productClientDeliveryNote = new ProductClientDeliveryNote();
-                $productClientDeliveryNote->quantity = $request->quantities[$key];
-                $productClientDeliveryNote->product_id = $product;
-                $productClientDeliveryNote->purchase_order_id = $clientDeliveryNote->id;
-                $productClientDeliveryNote->unity_id = $request->unities[$key];
+                $productClientDeliveryNote->quantity = $product["quantity"];
+                $productClientDeliveryNote->unity_id = $product["unity"];
+                $productClientDeliveryNote->product_id = $product["product"];
+                $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                 $productClientDeliveryNote->save();
 
                 array_push($productClientDeliveryNotes, $productClientDeliveryNote);
@@ -187,31 +186,31 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale' => 'required',
                 'reference' => 'required',
-                'delivery_note_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:delivery_note_date',
+                'delivery_note_date' => 'required|date|before:today',//|date_format:Ymd
+                'delivery_date' => 'required|date|after:delivery_note_date',//|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
-                'ordered_product' => 'required',
-                'quantities' => 'required|min:0',
-                'unities' => 'required',
+                'clientDeliveryNoteProducts' => 'required',
+                // 'quantities' => 'required|min:0',
+                // 'unities' => 'required',
             ],
             [
                 'sale.required' => "Le choix d'un bon de vente est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'delivery_note_date.required' => "La date du bon est obligatoire.",
                 'delivery_note_date.date' => "La date du bon de livraison est incorrecte.",
-                'delivery_note_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'delivery_note_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_note_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'ordered_product.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                'clientDeliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                // 'quantities.required' => "Les quantités sont obligatoires.",
+                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -219,7 +218,6 @@ class ClientDeliveryNoteController extends Controller
             $sale = Sale::where('purchase_order_id', $request->purchase_order)->first();
 
             $clientDeliveryNote->reference = $request->reference;
-            $clientDeliveryNote->delivery_note_date   = $request->delivery_note_date;
             $clientDeliveryNote->delivery_date   = $request->delivery_date;
             $clientDeliveryNote->total_amount = $request->total_amount;
             $clientDeliveryNote->observation = $request->observation;
@@ -227,15 +225,15 @@ class ClientDeliveryNoteController extends Controller
             $clientDeliveryNote->sale_id = $sale->id;
             $clientDeliveryNote->save();
 
-            ProductClientDeliveryNote::where('purchase_order_id', $clientDeliveryNote->id)->delete();
+            ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->delete();
 
             $productClientDeliveryNotes = [];
-            foreach ($request->ordered_product as $key => $product) {
+            foreach ($request->clientDeliveryNoteProducts as $key => $product) {
                 $productClientDeliveryNote = new ProductClientDeliveryNote();
-                $productClientDeliveryNote->quantity = $request->quantities[$key];
-                $productClientDeliveryNote->product_id = $product;
-                $productClientDeliveryNote->purchase_order_id = $clientDeliveryNote->id;
-                $productClientDeliveryNote->unity_id = $request->unities[$key];
+                $productClientDeliveryNote->quantity = $product["quantity"];
+                $productClientDeliveryNote->unity_id = $product["unity"];
+                $productClientDeliveryNote->product_id = $product["product"];
+                $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                 $productClientDeliveryNote->save();
 
                 array_push($productClientDeliveryNotes, $productClientDeliveryNote);
@@ -266,10 +264,18 @@ class ClientDeliveryNoteController extends Controller
         $clientDeliveryNote = ClientDeliveryNote::findOrFail($id);
         $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
         try {
-            $clientDeliveryNote->delete();
+            $success = false;
+            $message = "";
+            if (empty($clientDeliveryNote->productClientDeliveryNotes) || sizeof($clientDeliveryNote->productClientDeliveryNotes) == 0) {
+                // dd('delete');
+                $clientDeliveryNote->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cette livraison ne peut être supprimée car elle a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'clientDeliveryNote' => $clientDeliveryNote,
                 'success' => $success,

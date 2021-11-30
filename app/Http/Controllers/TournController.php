@@ -152,10 +152,19 @@ class TournController extends Controller
         $this->authorize('ROLE_TOURN_DELETE', Tourn::class);
         $tourn = Tourn::findOrFail($id);
         try {
-            $tourn->delete();
+            $success = false;
+            $message = "";
+            if (empty($tourn->clientDeliveryNotes) || sizeof($tourn->clientDeliveryNotes) == 0) {
+                // dd('delete');
+                $tourn->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette tournée ne peut être supprimée car elle a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'tourn' => $tourn,
                 'success' => $success,

@@ -294,10 +294,21 @@ class PurchaseOrderController extends Controller
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
         try {
-            $purchaseOrder->delete();
-
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (
+                empty($productsPurchaseOrders) || sizeof($productsPurchaseOrders) == 0 &&
+                empty($purchaseOrder->sales) || sizeof($purchaseOrder->sales) == 0 
+            ) {
+                // dd('delete');
+                $purchaseOrder->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette commande ne peut être supprimée car elle a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
                 'success' => $success,

@@ -131,10 +131,18 @@ class CategoryController extends Controller
         $this->authorize('ROLE_CATEGORY_DELETE', Category::class);
         $category = Category::findOrFail($id);
         try {
-            $category->delete();
+            $success = false;
+            $message = "";
+            if (empty($category->subCategories) || sizeof($category->subCategories) == 0) {
+                // dd('delete');
+                $category->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cette catégorie ne peut être supprimée car elle a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'category' => $category,
                 'success' => $success,

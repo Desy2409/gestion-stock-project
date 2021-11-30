@@ -181,10 +181,25 @@ class SalePointController extends Controller
         $this->authorize('ROLE_SALE_POINT_DELTE', SalePoint::class);
         $salePoint = SalePoint::findOrFail($id);
         try {
-            $salePoint->delete();
-
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (
+                empty($salePoint->orders) || sizeof($salePoint->orders) == 0 &&
+                empty($salePoint->purchases) || sizeof($salePoint->purchases) == 0 &&
+                empty($salePoint->purchaseOrders) || sizeof($salePoint->purchaseOrders) == 0 &&
+                empty($salePoint->sales) || sizeof($salePoint->sales) == 0 &&
+                empty($salePoint->goodToRemoves) || sizeof($salePoint->goodToRemoves) == 0&&
+                empty($salePoint->transfersDemands) || sizeof($salePoint->transfersDemands) == 0&&
+                empty($salePoint->transfers) || sizeof($salePoint->transfers) == 0
+            ) {
+                // dd('delete');
+                $salePoint->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce point de vente ne peut être supprimé car il a servi dans des traitements.";
+            }
             return new JsonResponse([
                 'salePoint' => $salePoint,
                 'success' => $success,

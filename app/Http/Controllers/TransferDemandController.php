@@ -264,10 +264,19 @@ class TransferDemandController extends Controller
         $transferDemand = TransferDemand::findOrFail($id);
         // $productsTransfersDemandsLines = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
         try {
-            $transferDemand->delete();
+            $success = false;
+            $message = "";
+            if (empty($transferDemand->transfers) || sizeof($transferDemand->transfers) == 0 && empty($transferDemand->productsTransfersDemandsLines) || sizeof($transferDemand->productsTransfersDemandsLines) == 0) {
+                // dd('delete');
+                $transferDemand->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette demande de transfert ne peut être supprimée car elle a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'transferDemand' => $transferDemand,
                 'success' => $success,
@@ -309,7 +318,7 @@ class TransferDemandController extends Controller
         }
     }
 
-    public function cancelTransferDemand($id)
+    public function rejectTransferDemand($id)
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_REJECT', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);

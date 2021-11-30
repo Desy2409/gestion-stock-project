@@ -113,10 +113,18 @@ class DestinationController extends Controller
         $this->authorize('ROLE_DESTINATION_DELETE', Destination::class);
         $destination = Destination::findOrFail($id);
         try {
-            $destination->delete();
+            $success = false;
+            $message = "";
+            if (empty($destination->tourns) || sizeof($destination->tourns) == 0) {
+                // dd('delete');
+                $destination->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cette destination ne peut être supprimée car elle a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'destination' => $destination,
                 'success' => $success,

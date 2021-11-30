@@ -339,11 +339,23 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         $person = Person::where('personable_id', $client->id)->where('personable_type', "App\Models\Client")->first();
         try {
-            $client->delete();
-            $person->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($client->purchaseOrders) || sizeof($client->purchaseOrders) == 0 &&
+                empty($client->sales) || sizeof($client->sales) == 0 &&
+                empty($client->goodToRemoves) || sizeof($client->goodToRemoves) == 0
+            ) {
+                // dd('delete');
+                $client->delete();
+                $person->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce client ne peut être supprimé car il a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'client' => $client,
                 'person' => $person,

@@ -128,7 +128,7 @@ class InstitutionController extends Controller
         );
 
         $existingInstitutions = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
-        if (!empty($existingInstitutions)&&sizeof($existingInstitutions)>1) {
+        if (!empty($existingInstitutions) && sizeof($existingInstitutions) > 1) {
             $success = false;
             return new JsonResponse([
                 'existingInstitution' => $existingInstitutions[0],
@@ -169,10 +169,18 @@ class InstitutionController extends Controller
         $this->authorize('ROLE_INSTITUTION_DELETE', Institution::class);
         $institution = Institution::findOrFail($id);
         try {
-            $institution->delete();
-
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (empty($institution->salesPoints) || sizeof($institution->salesPoints) == 0 && empty($institution->deliveryPoints) || sizeof($institution->deliveryPoints) == 0) {
+                // dd('delete');
+                $institution->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette institution ne peut être supprimée car elle a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'institution' => $institution,
                 'success' => $success,
