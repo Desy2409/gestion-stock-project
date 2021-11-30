@@ -41,7 +41,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'roles'=>'array',
+        'roles' => 'array',
     ];
 
     // Rest omitted for brevity
@@ -64,5 +64,10 @@ class User extends Authenticatable
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function userType()
+    {
+        return $this->belongsTo(UserType::class);
     }
 }

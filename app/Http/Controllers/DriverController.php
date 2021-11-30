@@ -40,7 +40,7 @@ class DriverController extends Controller
     // Enregistrement d'une nouvelle donnée driver
     public function store(Request $request)
     {
-        $this->authorize('ROLE_DRIVER_CREATE',Driver::class);
+        $this->authorize('ROLE_DRIVER_CREATE', Driver::class);
         $this->validate(
             $request,
             [
@@ -83,7 +83,7 @@ class DriverController extends Controller
     // Mise à jour d'une donnée driver
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_DRIVER_UPDATE',Driver::class);
+        $this->authorize('ROLE_DRIVER_UPDATE', Driver::class);
         $driver = Driver::findOrFail($id);
         $this->validate(
             $request,
@@ -137,9 +137,18 @@ class DriverController extends Controller
         $this->authorize('ROLE_DRIVER_DELETE', Driver::class);
         $driver = Driver::findOrFail($id);
         try {
-            $driver->delete();
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (empty($driver->hosts) || sizeof($driver->hosts) == 0 && empty($driver->emailChannelParams) || sizeof($driver->emailChannelParams) == 0) {
+                // dd('delete');
+                $driver->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce driver ne peut être supprimé car il a servi dans des traitements.";
+            }
+
             return new JsonResponse([
                 'driver' => $driver,
                 'success' => $success,

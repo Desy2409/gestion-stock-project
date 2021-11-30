@@ -195,10 +195,28 @@ class ProductController extends Controller
         $this->authorize('ROLE_PRODUCT_DELETE', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
         try {
-            $product->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($product->productPurchaseOrders) || sizeof($product->productPurchaseOrders) == 0 &&
+                empty($product->productOrders) || sizeof($product->productOrders) == 0 &&
+                empty($product->productPurchases) || sizeof($product->productPurchases) == 0 &&
+                empty($product->productDeliveryNotes) || sizeof($product->productDeliveryNotes) == 0 &&
+                empty($product->productPurchaseOrders) || sizeof($product->productPurchaseOrders) == 0 &&
+                empty($product->productSales) || sizeof($product->productSales) == 0 &&
+                empty($product->productClientDeliveryNotes) || sizeof($product->productClientDeliveryNotes) == 0 &&
+                empty($product->productsTransfersDemandsLines) || sizeof($product->productsTransfersDemandsLines) == 0 &&
+                empty($product->productsTransfersLines) || sizeof($product->productsTransfersLines) == 0
+            ) {
+                // dd('delete');
+                $product->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce produit ne peut être supprimé car il a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'product' => $product,
                 'success' => $success,

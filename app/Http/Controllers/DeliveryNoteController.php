@@ -128,7 +128,6 @@ class DeliveryNoteController extends Controller
             foreach ($request->deliveryNoteProducts as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $product["quantity"];
-                $productDeliveryNote->unit_price = $product["unit_price"];
                 $productDeliveryNote->unity_id = $product["unity"];
                 $productDeliveryNote->product_id = $product["product"];
                 $productDeliveryNote->delivery_note_id = $deliveryNote->id;
@@ -227,7 +226,6 @@ class DeliveryNoteController extends Controller
             foreach ($request->deliveryNoteProducts as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $product["quantity"];
-                $productDeliveryNote->unit_price = $product["unit_price"];
                 $productDeliveryNote->unity_id = $product["unity"];
                 $productDeliveryNote->product_id = $product["product"];
                 $productDeliveryNote->delivery_note_id = $deliveryNote->id;
@@ -266,10 +264,18 @@ class DeliveryNoteController extends Controller
         $deliveryNote = DeliveryNote::findOrFail($id);
         $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null;
         try {
-            $deliveryNote->delete();
+            $success = false;
+            $message = "";
+            if (empty($deliveryNote->productDeliveryNotes) || sizeof($deliveryNote->productDeliveryNotes) == 0) {
+                // dd('delete');
+                $deliveryNote->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cette livraison ne peut être supprimée car elle a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'deliveryNote' => $deliveryNote,
                 'success' => $success,

@@ -128,9 +128,18 @@ class HostController extends Controller
         $this->authorize('ROLE_HOST_DELETE', Host::class);
         $host = Host::findOrFail($id);
         try {
-            $host->delete();
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (empty($host->emailChannelParams) || sizeof($host->emailChannelParams) == 0) {
+                // dd('delete');
+                $host->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cet hôte ne peut être supprimé car il a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'host' => $host,
                 'success' => $success,

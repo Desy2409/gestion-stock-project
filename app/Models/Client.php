@@ -24,9 +24,9 @@ class Client extends Model
         return $this->morphOne(Person::class, 'personable');
     }
 
-    public function orders()
+    public function purchaseOrders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(PurchaseOrder::class);
     }
 
     public function sales()

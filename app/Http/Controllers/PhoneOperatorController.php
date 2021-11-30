@@ -152,9 +152,18 @@ class PhoneOperatorController extends Controller
         $this->authorize('ROLE_PHONE_OPERATOR_DELETE', PhoneOperator::class);
         $phoneOperator = PhoneOperator::findOrFail($id);
         try {
-            $phoneOperator->delete();
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+                $message = "";
+                if (empty($phoneOperator->startNumbers) || sizeof($phoneOperator->startNumbers) == 0) {
+                    // dd('delete');
+                    $phoneOperator->delete();
+                    $success = true;
+                    $message = "Suppression effectuée avec succès.";
+                }else{
+                    // dd('not delete');
+                    $message = "Cet opérateur téléphonique ne peut être supprimé car il a servi dans des traitements.";
+                }
+
             return new JsonResponse([
                 'phoneOperator' => $phoneOperator,
                 'success' => $success,

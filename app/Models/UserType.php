@@ -12,7 +12,12 @@ class UserType extends Model
         'description'
     ];
 
-    protected $casts=[
-        'roles'=>'array',
+    protected $casts = [
+        'roles' => 'array',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

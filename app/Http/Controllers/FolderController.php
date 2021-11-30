@@ -301,17 +301,18 @@ class FolderController extends Controller
         $folder = Folder::findOrFail($id);
         // dd($folder->name);
         try {
-            // if ($folder->folder_id == null) {
-                $folder->delete();
-                Storage::deleteDirectory($folder->path);
-            // } else {
-            //     $parentFolder = Folder::findOrFail($folder->folder_id);
-            //     $folder->delete();
-            //     Storage::deleteDirectory($parentFolder . '/' . $folder->name);
-            // }
-
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = false;
+                $message = "";
+                if (empty($folder->children) || sizeof($folder->children) == 0) {
+                    // dd('delete');
+                    $folder->delete();
+                    Storage::deleteDirectory($folder->path);
+                    $success = true;
+                    $message = "Suppression effectuée avec succès.";
+                }else{
+                    // dd('not delete');
+                    $message = "Ce dossier ne peut être supprimé car il a servi dans des traitements.";
+                }
             return new JsonResponse([
                 'folder' => $folder,
                 'success' => $success,

@@ -150,9 +150,18 @@ class UserTypeController extends Controller
         $this->authorize('ROLE_USER_TYPE_DELETE', UserType::class);
         $userType = UserType::findOrFail($id);
         try {
-            $userType->delete();
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (empty($userType->users) || sizeof($userType->users) == 0) {
+                // dd('delete');
+                $userType->delete();
+
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette citerne ne peut être supprimée car elle a servi dans des traitements.";
+            }
             return new JsonResponse([
                 'userType' => $userType,
                 'success' => $success,

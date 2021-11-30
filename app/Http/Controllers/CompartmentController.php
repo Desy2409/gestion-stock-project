@@ -119,10 +119,18 @@ class CompartmentController extends Controller
         $this->authorize('ROLE_COMPARTMENT_DELETE', Compartment::class);
         $compartment = Compartment::findOrFail($id);
         try {
-            $compartment->delete();
+            $success = false;
+            $message = "";
+            if (empty($compartment->tanks) || sizeof($compartment->tanks) == 0) {
+                // dd('delete');
+                $compartment->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Ce compartiment ne peut être supprimé car il a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'compartment' => $compartment,
                 'success' => $success,

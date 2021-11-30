@@ -31,7 +31,6 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         if (Schema::hasTable('roles')) {
             $roles = Role::all();
-
             if ($roles) {
                 foreach ($roles as $key => $role) {
                     Gate::define($role->code, function (User $user) use ($role) {

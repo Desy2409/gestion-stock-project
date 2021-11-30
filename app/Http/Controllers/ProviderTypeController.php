@@ -122,10 +122,18 @@ class ProviderTypeController extends Controller
         $this->authorize('ROLE_PROVIDER_TYPE_DELETE', ProviderType::class);
         $providerType = ProviderType::findOrFail($id);
         try {
-            $providerType->delete();
+            $success = false;
+            $message = "";
+            if (empty($providerType->providers) || sizeof($providerType->providers) == 0) {
+                // dd('delete');
+                $providerType->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Ce type de forunisseur ne peut être supprimé car il a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'providerType' => $providerType,
                 'success' => $success,
