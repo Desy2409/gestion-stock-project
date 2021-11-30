@@ -328,17 +328,17 @@ class PurchaseController extends Controller
                 $purchase->order_id = $order->id;
                 $purchase->provider_id = $order->provider->id;
                 $purchase->sale_point_id = $order->salePoint->id;
-                // $purchase->save();
+                $purchase->save();
 
                 $productPurchases = [];
                 $i=0;
-                dd($request->purchaseProducts);                                        
+                // dd($request->purchaseProducts);
                 foreach ($request->purchaseProducts as $key => $product) {
                     // dd($product[1]["unit_price"]);
                     // dd($product);
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
-                    // $productPurchase->unit_price = $product["unit_price"];
+                    $productPurchase->unit_price = $product["unit_price"];
                     $productPurchase->unity_id = $product["unity"];
                     $productPurchase->product_id = $product["product"];
                     // $productPurchase->quantity = $product[$i]["quantity"];

@@ -96,6 +96,7 @@ class TransferDemandController extends Controller
         );
 
         try {
+            // dd($request->transferDemandProducts);
             $lastTransferDemand = TransferDemand::latest()->first();
 
             $transferDemand = new TransferDemand();
@@ -117,7 +118,7 @@ class TransferDemandController extends Controller
                 $transferDemandLine = new ProductTransferDemandLine();
                 $transferDemandLine->quantity = $product["quantity"];
                 $transferDemandLine->unity_id = $product['unity'];
-                $transferDemandLine->product_id = $product;
+                $transferDemandLine->product_id = $product['product'];
                 $transferDemandLine->transfer_demand_id = $transferDemand->id;
                 $transferDemandLine->save();
 
@@ -139,6 +140,7 @@ class TransferDemandController extends Controller
                 'datas' => ['productTansferDemands' => $productTansferDemands]
             ], 200);
         } catch (Exception $e) {
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
