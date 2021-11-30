@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class NullableTournIdInClientDeliveryNotesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('client_delivery_notes', function (Blueprint $table) {
+            $table->dropForeign(['tourn_id']);
+            $table->dropColumn('tourn_id');
+        });
+
+        Schema::table('client_delivery_notes', function (Blueprint $table) {
+            $table->foreignId('tourn_id')->nullable()->constrained()->cascadeOnDelete();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('client_delivery_notes', function (Blueprint $table) {
+            //
+        });
+    }
+}

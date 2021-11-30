@@ -307,7 +307,7 @@ class TransferDemandController extends Controller
         }
     }
 
-    public function cancelTransferDemand($id)
+    public function rejectTransferDemand($id)
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_REJECT', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
+use App\Models\ClientDeliveryNote;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductClientDeliveryNote;
 use App\Models\ProductOrder;
 use App\Models\ProductPurchaseOrder;
 use App\Models\ProductSale;
@@ -25,7 +27,7 @@ class SaleController extends Controller
     public function saleOnPurchaseOrder()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->where('purchase_order_id','!=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -45,7 +47,7 @@ class SaleController extends Controller
     public function directSale()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_order_id','=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -184,6 +186,34 @@ class SaleController extends Controller
                 // if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
                 //     $sale->delete();
                 // }
+
+                $lastClientDeliveryNote = ClientDeliveryNote::latest()->first();
+
+                $clientDeliveryNote = new ClientDeliveryNote();
+                if ($lastClientDeliveryNote) {
+                    $clientDeliveryNote->code = $this->formateNPosition('BL', $lastClientDeliveryNote->id + 1, 8);
+                } else {
+                    $clientDeliveryNote->code = $this->formateNPosition('BL', 1, 8);
+                }
+                $clientDeliveryNote->reference = $request->reference;
+                $clientDeliveryNote->delivery_date   = $request->delivery_date;
+                $clientDeliveryNote->total_amount = $request->total_amount;
+                $clientDeliveryNote->observation = $request->observation;
+                $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
+                $clientDeliveryNote->sale_id = $sale->id;
+                $clientDeliveryNote->save();
+
+                $productClientDeliveryNotes = [];
+                foreach ($request->clientDeliveryNoteProducts as $key => $product) {
+                    $productClientDeliveryNote = new ProductClientDeliveryNote();
+                    $productClientDeliveryNote->quantity = $product["quantity"];
+                    $productClientDeliveryNote->unity_id = $product["unity"];
+                    $productClientDeliveryNote->product_id = $product["product"];
+                    $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
+                    $productClientDeliveryNote->save();
+
+                    array_push($productClientDeliveryNotes, $productClientDeliveryNote);
+                }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
@@ -373,6 +403,29 @@ class SaleController extends Controller
                     $productSale->save();
 
                     array_push($productSales, $productSale);
+                }
+
+                $clientDeliveryNote = $sale ? $sale->clientDeliveryNote : null;
+                $clientDeliveryNote->reference = $request->reference;
+                $clientDeliveryNote->delivery_date   = $request->delivery_date;
+                $clientDeliveryNote->total_amount = $request->total_amount;
+                $clientDeliveryNote->observation = $request->observation;
+                $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
+                $clientDeliveryNote->sale_id = $sale->id;
+                $clientDeliveryNote->save();
+
+                ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->delete();
+
+                $productClientDeliveryNotes = [];
+                foreach ($request->clientDeliveryNoteProducts as $key => $product) {
+                    $productClientDeliveryNote = new ProductClientDeliveryNote();
+                    $productClientDeliveryNote->quantity = $product["quantity"];
+                    $productClientDeliveryNote->unity_id = $product["unity"];
+                    $productClientDeliveryNote->product_id = $product["product"];
+                    $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
+                    $productClientDeliveryNote->save();
+
+                    array_push($productClientDeliveryNotes, $productClientDeliveryNote);
                 }
 
                 // $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();

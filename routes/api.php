@@ -61,9 +61,9 @@ Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
 
 
-Auth::routes();
+// Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 // Protected routes
@@ -225,7 +225,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
     Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
     Route::patch('/transfer-demand/{id}/validate', [TransferDemandController::class, 'validateTransferDemand']);
-    Route::patch('/transfer-demand/{id}/cancel', [TransferDemandController::class, 'cancelTransferDemand']);
+    Route::patch('/transfer-demand/{id}/reject', [TransferDemandController::class, 'rejectTransferDemand']);
     Route::patch('/transfer-demand/{id}/transform-to-transfer', [TransferDemandController::class, 'transformDemandToTransfer']);
 
     // Transfer routes
