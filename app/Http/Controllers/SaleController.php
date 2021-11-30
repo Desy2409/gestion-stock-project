@@ -558,10 +558,21 @@ class SaleController extends Controller
         $sale = Sale::findOrFail($id);
         $productSales = $sale ? $sale->productSales : null;
         try {
-            $sale->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($productSales) || sizeof($productSales) == 0 &&
+                empty($sale->clientDeliveryNotes) || sizeof($sale->clientDeliveryNotes) == 0 
+            ) {
+                // dd('delete');
+                $sale->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cet achat ne peut être supprimé car il a servi dans des traitements.";
+            }
             return new JsonResponse([
                 'sale' => $sale,
                 'success' => $success,

@@ -125,10 +125,22 @@ class TruckController extends Controller
         $this->authorize('ROLE_TRUCK_DELETE', Truck::class);
         $truck = Truck::findOrFail($id);
         try {
-            $truck->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($truck->tourns) || sizeof($truck->tourns) == 0 &&
+                empty($truck->tankTrucks) || sizeof($truck->tankTrucks) == 0 
+            ) {
+                // dd('delete');
+                $truck->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce camion ne peut être supprimé car il a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'truck' => $truck,
                 'success' => $success,

@@ -220,7 +220,6 @@ class PurchaseController extends Controller
                 foreach ($request->purchaseProducts as $key => $product) {
                     $productDeliveryNote = new ProductDeliveryNote();
                     $productDeliveryNote->quantity = $product["quantity"];
-                    $productDeliveryNote->unit_price = $product["unit_price"];
                     $productDeliveryNote->unity_id = $product["unity"];
                     $productDeliveryNote->product_id = $product["product"];
                     $productDeliveryNote->delivery_note_id = $deliveryNote->id;
@@ -463,7 +462,6 @@ class PurchaseController extends Controller
                     foreach ($request->deliveryNoteProducts as $key => $product) {
                         $productDeliveryNote = new ProductDeliveryNote();
                         $productDeliveryNote->quantity = $product["quantity"];
-                        $productDeliveryNote->unit_price = $product["unit_price"];
                         $productDeliveryNote->unity_id = $product["unity"];
                         $productDeliveryNote->product_id = $product["product"];
                         $productDeliveryNote->delivery_note_id = $deliveryNote->id;
@@ -606,10 +604,22 @@ class PurchaseController extends Controller
         $purchase = Purchase::findOrFail($id);
         $productPurchases = $purchase ? $purchase->productPurchases : null;
         try {
-            $purchase->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($productPurchases) || sizeof($productPurchases) == 0 &&
+                empty($purchase->deliveryNotes) || sizeof($purchase->deliveryNotes) == 0 
+            ) {
+                // dd('delete');
+                $purchase->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cet achat ne peut être supprimé car il a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'purchase' => $purchase,
                 'success' => $success,

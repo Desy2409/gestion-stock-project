@@ -250,11 +250,25 @@ class ProviderController extends Controller
         $provider = Provider::findOrFail($id);
         $person = Person::where('personable_id', $provider->id)->where('personable_type', "App\Models\Provider")->first();
         try {
-            $provider->delete();
-            $person->delete();
-
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+            $success = false;
+            $message = "";
+            if (
+                empty($provider->orders) || sizeof($provider->orders) == 0 &&
+                empty($provider->purchases) || sizeof($provider->purchases) == 0 &&
+                empty($provider->goodToRemoves) || sizeof($provider->goodToRemoves) == 0 &&
+                empty($provider->tanks) || sizeof($provider->tanks) == 0 &&
+                empty($provider->trucks) || sizeof($provider->trucks) == 0
+            ) {
+                // dd('delete');
+                $provider->delete();
+                $person->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce fournisseur ne peut être supprimé car il a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'provider' => $provider,
                 'person' => $person,

@@ -42,10 +42,10 @@ class SalePoint extends Model
         return $this->hasMany(Sale::class);
     }
 
-    public function clientDeliveryNotes()
-    {
-        return $this->hasMany(ClientDeliveryNote::class);
-    }
+    // public function clientDeliveryNotes()
+    // {
+    //     return $this->hasMany(ClientDeliveryNote::class);
+    // }
 
     public function stocks()
     {

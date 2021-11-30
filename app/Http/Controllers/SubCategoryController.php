@@ -131,10 +131,18 @@ class SubCategoryController extends Controller
         $this->authorize('ROLE_SUB_CATEGORY_DELETE', SubCategory::class);
         $subCategory = SubCategory::findOrFail($id);
         try {
-            $subCategory->delete();
+            $success = false;
+            $message = "";
+            if (empty($subCategory->products) || sizeof($subCategory->products) == 0) {
+                // dd('delete');
+                $subCategory->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cette sous-catégorie ne peut être supprimée car elle a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'subCategory' => $subCategory,
                 'success' => $success,

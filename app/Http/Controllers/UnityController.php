@@ -135,10 +135,26 @@ class UnityController extends Controller
         $this->authorize('ROLE_UNITY_DELETE', Truck::class);
         $unity = Unity::findOrFail($id);
         try {
-            $unity->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($unity->productOrders) || sizeof($unity->productOrders) == 0 &&
+                empty($unity->productPurchases) || sizeof($unity->productPurchases) == 0 &&
+                empty($unity->productDeliveryNotes) || sizeof($unity->productDeliveryNotes) == 0 &&
+                empty($unity->productPurchaseOrders) || sizeof($unity->productPurchaseOrders) == 0 &&
+                empty($unity->productSales) || sizeof($unity->productSales) == 0 &&
+                empty($unity->productClientDeliveryNotes) || sizeof($unity->productClientDeliveryNotes) == 0 
+            ) {
+                // dd('delete');
+                $unity->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette unité ne peut être supprimée car elle a servi dans des traitements.";
+            }
+            
             return new JsonResponse([
                 'unity' => $unity,
                 'success' => $success,

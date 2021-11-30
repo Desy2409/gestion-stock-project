@@ -15,11 +15,11 @@ class Folder extends Model
 
     public function children()
     {
-        return $this->belongsTo(Folder::class);
+        return $this->hasMany(Folder::class);
     }
 
     public function parent()
     {
-        return $this->hasMany(Folder::class);
+        return $this->belongsTo(Folder::class);
     }
 }

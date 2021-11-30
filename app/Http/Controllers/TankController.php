@@ -134,10 +134,22 @@ class TankController extends Controller
         $this->authorize('ROLE_TANK_DELETE', Tank::class);
         $tank = Tank::findOrFail($id);
         try {
-            $tank->delete();
+            $success = false;
+            $message = "";
+            if (
+                empty($tank->tourns) || sizeof($tank->tourns) == 0 &&
+                empty($tank->tankTrucks) || sizeof($tank->tankTrucks) == 0 
+            ) {
+                // dd('delete');
+                $tank->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cette citerne ne peut être supprimée car elle a servi dans des traitements.";
+            }
+
             return new JsonResponse([
                 'tank' => $tank,
                 'success' => $success,

@@ -264,10 +264,18 @@ class ClientDeliveryNoteController extends Controller
         $clientDeliveryNote = ClientDeliveryNote::findOrFail($id);
         $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
         try {
-            $clientDeliveryNote->delete();
+            $success = false;
+            $message = "";
+            if (empty($clientDeliveryNote->productClientDeliveryNotes) || sizeof($clientDeliveryNote->productClientDeliveryNotes) == 0) {
+                // dd('delete');
+                $clientDeliveryNote->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            }else{
+                // dd('not delete');
+                $message = "Cette livraison ne peut être supprimée car elle a servi dans des traitements.";
+            }
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'clientDeliveryNote' => $clientDeliveryNote,
                 'success' => $success,

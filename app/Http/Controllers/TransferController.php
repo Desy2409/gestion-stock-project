@@ -272,10 +272,18 @@ class TransferController extends Controller
         $transfer = Transfer::findOrFail($id);
         // $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
         try {
-            $transfer->delete();
+            $success = false;
+            $message = "";
+            if (empty($transfer->productsTransfersLines) || sizeof($transfer->productsTransfersLines) == 0) {
+                // dd('delete');
+                $transfer->delete();
 
-            $success = true;
-            $message = "Suppression effectuée avec succès.";
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Ce transfert ne peut être supprimé car il a servi dans des traitements.";
+            }
             return new JsonResponse([
                 'transfer' => $transfer,
                 'success' => $success,
