@@ -40,4 +40,9 @@ class Sale extends Model
     {
         return $this->hasMany(ClientDeliveryNote::class);
     }
+
+    public function clientDeliveryNote()
+    {
+        return $this->hasOne(ClientDeliveryNote::class);
+    }
 }

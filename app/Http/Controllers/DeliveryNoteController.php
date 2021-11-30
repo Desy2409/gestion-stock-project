@@ -117,7 +117,6 @@ class DeliveryNoteController extends Controller
                 $deliveryNote->code = $this->formateNPosition('BL', 1, 8);
             }
             $deliveryNote->reference = $request->reference;
-            $deliveryNote->purchase_date   = $request->purchase_date;
             $deliveryNote->delivery_date   = $request->delivery_date;
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;
@@ -215,7 +214,6 @@ class DeliveryNoteController extends Controller
             $purchase = Purchase::where('order_id', $request->order)->first();
 
             $deliveryNote->reference = $request->reference;
-            $deliveryNote->purchase_date   = $request->purchase_date;
             $deliveryNote->delivery_date   = $request->delivery_date;
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;

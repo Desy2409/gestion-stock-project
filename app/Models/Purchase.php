@@ -34,6 +34,11 @@ class Purchase extends Model
         return $this->hasMany(DeliveryNote::class);
     }
 
+    public function deliveryNote()
+    {
+        return $this->hasOne(DeliveryNote::class);
+    }
+
     public function productPurchases()
     {
         return $this->hasMany(ProductPurchase::class);
