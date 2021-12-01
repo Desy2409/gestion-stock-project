@@ -1180,5 +1180,39 @@
         "description": "Impression d'hôtes",
         "operation_id": 5,
         "page_operation_id": 2
+    }, {
+        "code": "ROLE_USER_READ",
+        "wording": "Consultation des utilisateurs",
+        "description": "Consultation des utilisateurs",
+        "operation_id": 1,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_USER_CREATE",
+        "wording": "Création d'un utilisateur",
+        "description": "Création d'un utilisateur",
+        "operation_id": 2,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_USER_UPDATE",
+        "wording": "Mise à jour des informations d'un utilisateur",
+        "description": "Mise à jour des informations d'un utilisateur",
+        "operation_id": 3,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_USER_DELETE",
+        "wording": "Suppression d'un utilisateur",
+        "description": "Suppression d'un utilisateur",
+        "operation_id": 4,
+        "page_operation_id": 2
+    },
+    {
+        "code": "ROLE_USER_PRINT",
+        "wording": "Impression d'utilisateurs",
+        "description": "Impression d'utilisateurs",
+        "operation_id": 5,
+        "page_operation_id": 2
     }
 ]

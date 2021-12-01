@@ -21,8 +21,9 @@ class ClientDeliveryNoteController extends Controller
     public function index()
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
-        $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->get();
+        // $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->get();
         $clientDeliveryNotes = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_note_date')->get();
+        $purchaseOrders = PurchaseOrder::with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastClientDeliveryNoteRegister = ClientDeliveryNoteRegister::latest()->first();
 
@@ -35,7 +36,7 @@ class ClientDeliveryNoteController extends Controller
         $clientDeliveryNoteRegister->save();
 
         return new JsonResponse([
-            'datas' => ['clientDeliveryNotes' => $clientDeliveryNotes, 'sales' => $sales]
+            'datas' => ['clientDeliveryNotes' => $clientDeliveryNotes, 'purchaseOrders' => $purchaseOrders]
         ], 200);
     }
 
