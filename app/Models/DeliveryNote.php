@@ -10,7 +10,6 @@ class DeliveryNote extends Model
     protected $fillable = [
         'code',
         'reference',
-        'purchase_date',
         'delivery_date',
         'total_amount',
         'observation',
