@@ -42,6 +42,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'roles' => 'array',
+        'sale_points' => 'array',
     ];
 
     // Rest omitted for brevity

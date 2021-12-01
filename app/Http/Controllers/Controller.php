@@ -12,8 +12,12 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    // private $user;
     public function __construct()
     {
-        //dd(Auth::user()->roles);
+        // $this->middleware('auth:api');
+        // dd('Test controller',Auth::user());
+        // $this->user = Auth::user();
+        // dd('Test controller', $this->user);
     }
 }

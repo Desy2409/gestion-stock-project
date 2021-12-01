@@ -15,16 +15,20 @@ use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 
 class TransferDemandController extends Controller
 {
     use UtilityTrait;
-
     public function index()
     {
+        $user = Auth::user();
+
         $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
-        $salesPoints = SalePoint::orderBy('social_reason')->get();
+        // $salesPoints = SalePoint::orderBy('social_reason')->get();
+        $transmitters = SalePoint::whereIn('id', $user->sale_points)->orderBy('social_reason')->get();
+        // dd($transmitters);
         $products = Product::with('subCategory')->orderBy('wording')->get();
         // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $transfersDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
@@ -41,7 +45,8 @@ class TransferDemandController extends Controller
         $transferDemandRegister->save();
 
         return new JsonResponse([
-            'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products, 'unities' => $unities]
+            // 'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products, 'unities' => $unities]
+            'datas' => ['transfersDemands' => $transfersDemands, 'transmitters' => $transmitters, 'products' => $products, 'unities' => $unities]
         ], 200);
     }
 
@@ -59,6 +64,15 @@ class TransferDemandController extends Controller
             'code' => $code
         ], 200);
     }
+
+    public function showReceiversOnTransmitterSelect($id)
+    {
+        $transmitter = SalePoint::findOrFail($id);
+        $receivers = SalePoint::where('id', '!=', $transmitter->id)->get();
+
+        return new JsonResponse(['datas' => ['receivers' => $receivers]], 200);
+    }
+
     public function store(Request $request)
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_CREATE', TransferDemand::class);
@@ -274,7 +288,7 @@ class TransferDemandController extends Controller
                 // dd('not delete');
                 $message = "Cette demande de transfert ne peut être supprimée car elle a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'transferDemand' => $transferDemand,
                 'success' => $success,
@@ -290,110 +304,4 @@ class TransferDemandController extends Controller
         }
     }
 
-    public function validateTransferDemand($id)
-    {
-        $this->authorize('ROLE_TRANSFER_DEMAND_VALIDATE', TransferDemand::class);
-        $transferDemand = TransferDemand::findOrFail($id);
-        try {
-            $transferDemand->state = 'S';
-            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
-            $transferDemand->save();
-
-            $success = true;
-            $message = "Demande de transfert validée avec succès.";
-            return new JsonResponse([
-                'transferDemand' => $transferDemand,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
-        } catch (Exception $e) {
-            $success = false;
-            $message = "Erreur survenue lors de la validation de la demande de transfert.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
-
-    public function rejectTransferDemand($id)
-    {
-        $this->authorize('ROLE_TRANSFER_DEMAND_REJECT', TransferDemand::class);
-        $transferDemand = TransferDemand::findOrFail($id);
-        try {
-            $transferDemand->state = 'A';
-            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
-            $transferDemand->save();
-
-            $success = true;
-            $message = "Demande de transfert annulée avec succès.";
-            return new JsonResponse([
-                'transferDemand' => $transferDemand,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
-        } catch (Exception $e) {
-            $success = false;
-            $message = "Erreur survenue lors de l'annulation de la demande de transfert.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
-
-    public function transformDemandToTransfer($id)
-    {
-        $this->authorize('ROLE_TRANSFER_DEMAND_TRANSFORM', TransferDemand::class);
-        $transferDemand = TransferDemand::findOrFail($id);
-
-        try {
-            $lastTransfer = Transfer::latest()->first();
-
-            $transfer = new Transfer();
-            if ($lastTransfer) {
-                $transfer->code = $this->formateNPosition('TF', $lastTransfer->id + 1, 8);
-            } else {
-                $transfer->code = $this->formateNPosition('TF', 1, 8);
-            }
-            $transfer->transfer_reason = $transferDemand->request_reason;
-            $transfer->date_of_transfer = date('Ymd');
-            // $transfer->date_of_receipt = $request->date_of_receipt;
-            $transfer->transmitter_id = $transferDemand->receiver_id;
-            $transfer->receiver_id = $transferDemand->transmitter_id;
-            // $transfer->save();
-
-            $productTransferDemandLines = ProductTransferDemandLine::where('transfer_demand_id', $transferDemand->id)->get();
-
-            $productTransferLines = [];
-            if (!empty($productTransferDemandLines) && sizeof($productTransferDemandLines) > 0) {
-                foreach ($productTransferDemandLines as $key => $productTransferDemandLine) {
-                    $productTransferLine = new ProductTransferLine();
-                    $productTransferLine->quantity = $productTransferDemandLine->quantity;
-                    $productTransferLine->unit_price = $productTransferDemandLine->unit_price;
-                    $productTransferLine->product_id = $productTransferDemandLine->product_id;
-                    // $productTransferLine->transfer_id = $transfer->id;
-
-                    array_push($productTransferLines, $productTransferLine);
-                }
-            }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'transferDemand' => $transferDemand,
-                'transfer' => $transfer,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productTransferLines' => $productTransferLines]
-            ], 200);
-        } catch (Exception $e) {
-            $success = false;
-            $message = "Erreur survenue lors de la transformation de la demande de transfert en transfert.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
 }

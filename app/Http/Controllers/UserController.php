@@ -2,15 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SalePoint;
 use App\Models\User;
 use App\Models\UserType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    // public $user;
+
+    // public function __construct($user)
+    // {
+    //     // dd(Auth::user());
+    //     $user = Auth::user();
+    //     $this->user = $user;
+    // }
+    
     public function index()
     {
         $this->authorize('ROLE_USER_READ', User::class);
@@ -25,6 +36,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_USER_CREATE', User::class);
+        // dd('user store after check role');
         $this->validate(
             $request,
             [
@@ -32,7 +44,7 @@ class UserController extends Controller
                 'password' => 'required|min:8',
                 'last_name' => 'required|max:30',
                 'first_name' => 'required|max:50',
-                'date_of_birth' => 'required|date|date_format:Ymd|before:today',
+                'date_of_birth' => 'required|date|before:today', //|date_format:Ymd
                 'place_of_birth' => 'required|max:100',
             ],
             [
@@ -46,7 +58,7 @@ class UserController extends Controller
                 'first_name.max' => "Le champ prénom(s) ne doit pas dépasser 50 caractères.",
                 'date_of_birth.required' => "Le champ date de naissance est obligatoire.",
                 'date_of_birth.date' => "Le champ date de naissance doit être une date valide.",
-                'date_of_birth.date_format' => "Le champ date de naissance doit être sous le format : Année Mois Jour.",
+                // 'date_of_birth.date_format' => "Le champ date de naissance doit être sous le format : Année Mois Jour.",
                 'date_of_birth.before' => "Le champ date de naissance doit être antérieure ou égale à aujourd'hui.",
             ]
         );
@@ -101,7 +113,7 @@ class UserController extends Controller
                 'password' => 'required|min:8',
                 'last_name' => 'required|max:30',
                 'first_name' => 'required|max:50',
-                'date_of_birth' => 'required|date|date_format:Ymd|before:today',
+                'date_of_birth' => 'required|date|before:today', //|date_format:Ymd
                 'place_of_birth' => 'required|max:100',
             ],
             [
@@ -115,7 +127,7 @@ class UserController extends Controller
                 'first_name.max' => "Le champ prénom(s) ne doit pas dépasser 50 caractères.",
                 'date_of_birth.required' => "Le champ date de naissance est obligatoire.",
                 'date_of_birth.date' => "Le champ date de naissance doit être une date valide.",
-                'date_of_birth.date_format' => "Le champ date de naissance doit être sous le format : Année Mois Jour.",
+                // 'date_of_birth.date_format' => "Le champ date de naissance doit être sous le format : Année Mois Jour.",
                 'date_of_birth.before' => "Le champ date de naissance doit être antérieure ou égale à aujourd'hui.",
             ]
         );
@@ -182,7 +194,7 @@ class UserController extends Controller
 
     public function userTypeConfiguration(Request $request, $id)
     {
-        $this->authorize('ROLE_USER_READ', User::class);
+        $this->authorize('ROLE_USER_CREATE', User::class);
         $user = User::findOrFail($id);
         $userType = UserType::findOrFail($request->user_type);
 
@@ -210,11 +222,13 @@ class UserController extends Controller
 
     public function rolesConfiguration(Request $request, $id)
     {
-        $this->authorize('ROLE_USER_READ', User::class);
+        $this->authorize('ROLE_USER_CREATE', User::class);
         $user = User::findOrFail($id);
 
         try {
-            $user->roles = $request->roles;
+            $roles = array_merge($user->roles, $request->checkedRoles);
+
+            $user->roles = $roles;
             $user->save();
 
             $success = true;
@@ -227,6 +241,42 @@ class UserController extends Controller
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'affectation des rôles à l'utilisateur.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function salePointsConfiguration(Request $request, $id)
+    {
+        // dd('user',Auth::user()->sale_points->toArray());
+        // dd($this->user);
+
+        $user = Auth::user();
+
+        $userSalePoints = SalePoint::whereIn('id', $user->sale_points)->get();
+        dd('userSalePoints', $userSalePoints);
+
+
+        $this->authorize('ROLE_USER_CREATE', User::class);
+        $user = User::findOrFail($id);
+
+        try {
+            $user->sale_points = $request->sale_points;
+            $user->save();
+
+            $success = true;
+            $message = "Point(s) de vente affecté(s) avec succès.";
+            return new JsonResponse([
+                'user' => $user,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            dd($e);
+            $success = false;
+            $message = "Erreur survenue lors de l'affectation des points de vente à l'utilisateur.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

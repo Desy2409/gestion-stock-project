@@ -37,9 +37,11 @@ use App\Http\Controllers\TankTruckController;
 use App\Http\Controllers\TournController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferDemandController;
+use App\Http\Controllers\TransferDemandProcessingController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\UserTypeController;
 use App\Http\Controllers\UnityController;
+use App\Http\Controllers\UserController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -220,13 +222,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Transfer demand routes
     Route::get('/transfer-demand', [TransferDemandController::class, 'index']);
     Route::get('/transfer-demand-code', [TransferDemandController::class, 'showNextCode']);
+    Route::get('/transfer-demand-on-transmitter-select', [TransferDemandController::class, 'showReceiversOnTransmitterSelect']);
     Route::post('/transfer-demand', [TransferDemandController::class, 'store']);
     Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
     Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
     Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
-    Route::patch('/transfer-demand/{id}/validate', [TransferDemandController::class, 'validateTransferDemand']);
-    Route::patch('/transfer-demand/{id}/reject', [TransferDemandController::class, 'rejectTransferDemand']);
-    Route::patch('/transfer-demand/{id}/transform-to-transfer', [TransferDemandController::class, 'transformDemandToTransfer']);
+
+
+    Route::get('/transfer-demand-processing', [TransferDemandProcessingController::class, 'index']);
+    Route::patch('/transfer-demand-processing/{id}/validate', [TransferDemandProcessingController::class, 'validateTransferDemand']);
+    Route::patch('/transfer-demand-processing/{id}/reject', [TransferDemandProcessingController::class, 'rejectTransferDemand']);
+    Route::patch('/transfer-demand-processing/{id}/transform-to-transfer', [TransferDemandProcessingController::class, 'transformDemandToTransfer']);
 
     // Transfer routes
     Route::get('/transfer', [TransferController::class, 'index']);
@@ -384,11 +390,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/role/{id}/destroy', [RoleController::class, 'destroy']);
 
         // User routes
-        Route::get('', [RoleController::class, 'index']);
-        Route::post('', [RoleController::class, 'store']);
-        Route::get('{id}/show', [RoleController::class, 'show']);
-        Route::patch('{id}/update', [RoleController::class, 'update']);
-        Route::delete('{id}/destroy', [RoleController::class, 'destroy']);
+        Route::get('', [UserController::class, 'index']);
+        Route::post('', [UserController::class, 'store']);
+        Route::get('{id}/show', [UserController::class, 'show']);
+        Route::patch('{id}/update', [UserController::class, 'update']);
+        Route::delete('{id}/destroy', [UserController::class, 'destroy']);
+        Route::patch('{id}/user-type-config', [UserController::class, 'userTypeConfiguration']);
+        Route::patch('{id}/roles-config', [UserController::class, 'rolesConfiguration']);
+        Route::patch('{id}/sale-points-config', [UserController::class, 'salePointsConfiguration']);
     });
 
 });
