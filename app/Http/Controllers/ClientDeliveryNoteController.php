@@ -22,7 +22,7 @@ class ClientDeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
         // $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->get();
-        $clientDeliveryNotes = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_note_date')->get();
+        $clientDeliveryNotes = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_date')->get();
         $purchaseOrders = PurchaseOrder::with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastClientDeliveryNoteRegister = ClientDeliveryNoteRegister::latest()->first();
@@ -75,8 +75,7 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale' => 'required',
                 'reference' => 'required|unique:client_delivery_notes',
-                'delivery_note_date' => 'required|date|before:today',//|date_format:Ymd
-                'delivery_date' => 'required|date|after:delivery_note_date',//|date_format:Ymd
+                'delivery_date' => 'required|date|before:today',//|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'clientDeliveryNoteProducts' => 'required',
@@ -87,14 +86,10 @@ class ClientDeliveryNoteController extends Controller
                 'sale.required' => "Le choix d'un bon de vente est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'reference.unique' => "Ce bon de livraison existe déjà.",
-                'delivery_note_date.required' => "La date du bon de livraison  est obligatoire.",
-                'delivery_note_date.date' => "La date du bon de livraison est incorrecte.",
-                // 'delivery_note_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_note_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                'delivery_date.required' => "La date de livraison effective est obligatoire.",
+                'delivery_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
                 // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'clientDeliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
@@ -169,7 +164,7 @@ class ClientDeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
         $clientDeliveryNote = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->findOrFail($id);
-        $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->orderBy('delivery_note_date')->get();
+        $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->orderBy('delivery_date')->get();
         $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
 
         return new JsonResponse([
@@ -187,8 +182,7 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale' => 'required',
                 'reference' => 'required',
-                'delivery_note_date' => 'required|date|before:today',//|date_format:Ymd
-                'delivery_date' => 'required|date|after:delivery_note_date',//|date_format:Ymd
+                'delivery_date' => 'required|date|before:today',//|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'clientDeliveryNoteProducts' => 'required',
@@ -198,14 +192,10 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale.required' => "Le choix d'un bon de vente est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
-                'delivery_note_date.required' => "La date du bon est obligatoire.",
-                'delivery_note_date.date' => "La date du bon de livraison est incorrecte.",
-                // 'delivery_note_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_note_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
+                'delivery_date.required' => "La date de livraison effective est obligatoire.",
+                'delivery_date.date' => "La date du bon de livraison est incorrecte.",
                 // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
+                'delivery_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'clientDeliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
