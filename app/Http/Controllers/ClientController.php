@@ -45,7 +45,7 @@ class ClientController extends Controller
     {
         $this->authorize('ROLE_CLIENT_READ', Client::class);
         $lastClientRegister = ClientRegister::latest()->first();
-        dd($lastClientRegister);
+        // dd($lastClientRegister);
         if ($lastClientRegister) {
             $code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
         } else {
