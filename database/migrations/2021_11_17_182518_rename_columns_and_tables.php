@@ -6,6 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 class RenameColumnsAndTables extends Migration
 {
+
+
+    public function listTableForeignKeys($table)
+    {
+        $conn = Schema::getConnection()->getDoctrineSchemaManager();
+
+        return array_map(function($key) {
+            return $key->getName();
+        }, $conn->listTableForeignKeys($table));
+    }
+
     /**
      * Run the migrations.
      *
