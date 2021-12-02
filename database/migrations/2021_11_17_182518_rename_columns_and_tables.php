@@ -29,9 +29,8 @@ class RenameColumnsAndTables extends Migration
 
         //isiii
         foreach ($tables as $tablename){
-            $value = get_object_vars($tablename)['Tables_in_'.$table];
-            $foreignKeys = $this->listTableForeignKeys($value);
-            Schema::table($value, function (Blueprint $table) use ($foreignKeys){
+            $foreignKeys = $this->listTableForeignKeys($tablename);
+            Schema::table($tablename, function (Blueprint $table) use ($foreignKeys){
                 foreach ($foreignKeys as $foreignKey){
                     $table->dropForeign($foreignKey);
                 }
