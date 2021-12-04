@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/nomber-of-provider', [DashboardController::class, 'countProviders']);
     Route::get('/nomber-of-product', [DashboardController::class, 'countProducts']);
     Route::get('/nomber-of-sale-point', [DashboardController::class, 'countSalePoints']);
+    Route::get('/number-of-pending-order/{startDate}/{endDate}', [DashboardController::class, 'countPendingOrders']);
 
     // Category routes
     Route::get('/category', [CategoryController::class, 'index']);
