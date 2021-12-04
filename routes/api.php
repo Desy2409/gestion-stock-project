@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientDeliveryNoteController;
 use App\Http\Controllers\CompartmentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DeliveryPointController;
 use App\Http\Controllers\DestinationController;
@@ -73,8 +74,14 @@ Route::post('/register', [AuthUserController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthUserController::class, 'logout']);
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/product/{$name}/search', [ProductController::class, 'search']);
+    // Route::get('/products', [ProductController::class, 'index']);
+    // Route::get('/product/{$name}/search', [ProductController::class, 'search']);
+
+    // Dashboard routes
+    Route::get('/nomber-of-client', [DashboardController::class, 'countClients']);
+    Route::get('/nomber-of-provider', [DashboardController::class, 'countProviders']);
+    Route::get('/nomber-of-product', [DashboardController::class, 'countProducts']);
+    Route::get('/nomber-of-sale-point', [DashboardController::class, 'countSalePoints']);
 
     // Category routes
     Route::get('/category', [CategoryController::class, 'index']);
