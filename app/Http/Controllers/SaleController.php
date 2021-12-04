@@ -47,7 +47,7 @@ class SaleController extends Controller
     public function directSale()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('deliveryNotes')->with('productSales')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
