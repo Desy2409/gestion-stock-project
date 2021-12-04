@@ -1,58 +1,58 @@
 [{
     "code": "ROLE_DRIVER",
-    "title": "Page de configuration d'un driver",
+    "title": "Driver",
     "description": "Page de configuration d'un driver"
 }, {
     "code": "ROLE_HOST",
-    "title": "Page de configuration d'un hôte",
+    "title": "Host",
     "description": "Page de configuration d'un hôte"
 }, {
     "code": "ROLE_EMAIL_CHANNEL_PARAM",
-    "title": "Page de configuration de l'envoi de mail",
+    "title": "Email channel params",
     "description": "Page de configuration de l'envoi de mail"
 }, {
     "code": "ROLE_INSTITUTION",
-    "title": "Page de configuration d'une instituion",
+    "title": "Institution",
     "description": "Page de configuration d'une instituion"
 }, {
     "code": "ROLE_SALE_POINT",
-    "title": "Page de configuration d'un point de vente",
+    "title": "Point de vente",
     "description": "Page de configuration d'un point de vente"
 }, {
     "code": "ROLE_CATEGORY",
-    "title": "Page de configuration d'une catégorie",
+    "title": "Catégorie",
     "description": "Page de configuration d'une catégorie"
 }, {
     "code": "ROLE_SUB_CATEGORY",
-    "title": "Page de configuration dune sous-catégorie",
-    "description": "Page de configuration dune sous-catégorie"
+    "title": "Sous-catégorie",
+    "description": "Page de configuration d'une sous-catégorie"
 }, {
     "code": "ROLE_PRODUCT",
     "title": "Page de configuration d'un produit",
     "description": "Page de configuration d'un produit"
 }, {
     "code": "ROLE_CLIENT",
-    "title": "Page de configuration d'un client",
+    "title": "Client",
     "description": "Page de configuration d'un client"
 }, {
     "code": "ROLE_PROVIDER_TYPE",
-    "title": "Page de configuration d'un type fournisseur",
+    "title": "Type fournisseur",
     "description": "Page de configuration d'un type fournisseur"
 }, {
     "code": "ROLE_PROVIDER",
-    "title": "Page de configuration d'un fournisseur",
+    "title": "Fournisseur",
     "description": "Page de configuration d'un fournisseur"
 }, {
     "code": "ROLE_UNITY",
-    "title": "Page de configuration d'une unité",
+    "title": "Unité",
     "description": "Page de configuration d'une unité"
 }, {
     "code": "ROLE_STOCK_TYPE",
-    "title": "Page de configuration d'un type de stock",
+    "title": "Type de stock",
     "description": "Page de configuration d'un type de stock"
 }, {
     "code": "ROLE_PURCHASE_ORDER",
-    "title": "Page de configuration d'une commande auprès du fournisseur",
+    "title": "Commande ",
     "description": "Page de configuration d'une commande auprès du fournisseur"
 }, {
     "code": "ROLE_PURCHASE_COUPON",
