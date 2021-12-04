@@ -17,11 +17,21 @@ class Product extends Model
         'price',
     ];
 
-    protected $hidden=['created_at'];
+    protected $hidden = ['created_at'];
 
     public function subCategory()
     {
         return $this->belongsTo(SubCategory::class);
+    }
+
+    public function prices()
+    {
+        return $this->hasMany(ProductPricing::class);
+    }
+
+    public function price()
+    {
+        return $this->hasOne(ProductPricing::class)->latest();
     }
 
     public function productPurchaseOrders()

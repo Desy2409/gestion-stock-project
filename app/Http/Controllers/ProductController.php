@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Product;
+use App\Models\ProductPricing;
 use App\Models\ProductRegister;
 use App\Models\StockType;
 use App\Models\SubCategory;
@@ -239,5 +240,42 @@ class ProductController extends Controller
     public function search($wording)
     {
         return Product::where('wording', 'like', '%' . $wording . '%')->get();
+    }
+
+
+    public function pricing(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $this->validate(
+            $request,
+            [
+                'price' => 'required'
+            ],
+            [
+                'price.required' => "Le prix du produit est obligatoire."
+            ]
+        );
+
+        try {
+            $productPricing = new ProductPricing();
+            $productPricing->price = $request->price;
+            $productPricing->product_id = $product->id;
+            $productPricing->save();
+
+            $success = true;
+            $message = "Prix défini avec succès.";
+            return new JsonResponse([
+                'product' => $product,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la définition de prix.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
     }
 }
