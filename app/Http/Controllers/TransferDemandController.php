@@ -27,7 +27,10 @@ class TransferDemandController extends Controller
 
         $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
         // $salesPoints = SalePoint::orderBy('social_reason')->get();
-        $transmitters = SalePoint::whereIn('id', $user->sale_points)->orderBy('social_reason')->get();
+        $transmitters = [];
+        if ($user->sale_points) {
+            $transmitters = SalePoint::whereIn('id', $user->sale_points)->orderBy('social_reason')->get();
+        }
         // dd($transmitters);
         $products = Product::with('subCategory')->orderBy('wording')->get();
         // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
@@ -68,7 +71,9 @@ class TransferDemandController extends Controller
     public function showReceiversOnTransmitterSelect($id)
     {
         $transmitter = SalePoint::findOrFail($id);
-        $receivers = SalePoint::where('id', '!=', $transmitter->id)->get();
+        if ($transmitter) {
+            $receivers = SalePoint::where('id', '!=', $transmitter->id)->get();
+        }
 
         return new JsonResponse(['datas' => ['receivers' => $receivers]], 200);
     }
@@ -303,5 +308,4 @@ class TransferDemandController extends Controller
             ], 400);
         }
     }
-
 }
