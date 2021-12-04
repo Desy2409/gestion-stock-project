@@ -39,32 +39,39 @@ class DashboardController extends Controller
         return new JsonResponse(['numberOfSalePoints' => $numberOfSalePoints], 200);
     }
 
-    public function salePoints()
-    {
-        $user = Auth::user();
-        // $salePoints = SalePoint::whereIn('id', $user->sale_points)->get();
-        $salePoints = SalePoint::all();
-        return new JsonResponse(['datas' => ['salePoints' => $salePoints]], 200);
-    }
-
-    public function saleTotalAmountOfSalePoint($id, $startDate, $endDate)
-    {
-        // $salePoint=SalePoint::findOrFail($id);
-        $saleTotalAmount = Sale::where('sale_point_id', $id)->whereBetween('sale_date', [$startDate, $endDate])->sum('total_amount');
-        return new JsonResponse(['saleTotalAmount' => $saleTotalAmount], 200);
-    }
-
-    public function purchaseTotalAmountOfSalePoint($id, $startDate, $endDate)
-    {
-        $purchaseTotalAmount = Purchase::where('sale_point_id', $id)->whereBetween('purchase_date', [$startDate, $endDate])->sum('total_amount');
-        return new JsonResponse(['purchaseTotalAmount' => $purchaseTotalAmount], 200);
-    }
-
-    public function countPendingOrders($id,$startDate, $endDate)
+    public function salePoints(Request $request)
     {
         // $user = Auth::user();
-        // $pendingOrders = Order::whereIn('sale_point_id', $user->sale_points)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get();
-        $pendingOrders = Order::where('sale_point_id',$id)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get();
-        return new JsonResponse(['datas' => ['pendingOrders' => $pendingOrders]], 200);
+        // $salePoints = SalePoint::whereIn('id', $user->sale_points)->get();
+        $salePoints = SalePoint::all();
+        // dd($salePoints);
+        foreach ($salePoints as $key => $salePoint) {
+            $datas = [
+                'salePoint' => $salePoint->social_reason,
+                'saleTotalAmount' => $this->saleTotalAmountOfSalePoint($salePoint->id, $request->start_date, $request->end_date),
+                'purchaseTotalAmount' => $this->purchaseTotalAmountOfSalePoint($salePoint->id, $request->start_date, $request->end_date),
+                'pendingOrder' => $this->countPendingOrders($salePoint->id, $request->start_date, $request->end_date)
+            ];
+            array_push($salePointsWithDatas, $datas);
+        }
+        return new JsonResponse(['datas' => ['salePointsWithDatas' => $salePointsWithDatas]], 200);
+    }
+
+    private function saleTotalAmountOfSalePoint($id, $startDate, $endDate)
+    {
+        $saleTotalAmount = Sale::where('sale_point_id', $id)->whereBetween('sale_date', [$startDate, $endDate])->sum('total_amount');
+        return $saleTotalAmount;
+    }
+
+    private function purchaseTotalAmountOfSalePoint($id, $startDate, $endDate)
+    {
+        $purchaseTotalAmount = Purchase::where('sale_point_id', $id)->whereBetween('purchase_date', [$startDate, $endDate])->sum('total_amount');
+        return $purchaseTotalAmount;
+    }
+
+    private function countPendingOrders($id, $startDate, $endDate)
+    {
+        $numberOfPendingOrder = count(Order::where('sale_point_id', $id)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get());
+        return $numberOfPendingOrder;
     }
 }
