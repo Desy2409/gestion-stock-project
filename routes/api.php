@@ -74,11 +74,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/product/{$name}/search', [ProductController::class, 'search']);
 
     // Dashboard routes
-    Route::get('/number-of-client', [DashboardController::class, 'countClients']);
-    Route::get('/number-of-provider', [DashboardController::class, 'countProviders']);
-    Route::get('/number-of-product', [DashboardController::class, 'countProducts']);
-    Route::get('/number-of-sale-point', [DashboardController::class, 'countSalePoints']);
-    Route::post('/dashboard-sale-point', [DashboardController::class, 'salePoints']);
+    Route::get('/count', [DashboardController::class, 'count']);
+    Route::get('/dashboard-sale-point', [DashboardController::class, 'salePoints']);
 
     // Category routes
     Route::get('/category', [CategoryController::class, 'index']);
