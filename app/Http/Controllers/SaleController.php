@@ -108,10 +108,10 @@ class SaleController extends Controller
         ], 200);
     }
 
-    public function store(Request $request, $saleType)
+    public function store(Request $request)
     {
         $this->authorize('ROLE_SALE_CREATE', Sale::class);
-        if ($saleType == "Vente directe") {
+        if ($request->saleType == "Vente directe") {
             $this->validate(
                 $request,
                 [
@@ -215,7 +215,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                // dd($e);
+                dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
@@ -283,7 +283,7 @@ class SaleController extends Controller
                 $sale->amount_token = $request->amount_token;
                 $sale->tva = $request->tva;
                 $sale->observation = $request->observation;
-                $sale->order_id = $purchaseOrder->id;
+                $sale->purchase_order_id = $purchaseOrder->id;
                 $sale->client_id = $purchaseOrder->client->id;
                 $sale->sale_point_id = $purchaseOrder->salePoint->id;
                 $sale->save();
@@ -326,11 +326,11 @@ class SaleController extends Controller
         }
     }
 
-    public function update(Request $request, $id, $saleType)
+    public function update(Request $request, $id)
     {
         $this->authorize('ROLE_SALE_UPDATE', Sale::class);
         $sale = Sale::findOrFail($id);
-        if ($saleType == "Vente directe") {
+        if ($request->saleType == "Vente directe") {
             $this->validate(
                 $request,
                 [
@@ -382,7 +382,7 @@ class SaleController extends Controller
                 $sale->save();
 
                 $clientDeliveryNote = $sale ? $sale->clientDeliveryNote : null;
-                
+
                 $clientDeliveryNote->reference = $request->reference;
                 $clientDeliveryNote->delivery_date   = $request->delivery_date;
                 $clientDeliveryNote->total_amount = $request->total_amount;
@@ -401,7 +401,7 @@ class SaleController extends Controller
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
                     $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product;
+                    $productSale->product_id = $product["product"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 

@@ -111,7 +111,7 @@ class OrderController extends Controller
         // }
 
         try {
-
+// dd($request->productOrders);
             $lastOrder = Order::latest()->first();
 
             $order = new Order();

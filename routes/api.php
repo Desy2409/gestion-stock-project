@@ -64,13 +64,9 @@ Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
 
 
-// Auth::routes();
-
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 // Protected routes
-
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthUserController::class, 'logout']);
@@ -78,10 +74,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/product/{$name}/search', [ProductController::class, 'search']);
 
     // Dashboard routes
-    Route::get('/nomber-of-client', [DashboardController::class, 'countClients']);
-    Route::get('/nomber-of-provider', [DashboardController::class, 'countProviders']);
-    Route::get('/nomber-of-product', [DashboardController::class, 'countProducts']);
-    Route::get('/nomber-of-sale-point', [DashboardController::class, 'countSalePoints']);
+    Route::get('/number-of-client', [DashboardController::class, 'countClients']);
+    Route::get('/number-of-provider', [DashboardController::class, 'countProviders']);
+    Route::get('/number-of-product', [DashboardController::class, 'countProducts']);
+    Route::get('/number-of-sale-point', [DashboardController::class, 'countSalePoints']);
 
     // Category routes
     Route::get('/category', [CategoryController::class, 'index']);
@@ -159,7 +155,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Purchase routes
     Route::get('/purchase-on-order', [PurchaseController::class, 'purchaseOnOrder']);
-    Route::get('/purchase-on-order-datas', [PurchaseController::class, 'datasFromOrder']);
+    Route::get('/purchase-on-order-datas/{id}', [PurchaseController::class, 'datasFromOrder']);
     Route::get('/purchase-direct', [PurchaseController::class, 'directPurchase']);
     Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
     Route::post('/purchase', [PurchaseController::class, 'store']);
