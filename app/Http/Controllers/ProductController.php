@@ -22,10 +22,7 @@ class ProductController extends Controller
     {
         $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $products = Product::with('subCategory')->orderBy('wording')->get();
-        // dd($products);
-        // $unities = Unity::orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
-        // $stockTypes = StockType::orderBy('wording')->get();
 
         $lastProductRegister = ProductRegister::latest()->first();
 

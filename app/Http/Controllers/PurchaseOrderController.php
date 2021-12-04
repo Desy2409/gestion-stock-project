@@ -68,8 +68,8 @@ class PurchaseOrderController extends Controller
                 'salePoint' => 'required',
                 'client' => 'required',
                 'reference' => 'required|unique:purchase_orders',
-                // 'purchase_date' => 'required|date|before:today', //|date_format:Ymd
-                // 'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
+                'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'productPurchaseOrders' => 'required',

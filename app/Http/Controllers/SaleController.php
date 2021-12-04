@@ -169,24 +169,6 @@ class SaleController extends Controller
                 $sale->sale_point_id = $request->SalePoint;
                 $sale->save();
 
-                $productSales = [];
-                foreach ($request->saleProducts as $key => $product) {
-                    $productSale = new ProductSale();
-                    $productSale->quantity = $product["quantity"];
-                    $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product["product"];
-                    $productSale->sale_id = $sale->id;
-                    $productSale->save();
-
-                    array_push($productSales, $productSale);
-                }
-
-                // $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
-                // if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
-                //     $sale->delete();
-                // }
-
                 $lastClientDeliveryNote = ClientDeliveryNote::latest()->first();
 
                 $clientDeliveryNote = new ClientDeliveryNote();
@@ -203,8 +185,16 @@ class SaleController extends Controller
                 $clientDeliveryNote->sale_id = $sale->id;
                 $clientDeliveryNote->save();
 
-                $productClientDeliveryNotes = [];
-                foreach ($request->clientDeliveryNoteProducts as $key => $product) {
+                $productSales = [];
+                foreach ($request->saleProducts as $key => $product) {
+                    $productSale = new ProductSale();
+                    $productSale->quantity = $product["quantity"];
+                    $productSale->unit_price = $product["unit_price"];
+                    $productSale->unity_id = $product["unity"];
+                    $productSale->product_id = $product["product"];
+                    $productSale->sale_id = $sale->id;
+                    $productSale->save();
+
                     $productClientDeliveryNote = new ProductClientDeliveryNote();
                     $productClientDeliveryNote->quantity = $product["quantity"];
                     $productClientDeliveryNote->unity_id = $product["unity"];
@@ -212,13 +202,14 @@ class SaleController extends Controller
                     $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                     $productClientDeliveryNote->save();
 
-                    array_push($productClientDeliveryNotes, $productClientDeliveryNote);
+                    array_push($productSales, $productSale);
                 }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'sale' => $sale,
+                    'clientDeliveryNote' => $clientDeliveryNote,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productSales' => $productSales],
@@ -390,7 +381,19 @@ class SaleController extends Controller
                 $sale->sale_point_id = $request->salePoint;
                 $sale->save();
 
+                $clientDeliveryNote = $sale ? $sale->clientDeliveryNote : null;
+
+                $clientDeliveryNote->reference = $request->reference;
+                $clientDeliveryNote->delivery_date   = $request->delivery_date;
+                $clientDeliveryNote->total_amount = $request->total_amount;
+                $clientDeliveryNote->observation = $request->observation;
+                $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
+                $clientDeliveryNote->sale_id = $sale->id;
+                $clientDeliveryNote->save();
+
                 ProductSale::where('sale_id', $sale->id)->delete();
+
+                ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->delete();
 
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $product) {
@@ -402,22 +405,6 @@ class SaleController extends Controller
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
-                    array_push($productSales, $productSale);
-                }
-
-                $clientDeliveryNote = $sale ? $sale->clientDeliveryNote : null;
-                $clientDeliveryNote->reference = $request->reference;
-                $clientDeliveryNote->delivery_date   = $request->delivery_date;
-                $clientDeliveryNote->total_amount = $request->total_amount;
-                $clientDeliveryNote->observation = $request->observation;
-                $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
-                $clientDeliveryNote->sale_id = $sale->id;
-                $clientDeliveryNote->save();
-
-                ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->delete();
-
-                $productClientDeliveryNotes = [];
-                foreach ($request->clientDeliveryNoteProducts as $key => $product) {
                     $productClientDeliveryNote = new ProductClientDeliveryNote();
                     $productClientDeliveryNote->quantity = $product["quantity"];
                     $productClientDeliveryNote->unity_id = $product["unity"];
@@ -425,18 +412,14 @@ class SaleController extends Controller
                     $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                     $productClientDeliveryNote->save();
 
-                    array_push($productClientDeliveryNotes, $productClientDeliveryNote);
+                    array_push($productSales, $productSale);
                 }
-
-                // $savedProductSales = ProductSale::where('sale_id', $sale->id)->get();
-                // if (empty($savedProductSales) || sizeof($savedProductSales) == 0) {
-                //     $sale->delete();
-                // }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'sale' => $sale,
+                    'clientDeliveryNote' => $clientDeliveryNote,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productSales' => $productSales],
@@ -458,9 +441,9 @@ class SaleController extends Controller
                     'sale_date' => 'required|date|before:today', //|date_format:Ymd
                     'observation' => 'max:255',
                     'saleProducts' => 'required',
-                    'quantities' => 'required|min:0',
-                    'unit_prices' => 'required|min:0',
-                    'unities' => 'required',
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                    // 'unities' => 'required',
                 ],
                 [
                     'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
@@ -471,11 +454,11 @@ class SaleController extends Controller
                     'sale_date.before' => "La date de la vente doit être antérieure ou égale à aujourd'hui.",
                     'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                     'saleProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                    'quantities.required' => "Les quantités sont obligatoires.",
-                    'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 ]
             );
 

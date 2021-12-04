@@ -21,14 +21,13 @@ class EmailChannelParamController extends Controller
         ], 200);
     }
 
-
     public function store(Request $request)
     {
         $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_CREATE', EmailChannelParam::class);
         $this->validate(
             $request,
             [
-                'driver' => 'required', //.function ($attribute, $value, $fail){},
+                'driver' => 'required',
                 'description' => 'max:255'
             ],
             [
@@ -210,7 +209,7 @@ class EmailChannelParamController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -226,6 +225,7 @@ class EmailChannelParamController extends Controller
         $emailChannelParam = EmailChannelParam::findOrFail($id);
         $correspondenceChannel = $emailChannelParam->correspondenceChannel;
         $drivers = Driver::orderBy('wording')->get();
+
         return new JsonResponse([
             'emailChannelParam' => $emailChannelParam,
             'correspondenceChannel' => $correspondenceChannel,
@@ -237,12 +237,12 @@ class EmailChannelParamController extends Controller
     {
         $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_UPDATE', EmailChannelParam::class);
         $emailChannelParam = EmailChannelParam::with('correspondenceChannel')->findOrFail($id);
-        // $correspondenceChannel = $emailChannelParam ? $emailChannelParam->correspondenceChannel : null;
         $correspondenceChannel = CorrespondenceChannel::where(['channelable_id' => $id, 'channelable_type' => $emailChannelParam::class])->first();
+        
         $this->validate(
             $request,
             [
-                'driver' => 'required', //.function ($attribute, $value, $fail){},
+                'driver' => 'required',
                 'description' => 'max:255'
             ],
             [
@@ -444,6 +444,7 @@ class EmailChannelParamController extends Controller
     {
         $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_DELETE', EmailChannelParam::class);
         $emailChannelParam = EmailChannelParam::findOrFail($id);
+        
         try {
             $emailChannelParam->delete();
             $success = true;

@@ -188,19 +188,6 @@ class PurchaseController extends Controller
                 $purchase->sale_point_id = $request->salePoint;
                 $purchase->save();
 
-                $productPurchases = [];
-                foreach ($request->purchaseProducts as $key => $product) {
-                    $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $product["quantity"];
-                    $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product["product"];
-                    $productPurchase->purchase_id = $purchase->id;
-                    $productPurchase->save();
-
-                    array_push($productPurchases, $productPurchase);
-                }
-
                 // Enregistrement de la livraison affiliée à l'achat direct
                 $lastDeliveryNote = DeliveryNote::latest()->first();
 
@@ -218,8 +205,16 @@ class PurchaseController extends Controller
                 $deliveryNote->purchase_id = $purchase->id;
                 $deliveryNote->save();
 
-                $productDeliveryNotes = [];
+                $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
+                    $productPurchase = new ProductPurchase();
+                    $productPurchase->quantity = $product["quantity"];
+                    $productPurchase->unit_price = $product["unit_price"];
+                    $productPurchase->unity_id = $product["unity"];
+                    $productPurchase->product_id = $product["product"];
+                    $productPurchase->purchase_id = $purchase->id;
+                    $productPurchase->save();
+
                     $productDeliveryNote = new ProductDeliveryNote();
                     $productDeliveryNote->quantity = $product["quantity"];
                     $productDeliveryNote->unity_id = $product["unity"];
@@ -227,18 +222,14 @@ class PurchaseController extends Controller
                     $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                     $productDeliveryNote->save();
 
-                    array_push($productDeliveryNotes, $productDeliveryNote);
+                    array_push($productPurchases, $productPurchase);
                 }
-
-                // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                //     $purchase->delete();
-                // }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'purchase' => $purchase,
+                    'deliveryNote' => $deliveryNote,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productPurchases' => $productPurchases],
@@ -446,7 +437,19 @@ class PurchaseController extends Controller
                 $purchase->sale_point_id = $request->salePoint->id;
                 $purchase->save();
 
+                $deliveryNote = $purchase ? $purchase->deliveryNote : null;
+                // if ($deliveryNote) {
+                $deliveryNote->reference = $request->reference;
+                $deliveryNote->delivery_date   = $request->delivery_date;
+                $deliveryNote->total_amount = $request->total_amount;
+                $deliveryNote->observation = $request->observation;
+                $deliveryNote->place_of_delivery = $request->place_of_delivery;
+                $deliveryNote->purchase_id = $purchase->id;
+                $deliveryNote->save();
+                
                 ProductPurchase::where('purchase_id', $purchase->id)->delete();
+
+                ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
 
                 $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
@@ -458,43 +461,21 @@ class PurchaseController extends Controller
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
+                    $productDeliveryNote = new ProductDeliveryNote();
+                    $productDeliveryNote->quantity = $product["quantity"];
+                    $productDeliveryNote->unity_id = $product["unity"];
+                    $productDeliveryNote->product_id = $product["product"];
+                    $productDeliveryNote->delivery_note_id = $deliveryNote->id;
+                    $productDeliveryNote->save();
+
                     array_push($productPurchases, $productPurchase);
                 }
-
-                $deliveryNote = $purchase ? $purchase->deliveryNote : null;
-                if ($deliveryNote) {
-                    $deliveryNote->reference = $request->reference;
-                    $deliveryNote->delivery_date   = $request->delivery_date;
-                    $deliveryNote->total_amount = $request->total_amount;
-                    $deliveryNote->observation = $request->observation;
-                    $deliveryNote->place_of_delivery = $request->place_of_delivery;
-                    $deliveryNote->purchase_id = $purchase->id;
-                    $deliveryNote->save();
-
-                    ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
-
-                    $productDeliveryNotes = [];
-                    foreach ($request->deliveryNoteProducts as $key => $product) {
-                        $productDeliveryNote = new ProductDeliveryNote();
-                        $productDeliveryNote->quantity = $product["quantity"];
-                        $productDeliveryNote->unity_id = $product["unity"];
-                        $productDeliveryNote->product_id = $product["product"];
-                        $productDeliveryNote->delivery_note_id = $deliveryNote->id;
-                        $productDeliveryNote->save();
-
-                        array_push($productDeliveryNotes, $productDeliveryNote);
-                    }
-                }
-
-                // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                //     $purchase->delete();
-                // }
 
                 $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'purchase' => $purchase,
+                    'deliveryNote' => $deliveryNote,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productPurchases' => $productPurchases],
@@ -623,7 +604,7 @@ class PurchaseController extends Controller
             $message = "";
             if (
                 empty($productPurchases) || sizeof($productPurchases) == 0 &&
-                empty($purchase->deliveryNotes) || sizeof($purchase->deliveryNotes) == 0 
+                empty($purchase->deliveryNotes) || sizeof($purchase->deliveryNotes) == 0
             ) {
                 // dd('delete');
                 $purchase->delete();
@@ -634,7 +615,7 @@ class PurchaseController extends Controller
                 // dd('not delete');
                 $message = "Cet achat ne peut être supprimé car il a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'purchase' => $purchase,
                 'success' => $success,

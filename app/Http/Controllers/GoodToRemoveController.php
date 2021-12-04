@@ -36,7 +36,6 @@ class GoodToRemoveController extends Controller
         $salePoints = SalePoint::orderBy('social_reason')->get();
         $stockTypes = StockType::orderBy('wording')->get();
         $clients = Client::with('person.address')->get();
-
         $transfers = Transfer::orderBy('code')->get();
 
         $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
