@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\Institution;
 use App\Models\Order;
 use App\Models\OrderRegister;
 use App\Models\Product;
@@ -13,6 +14,7 @@ use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -70,8 +72,8 @@ class OrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'order_date' => 'required|date|before:today',//|date_format:Ymd
-                'delivery_date' => 'required|date|after:order_date',//|date_format:Ymd
+                'order_date' => 'required|date|before:today', //|date_format:Ymd
+                'delivery_date' => 'required|date|after:order_date', //|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'productOrders' => 'required',
@@ -325,7 +327,7 @@ class OrderController extends Controller
             $message = "";
             if (
                 empty($productsOrders) || sizeof($productsOrders) == 0 &&
-                empty($order->purchases) || sizeof($order->purchases) == 0 
+                empty($order->purchases) || sizeof($order->purchases) == 0
             ) {
                 // dd('delete');
                 $order->delete();
@@ -404,130 +406,4 @@ class OrderController extends Controller
         }
     }
 
-
-    // public function fromOrderToDeliveryNote()
-    // {
-    //     $this->authorize('ROLE_ORDER_CREATE', Order::class);
-    //     // dd($request->all());
-    //     // dd('Order store');
-    //     $this->validate(
-    //         $request,
-    //         [
-    //             // 'folder' => 'required',
-    //             'sale_point' => 'required',
-    //             'provider' => 'required',
-    //             'reference' => 'required',
-    //             'order_date' => 'required|date|before:today',//|date_format:Ymd
-    //             'delivery_date' => 'required|date|after:order_date',//|date_format:Ymd
-    //             'total_amount' => 'required',
-    //             'observation' => 'max:255',
-    //             'productOrders' => 'required',
-    //             // 'upload_files' => 'required',
-    //         ],
-    //         [
-    //             // 'folder.required' => "Le choix du dossier de destination des fichiers est obligatoire",
-    //             'sale_point.required' => "Le choix du point de vente est obligatoire.",
-    //             'provider.required' => "Le choix du fournisseur est obligatoire.",
-    //             'reference.required' => "La référence du bon est obligatoire.",
-    //             'order_date.required' => "La date du bon est obligatoire.",
-    //             'order_date.date' => "La date du bon de commande est incorrecte.",
-    //             // 'order_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
-    //             'order_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
-    //             'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-    //             'delivery_date.date' => "La date de livraison est incorrecte.",
-    //             // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-    //             'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
-    //             'total_amount.required' => "Le montant total est obligatoire.",
-    //             'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-    //             'productOrders.required' => "Vous devez ajouter au moins un produit au panier.",
-    //             // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.", Ok testons Amdi !!! tu parles trop !! Viens tester !! eeeeeh Dieu h
-    //         ]
-    //     );
-    //     // dd($request->productOrders[0]['quantity']);
-    //     // dd('after Order store');
-
-    //     // if (sizeof($request->productOrders) != sizeof($request->quantities) || sizeof($request->productOrders) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-    //     //     $success = false;
-    //     //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-    //     //     return new JsonResponse([
-    //     //         'success' => $success,
-    //     //         'message' => $message,
-    //     //     ]);
-    //     // }
-
-    //     try {
-
-    //         $lastOrder = Order::latest()->first();
-
-    //         $order = new Order();
-    //         if ($lastOrder) {
-    //             $order->code = $this->formateNPosition('BC', $lastOrder->id + 1, 8);
-    //         } else {
-    //             $order->code = $this->formateNPosition('BC', 1, 8);
-    //         }
-    //         $order->reference = $request->reference;
-    //         $order->order_date   = $request->order_date;
-    //         $order->delivery_date   = $request->delivery_date;
-    //         $order->total_amount = $request->total_amount;
-    //         $order->observation = $request->observation;
-    //         $order->provider_id = $request->provider;
-    //         $order->sale_point_id = $request->sale_point;
-    //         $order->save();
-
-
-    //         $productsOrders = [];
-    //         foreach ($request->productOrders as $key => $productOrderLine) {
-    //             // dd($productOrderLine);
-    //             $productOrder = new ProductOrder();
-    //             $productOrder->quantity = $productOrderLine['quantity'];
-    //             $productOrder->unit_price = $productOrderLine['unit_price'];
-    //             $productOrder->product_id = $productOrderLine['product'];;
-    //             $productOrder->order_id = $order->id;
-    //             $productOrder->unity_id = $productOrderLine['unity'];;
-    //             $productOrder->save();
-
-    //             array_push($productsOrders, $productOrder);
-    //         }
-    //         // dd($productsOrders);
-
-    //         /*$savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
-    //         if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
-    //             $order->delete();
-    //         }*/
-
-
-
-
-    //         // $folder = Folder::findOrFail($request->folder);
-
-    //         // foreach ($request->upload_files as $key => $file) {
-    //         //     $fileName = $currentFileType->wording . ' - ' . $postulant->last_name . ' ' . $postulant->first_name . '.' . $file->getClientOriginalExtension();
-    //         //         $path = $file->storeAs($folder->path.'/' . $postulant->last_name . ' ' . $postulant->first_name, $fileName, 'public');
-    //         //     $uploadFile = new UploadFile();
-    //         //     $uploadFile->code = Str::random(10);
-    //         //     $uploadFile->name = $path;
-    //         //     $uploadFile->personalized_name = $request->personalized_name;
-    //         //     $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
-    //         //     $uploadFile->folder_id = $folder->id;
-    //         //     $uploadFile->save();
-    //         // }
-
-    //         $success = true;
-    //         $message = "Enregistrement effectué avec succès.";
-    //         return new JsonResponse([
-    //             'order' => $order,
-    //             'success' => $success,
-    //             'message' => $message,
-    //             'datas' => ['productsOrders' => $productsOrders],
-    //         ], 200);
-    //     } catch (Exception $e) {
-    //         dd($e);
-    //         $success = false;
-    //         $message = "Erreur survenue lors de l'enregistrement.";
-    //         return new JsonResponse([
-    //             'success' => $success,
-    //             'message' => $message,
-    //         ], 400);
-    //     }
-    // }
 }
