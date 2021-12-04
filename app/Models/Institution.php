@@ -15,6 +15,34 @@ class Institution extends Model
         'phone_number',
         'address',
         'bp',
+        'settings'
+    ];
+
+    protected $casts = [
+        'settings' => 'array'
+    ];
+
+    protected $attributes = [
+        'setting' => '{
+            "order_purchase_order_validation_level": "",
+            "blocking_number_of_attempt": "",
+            "password_complexity": {
+                "minuscule": true,
+                "majuscule": true,
+                "special_characters": true,
+                "min_length": "",
+                "old_password>": "",
+                "new_password>": ""
+            },
+            "client_code_length": "",
+            "provider_code_length": "",
+            "goods_code_length": "",
+            "order_purchase_order_number_recall_day": "",
+            "offline_mode": "",
+            "institution_type": "",
+            "currency": "",
+            "taxes": ""
+        }'
     ];
 
     public function salesPoints()
