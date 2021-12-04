@@ -6,6 +6,8 @@ use App\Models\Client;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Provider;
+use App\Models\Purchase;
+use App\Models\Sale;
 use App\Models\SalePoint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,10 +39,32 @@ class DashboardController extends Controller
         return new JsonResponse(['numberOfSalePoints' => $numberOfSalePoints], 200);
     }
 
-    public function countPendingOrders($startDate, $endDate)
+    public function salePoints()
     {
         $user = Auth::user();
-        $pendingOrders = Order::whereIn('sale_point_id', $user->sale_points)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get();
+        // $salePoints = SalePoint::whereIn('id', $user->sale_points)->get();
+        $salePoints = SalePoint::all();
+        return new JsonResponse(['datas' => ['salePoints' => $salePoints]], 200);
+    }
+
+    public function saleTotalAmountOfSalePoint($id, $startDate, $endDate)
+    {
+        // $salePoint=SalePoint::findOrFail($id);
+        $saleTotalAmount = Sale::where('sale_point_id', $id)->whereBetween('sale_date', [$startDate, $endDate])->sum('total_amount');
+        return new JsonResponse(['saleTotalAmount' => $saleTotalAmount], 200);
+    }
+
+    public function purchaseTotalAmountOfSalePoint($id, $startDate, $endDate)
+    {
+        $purchaseTotalAmount = Purchase::where('sale_point_id', $id)->whereBetween('purchase_date', [$startDate, $endDate])->sum('total_amount');
+        return new JsonResponse(['purchaseTotalAmount' => $purchaseTotalAmount], 200);
+    }
+
+    public function countPendingOrders($id,$startDate, $endDate)
+    {
+        // $user = Auth::user();
+        // $pendingOrders = Order::whereIn('sale_point_id', $user->sale_points)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get();
+        $pendingOrders = Order::where('sale_point_id',$id)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get();
         return new JsonResponse(['datas' => ['pendingOrders' => $pendingOrders]], 200);
     }
 }

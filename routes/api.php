@@ -78,7 +78,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/number-of-provider', [DashboardController::class, 'countProviders']);
     Route::get('/number-of-product', [DashboardController::class, 'countProducts']);
     Route::get('/number-of-sale-point', [DashboardController::class, 'countSalePoints']);
-    Route::get('/number-of-pending-order/{startDate}/{endDate}', [DashboardController::class, 'countPendingOrders']);
+    Route::get('/dashboard-sale-point', [DashboardController::class, 'salePoints']);
+    Route::get('/sale-total-amount/{id}/{startDate}/{endDate}', [DashboardController::class, 'saleTotalAmountOfSalePoint']);
+    Route::get('/purchase-total-amount/{id}/{startDate}/{endDate}', [DashboardController::class, 'purchaseTotalAmountOfSalePoint']);
+    Route::get('/number-of-pending-order/{id}/{startDate}/{endDate}', [DashboardController::class, 'countPendingOrders']);
 
     // Category routes
     Route::get('/category', [CategoryController::class, 'index']);
@@ -143,6 +146,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/product/{id}/edit', [ProductController::class, 'edit']);
     Route::patch('/product/{id}/update', [ProductController::class, 'update']);
     Route::delete('/product/{id}/destroy', [ProductController::class, 'destroy']);
+    Route::delete('/product/{id}/pricing', [ProductController::class, 'pricing']);
 
     // Order routes
     Route::get('/order', [OrderController::class, 'index']);
