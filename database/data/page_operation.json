@@ -1,7 +1,7 @@
 [{
     "code": "ROLE_DRIVER",
-    "title": "Page de configuration d'un' driver",
-    "description": "Page de configuration d'un' driver"
+    "title": "Page de configuration d'un driver",
+    "description": "Page de configuration d'un driver"
 }, {
     "code": "ROLE_HOST",
     "title": "Page de configuration d'un hôte",
