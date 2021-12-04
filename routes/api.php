@@ -229,7 +229,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
     Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
 
-
+// Transfer demand processing routes
     Route::get('/transfer-demand-processing', [TransferDemandProcessingController::class, 'index']);
     Route::patch('/transfer-demand-processing/{id}/validate', [TransferDemandProcessingController::class, 'validateTransferDemand']);
     Route::patch('/transfer-demand-processing/{id}/reject', [TransferDemandProcessingController::class, 'rejectTransferDemand']);
