@@ -43,6 +43,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'roles' => 'array',
         'sale_points' => 'array',
+        'settings' => 'array',
+    ];
+
+    protected $attributes = [
+        'settings' => '{
+            "authorized_sale_point": "",
+            "order_purchase_order_validation": "",
+            "transfer_demand_validation": ""
+        }'
     ];
 
     // Rest omitted for brevity

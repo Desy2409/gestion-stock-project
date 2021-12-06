@@ -14,7 +14,24 @@ class SalePoint extends Model
         'email',
         'phone_number',
         'address',
-        'bp'
+        'bp',
+        'settings'
+    ];
+
+    protected $casts = [
+        'settings' => 'array'
+    ];
+
+    protected $attributes = [
+        'settings' => '{
+            "location": {
+                "latitude": "",
+                "longitude": ""
+            },
+            "delivery_points": {},
+            "order_purchase_order_validation_authorized_user": "",
+            "transfert_deamnd_validation_authorized_user": ""
+        }'
     ];
 
     public function institution()
