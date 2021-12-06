@@ -328,14 +328,14 @@ class PurchaseController extends Controller
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product["product"];
+                    $productPurchase->unity_id = $product["unity"]["id"];
+                    $productPurchase->product_id = $product["product"]["id"];
                     // $productPurchase->quantity = $product[$i]["quantity"];
                     // $productPurchase->unit_price = $product[$i]["unit_price"];
                     // $productPurchase->unity_id = $product[$i]["unity"];
                     // $productPurchase->product_id = $product[$i]["product"];
                     $productPurchase->purchase_id = $purchase->id;
-                    // $productPurchase->save();
+                    $productPurchase->save();
                     $i++;
 
                     array_push($productPurchases, $productPurchase);
@@ -357,7 +357,7 @@ class PurchaseController extends Controller
                     'datas' => ['productPurchases' => $productPurchases],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
@@ -446,7 +446,7 @@ class PurchaseController extends Controller
                 $deliveryNote->place_of_delivery = $request->place_of_delivery;
                 $deliveryNote->purchase_id = $purchase->id;
                 $deliveryNote->save();
-                
+
                 ProductPurchase::where('purchase_id', $purchase->id)->delete();
 
                 ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();

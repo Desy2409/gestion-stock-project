@@ -44,6 +44,7 @@ class DashboardController extends Controller
         // $user = Auth::user();
         // $salePoints = SalePoint::whereIn('id', $user->sale_points)->get();
         $salePoints = SalePoint::all();
+        $salePointsWithDatas = [];
         // dd($salePoints);
         foreach ($salePoints as $key => $salePoint) {
             $datas = [

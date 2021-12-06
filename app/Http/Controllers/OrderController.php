@@ -136,9 +136,9 @@ class OrderController extends Controller
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $productOrderLine['quantity'];
                 $productOrder->unit_price = $productOrderLine['unit_price'];
-                $productOrder->product_id = $productOrderLine['product'];;
+                $productOrder->product_id = $productOrderLine['product'];
                 $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $productOrderLine['unity'];;
+                $productOrder->unity_id = $productOrderLine['unity'];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
