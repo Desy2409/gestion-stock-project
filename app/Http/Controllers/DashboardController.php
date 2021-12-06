@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\CurrencyTrait;
 use App\Models\Client;
 use App\Models\Order;
 use App\Models\Product;
@@ -13,9 +14,13 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
+use NumberFormatter;
 
 class DashboardController extends Controller
 {
+    use CurrencyTrait;
+
     public function count()
     {
         $numberOfClients = count(Client::all());
@@ -68,11 +73,32 @@ class DashboardController extends Controller
         return $saleTotalAmount;
     }
 
-    private function purchaseTotalAmountOfSalePoint($id, $startDate, $endDate)
+    public function purchaseTotalAmountOfSalePoint($id, $startDate, $endDate)
     {
+        // dd('echo');
         $purchaseTotalAmount = Purchase::where('sale_point_id', $id)->whereBetween('purchase_date', [$startDate, $endDate])->sum('total_amount');
+
+        // dd(Lang::getLocale());
+//         $fmt = numfmt_create( 'de_DE', NumberFormatter::CURRENCY );
+// dd(numfmt_format_currency($fmt, 1234567.891234567890000, "EUR")."\n");
+// $purchaseTotalAmount=213323,33;
+
+        // dd(number_format($purchaseTotalAmount,2,',','.'));
         return $purchaseTotalAmount;
     }
+
+    // private function number_format(
+    //     float $num,
+    //     int $decimals = 0,
+    //     ?string $decimal_separator = ".",
+    //     ?string $thousands_separator = ","
+    // ): string
+
+    // private function purchaseTotalAmountOfSalePoint($id, $startDate, $endDate)
+    // {
+    //     $purchaseTotalAmount = Purchase::where('sale_point_id', $id)->whereBetween('purchase_date', [$startDate, $endDate])->sum('total_amount');
+    //     return $purchaseTotalAmount;
+    // }
 
     private function countPendingOrders($id, $startDate, $endDate)
     {

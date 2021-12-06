@@ -23,7 +23,8 @@ class ClientDeliveryNoteController extends Controller
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
         // $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->get();
         $clientDeliveryNotes = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_date')->get();
-        $purchaseOrders = PurchaseOrder::with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
+        $purchasesBasedOnPurchaseOrderId = Sale::select('purchase_order_id')->distinct()->where('purchase_order_id', '!=', null)->pluck('purchase_order_id')->toArray();
+        $purchaseOrders = PurchaseOrder::whereIn('id',$purchasesBasedOnPurchaseOrderId)->with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastClientDeliveryNoteRegister = ClientDeliveryNoteRegister::latest()->first();
 
