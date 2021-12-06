@@ -16,5 +16,6 @@
     "offline_mode": "",
     "institution_type": "",
     "currency": "",
-    "taxes": ""
+    "taxes": "",
+    "possible_price_update": ""
 }]

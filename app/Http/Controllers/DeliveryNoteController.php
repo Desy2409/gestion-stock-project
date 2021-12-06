@@ -22,7 +22,8 @@ class DeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('delivery_date')->get();
-        $orders = Order::with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
+        $purchasesBasedOnOrderId = Purchase::select('order_id')->distinct()->where('order_id', '!=', null)->pluck('order_id')->toArray();
+        $orders = Order::whereIn('id',$purchasesBasedOnOrderId)->with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 
@@ -271,7 +272,7 @@ class DeliveryNoteController extends Controller
                 $deliveryNote->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Cette livraison ne peut être supprimée car elle a servi dans des traitements.";
             }
