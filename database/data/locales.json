@@ -1,0 +1,71 @@
+[{
+        "region": "English",
+        "short_locale_name": "en",
+        "locale_name": "en_US",
+        "separator": ".",
+        "currency": ""
+    },
+    {
+        "region": "French",
+        "short_locale_name": "fr",
+        "locale_name": "fr_FR",
+        "separator": ",",
+        "currency": ""
+    },
+    {
+        "region": "German",
+        "short_locale_name": "de",
+        "locale_name": "de_DE",
+        "separator": ",",
+        "currency": ""
+    },
+    {
+        "region": "Italian",
+        "short_locale_name": "it",
+        "locale_name": "it_IT",
+        "separator": ",",
+        "currency": ""
+    },
+    {
+        "region": "Japanese",
+        "short_locale_name": "ja",
+        "locale_name": "ja_JP",
+        "separator": ",",
+        "currency": ""
+    },
+    {
+        "region": "Korean",
+        "short_locale_name": "ko",
+        "locale_name": "ko_KR",
+        "separator": "",
+        "currency": ""
+    },
+    {
+        "region": "Portuguese - Brazilian",
+        "short_locale_name": "pt",
+        "locale_name": "pt_BR",
+        "separator": "",
+        "currency": ""
+    },
+    {
+        "region": "Spanish",
+        "short_locale_name": "es",
+        "locale_name": "es_ES",
+        "separator": ",",
+        "currency": ""
+    },
+    {
+        "region": "Chinese - Simplified",
+        "short_locale_name": "zh_CN",
+        "locale_name": "zh_CN",
+        "separator": "",
+        "currency": ""
+    },
+    {
+        "region": "Chinese - Traditional",
+        "short_locale_name": "zh_TW",
+        "locale_name": "zh_TW",
+        "separator": "",
+        "currency": ""
+    }
+]

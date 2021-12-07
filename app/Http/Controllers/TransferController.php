@@ -21,10 +21,11 @@ class TransferController extends Controller
     public function index()
     {
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
-        // $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
+        $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
         $transfers = Transfer::with('transferDemand')->with('productsTransfersLines')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
-        $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->where('state', 'S')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
+        // $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->where('state', 'S')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
+        $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
 
         $lastTransferRegister = TransferRegister::latest()->first();
 
@@ -37,7 +38,7 @@ class TransferController extends Controller
         $transferRegister->save();
 
         return new JsonResponse([
-            'datas' => ['transfers' => $transfers, 'transferDemands' => $transferDemands]
+            'datas' => ['transfers' => $transfers, 'transferDemands' => $transferDemands, 'salesPoints' => $salesPoints]
         ], 200);
     }
 
@@ -79,8 +80,8 @@ class TransferController extends Controller
                 // 'transmitter' => 'required',
                 // 'receiver' => 'required',
                 'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_equals:today',//|date_format:Ymd
-                'date_of_receipt' => 'date|after:date_of_transfer',//|date_format:Ymd
+                'date_of_transfer' => 'required|date|date_equals:today', //|date_format:Ymd
+                'date_of_receipt' => 'date|after:date_of_transfer', //|date_format:Ymd
                 'transferProducts' => 'required',
                 // 'quantities' => 'required|min:0',
                 // 'unit_prices' => 'required|min:0',

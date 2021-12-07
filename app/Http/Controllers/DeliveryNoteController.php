@@ -13,6 +13,7 @@ use App\Models\Purchase;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class DeliveryNoteController extends Controller
 {
@@ -23,7 +24,9 @@ class DeliveryNoteController extends Controller
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('delivery_date')->get();
         $purchasesBasedOnOrderId = Purchase::select('order_id')->distinct()->where('order_id', '!=', null)->pluck('order_id')->toArray();
-        $orders = Order::whereIn('id',$purchasesBasedOnOrderId)->with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
+        $orders = Order::whereIn('id', $purchasesBasedOnOrderId)->with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
+        // dd($orders->pluck('id')->toArray());
+        dd(App::getLocale());
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 
@@ -108,6 +111,8 @@ class DeliveryNoteController extends Controller
         try {
 
             $purchase = Purchase::where('order_id', $request->order)->first();
+            $purchaseProducts = $purchase ? $purchase->productPurchases : null;
+            $oldDeliveryNotes = DeliveryNote::where('purchase_id', $purchase->id)->get();
 
             $lastDeliveryNote = DeliveryNote::latest()->first();
 
@@ -127,6 +132,10 @@ class DeliveryNoteController extends Controller
 
             $productDeliveryNotes = [];
             foreach ($request->deliveryNoteProducts as $key => $product) {
+                // if (in_array($product["product"], $purchaseProducts->pluck('product_id')->toArray())) {
+
+                // }
+
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $product["quantity"];
                 $productDeliveryNote->unity_id = $product["unity"];
