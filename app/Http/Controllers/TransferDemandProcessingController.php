@@ -16,12 +16,13 @@ class TransferDemandProcessingController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        // $user = Auth::user();
+        $transfersDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
+        // $issuedDemands = TransferDemand::whereIn('transmitter_id', $user->sale_points)->get();
+        // $receivedDemands = TransferDemand::where('receiver_id', $user->sale_points)->get();
 
-        $issuedDemands = TransferDemand::whereIn('transmitter_id', $user->sale_points)->get();
-        $receivedDemands = TransferDemand::where('receiver', $user->sale_points)->get();
-
-        return new JsonResponse(['datas' => ['issuedDemands' => $issuedDemands, 'receivedDemands' => $receivedDemands]], 200);
+        // return new JsonResponse(['datas' => ['issuedDemands' => $issuedDemands, 'receivedDemands' => $receivedDemands]], 200);
+        return new JsonResponse(['datas' => ['transfersDemands' => $transfersDemands]], 200);
     }
 
     public function validateTransferDemand($id)
