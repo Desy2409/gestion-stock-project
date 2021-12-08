@@ -42,7 +42,6 @@ class TransferController extends Controller
         ], 200);
     }
 
-
     public function datasOnSelectTransferDemand($id)
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);

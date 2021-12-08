@@ -12,51 +12,53 @@ trait CurrencyTrait
     function formatCurrency($amount)
     {
         $locale = App::getLocale();
-        
+        // $formatAmonut = 0;
         switch ($locale) {
             case 'en':
-                // $amount = str_replace($oldSeparator,$countrySeparator,$amount);
+                $formatAmonut = $amount; //str_replace($oldSeparator,$countrySeparator,$amount);
                 break;
 
             case 'fr':
-                # code...
+                $formatAmonut = str_replace('.', ',', $amount);
                 break;
 
             case 'de':
-                # code...
+                $formatAmonut = str_replace('.', ',', $amount);
                 break;
 
             case 'it':
-                # code...
+                $formatAmonut = str_replace('.', ',', $amount);
                 break;
 
             case 'ja':
-                # code...
+                $formatAmonut = str_replace('.', ',', $amount);
                 break;
 
             case 'ko':
-                # code...
+                $formatAmonut = $amount;
                 break;
 
             case 'pt':
-                # code...
+                $formatAmonut = $amount;
                 break;
 
             case 'es':
-                # code...
+                $formatAmonut = $amount;
                 break;
 
             case 'zh_CN':
-                # code...
+                $formatAmonut = $amount;
                 break;
 
             case 'zh_TW':
-                # code...
+                $formatAmonut = $amount;
                 break;
 
             default:
-                # code...
+                $formatAmonut = $amount;
                 break;
         }
+
+        return $formatAmonut;
     }
 }
