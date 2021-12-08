@@ -76,32 +76,32 @@ class DeliveryNoteController extends Controller
             [
                 'purchase' => 'required',
                 'reference' => 'required|unique:delivery_notes',
-                'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
+                // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'deliveryNoteProducts' => 'required',
-                'quantities' => 'required|min:0',
-                'unities' => 'required',
+                // 'quantities' => 'required|min:0',
+                // 'unities' => 'required',
             ],
             [
                 'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
                 'reference.required' => "La référence du bon est obligatoire.",
                 'reference.unique' => "Ce bon de livraison existe déjà.",
-                'purchase_date.required' => "La date du bon de livraison  est obligatoire.",
-                'purchase_date.date' => "La date du bon de livraison est incorrecte.",
-                'purchase_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'purchase_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
+                // 'purchase_date.required' => "La date du bon de livraison  est obligatoire.",
+                // 'purchase_date.date' => "La date du bon de livraison est incorrecte.",
+                // 'purchase_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'purchase_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
+                // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantities.required' => "Les quantités sont obligatoires.",
-                'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                // 'quantities.required' => "Les quantités sont obligatoires.",
+                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
             ]
         );
 
@@ -129,8 +129,8 @@ class DeliveryNoteController extends Controller
             foreach ($request->deliveryNoteProducts as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $product["quantity"];
-                $productDeliveryNote->unity_id = $product["unity"];
-                $productDeliveryNote->product_id = $product["product"];
+                $productDeliveryNote->unity_id = $product["unity"]["id"];
+                $productDeliveryNote->product_id = $product["product"]["id"];
                 $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                 $productDeliveryNote->save();
 
