@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'code',
         'reference',
@@ -77,5 +75,29 @@ class Product extends Model
     public function stocks()
     {
         return $this->hasMany(Stock::class);
+    }
+
+    public function totalQuantityPurchased()
+    {
+        $productPurchases = $this->productPurchases();
+        $total = 0;
+        foreach ($productPurchases as $key => $productPurchase) {
+            $total += $productPurchase->quantity;
+        }
+        return $total;
+    }
+
+    public function totalQuantityDelivered()
+    {
+        $productDeliveryNotes = $this->productDeliveryNotes();
+        $total = 0;
+        foreach ($productDeliveryNotes as $key => $productDeliveryNote) {
+            $total += $productDeliveryNote->quantity;
+        }
+        return $total;
+    }
+
+    public function remainsToDeliver(){
+
     }
 }
