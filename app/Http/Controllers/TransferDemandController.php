@@ -23,14 +23,14 @@ class TransferDemandController extends Controller
     use UtilityTrait;
     public function index()
     {
-        $user = Auth::user();
+        // $user = Auth::user();
 
         $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
-        // $salesPoints = SalePoint::orderBy('social_reason')->get();
+        $salesPoints = SalePoint::orderBy('social_reason')->get();
         $transmitters = [];
-        if ($user->sale_points) {
-            $transmitters = SalePoint::whereIn('id', $user->sale_points)->orderBy('social_reason')->get();
-        }
+        // if ($user->sale_points) {
+        //     $transmitters = SalePoint::whereIn('id', $user->sale_points)->orderBy('social_reason')->get();
+        // }
         // dd($transmitters);
         $products = Product::with('subCategory')->orderBy('wording')->get();
         // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
@@ -48,8 +48,8 @@ class TransferDemandController extends Controller
         $transferDemandRegister->save();
 
         return new JsonResponse([
-            // 'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products, 'unities' => $unities]
-            'datas' => ['transfersDemands' => $transfersDemands, 'transmitters' => $transmitters, 'products' => $products, 'unities' => $unities]
+            'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products, 'unities' => $unities]
+            // 'datas' => ['transfersDemands' => $transfersDemands, 'transmitters' => $transmitters, 'products' => $products, 'unities' => $unities]
         ], 200);
     }
 
