@@ -26,7 +26,7 @@ class DeliveryNoteController extends Controller
         $purchasesBasedOnOrderId = Purchase::select('order_id')->distinct()->where('order_id', '!=', null)->pluck('order_id')->toArray();
         $orders = Order::whereIn('id', $purchasesBasedOnOrderId)->with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
         // dd($orders->pluck('id')->toArray());
-        dd(App::getLocale());
+        // dd(App::getLocale());
 
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
 
@@ -64,6 +64,8 @@ class DeliveryNoteController extends Controller
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $order = Order::findOrFail($id);
         $purchase = Purchase::where('order_id', $order->id)->first();
+
+        // dd($purchase->verifyQuantity);
 
         $productPurchases = ProductPurchase::with('product')->with('unity')->where('purchase_id', $purchase->id)->get();
         return new JsonResponse([

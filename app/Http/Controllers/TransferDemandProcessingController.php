@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TransferDemandProcessingMail;
 use App\Models\ProductTransferDemandLine;
 use App\Models\ProductTransferLine;
 use App\Models\Transfer;
@@ -10,6 +11,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class TransferDemandProcessingController extends Controller
 {
@@ -29,10 +31,16 @@ class TransferDemandProcessingController extends Controller
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_VALIDATE', TransferDemand::class);
         $transferDemand = TransferDemand::findOrFail($id);
+        $productsTransfersDemandsLines = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
+        // dd($productsTransfersDemandsLines);
+        $email = 'tes@mailinator.com';
         try {
-            $transferDemand->state = 'S';
-            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
-            $transferDemand->save();
+            // $transferDemand->state = 'S';
+            // $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
+            // $transferDemand->save();
+            Mail::to($email)->send(new TransferDemandProcessingMail($transferDemand, $productsTransfersDemandsLines));
+
+
 
             $success = true;
             $message = "Demande de transfert validée avec succès.";
@@ -42,6 +50,7 @@ class TransferDemandProcessingController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de la validation de la demande de transfert.";
             return new JsonResponse([

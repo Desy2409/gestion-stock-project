@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/count', [DashboardController::class, 'count']);
     Route::get('/dash-purchase/{id}/{startDate}/{endDate}', [DashboardController::class, 'purchaseTotalAmountOfSalePoint']);
     Route::get('/dashboard-sale-point', [DashboardController::class, 'salePoints']);
+    Route::post('/dashboard-graphics', [DashboardController::class, 'graphicsValues']);
 
     // Category routes
     Route::get('/category', [CategoryController::class, 'index']);
