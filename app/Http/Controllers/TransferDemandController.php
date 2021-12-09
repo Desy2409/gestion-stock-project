@@ -33,7 +33,6 @@ class TransferDemandController extends Controller
         // }
         // dd($transmitters);
         $products = Product::with('subCategory')->orderBy('wording')->get();
-        // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $transfersDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $unities = Unity::orderBy('wording')->get();
 

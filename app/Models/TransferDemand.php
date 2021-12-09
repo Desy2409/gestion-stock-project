@@ -16,9 +16,14 @@ class TransferDemand extends Model
         'state'
     ];
 
-    public function salePoint()
-    {
-        return $this->belongsTo(SalePoint::class);
+    protected $appends =  ['transmitter','receiver'];
+
+    public function getTransmitterAttribute(){
+        return SalePoint::where('id',$this->transmitter_id)->first();
+    }
+
+    public function getReceiverAttribute(){
+        return SalePoint::where('id',$this->receiver_id)->first();
     }
 
     public function transfers()
@@ -28,6 +33,7 @@ class TransferDemand extends Model
 
     public function productsTransfersDemandsLines()
     {
+        // dd('test 2');
         return $this->hasMany(ProductTransferDemandLine::class);
     }
 }
