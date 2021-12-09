@@ -1,9 +1,9 @@
 @component('mail::message')
 # Bonjour <br>
 
-# <u>Objet</u> : Demande de transfert en attente de validation. <br><br>
-# <u>Code</u> : {{ $transferDemand->code }}
-# <u>Motif</u> : {{ $transferDemand->request_reason }}
+# <u>Objet</u> : Livraison en attente de validation. <br><br>
+# <u>Code</u> : {{ $clientDeliveryNote->code }}</div>
+# <u>Motif</u> : {{ $clientDeliveryNote->request_reason }}
 
 @php
     $i = 1;
@@ -20,12 +20,12 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($productsTransfersDemandsLines as $productTransferDemandLine)
+        @foreach ($productClientDeliveryNotes as $productClientDeliveryNote)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td style="margin-left: 50px">{{ $productTransferDemandLine->product->wording }}</td>
-                <td class="text-center">{{ $productTransferDemandLine->unity->wording }}</td>
-                <td class="text-center">{{ $productTransferDemandLine->quantity }}</td>
+                <td style="margin-left: 50px">{{ $productClientDeliveryNote->product->wording }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->unity->wording }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->quantity }}</td>
             </tr>
         @endforeach
     </tbody>
