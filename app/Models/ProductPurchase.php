@@ -10,7 +10,6 @@ class ProductPurchase extends Model
     protected $fillable = [
         'quantity',
         'unit_price',
-        'unity',
     ];
 
     public function product()

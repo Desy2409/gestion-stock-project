@@ -21,4 +21,8 @@ class ProductTransferDemandLine extends Model
     {
         return $this->belongsTo(TransferDemand::class);
     }
+
+    public function unity(){
+        return $this->belongsTo(Unity::class);
+    }
 }

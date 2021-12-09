@@ -51,7 +51,7 @@ class SubCategoryController extends Controller
             $subCategory->description = $request->description;
             $subCategory->category_id = $request->category;
             $subCategory->save();
-
+            // dd($request->category);
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([

@@ -158,7 +158,7 @@ class PurchaseOrderController extends Controller
                 'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -298,7 +298,7 @@ class PurchaseOrderController extends Controller
             $message = "";
             if (
                 empty($productsPurchaseOrders) || sizeof($productsPurchaseOrders) == 0 &&
-                empty($purchaseOrder->sales) || sizeof($purchaseOrder->sales) == 0 
+                empty($purchaseOrder->sales) || sizeof($purchaseOrder->sales) == 0
             ) {
                 // dd('delete');
                 $purchaseOrder->delete();
@@ -308,7 +308,7 @@ class PurchaseOrderController extends Controller
                 // dd('not delete');
                 $message = "Cette commande ne peut être supprimée car elle a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'purchaseOrder' => $purchaseOrder,
                 'success' => $success,

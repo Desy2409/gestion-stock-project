@@ -43,4 +43,14 @@ class Unity extends Model
     {
         return $this->hasMany(ProductClientDeliveryNote::class);
     }
+
+    public function productTransferDemandLines()
+    {
+        return $this->hasMany(ProductTransferDemandLine::class);
+    }
+
+    public function productTransferLines()
+    {
+        return $this->hasMany(ProductTransferLine::class);
+    }
 }
