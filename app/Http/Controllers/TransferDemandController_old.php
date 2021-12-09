@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 
-class TransferDemandController extends Controller
+class TransferDemandController_old extends Controller
 {
     use UtilityTrait;
     public function index()
@@ -33,7 +33,6 @@ class TransferDemandController extends Controller
         // }
         // dd($transmitters);
         $products = Product::with('subCategory')->orderBy('wording')->get();
-        // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $transfersDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $unities = Unity::orderBy('wording')->get();
 
