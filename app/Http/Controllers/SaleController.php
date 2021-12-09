@@ -227,7 +227,7 @@ class SaleController extends Controller
             $this->validate(
                 $request,
                 [
-                    'purchase_order' => 'required',
+                    'purchaseOrder' => 'required',
                     'reference' => 'required|unique:sales',
                     'sale_date' => 'required|date|before:today', //|date_format:Ymd
                     'observation' => 'max:255',
@@ -237,7 +237,7 @@ class SaleController extends Controller
                     // 'unities' => 'required',
                 ],
                 [
-                    'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
+                    'purchaseOrder.required' => "Le choix d'un bon de commande est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Cette vente existe déjà.",
                     'sale_date.required' => "La date du bon est obligatoire.",
@@ -263,7 +263,7 @@ class SaleController extends Controller
             // }
 
             try {
-                $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order);
+                $purchaseOrder = PurchaseOrder::findOrFail($request->purchaseOrder);
 
                 $lastSale = Sale::latest()->first();
 
@@ -293,8 +293,8 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product;
+                    $productSale->unity_id = $product["unity"]["id"];
+                    $productSale->product_id = $product["product"]["id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 

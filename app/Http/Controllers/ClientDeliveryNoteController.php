@@ -122,8 +122,8 @@ class ClientDeliveryNoteController extends Controller
             foreach ($request->clientDeliveryNoteProducts as $key => $product) {
                 $productClientDeliveryNote = new ProductClientDeliveryNote();
                 $productClientDeliveryNote->quantity = $product["quantity"];
-                $productClientDeliveryNote->unity_id = $product["unity"];
-                $productClientDeliveryNote->product_id = $product["product"];
+                $productClientDeliveryNote->unity_id = $product["unity"]["id"];
+                $productClientDeliveryNote->product_id = $product["product"]["id"];
                 $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                 $productClientDeliveryNote->save();
 
