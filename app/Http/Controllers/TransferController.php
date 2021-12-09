@@ -92,10 +92,10 @@ class TransferController extends Controller
                 'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
                 'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
                 'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
+                // 'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
                 'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
                 'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
+                // 'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
                 'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
                 'transferProducts.required' => "Vous devez ajouter au moins un produit.",
                 // 'quantities.required' => "Les quantités sont obligatoires.",
@@ -126,8 +126,8 @@ class TransferController extends Controller
             foreach ($request->transferProducts as $key => $product) {
                 $transferLine = new ProductTransferLine();
                 $transferLine->quantity = $product["quantity"];
-                $transferLine->unity_id = $product['unity'];
-                $transferLine->product_id = $product;
+                $transferLine->unity_id = $product['unity']["id"];
+                $transferLine->product_id = $product['product']["id"];
                 $transferLine->transfer_id = $transfer->id;
                 $transferLine->save();
 
@@ -148,6 +148,7 @@ class TransferController extends Controller
                 'datas' => ['productTansfers' => $productTansfers]
             ], 200);
         } catch (Exception $e) {
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -235,7 +236,7 @@ class TransferController extends Controller
                 $transferLine = new ProductTransferLine();
                 $transferLine->quantity = $product["quantity"];
                 $transferLine->unity_id = $product['unity'];
-                $transferLine->product_id = $product;
+                $transferLine->product_id = $product['product'];
                 $transferLine->transfer_id = $transfer->id;
                 $transferLine->save();
 
