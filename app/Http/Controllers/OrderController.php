@@ -227,14 +227,14 @@ class OrderController extends Controller
                 'sale_point' => 'required',
                 'provider' => 'required',
                 'reference' => 'required',
-                'order_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:order_date',
+                'order_date' => 'required|date|before:today',
+                'delivery_date' => 'required|date|after:order_date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'productOrders' => 'required',
-                'quantity' => 'required|min:0',
-                'unit_prices' => 'required|min:0',
-                'unities' => 'required',
+                // 'quantity' => 'required|min:0',
+                // 'unit_prices' => 'required|min:0',
+                // 'unities' => 'required',
                 // 'upload_files' => 'required',
             ],
             [
@@ -244,32 +244,32 @@ class OrderController extends Controller
                 'reference.required' => "La référence du bon est obligatoire.",
                 'order_date.required' => "La date du bon est obligatoire.",
                 'order_date.date' => "La date du bon de commande est incorrecte.",
-                'order_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
+                // 'order_date.date_format' => "La date du bon de commande doit être sous le format : Année Mois Jour.",
                 'order_date.before' => "La date du bon de commande doit être antérieure ou égale à aujourd'hui.",
                 'delivery_date.required' => "La date de livraison prévue est obligatoire.",
                 'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'delivery_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
                 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de commande.",
                 'total_amount.required' => "Le montant total est obligatoire.",
                 'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
                 'productOrders.required' => "Vous devez ajouter au moins un produit au panier.",
-                'quantity.required' => "Les quantités sont obligatoires.",
-                'quantity.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                // 'quantity.required' => "Les quantités sont obligatoires.",
+                // 'quantity.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
                 // 'upload_files.required' => "Veuillez charger au moins un fichier lié au bon de commande.",
             ]
         );
 
-        if (sizeof($request->productOrders) != sizeof($request->quantities) || sizeof($request->productOrders) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-            $success = false;
-            $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ]);
-        }
+        // if (sizeof($request->productOrders) != sizeof($request->quantities) || sizeof($request->productOrders) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
+        //     $success = false;
+        //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
+        //     return new JsonResponse([
+        //         'success' => $success,
+        //         'message' => $message,
+        //     ]);
+        // }
 
         try {
             // $order = new Order();
@@ -287,11 +287,11 @@ class OrderController extends Controller
             $productsOrders = [];
             foreach ($request->productOrders as $key => $product) {
                 $productOrder = new ProductOrder();
-                $productOrder->quantity = $request->quantity[$key];
-                $productOrder->unit_price = $request->unit_prices[$key];
-                $productOrder->product_id = $product;
+                $productOrder->quantity = $product["quantity"];
+                $productOrder->unit_price = $product["unit_price"];
+                $productOrder->product_id = $product["product"]["id"];
                 $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $request->unities[$key];
+                $productOrder->unity_id = $product["unity"]["id"];;
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
