@@ -27,7 +27,7 @@ class SaleController extends Controller
     public function saleOnPurchaseOrder()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -99,7 +99,7 @@ class SaleController extends Controller
     public function show($id)
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sale = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->findOrFail($id);
+        $sale = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->findOrFail($id);
         $productSales = $sale ? $sale->productSales : null; //ProductPurchase::where('order_id', $sale->id)->get();
 
         return new JsonResponse([
