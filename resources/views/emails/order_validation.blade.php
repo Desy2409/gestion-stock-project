@@ -1,7 +1,7 @@
 @component('mail::message')
 <div class="mb-2"><b>Bonjour</b></div>
 <div class="mb-2">
-    <u>Objet</u> : Bon de commande en attente de validation
+    <u>Objet</u> : Bon de commande en attente de validation (Entrée)
 </div>
 <div class="row">
     <div id="" class="col-5"><u>Code</u> : <b>{{ $order->code }}</b></div>
@@ -30,7 +30,7 @@
         @foreach ($productOrders as $productOrder)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td class="ml-2">{{ $productOrder->product->wording }}</td>
+                <td class="ml-2">&nbsp;{{ $productOrder->product->wording }}</td>
                 <td class="text-center">{{ $productOrder->unity->wording }}</td>
                 <td class="text-center">{{ $productOrder->unit_price }}</td>
                 <td class="text-center">{{ $productOrder->quantity }}</td>

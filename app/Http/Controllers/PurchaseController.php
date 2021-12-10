@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Mail\PurchaseValidationMail;
 use App\Models\DeliveryNote;
 use App\Models\Product;
 use App\Models\ProductPurchase;
@@ -18,6 +19,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseController extends Controller
 {
@@ -105,6 +107,21 @@ class PurchaseController extends Controller
         $purchase = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->findOrFail($id);
         $productPurchases = $purchase ? $purchase->productPurchases : null; //ProductPurchase::where('order_id', $purchase->id)->get();
 
+        $email = 'tes@mailinator.com';
+        Mail::to($email)->send(new PurchaseValidationMail($purchase, $productPurchases));
+
+
+        return new JsonResponse([
+            'purchase' => $purchase,
+            'datas' => ['productPurchases' => $productPurchases]
+        ], 200);
+    }
+
+    public function edit($id)
+    {
+        $this->authorize('ROLE_PURCHASE_READ', Sale::class);
+        $purchase = Purchase::with('order')->with('provider')->with('salePoint')->findOrFail($id);
+        $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'purchase' => $purchase,
             'datas' => ['productPurchases' => $productPurchases]
@@ -320,7 +337,7 @@ class PurchaseController extends Controller
                 $purchase->save();
 
                 $productPurchases = [];
-                $i=0;
+                $i = 0;
                 // dd($request->purchaseProducts);
                 foreach ($request->purchaseProducts as $key => $product) {
                     // dd($product[1]["unit_price"]);
