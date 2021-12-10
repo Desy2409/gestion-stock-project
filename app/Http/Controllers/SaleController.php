@@ -27,7 +27,7 @@ class SaleController extends Controller
     public function saleOnPurchaseOrder()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -99,7 +99,7 @@ class SaleController extends Controller
     public function show($id)
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sale = Sale::with('client')->with('purchaseOrder')->with('deliveryNotes')->with('productSales')->findOrFail($id);
+        $sale = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->findOrFail($id);
         $productSales = $sale ? $sale->productSales : null; //ProductPurchase::where('order_id', $sale->id)->get();
 
         return new JsonResponse([
@@ -227,7 +227,7 @@ class SaleController extends Controller
             $this->validate(
                 $request,
                 [
-                    'purchase_order' => 'required',
+                    'purchaseOrder' => 'required',
                     'reference' => 'required|unique:sales',
                     'sale_date' => 'required|date|before:today', //|date_format:Ymd
                     'observation' => 'max:255',
@@ -237,7 +237,7 @@ class SaleController extends Controller
                     // 'unities' => 'required',
                 ],
                 [
-                    'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
+                    'purchaseOrder.required' => "Le choix d'un bon de commande est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Cette vente existe déjà.",
                     'sale_date.required' => "La date du bon est obligatoire.",
@@ -263,7 +263,7 @@ class SaleController extends Controller
             // }
 
             try {
-                $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order);
+                $purchaseOrder = PurchaseOrder::findOrFail($request->purchaseOrder);
 
                 $lastSale = Sale::latest()->first();
 
@@ -293,8 +293,8 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product;
+                    $productSale->unity_id = $product["unity"]["id"];
+                    $productSale->product_id = $product["product"]["id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
