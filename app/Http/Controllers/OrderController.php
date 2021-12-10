@@ -206,7 +206,7 @@ class OrderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $order = Order::with('provider')->with('productOrders')->findOrFail($id);
+        $order = Order::with('provider')->with('salePoint')->findOrFail($id);
         // $providers = Provider::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
         $productOrders = ProductOrder::where('order_id',$order->id)->with('product')->with('unity')->get();
