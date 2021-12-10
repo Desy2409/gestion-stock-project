@@ -13,8 +13,8 @@ class PurchaseValidationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Purchase $purchase;
-    public ProductPurchase $productPurchases;
+    public $purchase;
+    public $productPurchases;
 
     /**
      * Create a new message instance.

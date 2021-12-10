@@ -25,4 +25,8 @@ class DeliveryNote extends Model
     {
         return $this->hasMany(ProductDeliveryNote::class);
     }
+
+    public function products(){
+        
+    }
 }

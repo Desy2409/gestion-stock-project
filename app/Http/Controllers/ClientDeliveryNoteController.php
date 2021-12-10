@@ -284,7 +284,7 @@ class ClientDeliveryNoteController extends Controller
         }
     }
 
-    public function validateDeliveryNote($id)
+    public function validateClientDeliveryNote($id)
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_VALIDATE', ClientDeliveryNote::class);
         $clientDeliveryNote = ClientDeliveryNote::findOrFail($id);
@@ -310,7 +310,7 @@ class ClientDeliveryNoteController extends Controller
         }
     }
 
-    public function rejectDeliveryNote($id)
+    public function rejectClientDeliveryNote($id)
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_REJECT', ClientDeliveryNote::class);
         $clientDeliveryNote = ClientDeliveryNote::findOrFail($id);

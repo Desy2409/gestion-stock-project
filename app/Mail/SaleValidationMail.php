@@ -13,8 +13,8 @@ class SaleValidationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Sale $sale;
-    public ProductSale $productSales;
+    public $sale;
+    public $productSales;
 
     /**
      * Create a new message instance.

@@ -2,8 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\ProductTransferDemandLine;
-use App\Models\TransferDemand;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,8 +11,8 @@ class TransferDemandProcessingMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public TransferDemand $transferDemand;
-    public ProductTransferDemandLine $productsTransfersDemandsLines;
+    public $transferDemand;
+    public $productsTransfersDemandsLines;
 
     /**
      * Create a new message instance.

@@ -2,8 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
-use App\Models\ProductOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,8 +11,8 @@ class OrderValidationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Order $order;
-    public ProductOrder $productOrders;
+    public $order;
+    public $productOrders;
 
     /**
      * Create a new message instance.

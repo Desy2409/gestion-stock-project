@@ -3,7 +3,6 @@
 
 # <u>Objet</u> : Livraison en attente de validation. <br><br>
 # <u>Code</u> : {{ $clientDeliveryNote->code }}</div>
-# <u>Motif</u> : {{ $clientDeliveryNote->request_reason }}
 
 @php
     $i = 1;
@@ -16,7 +15,9 @@
             <th scope="col" class="text-center">N°</th>
             <th scope="col" class="text-center">Produit</th>
             <th scope="col" class="text-center">Unité</th>
+            <th scope="col" class="text-center">PU</th>
             <th scope="col" class="text-center">Quantité</th>
+            <th scope="col" class="text-center">Total</th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +26,9 @@
                 <th scope="row" class="text-center">{{ $i++ }}</th>
                 <td style="margin-left: 50px">{{ $productClientDeliveryNote->product->wording }}</td>
                 <td class="text-center">{{ $productClientDeliveryNote->unity->wording }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->unit_price }}</td>
                 <td class="text-center">{{ $productClientDeliveryNote->quantity }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->quantity *$productClientDeliveryNote->unit_price }}</td>
             </tr>
         @endforeach
     </tbody>
