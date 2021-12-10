@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Mail\PurchaseOrderValidationMail;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductPurchaseOrder;
@@ -13,7 +14,7 @@ use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseOrderController extends Controller
 {
@@ -171,8 +172,12 @@ class PurchaseOrderController extends Controller
     public function show($id)
     {
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
-        $purchaseOrder = PurchaseOrder::with('provider')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
         $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productPurchaseOrders : null; //ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->get();
+
+        $email = 'tes@mailinator.com';
+        Mail::to($email)->send(new PurchaseOrderValidationMail($purchaseOrder, $productsPurchaseOrders));
+
 
         return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
@@ -183,7 +188,7 @@ class PurchaseOrderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
-        $purchaseOrder = PurchaseOrder::with('provider')->with('salePoint')->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->findOrFail($id);
         // $clients = Client::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
         $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id',$purchaseOrder->id)->with('product')->with('unity')->get();
@@ -205,8 +210,8 @@ class PurchaseOrderController extends Controller
                 'sale_point' => 'required',
                 'client' => 'required',
                 'reference' => 'required',
-                // 'purchase_date' => 'required|date|before:today', //|date_format:Ymd
-                // 'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
+                'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'productPurchaseOrders' => 'required',
@@ -260,11 +265,11 @@ class PurchaseOrderController extends Controller
             $productsPurchaseOrders = [];
             foreach ($request->productPurchaseOrders as $key => $product) {
                 $productPurchaseOrder = new ProductPurchaseOrder();
-                $productPurchaseOrder->quantity = $request->quanty[$key];
-                $productPurchaseOrder->unit_price = $request->unit_price[$key];
-                $productPurchaseOrder->product_id = $product;
+                $productPurchaseOrder->quantity = $product['quantity'];
+                $productPurchaseOrder->unit_price = $product['unit_price'];
+                $productPurchaseOrder->unity_id = $product['unity'];
+                $productPurchaseOrder->product_id = $product['product'];
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
-                $productPurchaseOrder->unity_id = $request->unity[$key];
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);

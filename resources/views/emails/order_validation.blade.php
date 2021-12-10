@@ -1,9 +1,12 @@
 @component('mail::message')
-# <div class="col-md-6">Bonjour</div> <br>
-# <u>Objet</u> : Bon de commande en attente de validation. <br><br>
-# <div id="" class="col-md-6"><u>Code</u> : {{ $order->code }}</div>
-# <div id="" class="col-md-6"><u>Référence</u> : {{ $order->reference }}</div><br>
-
+<div class="mb-2"><b>Bonjour</b></div>
+<div class="mb-2">
+    <u>Objet</u> : Bon de commande en attente de validation
+</div>
+<div class="row">
+    <div id="" class="col-5"><u>Code</u> : <b>{{ $order->code }}</b></div>
+    <div id="" class="col-7"><u>Référence</u> : <b>{{ $order->reference }}</b></div>
+</div>
 @php
     $i = 1;
     $total = 0;
@@ -27,7 +30,7 @@
         @foreach ($productOrders as $productOrder)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td style="margin-left: 50px">{{ $productOrder->product->wording }}</td>
+                <td class="ml-2">{{ $productOrder->product->wording }}</td>
                 <td class="text-center">{{ $productOrder->unity->wording }}</td>
                 <td class="text-center">{{ $productOrder->unit_price }}</td>
                 <td class="text-center">{{ $productOrder->quantity }}</td>
@@ -44,32 +47,30 @@
     </tbody>
 </table>
 
-
 @endcomponent
 @if ($order->state=="S")
     <div class="text-right">
-        <span class="badge badge-info"><h2>Ce bon de commande a déjà été validé</h2></span>
+        <span class="badge badge-info my-auto"><h2>Ce bon de commande a déjà été validé</h2></span>
     </div>
     @elseif ($order->state=="A")
     <div class="text-right">
-        <span class="badge badge-info"><h2>Ce bon de commande a déjà été annulé</h2></span>
+        <span class="badge badge-info my-auto"><h2>Ce bon de commande a déjà été annulé</h2></span>
     </div>
 @else
-<div class="row pull-right" style="margin-top: -20px;">
-    <div class="col-md-6">
+<div class="row float-right" style="margin-top: -25px;">
+    <div class="col-md-6 float-sm-left">
         @component('mail::button', ['url' => $url_reject,'color'=>'error'])
             Rejeter
         @endcomponent
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 float-sm-left">
         @component('mail::button', ['url' => $url_validate,'color'=>'success'])
             Valider
         @endcomponent
     </div>
-</div><br><br><br><br>    
+</div>    
 @endif
-
-
+<br><br><br><br>
 
 Cordialement,<br>
 L'équipe de {{ config('app.name') }}
