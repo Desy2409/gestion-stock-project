@@ -291,7 +291,7 @@ class OrderController extends Controller
                 $productOrder->unit_price = $product["unit_price"];
                 $productOrder->product_id = $product["product"]["id"];
                 $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $product["unity"]["id"];;
+                $productOrder->unity_id = $product["unity"]["id"];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);

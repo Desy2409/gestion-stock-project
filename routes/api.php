@@ -183,6 +183,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-order-code', [PurchaseOrderController::class, 'showNextCode']);
     Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
     Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
+    Route::get('/purchase-order/{id}/edit', [PurchaseOrderController::class, 'edit']);
     Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
     Route::patch('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate.purchase_order');
