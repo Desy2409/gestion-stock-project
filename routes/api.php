@@ -164,8 +164,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase/{id}/show', [PurchaseController::class, 'show']);
     Route::patch('/purchase/{id}/update', [PurchaseController::class, 'update']);
     Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
-    Route::patch('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase'])->name('validate.purchase');
-    Route::patch('/purchase/{id}/reject', [PurchaseController::class, 'rejectPurchase'])->name('reject.purchase');
+    Route::patch('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase'])->name('validate_purchase');
+    Route::patch('/purchase/{id}/reject', [PurchaseController::class, 'rejectPurchase'])->name('reject_purchase');
 
     // Delivery note routes
     Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
