@@ -399,6 +399,7 @@ class OrderController extends Controller
                 'message' => $message,
             ], 400);
         }
+        return back();
     }
 
     public function rejectOrder($id)
