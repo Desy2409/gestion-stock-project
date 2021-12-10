@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Mail\OrderValidationMail;
 use App\Models\Institution;
 use App\Models\Order;
 use App\Models\OrderRegister;
@@ -14,6 +15,7 @@ use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
@@ -111,7 +113,7 @@ class OrderController extends Controller
         // }
 
         try {
-// dd($request->productOrders);
+            // dd($request->productOrders);
             $lastOrder = Order::latest()->first();
 
             $order = new Order();
@@ -192,6 +194,9 @@ class OrderController extends Controller
         $order = Order::with('provider')->with('productOrders')->findOrFail($id);
         $productsOrders = $order ? $order->productOrders : null; //ProductOrder::where('order_id', $order->id)->get();
 
+        $email = 'tes@mailinator.com';
+        Mail::to($email)->send(new OrderValidationMail($order, $productsOrders));
+
         return new JsonResponse([
             'order' => $order,
             'datas' => ['productsOrders' => $productsOrders]
@@ -201,10 +206,10 @@ class OrderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $order = Order::with('provider')->with('productOrders')->findOrFail($id);
+        $order = Order::with('provider')->with('salePoint')->findOrFail($id);
         // $providers = Provider::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productOrders = $order ? $order->productOrders : null;
+        $productOrders = ProductOrder::where('order_id',$order->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'order' => $order,
             'datas' => [ 'productOrders' => $productOrders]
@@ -355,12 +360,29 @@ class OrderController extends Controller
 
     public function validateOrder($id)
     {
+        // dd('order validate');
         $this->authorize('ROLE_ORDER_VALIDATE', Order::class);
         $order = Order::findOrFail($id);
         try {
             $order->state = 'S';
             $order->date_of_processing = date('Y-m-d', strtotime(now()));
             $order->save();
+
+            // $success = false;
+            // $message = "";
+            // if ($order->state = 'P') {
+            //     $order->state = 'S';
+            //     $order->date_of_processing = date('Y-m-d', strtotime(now()));
+            //     $order->save();
+
+            //     $success = true;
+            //     $message = "Bon de commande validé avec succès.";
+            // } elseif ($order->state = 'S') {
+            //     $message = "Impossible de valider ce bon de commande car il a déjà été validé.";
+            // } elseif ($order->state = 'A') {
+            //     $message = "Impossible de valider ce bon de commande car il a été annulé.";
+            // }
+
 
             $success = true;
             $message = "Bon de commande validé avec succès.";
@@ -404,5 +426,4 @@ class OrderController extends Controller
             ], 400);
         }
     }
-
 }

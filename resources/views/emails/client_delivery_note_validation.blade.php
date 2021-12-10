@@ -1,9 +1,8 @@
 @component('mail::message')
 # Bonjour <br>
 
-# <u>Objet</u> : Demande de transfert en attente de validation. <br><br>
-# <u>Code</u> : {{ $transferDemand->code }}
-# <u>Motif</u> : {{ $transferDemand->request_reason }}
+# <u>Objet</u> : Livraison en attente de validation. <br><br>
+# <u>Code</u> : {{ $clientDeliveryNote->code }}</div>
 
 @php
     $i = 1;
@@ -16,16 +15,20 @@
             <th scope="col" class="text-center">N°</th>
             <th scope="col" class="text-center">Produit</th>
             <th scope="col" class="text-center">Unité</th>
+            <th scope="col" class="text-center">PU</th>
             <th scope="col" class="text-center">Quantité</th>
+            <th scope="col" class="text-center">Total</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($productsTransfersDemandsLines as $productTransferDemandLine)
+        @foreach ($productClientDeliveryNotes as $productClientDeliveryNote)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td style="margin-left: 50px">{{ $productTransferDemandLine->product->wording }}</td>
-                <td class="text-center">{{ $productTransferDemandLine->unity->wording }}</td>
-                <td class="text-center">{{ $productTransferDemandLine->quantity }}</td>
+                <td style="margin-left: 50px">{{ $productClientDeliveryNote->product->wording }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->unity->wording }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->unit_price }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->quantity }}</td>
+                <td class="text-center">{{ $productClientDeliveryNote->quantity *$productClientDeliveryNote->unit_price }}</td>
             </tr>
         @endforeach
     </tbody>

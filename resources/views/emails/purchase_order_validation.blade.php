@@ -1,9 +1,9 @@
 @component('mail::message')
 # Bonjour <br>
 
-# <u>Objet</u> : Demande de transfert en attente de validation. <br><br>
-# <u>Code</u> : {{ $transferDemand->code }}
-# <u>Motif</u> : {{ $transferDemand->request_reason }}
+# <u>Objet</u> : Bon de commande en attente de validation. <br><br>
+# <u>Code</u> : {{ $purchaseOrder->code }}</div>
+# <u>Référence</u> : {{ $purchaseOrder->reference }}</div>
 
 @php
     $i = 1;
@@ -16,16 +16,20 @@
             <th scope="col" class="text-center">N°</th>
             <th scope="col" class="text-center">Produit</th>
             <th scope="col" class="text-center">Unité</th>
+            <th scope="col" class="text-center">PU</th>
             <th scope="col" class="text-center">Quantité</th>
+            <th scope="col" class="text-center">Total</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($productsTransfersDemandsLines as $productTransferDemandLine)
+        @foreach ($productPurchaseOrders as $productPurchaseOrder)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td style="margin-left: 50px">{{ $productTransferDemandLine->product->wording }}</td>
-                <td class="text-center">{{ $productTransferDemandLine->unity->wording }}</td>
-                <td class="text-center">{{ $productTransferDemandLine->quantity }}</td>
+                <td style="margin-left: 50px">{{ $productPurchaseOrder->product->wording }}</td>
+                <td class="text-center">{{ $productPurchaseOrder->unity->wording }}</td>
+                <td class="text-center">{{ $productPurchaseOrder->unit_price }}</td>
+                <td class="text-center">{{ $productPurchaseOrder->quantity }}</td>
+                <td class="text-center">{{ $productPurchaseOrder->unit_price * $productPurchaseOrder->quantity }}</td>
             </tr>
         @endforeach
     </tbody>

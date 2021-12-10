@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f9fd6679304b8354ceac9a706aded26",
+    "content-hash": "4bdc9faf2934ef7ec05e9f950d077e2a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -121,6 +121,56 @@
                 }
             ],
             "time": "2021-08-15T20:50:18+00:00"
+        },
+        {
+            "name": "chhw/commander",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wangchristine/commander.git",
+                "reference": "bb12e59e01fc8cf1f9f09f1525600aa7c8993f46"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wangchristine/commander/zipball/bb12e59e01fc8cf1f9f09f1525600aa7c8993f46",
+                "reference": "bb12e59e01fc8cf1f9f09f1525600aa7c8993f46",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": ">=5.0",
+                "illuminate/database": ">=5.0",
+                "illuminate/support": ">=5.0",
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "CHHW\\Commander\\CommanderServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CHHW\\Commander\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "This package gives you to automatically generate service/repository class, which is extended by Laravel original make commands.",
+            "keywords": [
+                "command",
+                "generate",
+                "laravel",
+                "lumen"
+            ],
+            "support": {
+                "issues": "https://github.com/wangchristine/commander/issues",
+                "source": "https://github.com/wangchristine/commander/tree/2.1.0"
+            },
+            "time": "2021-12-02T15:09:52+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",
