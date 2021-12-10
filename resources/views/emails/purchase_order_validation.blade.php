@@ -1,7 +1,7 @@
 @component('mail::message')
 <div class="mb-2"><b>Bonjour</b></div>
 <div class="mb-2">
-    <u>Objet</u> : Bon de commande en attente de validation
+    <u>Objet</u> : Bon de commande en attente de validation (Sortie)
 </div>
 <div class="row">
     <div id="" class="col-5"><u>Code</u> : <b>{{ $purchaseOrder->code }}</b></div>
@@ -10,8 +10,8 @@
 @php
     $i = 1;
     $total = 0;
-    $url_validate = route('validate_purchase', ['id' => $purchaseOrder->id]);
-    $url_reject = route('reject_purchase', ['id' => $purchaseOrder->id]);
+    $url_validate = route('validate_purchase_order', ['id' => $purchaseOrder->id]);
+    $url_reject = route('reject_purchase_order', ['id' => $purchaseOrder->id]);
 @endphp
 
 @component('mail::table')
@@ -30,7 +30,7 @@
         @foreach ($productPurchaseOrders as $productPurchaseOrder)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td class="ml-2">{{ $productPurchaseOrder->product->wording }}</td>
+                <td class="ml-2">&nbsp;{{ $productPurchaseOrder->product->wording }}</td>
                 <td class="text-center">{{ $productPurchaseOrder->unity->wording }}</td>
                 <td class="text-center">{{ $productPurchaseOrder->unit_price }}</td>
                 <td class="text-center">{{ $productPurchaseOrder->quantity }}</td>

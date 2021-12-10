@@ -190,6 +190,17 @@ class DeliveryNoteController extends Controller
         ], 200);
     }
 
+    public function edit($id)
+    {
+        $this->authorize('ROLE_DELIVERY_NOTE_READ', Sale::class);
+        $deliveryNote = DeliveryNote::with('purchase')->with('provider')->with('salePoint')->findOrFail($id);
+        $productDeliveryNotes = ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->with('product')->with('unity')->get();
+        return new JsonResponse([
+            'deliveryNote' => $deliveryNote,
+            'datas' => ['productDeliveryNotes' => $productDeliveryNotes]
+        ], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $this->authorize('ROLE_DELIVERY_NOTE_UPDATE', DeliveryNote::class);

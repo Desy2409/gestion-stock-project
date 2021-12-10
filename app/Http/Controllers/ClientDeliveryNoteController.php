@@ -163,14 +163,12 @@ class ClientDeliveryNoteController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
-        $clientDeliveryNote = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->findOrFail($id);
-        $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->orderBy('delivery_date')->get();
-        $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
-
+        $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', Sale::class);
+        $clientDeliveryNote = ClientDeliveryNote::with('sale')->with('salePoint')->findOrFail($id);
+        $productClientDeliveryNotes = ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'clientDeliveryNote' => $clientDeliveryNote,
-            'datas' => ['clientDeliveryNote' => $clientDeliveryNote, 'productClientDeliveryNotes' => $productClientDeliveryNotes, 'sales' => $sales]
+            'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]
         ], 200);
     }
 
