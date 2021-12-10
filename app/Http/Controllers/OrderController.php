@@ -209,7 +209,7 @@ class OrderController extends Controller
         $order = Order::with('provider')->with('productOrders')->findOrFail($id);
         // $providers = Provider::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productOrders = $order ? $order->productOrders : null;
+        $productOrders = ProductOrder::where('order_id',$order->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'order' => $order,
             'datas' => [ 'productOrders' => $productOrders]

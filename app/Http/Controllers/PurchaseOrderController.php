@@ -184,13 +184,14 @@ class PurchaseOrderController extends Controller
     {
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         $purchaseOrder = PurchaseOrder::with('provider')->with('salePoint')->with('productPurchaseOrders')->findOrFail($id);
-        $clients = Client::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productsPurchaseOrders = $purchaseOrder ? $purchaseOrder->productsPurchaseOrders : null;
+        // $clients = Client::with('person')->get();
+        // $products = Product::with('subCategory')->orderBy('wording')->get();
+        $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id',$purchaseOrder->id)->with('product')->with('unity')->get();
 
         return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
-            'datas' => ['clients' => $clients, 'products' => $products, 'productsPurchaseOrders' => $productsPurchaseOrders]
+            // 'datas' => ['clients' => $clients, 'products' => $products, 'productsPurchaseOrders' => $productsPurchaseOrders]
+            'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders]
         ], 200);
     }
 
