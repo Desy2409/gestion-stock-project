@@ -207,13 +207,12 @@ class OrderController extends Controller
     {
         $this->authorize('ROLE_ORDER_READ', Order::class);
         $order = Order::with('provider')->with('productOrders')->findOrFail($id);
-        $providers = Provider::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productsOrders = $order ? $order->productsOrders : null;
-
+        // $providers = Provider::with('person')->get();
+        // $products = Product::with('subCategory')->orderBy('wording')->get();
+        $productOrders = $order ? $order->productOrders : null;
         return new JsonResponse([
             'order' => $order,
-            'datas' => ['providers' => $providers, 'products' => $products, 'productsOrders' => $productsOrders]
+            'datas' => [ 'productOrders' => $productOrders]
         ], 200);
     }
 

@@ -76,7 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard routes
     Route::get('/count', [DashboardController::class, 'count']);
     Route::get('/dash-purchase/{id}/{startDate}/{endDate}', [DashboardController::class, 'purchaseTotalAmountOfSalePoint']);
-    Route::get('/dashboard-sale-point', [DashboardController::class, 'salePoints']);
+    Route::post('/dashboard-sale-point', [DashboardController::class, 'salePoints']);
     Route::post('/dashboard-graphics', [DashboardController::class, 'graphicsValues']);
 
     // Category routes
@@ -151,6 +151,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/order/{id}/show', [OrderController::class, 'show']);
     Route::patch('/order/{id}/update', [OrderController::class, 'update']);
     Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
+    Route::get('/order/{id}/edit', [OrderController::class, 'edit']);
     Route::get('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
     Route::get('/order/{id}/reject', [OrderController::class, 'rejectOrder'])->name('reject_order');
 
