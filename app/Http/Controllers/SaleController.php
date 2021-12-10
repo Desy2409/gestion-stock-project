@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Mail\SaleValidationMail;
 use App\Models\Client;
 use App\Models\ClientDeliveryNote;
 use App\Models\Order;
@@ -19,6 +20,7 @@ use App\Models\Unity;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class SaleController extends Controller
 {
@@ -101,12 +103,26 @@ class SaleController extends Controller
         $this->authorize('ROLE_SALE_READ', Sale::class);
         $sale = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->findOrFail($id);
         $productSales = $sale ? $sale->productSales : null; //ProductPurchase::where('order_id', $sale->id)->get();
+        
+        $email = 'tes@mailinator.com';
+        Mail::to($email)->send(new SaleValidationMail($sale, $productSales));
 
         return new JsonResponse([
             'sale' => $sale,
             'datas' => ['productSales' => $productSales]
         ], 200);
     }
+
+    public function edit($id)
+    {
+        $this->authorize('ROLE_SALE_READ', Sale::class);
+        $sale = Sale::with('purchaseOrder')->with('client')->with('salePoint')->findOrFail($id);
+        $productSales = ProductSale::where('sale_id',$sale->id)->with('product')->with('unity')->get();
+        return new JsonResponse([
+            'sale' => $sale,
+            'datas' => [ 'productSales' => $productSales]
+        ], 200);
+    }    
 
     public function store(Request $request)
     {

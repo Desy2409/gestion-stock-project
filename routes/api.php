@@ -162,6 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
     Route::post('/purchase', [PurchaseController::class, 'store']);
     Route::get('/purchase/{id}/show', [PurchaseController::class, 'show']);
+    Route::get('/purchase/{id}/edit', [PurchaseController::class, 'edit']);
     Route::patch('/purchase/{id}/update', [PurchaseController::class, 'update']);
     Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
     Route::patch('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase'])->name('validate_purchase');
@@ -173,6 +174,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/delivery-note-order-select/{id}', [DeliveryNoteController::class, 'datasOnSelectOrder']);
     Route::post('/delivery-note', [DeliveryNoteController::class, 'store']);
     Route::get('/delivery-note/{id}/show', [DeliveryNoteController::class, 'show']);
+    Route::get('/delivery-note/{id}/edit', [DeliveryNoteController::class, 'edit']);
     Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
     Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
     Route::patch('/delivery-note/{id}/validate', [DeliveryNoteController::class, 'validateDeliveryNote'])->name('validate.delivery_note');
@@ -186,8 +188,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-order/{id}/edit', [PurchaseOrderController::class, 'edit']);
     Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
-    Route::patch('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate.purchase_order');
-    Route::patch('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder'])->name('reject.purchase_order');
+    Route::patch('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate_purchase_order');
+    Route::patch('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder'])->name('reject_purchase_order');
 
     // Sale routes
     Route::get('/sale-on-purchase-order', [SaleController::class, 'saleOnPurchaseOrder']);
@@ -196,10 +198,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sale-code', [SaleController::class, 'showNextCode']);
     Route::post('/sale', [SaleController::class, 'store']);
     Route::get('/sale/{id}/show', [SaleController::class, 'show']);
+    Route::get('/sale/{id}/edit', [SaleController::class, 'edit']);
     Route::patch('/sale/{id}/update', [SaleController::class, 'update']);
     Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
-    Route::patch('/sale/{id}/validate', [SaleController::class, 'validateSale'])->name('validate.sale');
-    Route::patch('/sale/{id}/reject', [SaleController::class, 'rejectSale'])->name('reject.sale');
+    Route::patch('/sale/{id}/validate', [SaleController::class, 'validateSale'])->name('validate_sale');
+    Route::patch('/sale/{id}/reject', [SaleController::class, 'rejectSale'])->name('reject_sale');
 
     // Client delivery note routes
     Route::get('/client-delivery-note', [ClientDeliveryNoteController::class, 'index']);
@@ -207,6 +210,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client-delivery-note-purchase-order-select/{id}', [ClientDeliveryNoteController::class, 'datasOnSelectPurchaseOrder']);
     Route::post('/client-delivery-note', [ClientDeliveryNoteController::class, 'store']);
     Route::get('/client-delivery-note/{id}/show', [ClientDeliveryNoteController::class, 'show']);
+    Route::get('/client-delivery-note/{id}/edit', [ClientDeliveryNoteController::class, 'edit']);
     Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
     Route::delete('/client-delivery-note/{id}/destroy', [ClientDeliveryNoteController::class, 'destroy']);
     Route::patch('/client-delivery-note/{id}/validate', [ClientDeliveryNoteController::class, 'validateClientDeliveryNote'])->name('validate.client_delivery_note');
