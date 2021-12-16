@@ -9,11 +9,19 @@ use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Models\Address;
 use App\Models\ClientRegister;
+use App\Repositories\ClientRepository;
 use Illuminate\Http\JsonResponse;
 
 class ClientController extends Controller
 {
     use UtilityTrait;
+
+    public $clientRepository;
+
+    public function __construct(ClientRepository $clientRepository)
+    {
+        $this->clientRepository = $clientRepository;
+    }
 
     public function index()
     {
@@ -369,6 +377,16 @@ class ClientController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function clientReports(Request $request)
+    {
+        try {
+            $clients = $this->clientRepository->clientReport($request->code, $request->reference, $request->last_name, $request->first_name, $request->social_reason, $request->rccm_number, $request->cc_number, $request->person_type, $request->settings, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['clients' => $clients]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }
