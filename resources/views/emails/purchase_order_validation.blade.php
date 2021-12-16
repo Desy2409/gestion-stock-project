@@ -30,7 +30,7 @@
         @foreach ($productPurchaseOrders as $productPurchaseOrder)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td class="ml-2">&nbsp;{{ $productPurchaseOrder->product->wording }}</td>
+                <td class="ml-2">&nbsp;&nbsp;{{ $productPurchaseOrder->product->wording }}</td>
                 <td class="text-center">{{ $productPurchaseOrder->unity->wording }}</td>
                 <td class="text-center">{{ $productPurchaseOrder->unit_price }}</td>
                 <td class="text-center">{{ $productPurchaseOrder->quantity }}</td>

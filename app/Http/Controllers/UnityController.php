@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unity;
+use App\Repositories\UnityRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,13 @@ use Illuminate\Support\Str;
 
 class UnityController extends Controller
 {
+    public $unityRepository;
+
+    public function __construct(UnityRepository $unityRepository)
+    {
+        $this->unityRepository = $unityRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_UNITY_READ', Truck::class);
@@ -177,5 +185,15 @@ class UnityController extends Controller
         return new JsonResponse([
             'unity' => $unity
         ], 200);
+    }
+
+    public function unityReports(Request $request)
+    {
+        try {
+            $unities = $this->unityRepository->unityReport($request->code, $request->wording, $request->description, $request->symbol, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['unities' => $unities]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

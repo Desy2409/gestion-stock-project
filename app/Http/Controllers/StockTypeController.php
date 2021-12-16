@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StockType;
+use App\Repositories\StockTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,12 @@ use Illuminate\Support\Str;
 
 class StockTypeController extends Controller
 {
+    public $stockTypeRepository;
+
+    public function __construct(StockTypeRepository $stockTypeRepository)
+    {
+        $this->stockTypeRepository = $stockTypeRepository;
+    }
     public function index()
     {
         $this->authorize('ROLE_STOCK_TYPE_READ', StockType::class);
@@ -133,5 +140,16 @@ class StockTypeController extends Controller
         return new JsonResponse([
             'stockType' => $stockType
         ], 200);
+    }
+
+
+    public function stockTypeReports(Request $request)
+    {
+        try {
+            $stockTypes = $this->stockTypeRepository->reportIncludeCode(StockType::class, $request->code, $request->wording, $request->description, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['stockTypes' => $stockTypes]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

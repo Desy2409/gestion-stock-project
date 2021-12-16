@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Driver;
 use App\Models\Host;
+use App\Repositories\HostRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,13 @@ use Illuminate\Support\Str;
 
 class HostController extends Controller
 {
+    public $hostRepository;
+
+    public function __construct(HostRepository $hostRepository)
+    {
+        $this->hostRepository = $hostRepository;
+    }
+    
     public function index()
     {
         $this->authorize('ROLE_HOST_READ', Host::class);
@@ -162,5 +170,15 @@ class HostController extends Controller
         return new JsonResponse([
             'host' => $host
         ], 200);
+    }
+
+    public function hostReports(Request $request)
+    {
+        try {
+            $hosts = $this->hostRepository->hostReport($request->code, $request->provider, $request->url, $request->host_name, $request->driver, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['hosts' => $hosts]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

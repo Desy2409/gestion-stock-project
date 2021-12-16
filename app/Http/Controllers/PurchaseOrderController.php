@@ -11,6 +11,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderRegister;
 use App\Models\SalePoint;
 use App\Models\Unity;
+use App\Repositories\PurchaseOrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,6 +21,13 @@ class PurchaseOrderController extends Controller
 {
 
     use UtilityTrait;
+
+    public $purchaseOrderRepository;
+
+    public function __construct(PurchaseOrderRepository $purchaseOrderRepository)
+    {
+        $this->purchaseOrderRepository = $purchaseOrderRepository;
+    }
 
     public function index()
     {
@@ -191,7 +199,7 @@ class PurchaseOrderController extends Controller
         $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->findOrFail($id);
         // $clients = Client::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id',$purchaseOrder->id)->with('product')->with('unity')->get();
+        $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->with('product')->with('unity')->get();
 
         return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
@@ -381,6 +389,16 @@ class PurchaseOrderController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function purchaseOrderReports(Request $request)
+    {
+        try {
+            $purchaseOrders = $this->purchaseOrderRepository->purchaseOrderReport($request->code, $request->reference, $request->purchase_date, $request->delivery_date, $request->date_of_processing, $request->total_amount, $request->state, $request->observation, $request->client, $request->sale_point, $request->start_purchase_date, $request->end_purchase_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            return new JsonResponse(['datas' => ['purchaseOrders' => $purchaseOrders]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

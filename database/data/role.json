@@ -1116,103 +1116,137 @@
         "wording": "Consultation de la configuration des hôtes",
         "description": "Consultation de la configuration des hôtes",
         "operation_id": 1,
-        "page_operation_id": 2
+        "page_operation_id": 29
     },
     {
         "code": "ROLE_PHONE_OPERATOR_CREATE",
         "wording": "Création d'un nouvel hôte",
         "description": "Création d'un nouvel hôte",
         "operation_id": 2,
-        "page_operation_id": 2
+        "page_operation_id": 29
     },
     {
         "code": "ROLE_PHONE_OPERATOR_UPDATE",
         "wording": "Mise à jour d'un hôte",
         "description": "Mise à jour d'un hôte",
         "operation_id": 3,
-        "page_operation_id": 2
+        "page_operation_id": 29
     },
     {
         "code": "ROLE_PHONE_OPERATOR_DELETE",
         "wording": "Suppression d'un hôte",
         "description": "Suppression d'un hôte",
         "operation_id": 4,
-        "page_operation_id": 2
+        "page_operation_id": 29
     },
     {
         "code": "ROLE_PHONE_OPERATOR_PRINT",
         "wording": "Impression d'hôtes",
         "description": "Impression d'hôtes",
         "operation_id": 5,
-        "page_operation_id": 2
+        "page_operation_id": 29
     },
     {
         "code": "ROLE_DELIVERY_POINT_READ",
         "wording": "Consultation de la configuration des hôtes",
         "description": "Consultation de la configuration des hôtes",
         "operation_id": 1,
-        "page_operation_id": 2
+        "page_operation_id": 30
     },
     {
         "code": "ROLE_DELIVERY_POINT_CREATE",
         "wording": "Création d'un nouvel hôte",
         "description": "Création d'un nouvel hôte",
         "operation_id": 2,
-        "page_operation_id": 2
+        "page_operation_id": 30
     },
     {
         "code": "ROLE_DELIVERY_POINT_UPDATE",
         "wording": "Mise à jour d'un hôte",
         "description": "Mise à jour d'un hôte",
         "operation_id": 3,
-        "page_operation_id": 2
+        "page_operation_id": 30
     },
     {
         "code": "ROLE_DELIVERY_POINT_DELETE",
         "wording": "Suppression d'un hôte",
         "description": "Suppression d'un hôte",
         "operation_id": 4,
-        "page_operation_id": 2
+        "page_operation_id": 30
     },
     {
         "code": "ROLE_DELIVERY_POINT_PRINT",
         "wording": "Impression d'hôtes",
         "description": "Impression d'hôtes",
         "operation_id": 5,
-        "page_operation_id": 2
+        "page_operation_id": 30
     }, {
         "code": "ROLE_USER_READ",
         "wording": "Consultation des utilisateurs",
         "description": "Consultation des utilisateurs",
         "operation_id": 1,
-        "page_operation_id": 2
+        "page_operation_id": 31
     },
     {
         "code": "ROLE_USER_CREATE",
         "wording": "Création d'un utilisateur",
         "description": "Création d'un utilisateur",
         "operation_id": 2,
-        "page_operation_id": 2
+        "page_operation_id": 31
     },
     {
         "code": "ROLE_USER_UPDATE",
         "wording": "Mise à jour des informations d'un utilisateur",
         "description": "Mise à jour des informations d'un utilisateur",
         "operation_id": 3,
-        "page_operation_id": 2
+        "page_operation_id": 31
     },
     {
         "code": "ROLE_USER_DELETE",
         "wording": "Suppression d'un utilisateur",
         "description": "Suppression d'un utilisateur",
         "operation_id": 4,
-        "page_operation_id": 2
+        "page_operation_id": 31
     },
     {
         "code": "ROLE_USER_PRINT",
         "wording": "Impression d'utilisateurs",
         "description": "Impression d'utilisateurs",
         "operation_id": 5,
-        "page_operation_id": 2
+        "page_operation_id": 31
+    }, {
+        "code": "ROLE_USER_TYPE_READ",
+        "wording": "Consultation des utilisateurs",
+        "description": "Consultation des utilisateurs",
+        "operation_id": 1,
+        "page_operation_id": 32
+    },
+    {
+        "code": "ROLE_USER_TYPE_CREATE",
+        "wording": "Création d'un utilisateur",
+        "description": "Création d'un utilisateur",
+        "operation_id": 2,
+        "page_operation_id": 32
+    },
+    {
+        "code": "ROLE_USER_TYPE_UPDATE",
+        "wording": "Mise à jour des informations d'un utilisateur",
+        "description": "Mise à jour des informations d'un utilisateur",
+        "operation_id": 3,
+        "page_operation_id": 32
+    },
+    {
+        "code": "ROLE_USER_TYPE_DELETE",
+        "wording": "Suppression d'un utilisateur",
+        "description": "Suppression d'un utilisateur",
+        "operation_id": 4,
+        "page_operation_id": 32
+    },
+    {
+        "code": "ROLE_USER_TYPE_PRINT",
+        "wording": "Impression d'utilisateurs",
+        "description": "Impression d'utilisateurs",
+        "operation_id": 5,
+        "page_operation_id": 32
     }
 ]

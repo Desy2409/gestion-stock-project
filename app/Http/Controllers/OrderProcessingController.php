@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\StockTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Models\DeliveryNote;
 use App\Models\Institution;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Validator;
 class OrderProcessingController extends Controller
 {
     use UtilityTrait;
+    use StockTrait;
 
     public function index()
     {
@@ -89,7 +91,7 @@ class OrderProcessingController extends Controller
                     $purchase->purchase_date   = $request->order_date;
                     $purchase->delivery_date   = $request->delivery_date;
                     $purchase->total_amount = $order->total_amount;
-                    $purchase->amount_gross = $order->total_amount;
+                    $purchase->amount_gross = $order->amount_gross;
                     $purchase->ht_amount = $request->ht_amount;
                     $purchase->discount = $request->discount;
                     $purchase->amount_token = $request->amount_token;
@@ -116,34 +118,35 @@ class OrderProcessingController extends Controller
                     $deliveryNote->purchase_id = $purchase->id;
                     $deliveryNote->save();
 
-
                     $productsOrders = [];
                     foreach ($request->productOrders as $key => $productOrderLine) {
                         $productOrder = new ProductOrder();
                         $productOrder->quantity = $productOrderLine['quantity'];
                         $productOrder->unit_price = $productOrderLine['unit_price'];
-                        $productOrder->product_id = $productOrderLine['product'];;
+                        $productOrder->product_id = $productOrderLine['product']['id'];
+                        $productOrder->unity_id = $productOrderLine['unity']['id'];
                         $productOrder->order_id = $order->id;
-                        $productOrder->unity_id = $productOrderLine['unity'];;
                         $productOrder->save();
 
                         $productPurchase = new ProductPurchase();
-                        $productPurchase->quantity = $productOrderLine["quantity"];
-                        $productPurchase->unit_price = $productOrderLine["unit_price"];
-                        $productPurchase->unity_id = $productOrderLine["unity"];
-                        $productPurchase->product_id = $productOrderLine;
+                        $productPurchase->quantity = $productOrderLine['quantity'];
+                        $productPurchase->unit_price = $productOrderLine['unit_price'];
+                        $productPurchase->product_id = $productOrderLine['product']['id'];
+                        $productPurchase->unity_id = $productOrderLine['unity']['id'];
                         $productPurchase->purchase_id = $purchase->id;
                         $productPurchase->save();
 
                         $productDeliveryNote = new ProductDeliveryNote();
                         $productDeliveryNote->quantity = $productOrderLine["quantity"];
-                        $productDeliveryNote->unity_id = $productOrderLine["unity"];
-                        $productDeliveryNote->product_id = $productOrderLine["product"];
+                        $productDeliveryNote->product_id = $productOrderLine["product"]['id'];
+                        $productDeliveryNote->unity_id = $productOrderLine["unity"]['id'];
                         $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                         $productDeliveryNote->save();
 
                         array_push($productsOrders, $productOrder);
                     }
+
+                    $this->increment($deliveryNote);
 
                     $success = true;
                     $message = "Enregistrement effectué avec succès.";
@@ -197,7 +200,7 @@ class OrderProcessingController extends Controller
                     $purchase->purchase_date   = $request->order_date;
                     $purchase->delivery_date   = $request->delivery_date;
                     $purchase->total_amount = $order->total_amount;
-                    $purchase->amount_gross = $order->total_amount;
+                    $purchase->amount_gross = $order->amount_gross;
                     $purchase->ht_amount = $request->ht_amount;
                     $purchase->discount = $request->discount;
                     $purchase->amount_token = $request->amount_token;
@@ -213,16 +216,16 @@ class OrderProcessingController extends Controller
                         $productOrder = new ProductOrder();
                         $productOrder->quantity = $productOrderLine['quantity'];
                         $productOrder->unit_price = $productOrderLine['unit_price'];
-                        $productOrder->product_id = $productOrderLine['product'];;
+                        $productOrder->product_id = $productOrderLine['product']['id'];
+                        $productOrder->unity_id = $productOrderLine['unity']['id'];
                         $productOrder->order_id = $order->id;
-                        $productOrder->unity_id = $productOrderLine['unity'];;
                         $productOrder->save();
 
                         $productPurchase = new ProductPurchase();
-                        $productPurchase->quantity = $productOrderLine["quantity"];
-                        $productPurchase->unit_price = $productOrderLine["unit_price"];
-                        $productPurchase->unity_id = $productOrderLine["unity"];
-                        $productPurchase->product_id = $productOrderLine;
+                        $productPurchase->quantity = $productOrderLine['quantity'];
+                        $productPurchase->unit_price = $productOrderLine['unit_price'];
+                        $productPurchase->product_id = $productOrderLine['product']['id'];
+                        $productPurchase->unity_id = $productOrderLine['unity']['id'];
                         $productPurchase->purchase_id = $purchase->id;
                         $productPurchase->save();
 
@@ -288,26 +291,27 @@ class OrderProcessingController extends Controller
                     $deliveryNote->purchase_id = $purchase->id;
                     $deliveryNote->save();
 
-
                     $productsPurchases = [];
                     foreach ($request->productsPurchases as $key => $productPurchaseLine) {
                         $productPurchase = new ProductPurchase();
-                        $productPurchase->quantity = $productPurchaseLine["quantity"];
-                        $productPurchase->unit_price = $productPurchaseLine["unit_price"];
-                        $productPurchase->unity_id = $productPurchaseLine["unity"];
-                        $productPurchase->product_id = $productPurchaseLine;
+                        $productPurchase->quantity = $productPurchaseLine['quantity'];
+                        $productPurchase->unit_price = $productPurchaseLine['unit_price'];
+                        $productPurchase->product_id = $productPurchaseLine['product']['id'];
+                        $productPurchase->unity_id = $productPurchaseLine['unity']['id'];
                         $productPurchase->purchase_id = $purchase->id;
                         $productPurchase->save();
 
                         $productDeliveryNote = new ProductDeliveryNote();
-                        $productDeliveryNote->quantity = $productPurchaseLine["quantity"];
-                        $productDeliveryNote->unity_id = $productPurchaseLine["unity"];
-                        $productDeliveryNote->product_id = $productPurchaseLine["product"];
+                        $productDeliveryNote->quantity = $productPurchaseLine['quantity'];
+                        $productDeliveryNote->product_id = $productPurchaseLine['product']['id'];
+                        $productDeliveryNote->unity_id = $productPurchaseLine['unity']['id'];
                         $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                         $productDeliveryNote->save();
 
                         array_push($productsPurchases, $productPurchase);
                     }
+
+                    $this->increment($deliveryNote);
 
                     $success = true;
                     $message = "Enregistrement effectué avec succès.";

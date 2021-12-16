@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Destination;
+use App\Repositories\DestinationRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DestinationController extends Controller
 {
+    public $destinationRepository;
+
+    public function __construct(DestinationRepository $destinationRepository)
+    {
+        $this->destinationRepository = $destinationRepository;
+    }
     public function index()
     {
         $this->authorize('ROLE_DESTINATION_READ', Destination::class);
@@ -120,7 +127,7 @@ class DestinationController extends Controller
                 $destination->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Cette destination ne peut être supprimée car elle a servi dans des traitements.";
             }
@@ -147,5 +154,15 @@ class DestinationController extends Controller
         return new JsonResponse([
             'destination' => $destination
         ], 200);
+    }
+
+    public function destinationReports(Request $request)
+    {
+        try {
+            $destinations = $this->destinationRepository->reportIncludeReference(Destination::class, $request->reference, $request->wording, $request->description, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['destinations' => $destinations]],200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

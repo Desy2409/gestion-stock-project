@@ -30,7 +30,7 @@
         @foreach ($productOrders as $productOrder)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td class="ml-2">&nbsp;{{ $productOrder->product->wording }}</td>
+                <td class="ml-2">&nbsp;&nbsp;{{ $productOrder->product->wording }}</td>
                 <td class="text-center">{{ $productOrder->unity->wording }}</td>
                 <td class="text-center">{{ $productOrder->unit_price }}</td>
                 <td class="text-center">{{ $productOrder->quantity }}</td>
@@ -52,7 +52,7 @@
     <div class="text-right">
         <span class="badge badge-info my-auto"><h2>Ce bon de commande a déjà été validé</h2></span>
     </div>
-    @elseif ($order->state=="A")
+@elseif ($order->state=="A")
     <div class="text-right">
         <span class="badge badge-info my-auto"><h2>Ce bon de commande a déjà été annulé</h2></span>
     </div>
