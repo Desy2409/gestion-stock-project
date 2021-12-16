@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Institution;
 use App\Models\SalePoint;
+use App\Repositories\SalePointRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SalePointController extends Controller
 {
+    public $salePointRepository;
+
+    public function __construct(SalePointRepository $salePointRepository)
+    {
+        $this->salePointRepository = $salePointRepository;
+    }
     public function index()
     {
         $this->authorize('ROLE_SALE_POINT_READ', SalePoint::class);
@@ -188,8 +195,8 @@ class SalePointController extends Controller
                 empty($salePoint->purchases) || sizeof($salePoint->purchases) == 0 &&
                 empty($salePoint->purchaseOrders) || sizeof($salePoint->purchaseOrders) == 0 &&
                 empty($salePoint->sales) || sizeof($salePoint->sales) == 0 &&
-                empty($salePoint->goodToRemoves) || sizeof($salePoint->goodToRemoves) == 0&&
-                empty($salePoint->transfersDemands) || sizeof($salePoint->transfersDemands) == 0&&
+                empty($salePoint->goodToRemoves) || sizeof($salePoint->goodToRemoves) == 0 &&
+                empty($salePoint->transfersDemands) || sizeof($salePoint->transfersDemands) == 0 &&
                 empty($salePoint->transfers) || sizeof($salePoint->transfers) == 0
             ) {
                 // dd('delete');
@@ -212,6 +219,16 @@ class SalePointController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function salePointReports(Request $request)
+    {
+        try {
+            $salePoints = $this->salePointRepository->salePointReport($request->rccm_number, $request->cc_number, $request->social_reason, $request->email, $request->phone_number, $request->address, $request->bp, $request->settings, $request->start_date, $request->end_date,$request->institution);
+            return new JsonResponse(['datas' => ['salePoints' => $salePoints]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

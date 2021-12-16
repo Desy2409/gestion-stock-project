@@ -86,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/category/{id}/destroy', [CategoryController::class, 'destroy']);
     Route::get('/category/{id}/show', [CategoryController::class, 'show']);
     Route::get('/category/{id}/sub-categories', [CategoryController::class, 'subCategoriesOfCategory']);
+    Route::get('/category-report', [CategoryController::class, 'categoryReports']);
 
     // Sub category routes
     Route::get('/sub-category', [SubCategoryController::class, 'index']);
@@ -93,6 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/sub-category/{id}/update', [SubCategoryController::class, 'update']);
     Route::delete('/sub-category/{id}/destroy', [SubCategoryController::class, 'destroy']);
     Route::get('/sub-category/{id}/show', [SubCategoryController::class, 'show']);
+    Route::get('/sub-category-report', [SubCategoryController::class, 'subCategoryReports']);
 
     // Unity routes
     Route::get('/unity', [UnityController::class, 'index']);
@@ -100,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/unity/{id}/update', [UnityController::class, 'update']);
     Route::delete('/unity/{id}/destroy', [UnityController::class, 'destroy']);
     Route::get('/unity/{id}/show', [UnityController::class, 'show']);
+    Route::get('/unity-report', [UnityController::class, 'unityReports']);
 
     // Stock type routes
     Route::get('/stock-type', [StockTypeController::class, 'index']);
@@ -107,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/stock-type/{id}/update', [StockTypeController::class, 'update']);
     Route::delete('/stock-type/{id}/destroy', [StockTypeController::class, 'destroy']);
     Route::get('/stock-type/{id}/show', [StockTypeController::class, 'show']);
+    Route::get('/stock-type-report', [StockTypeController::class, 'stockTypeReports']);
 
     // Client routes
     Route::get('/client', [ClientController::class, 'index']);
@@ -133,6 +137,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/provider-type/{id}/update', [ProviderTypeController::class, 'edit']);
     Route::patch('/provider-type/{id}/update', [ProviderTypeController::class, 'update']);
     Route::delete('/provider-type/{id}/destroy', [ProviderTypeController::class, 'destroy']);
+    Route::get('/provider-type-report', [ProviderTypeController::class, 'providerTypeReports']);
 
     // Product routes
     Route::get('/product', [ProductController::class, 'index']);
@@ -143,6 +148,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/product/{id}/update', [ProductController::class, 'update']);
     Route::delete('/product/{id}/destroy', [ProductController::class, 'destroy']);
     Route::delete('/product/{id}/pricing', [ProductController::class, 'pricing']);
+    Route::get('/product-report', [ProductController::class, 'productReports']);
 
     // Order routes
     Route::get('/order', [OrderController::class, 'index']);
@@ -154,6 +160,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/order/{id}/edit', [OrderController::class, 'edit']);
     Route::patch('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
     Route::get('/order/{id}/reject', [OrderController::class, 'rejectOrder'])->name('reject_order');
+    Route::get('/order-report', [OrderController::class, 'orderReports']);
 
     // Purchase routes
     Route::get('/purchase-on-order', [PurchaseController::class, 'purchaseOnOrder']);
@@ -165,8 +172,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase/{id}/edit', [PurchaseController::class, 'edit']);
     Route::patch('/purchase/{id}/update', [PurchaseController::class, 'update']);
     Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
-    Route::patch('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase'])->name('validate_purchase');
-    Route::patch('/purchase/{id}/reject', [PurchaseController::class, 'rejectPurchase'])->name('reject_purchase');
+    Route::get('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase'])->name('validate_purchase');
+    Route::get('/purchase/{id}/reject', [PurchaseController::class, 'rejectPurchase'])->name('reject_purchase');
+    Route::get('/purchase-report', [PurchaseController::class, 'purchaseReports']);
 
     // Delivery note routes
     Route::get('/delivery-note', [DeliveryNoteController::class, 'index']);
@@ -177,8 +185,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/delivery-note/{id}/edit', [DeliveryNoteController::class, 'edit']);
     Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
     Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
-    Route::patch('/delivery-note/{id}/validate', [DeliveryNoteController::class, 'validateDeliveryNote'])->name('validate.delivery_note');
-    Route::patch('/delivery-note/{id}/reject', [DeliveryNoteController::class, 'rejectDeliveryNote'])->name('reject.delivery_note');
+    Route::get('/delivery-note/{id}/validate', [DeliveryNoteController::class, 'validateDeliveryNote'])->name('validate_delivery_note');
+    Route::get('/delivery-note/{id}/reject', [DeliveryNoteController::class, 'rejectDeliveryNote'])->name('reject_delivery_note');
+    Route::get('/delivery-note/{id}/return', [DeliveryNoteController::class, 'returnOfMerchandises']);
+    Route::get('/delivery-note-report', [DeliveryNoteController::class, 'deliveryNoteReports']);
 
     // Purchase order routes
     Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
@@ -188,8 +198,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-order/{id}/edit', [PurchaseOrderController::class, 'edit']);
     Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
-    Route::patch('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate_purchase_order');
-    Route::patch('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder'])->name('reject_purchase_order');
+    Route::get('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate_purchase_order');
+    Route::get('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder'])->name('reject_purchase_order');
+    Route::get('/purchase-order-report', [PurchaseOrderController::class, 'purchaseOrderReports']);
 
     // Sale routes
     Route::get('/sale-on-purchase-order', [SaleController::class, 'saleOnPurchaseOrder']);
@@ -201,8 +212,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sale/{id}/edit', [SaleController::class, 'edit']);
     Route::patch('/sale/{id}/update', [SaleController::class, 'update']);
     Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
-    Route::patch('/sale/{id}/validate', [SaleController::class, 'validateSale'])->name('validate_sale');
-    Route::patch('/sale/{id}/reject', [SaleController::class, 'rejectSale'])->name('reject_sale');
+    Route::get('/sale/{id}/validate', [SaleController::class, 'validateSale'])->name('validate_sale');
+    Route::get('/sale/{id}/reject', [SaleController::class, 'rejectSale'])->name('reject_sale');
+    Route::get('/sale-report', [SaleController::class, 'saleReports']);
 
     // Client delivery note routes
     Route::get('/client-delivery-note', [ClientDeliveryNoteController::class, 'index']);
@@ -213,8 +225,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client-delivery-note/{id}/edit', [ClientDeliveryNoteController::class, 'edit']);
     Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
     Route::delete('/client-delivery-note/{id}/destroy', [ClientDeliveryNoteController::class, 'destroy']);
-    Route::patch('/client-delivery-note/{id}/validate', [ClientDeliveryNoteController::class, 'validateClientDeliveryNote'])->name('validate.client_delivery_note');
-    Route::patch('/client-delivery-note/{id}/reject', [ClientDeliveryNoteController::class, 'rejectClientDeliveryNote'])->name('reject.client_delivery_note');
+    Route::get('/client-delivery-note/{id}/validate', [ClientDeliveryNoteController::class, 'validateClientDeliveryNote'])->name('validate_client_delivery_note');
+    Route::get('/client-delivery-note/{id}/reject', [ClientDeliveryNoteController::class, 'rejectClientDeliveryNote'])->name('reject_client_delivery_note');
+    Route::get('/client-delivery-note/{id}/return', [ClientDeliveryNoteController::class, 'returnOfMerchandises']);
+    Route::get('/client-delivery-note-report', [ClientDeliveryNoteController::class, 'clientDeliveryNoteReports']);
 
     // Institution routes
     Route::get('/institution', [InstitutionController::class, 'index']);
@@ -222,6 +236,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/institution/{id}/show', [InstitutionController::class, 'show']);
     Route::patch('/institution/{id}/update', [InstitutionController::class, 'update']);
     Route::delete('/institution/{id}/destroy', [InstitutionController::class, 'destroy']);
+    Route::get('/institution-report', [InstitutionController::class, 'institutionReports']);
 
     // Sale point routes
     Route::get('/sale-point', [SalePointController::class, 'index']);
@@ -229,6 +244,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sale-point/{id}/show', [SalePointController::class, 'show']);
     Route::patch('/sale-point/{id}/update', [SalePointController::class, 'update']);
     Route::delete('/sale-point/{id}/destroy', [SalePointController::class, 'destroy']);
+    Route::get('/sale-point-report', [SalePointController::class, 'salePointReports']);
 
     // Transfer demand routes
     Route::get('/transfer-demand', [TransferDemandController::class, 'index']);
@@ -240,7 +256,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
     Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
 
-// Transfer demand processing routes
+    // Transfer demand processing routes
     Route::get('/transfer-demand-processing', [TransferDemandProcessingController::class, 'index']);
     Route::patch('/transfer-demand-processing/{id}/validate', [TransferDemandProcessingController::class, 'validateTransferDemand'])->name('validate.transfer_demand');
     Route::patch('/transfer-demand-processing/{id}/reject', [TransferDemandProcessingController::class, 'rejectTransferDemand'])->name('reject.transfer_demand');
@@ -262,6 +278,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/compartment/{id}/show', [CompartmentController::class, 'show']);
     Route::patch('/compartment/{id}/update', [CompartmentController::class, 'update']);
     Route::delete('/compartment/{id}/destroy', [CompartmentController::class, 'destroy']);
+    Route::get('/compartment-report', [CompartmentController::class, 'compartmentReports']);
 
     // Tank routes
     Route::get('/tank', [TankController::class, 'index']);
@@ -269,6 +286,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tank/{id}/show', [TankController::class, 'show']);
     Route::patch('/tank/{id}/update', [TankController::class, 'update']);
     Route::delete('/tank/{id}/destroy', [TankController::class, 'destroy']);
+    Route::get('/tank-report', [TankController::class, 'tankReports']);
 
     // Truck routes
     Route::get('/truck', [TruckController::class, 'index']);
@@ -276,6 +294,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/truck/{id}/show', [TruckController::class, 'show']);
     Route::patch('/truck/{id}/update', [TruckController::class, 'update']);
     Route::delete('/truck/{id}/destroy', [TruckController::class, 'destroy']);
+    Route::get('/truck-report', [TruckController::class, 'truckReports']);
 
     // Tank truck routes
     Route::get('/tank-truck', [TankTruckController::class, 'index']);
@@ -291,6 +310,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tourn/{id}/show', [TournController::class, 'show']);
     Route::patch('/tourn/{id}/update', [TournController::class, 'update']);
     Route::delete('/tourn/{id}/destroy', [TournController::class, 'destroy']);
+    Route::get('/tourn-report', [TournController::class, 'tournReports']);
 
     // Destination routes
     Route::get('/destination', [DestinationController::class, 'index']);
@@ -298,6 +318,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/destination/{id}/show', [DestinationController::class, 'show']);
     Route::patch('/destination/{id}/update', [DestinationController::class, 'update']);
     Route::delete('/destination/{id}/destroy', [DestinationController::class, 'destroy']);
+    Route::get('/destination-report', [DestinationController::class, 'destinationReports']);
 
     // Good to remove routes
     Route::get('/good-to-remove', [GoodToRemoveController::class, 'index']);
@@ -349,6 +370,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/driver/{id}/show', [DriverController::class, 'show']);
     Route::patch('/driver/{id}/update', [DriverController::class, 'update']);
     Route::delete('/driver/{id}/destroy', [DriverController::class, 'destroy']);
+    Route::get('/driver-report', [DriverController::class, 'driverReports']);
 
     // Host routes
     Route::get('/host', [HostController::class, 'index']);
@@ -356,6 +378,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/host/{id}/show', [HostController::class, 'show']);
     Route::patch('/host/{id}/update', [HostController::class, 'update']);
     Route::delete('/host/{id}/destroy', [HostController::class, 'destroy']);
+    Route::get('/host-report', [HostController::class, 'hostReports']);
 
     // Email channel param routes
     Route::get('/email-channel-param', [EmailChannelParamController::class, 'index']);
@@ -412,5 +435,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{id}/roles-config', [UserController::class, 'rolesConfiguration']);
         Route::patch('{id}/sale-points-config', [UserController::class, 'salePointsConfiguration']);
     });
-
 });

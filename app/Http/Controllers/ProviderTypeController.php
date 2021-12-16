@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProviderType;
+use App\Repositories\ProviderTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProviderTypeController extends Controller
 {
+    public $providerTypeRepository;
+
+    public function __construct(ProviderTypeRepository $providerTypeRepository)
+    {
+        $this->providerTypeRepository = $providerTypeRepository;
+    }
 
     private $types = ["Raffinerie", "Unité de stockage", "Transport", "Autre fournisseur"];
 
@@ -149,13 +156,6 @@ class ProviderTypeController extends Controller
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $this->authorize('ROLE_PROVIDER_TYPE_READ', ProviderType::class);
@@ -163,5 +163,15 @@ class ProviderTypeController extends Controller
         return new JsonResponse([
             'providerType' => $providerType
         ], 200);
+    }
+
+    public function providerTypeReports(Request $request)
+    {
+        try {
+            $providerTypes = $this->providerTypeRepository->providerTypeReport($request->reference, $request->wording, $request->description, $request->type, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['providerTypes' => $providerTypes]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

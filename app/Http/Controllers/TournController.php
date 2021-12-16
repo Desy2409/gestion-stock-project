@@ -6,6 +6,7 @@ use App\Http\Traits\UtilityTrait;
 use App\Models\GoodToRemove;
 use App\Models\Tourn;
 use App\Models\TournRegister;
+use App\Repositories\TournRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,13 @@ use Illuminate\Http\Request;
 class TournController extends Controller
 {
     use UtilityTrait;
+
+    public $tournRepository;
+
+    public function __construct(TournRepository $tournRepository)
+    {
+        $this->tournRepository = $tournRepository;
+    }
 
     public function index()
     {
@@ -187,5 +195,15 @@ class TournController extends Controller
         return new JsonResponse([
             'tourn' => $tourn
         ], 200);
+    }
+
+    public function tournReports(Request $request)
+    {
+        try {
+            $tourns = $this->tournRepository->tournReport($request->code, $request->reference, $request->tank, $request->truck, $request->destination, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['tourns' => $tourns]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

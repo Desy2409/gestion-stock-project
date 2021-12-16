@@ -15,6 +15,7 @@ use App\Models\Order;
 use App\Models\ProductDeliveryNote;
 use App\Models\SalePoint;
 use App\Models\Unity;
+use App\Repositories\PurchaseRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,12 @@ class PurchaseController extends Controller
 
     private $directPurchase = "Achat direct";
     private $purchaseOnOrder = "Achat sur commande";
+
+    public $purchaseRepository;
+    public function __construct(PurchaseRepository $purchaseRepository)
+    {
+        $this->purchaseRepository = $purchaseRepository;
+    }
 
     public function purchaseOnOrder()
     {
@@ -700,6 +707,16 @@ class PurchaseController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function purchaseReports(Request $request)
+    {
+        try {
+            $purchases = $this->purchaseRepository->purchaseReport($request->code, $request->reference, $request->purchase_date, $request->delivery_date, $request->date_of_processing, $request->state, $request->total_amount, $request->tva, $request->amount_token, $request->discount, $request->amount_gross, $request->ht_amount, $request->order, $request->provider, $request->sale_point, $request->observation, $request->start_purchase_date, $request->end_purchase_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            return new JsonResponse(['datas' => ['purchases' => $purchases]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

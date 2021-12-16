@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\SubCategory;
+use App\Repositories\CategoryRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    public $categoryRepository;
+    public function __construct(CategoryRepository $categoryRepository)
+    {
+        $this->categoryRepository = $categoryRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_CATEGORY_READ', Category::class);
@@ -138,7 +145,7 @@ class CategoryController extends Controller
                 $category->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Cette catégorie ne peut être supprimée car elle a servi dans des traitements.";
             }
@@ -165,5 +172,15 @@ class CategoryController extends Controller
         return new JsonResponse([
             'category' => $category
         ], 200);
+    }
+
+    public function categoryReports(Request $request)
+    {
+        try {
+            $categories = $this->categoryRepository->reportIncludeReference(Category::class, $request->reference, $request->wording, $request->description, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['categories' => $categories]],200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

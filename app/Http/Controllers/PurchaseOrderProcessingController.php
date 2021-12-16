@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\StockTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\ClientDeliveryNote;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Validator;
 class PurchaseOrderProcessingController extends Controller
 {
     use UtilityTrait;
+    use StockTrait;
 
     public function index()
     {
@@ -87,7 +89,7 @@ class PurchaseOrderProcessingController extends Controller
                     $sale->reference = $request->reference;
                     $sale->sale_date   = $request->sale_date;
                     $sale->total_amount = $purchaseOrder->total_amount;
-                    $sale->amount_gross = $purchaseOrder->total_amount;
+                    $sale->amount_gross = $purchaseOrder->amount_gross;
                     $sale->ht_amount = $request->ht_amount;
                     $sale->discount = $request->discount;
                     $sale->amount_token = $request->amount_token;
@@ -118,30 +120,32 @@ class PurchaseOrderProcessingController extends Controller
 
                     foreach ($request->productPurchaseOrders as $key => $productPurchaseOrderLine) {
                         $productPurchaseOrder = new ProductPurchaseOrder();
-                        $productPurchaseOrder->quantity = $productPurchaseOrderLine["quantity"];
-                        $productPurchaseOrder->unit_price = $productPurchaseOrderLine["unit_price"];
-                        $productPurchaseOrder->unity_id = $productPurchaseOrderLine["unity"];
-                        $productPurchaseOrder->product_id = $productPurchaseOrderLine["product"];
+                        $productPurchaseOrder->quantity = $productPurchaseOrderLine['quantity'];
+                        $productPurchaseOrder->unit_price = $productPurchaseOrderLine['unit_price'];
+                        $productPurchaseOrder->product_id = $productPurchaseOrderLine['product']['id'];
+                        $productPurchaseOrder->unity_id = $productPurchaseOrderLine['unity']['id'];
                         $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
                         $productPurchaseOrder->save();
 
                         $productSale = new ProductSale();
-                        $productSale->quantity = $productPurchaseOrderLine["quantity"];
-                        $productSale->unit_price = $productPurchaseOrderLine["unit_price"];
-                        $productSale->unity_id = $productPurchaseOrderLine["unity"];
-                        $productSale->product_id = $productPurchaseOrderLine["product"];
+                        $productSale->quantity = $productPurchaseOrderLine['quantity'];
+                        $productSale->unit_price = $productPurchaseOrderLine['unit_price'];
+                        $productSale->product_id = $productPurchaseOrderLine['product']['id'];
+                        $productSale->unity_id = $productPurchaseOrderLine['unity']['id'];
                         $productSale->sale_id = $sale->id;
                         $productSale->save();
 
                         $productClientDeliveryNote = new ProductClientDeliveryNote();
-                        $productClientDeliveryNote->quantity = $productPurchaseOrderLine["quantity"];
-                        $productClientDeliveryNote->unity_id = $productPurchaseOrderLine["unity"];
-                        $productClientDeliveryNote->product_id = $productPurchaseOrderLine["product"];
+                        $productClientDeliveryNote->quantity = $productPurchaseOrderLine['quantity'];
+                        $productClientDeliveryNote->product_id = $productPurchaseOrderLine['product']['id'];
+                        $productClientDeliveryNote->unity_id = $productPurchaseOrderLine['unity']['id'];
                         $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                         $productClientDeliveryNote->save();
 
                         array_push($productsPurchaseOrders, $productPurchaseOrder);
                     }
+
+                    $this->decrement($clientDeliveryNote);
 
                     $success = true;
                     $message = "Enregistrement effectué avec succès.";
@@ -149,7 +153,7 @@ class PurchaseOrderProcessingController extends Controller
                         'purchaseOrder' => $purchaseOrder,
                         'success' => $success,
                         'message' => $message,
-                        'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
+                        // 'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
                     ], 200);
                 } catch (Exception $e) {
                     dd($e);
@@ -191,7 +195,7 @@ class PurchaseOrderProcessingController extends Controller
                     $sale->reference = $request->reference;
                     $sale->sale_date   = $request->sale_date;
                     $sale->total_amount = $purchaseOrder->total_amount;
-                    $sale->amount_gross = $purchaseOrder->total_amount;
+                    $sale->amount_gross = $purchaseOrder->amount_gross;
                     $sale->ht_amount = $request->ht_amount;
                     $sale->discount = $request->discount;
                     $sale->amount_token = $request->amount_token;
@@ -206,18 +210,18 @@ class PurchaseOrderProcessingController extends Controller
 
                     foreach ($request->productPurchaseOrders as $key => $productPurchaseOrderLine) {
                         $productPurchaseOrder = new ProductPurchaseOrder();
-                        $productPurchaseOrder->quantity = $productPurchaseOrderLine["quantity"];
-                        $productPurchaseOrder->unit_price = $productPurchaseOrderLine["unit_price"];
-                        $productPurchaseOrder->unity_id = $productPurchaseOrderLine["unity"];
-                        $productPurchaseOrder->product_id = $productPurchaseOrderLine["product"];
+                        $productPurchaseOrder->quantity = $productPurchaseOrderLine['quantity'];
+                        $productPurchaseOrder->unit_price = $productPurchaseOrderLine['unit_price'];
+                        $productPurchaseOrder->product_id = $productPurchaseOrderLine['product']['id'];
+                        $productPurchaseOrder->unity_id = $productPurchaseOrderLine['unity']['id'];
                         $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
                         $productPurchaseOrder->save();
 
                         $productSale = new ProductSale();
-                        $productSale->quantity = $productPurchaseOrderLine["quantity"];
-                        $productSale->unit_price = $productPurchaseOrderLine["unit_price"];
-                        $productSale->unity_id = $productPurchaseOrderLine["unity"];
-                        $productSale->product_id = $productPurchaseOrderLine["product"];
+                        $productSale->quantity = $productPurchaseOrderLine['quantity'];
+                        $productSale->unit_price = $productPurchaseOrderLine['unit_price'];
+                        $productSale->product_id = $productPurchaseOrderLine['product']['id'];
+                        $productSale->unity_id = $productPurchaseOrderLine['unity']['id'];
                         $productSale->sale_id = $sale->id;
                         $productSale->save();
 
@@ -283,22 +287,24 @@ class PurchaseOrderProcessingController extends Controller
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $productSaleLine) {
                     $productSale = new ProductSale();
-                    $productSale->quantity = $productSaleLine["quantity"];
-                    $productSale->unit_price = $productSaleLine["unit_price"];
-                    $productSale->unity_id = $productSaleLine["unity"];
-                    $productSale->product_id = $productSaleLine["product"];
+                    $productSale->quantity = $productSaleLine['quantity'];
+                    $productSale->unit_price = $productSaleLine['unit_price'];
+                    $productSale->product_id = $productSaleLine['product']['id'];
+                    $productSale->unity_id = $productSaleLine['unity']['id'];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
                     $productClientDeliveryNote = new ProductClientDeliveryNote();
-                    $productClientDeliveryNote->quantity = $productSaleLine["quantity"];
-                    $productClientDeliveryNote->unity_id = $productSaleLine["unity"];
-                    $productClientDeliveryNote->product_id = $productSaleLine["product"];
+                    $productClientDeliveryNote->quantity = $productSaleLine['quantity'];
+                    $productClientDeliveryNote->product_id = $productSaleLine['product']['id'];
+                    $productClientDeliveryNote->unity_id = $productSaleLine['unity']['id'];
                     $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                     $productClientDeliveryNote->save();
 
                     array_push($productSales, $productSale);
                 }
+
+                $this->decrement($clientDeliveryNote);
                 
                 break;
 

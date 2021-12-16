@@ -17,5 +17,6 @@
     "institution_type": "",
     "currency": "",
     "taxes": "",
-    "possible_price_update": ""
+    "possible_price_update": "",
+    "from_order_to_delivery": ""
 }]

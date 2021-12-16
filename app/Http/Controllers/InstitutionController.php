@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution;
+use App\Repositories\InstitutionRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class InstitutionController extends Controller
 {
+    public $institutionRepository;
+
+    public function __construct(InstitutionRepository $institutionRepository)
+    {
+        $this->institutionRepository = $institutionRepository;
+    }
     public function index()
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
@@ -180,7 +187,7 @@ class InstitutionController extends Controller
                 // dd('not delete');
                 $message = "Cette institution ne peut être supprimée car elle a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'institution' => $institution,
                 'success' => $success,
@@ -193,6 +200,16 @@ class InstitutionController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 200);
+        }
+    }
+
+    public function institutionReports(Request $request)
+    {
+        try {
+            $institutions = $this->institutionRepository->institutionReport($request->rccm_number, $request->cc_number, $request->social_reason, $request->email, $request->phone_number, $request->address, $request->bp, $request->settings, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['institutions' => $institutions]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

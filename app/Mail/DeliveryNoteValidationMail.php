@@ -13,8 +13,8 @@ class DeliveryNoteValidationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public DeliveryNote $deliveryNote;
-    public ProductDeliveryNote $productDeliveryNotes;
+    public $deliveryNote;
+    public $productDeliveryNotes;
 
     /**
      * Create a new message instance.

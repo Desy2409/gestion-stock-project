@@ -81,35 +81,35 @@ class DashboardController extends Controller
         return $numberOfPendingOrder;
     }
     
-    // public function graphicsValues(Request $request)
-    // {
-    //     try {
-    //         return new JsonResponse([
-    //             'countOrders' => $this->countOrdersBetweenDates($request->start_date, $request->end_date),
-    //             'countPurchaseOrders' => $this->countPurchaseOrdersBetweenDates($request->start_date, $request->end_date),
-    //         ], 200);
-    //     } catch (Exception $e) {
-    //         $success = false;
-    //         $message = "Erreur survenue lors de la recherche au niveau des graphes.";
-    //         return new JsonResponse([
-    //             'success' => $success,
-    //             'message' => $message,
-    //         ], 400);
-    //     }
-    // }
+    public function graphicsValues(Request $request)
+    {
+        try {
+            return new JsonResponse([
+                'purchases' => $this->purchasesTotalAmountsBetweenDates($request->start_date, $request->end_date),
+                'sales' => $this->salesTotalAmountsBetweenDates($request->start_date, $request->end_date),
+            ], 200);
+        } catch (Exception $e) {
+            $success = false;
+            $message = "Erreur survenue lors de la recherche au niveau des graphes.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
 
-    // private function countOrdersBetweenDates($startDate, $endDate)
-    // {
-    //     $countOrdersBetweenDates = count(Order::whereBetween('order_date', [$startDate, $endDate])->get());
-    //     // $countOrdersBetweenDates = count(Order::where('state', 'S')->whereBetween('order_date', [$startDate, $endDate])->get());
-    //     return $countOrdersBetweenDates;
-    // }
+    private function purchasesTotalAmountsBetweenDates($startDate, $endDate)
+    {
+        $purchasesTotalAmountsBetweenDates = Purchase::whereBetween('purchase_date', [$startDate, $endDate])->pluck('total_amount','purchase_date')->toArray();
+        // $purchasesTotalAmountsBetweenDates = count(Order::where('state', 'S')->whereBetween('order_date', [$startDate, $endDate])->get());
+        return $purchasesTotalAmountsBetweenDates;
+    }
 
-    // private function countPurchaseOrdersBetweenDates($startDate, $endDate)
-    // {
-    //     $countPurchaseOrdersBetweenDates = count(PurchaseOrder::whereBetween('purchase_date', [$startDate, $endDate])->get());
-    //     // $countPurchaseOrdersBetweenDates = count(PurchaseOrder::whereDate('purchase_date','>=', $startDate)->whereDate('purchase_date','<=', $endDate)->get());
-    //     // $countPurchaseOrdersBetweenDates = count(PurchaseOrder::where('state', 'S')->whereBetween('purchase_date', [$startDate, $endDate])->get());
-    //     return $countPurchaseOrdersBetweenDates;
-    // }
+    private function salesTotalAmountsBetweenDates($startDate, $endDate)
+    {
+        $salesTotalAmountsBetweenDates = Sale::whereBetween('sale_date', [$startDate, $endDate])->pluck('total_amount','sale_date')->toArray();
+        // $salesTotalAmountsBetweenDates = count(PurchaseOrder::whereDate('purchase_date','>=', $startDate)->whereDate('purchase_date','<=', $endDate)->get());
+        // $salesTotalAmountsBetweenDates = count(PurchaseOrder::where('state', 'S')->whereBetween('purchase_date', [$startDate, $endDate])->get());
+        return $salesTotalAmountsBetweenDates;
+    }
 }

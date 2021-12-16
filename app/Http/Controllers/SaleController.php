@@ -17,6 +17,7 @@ use App\Models\Sale;
 use App\Models\SalePoint;
 use App\Models\SaleRegister;
 use App\Models\Unity;
+use App\Repositories\SaleRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,12 @@ use Illuminate\Support\Facades\Mail;
 class SaleController extends Controller
 {
     use UtilityTrait;
+
+    public $saleRepository;
+    public function __construct(SaleRepository $saleRepository)
+    {
+        $this->saleRepository = $saleRepository;
+    }
 
     public function saleOnPurchaseOrder()
     {
@@ -637,6 +644,16 @@ class SaleController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+    
+    public function saleReports(Request $request)
+    {
+        try {
+            $sales = $this->saleRepository->saleReport($request->code, $request->reference, $request->sale_date, $request->date_of_processing, $request->state, $request->total_amount, $request->tva, $request->amount_token, $request->discount, $request->amount_gross, $request->ht_amount, $request->purchase_order, $request->client, $request->sale_point, $request->observation, $request->start_sale_date, $request->end_sale_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            return new JsonResponse(['datas' => ['sales' => $sales]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

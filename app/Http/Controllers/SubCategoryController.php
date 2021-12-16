@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\SubCategory;
+use App\Repositories\SubCategoryRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,12 @@ use Illuminate\Support\Str;
 
 class SubCategoryController extends Controller
 {
+    public $subCategoryRepository;
+
+    public function __construct(SubCategoryRepository $subCategoryRepository)
+    {
+        $this->subCategoryRepository = $subCategoryRepository;
+    }
     public function index()
     {
         $this->authorize('ROLE_SUB_CATEGORY_READ', SubCategory::class);
@@ -138,7 +145,7 @@ class SubCategoryController extends Controller
                 $subCategory->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Cette sous-catégorie ne peut être supprimée car elle a servi dans des traitements.";
             }
@@ -158,13 +165,6 @@ class SubCategoryController extends Controller
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $this->authorize('ROLE_SUB_CATEGORY_READ', SubCategory::class);
@@ -172,5 +172,16 @@ class SubCategoryController extends Controller
         return new JsonResponse([
             'subCategory' => $subCategory
         ], 200);
+    }
+
+
+    public function subCategoryReports(Request $request)
+    {
+        try {
+            $subCategories = $this->subCategoryRepository->subCategoryReport($request->reference, $request->wording, $request->description, $request->start_date, $request->end_date, $request->category);
+            return new JsonResponse(['datas' => ['subCategories' => $subCategories]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

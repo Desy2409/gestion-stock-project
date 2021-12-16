@@ -18,7 +18,7 @@ class UserTypeController extends Controller
         $roles = Role::all();
         $userTypes = UserType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['roles' => $roles, 'user_types' => $userTypes]
+            'datas' => ['roles' => $roles, 'userTypes' => $userTypes]
         ], 200);
     }
 

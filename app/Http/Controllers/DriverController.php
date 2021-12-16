@@ -6,6 +6,7 @@ use App\Models\Driver;
 use App\Models\EmailChannelParam;
 use App\Models\Host;
 use App\Models\Role;
+use App\Repositories\DriverRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,9 +15,16 @@ use Illuminate\Support\Str;
 
 class DriverController extends Controller
 {
+    public $driverRepository;
+
+    public function __construct(DriverRepository $driverRepository)
+    {
+        $this->driverRepository = $driverRepository;
+    }
+
     public function index()
     {
-        // $this->authorize('ROLE_DRIVER_READ', Driver::class);
+        $this->authorize('ROLE_DRIVER_READ', Driver::class);
         $drivers = Driver::with('hosts')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['drivers' => $drivers],
@@ -171,5 +179,15 @@ class DriverController extends Controller
         return new JsonResponse([
             'driver' => $driver
         ], 200);
+    }
+
+    public function driverReports(Request $request)
+    {
+        try {
+            $drivers = $this->driverRepository->reportIncludeCode(Driver::class, $request->code, $request->wording, $request->description, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['drivers' => $drivers]],200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }
