@@ -152,7 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/order/{id}/update', [OrderController::class, 'update']);
     Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
     Route::get('/order/{id}/edit', [OrderController::class, 'edit']);
-    Route::get('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
+    Route::patch('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
     Route::get('/order/{id}/reject', [OrderController::class, 'rejectOrder'])->name('reject_order');
 
     // Purchase routes
@@ -236,6 +236,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transfer-demand-on-transmitter-select', [TransferDemandController::class, 'showReceiversOnTransmitterSelect']);
     Route::post('/transfer-demand', [TransferDemandController::class, 'store']);
     Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
+    Route::get('/transfer-demand/{id}/edit', [TransferDemandController::class, 'edit']);
     Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
     Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
 

@@ -36,4 +36,9 @@ class TransferDemand extends Model
         // dd('test 2');
         return $this->hasMany(ProductTransferDemandLine::class);
     }
+
+    public function salePoint()
+    {
+        return $this->belongsTo(SalePoint::class);
+    }
 }

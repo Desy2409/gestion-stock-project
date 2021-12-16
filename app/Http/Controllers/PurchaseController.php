@@ -121,7 +121,7 @@ class PurchaseController extends Controller
     {
         $this->authorize('ROLE_PURCHASE_READ', Sale::class);
         $purchase = Purchase::with('order')->with('provider')->with('salePoint')->findOrFail($id);
-        $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->with('product')->with('unity')->get();
+        $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
         return new JsonResponse([
             'purchase' => $purchase,
             'datas' => ['productPurchases' => $productPurchases]
@@ -252,7 +252,7 @@ class PurchaseController extends Controller
                     'datas' => ['productPurchases' => $productPurchases],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
@@ -324,8 +324,8 @@ class PurchaseController extends Controller
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
-                $purchase->total_amount = $order->total_amount;
-                $purchase->amount_gross = $order->total_amount;
+                $purchase->total_amount = $request->total_amount;
+                $purchase->amount_gross = $request->amount_gross;
                 $purchase->ht_amount = $request->ht_amount;
                 $purchase->discount = $request->discount;
                 $purchase->amount_token = $request->amount_token;
@@ -395,7 +395,7 @@ class PurchaseController extends Controller
                 [
                     'salePoint' => 'required',
                     'provider' => 'required',
-                    'reference' => 'required|unique:purchases',
+                    'reference' => 'required',
                     'purchase_date' => 'required|date|before:today', //|date_format:Ymd
                     'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                     // 'total_amount' => 'required',
@@ -451,22 +451,22 @@ class PurchaseController extends Controller
                 $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->salePoint->id;
+                $purchase->sale_point_id = $request->salePoint;
                 $purchase->save();
 
-                $deliveryNote = $purchase ? $purchase->deliveryNote : null;
-                // if ($deliveryNote) {
-                $deliveryNote->reference = $request->reference;
-                $deliveryNote->delivery_date   = $request->delivery_date;
-                $deliveryNote->total_amount = $request->total_amount;
-                $deliveryNote->observation = $request->observation;
-                $deliveryNote->place_of_delivery = $request->place_of_delivery;
-                $deliveryNote->purchase_id = $purchase->id;
-                $deliveryNote->save();
+                // $deliveryNote = $purchase ? $purchase->deliveryNote : null;
+                // // if ($deliveryNote) {
+                // $deliveryNote->reference = $request->reference;
+                // $deliveryNote->delivery_date   = $request->delivery_date;
+                // $deliveryNote->total_amount = $request->total_amount;
+                // $deliveryNote->observation = $request->observation;
+                // $deliveryNote->place_of_delivery = $request->place_of_delivery;
+                // $deliveryNote->purchase_id = $purchase->id;
+                // $deliveryNote->save();
 
                 ProductPurchase::where('purchase_id', $purchase->id)->delete();
 
-                ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
+                // ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
 
                 $productPurchases = [];
                 foreach ($request->purchaseProducts as $key => $product) {
@@ -474,16 +474,16 @@ class PurchaseController extends Controller
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
                     $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product;
+                    $productPurchase->product_id = $product["product"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
-                    $productDeliveryNote = new ProductDeliveryNote();
-                    $productDeliveryNote->quantity = $product["quantity"];
-                    $productDeliveryNote->unity_id = $product["unity"];
-                    $productDeliveryNote->product_id = $product["product"];
-                    $productDeliveryNote->delivery_note_id = $deliveryNote->id;
-                    $productDeliveryNote->save();
+                    // $productDeliveryNote = new ProductDeliveryNote();
+                    // $productDeliveryNote->quantity = $product["quantity"];
+                    // $productDeliveryNote->unity_id =  $product["unity"]["id"];
+                    // $productDeliveryNote->product_id = $product["product"]["id"];
+                    // $productDeliveryNote->delivery_note_id = $deliveryNote->id;
+                    // $productDeliveryNote->save();
 
                     array_push($productPurchases, $productPurchase);
                 }
@@ -492,12 +492,13 @@ class PurchaseController extends Controller
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'purchase' => $purchase,
-                    'deliveryNote' => $deliveryNote,
+                    // 'deliveryNote' => $deliveryNote,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productPurchases' => $productPurchases],
                 ], 200);
             } catch (Exception $e) {
+                dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([
@@ -510,7 +511,7 @@ class PurchaseController extends Controller
                 $request,
                 [
                     'order' => 'required',
-                    'reference' => 'required|unique:purchases',
+                    'reference' => 'required',
                     'purchase_date' => 'required|date|before:today', //|date_format:Ymd
                     'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
                     // 'total_amount' => 'required',
@@ -523,7 +524,7 @@ class PurchaseController extends Controller
                 [
                     'order.required' => "Le choix d'une commande est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
-                    'reference.unique' => "Ce bon d'achat existe déjà.",
+                    // 'reference.unique' => "Ce bon d'achat existe déjà.",
                     'purchase_date.required' => "La date du bon d'achat est obligatoire.",
                     'purchase_date.date' => "La date du bon d'achat est incorrecte.",
                     // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
@@ -559,16 +560,16 @@ class PurchaseController extends Controller
                 $purchase->reference = $request->reference;
                 $purchase->purchase_date   = $request->purchase_date;
                 $purchase->delivery_date   = $request->delivery_date;
-                $purchase->total_amount = $order->total_amount;
-                $purchase->amount_gross = $order->total_amount;
+                $purchase->total_amount = $request->total_amount;
+                $purchase->amount_gross = $request->amount_gross;
                 $purchase->ht_amount = $request->ht_amount;
                 $purchase->discount = $request->discount;
                 $purchase->amount_token = $request->amount_token;
                 $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->order_id = $order->id;
-                $purchase->provider_id = $order->provider->id;
-                $purchase->sale_point_id = $order->sale_point->id;
+                $purchase->provider_id = $request->provider;
+                $purchase->sale_point_id = $request->sale_point;
                 $purchase->save();
 
                 ProductPurchase::where('purchase_id', $purchase->id)->delete();
@@ -579,7 +580,7 @@ class PurchaseController extends Controller
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
                     $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product;
+                    $productPurchase->product_id = $product["product"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
@@ -592,7 +593,7 @@ class PurchaseController extends Controller
                 }
 
                 $success = true;
-                $message = "Modification effectuée avec succès.";
+                $message = 'Modification effectuée avec succès.';
                 return new JsonResponse([
                     'purchase' => $purchase,
                     'success' => $success,
@@ -666,6 +667,7 @@ class PurchaseController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la validation du bon d'achat.";
             return new JsonResponse([
