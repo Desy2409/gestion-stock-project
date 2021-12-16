@@ -120,6 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/client/{id}/update', [ClientController::class, 'update']);
     Route::delete('/client/{id}/destroy', [ClientController::class, 'destroy']);
     Route::get('/code', [ClientController::class, 'returnCode']);
+    Route::get('/client-report', [ClientController::class, 'clientReports']);
 
     // Provider routes
     Route::get('/provider', [ProviderController::class, 'index']);
