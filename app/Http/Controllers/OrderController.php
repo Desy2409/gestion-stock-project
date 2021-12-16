@@ -12,15 +12,26 @@ use App\Models\ProductOrder;
 use App\Models\Provider;
 use App\Models\SalePoint;
 use App\Models\Unity;
+use App\Models\User;
+use App\Repositories\OrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
     use UtilityTrait;
+
+    public $orderRepository;
+
+    public function __construct(OrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
 
     public function index()
     {
@@ -194,8 +205,17 @@ class OrderController extends Controller
         $order = Order::with('provider')->with('productOrders')->findOrFail($id);
         $productsOrders = $order ? $order->productOrders : null; //ProductOrder::where('order_id', $order->id)->get();
 
-        $email = 'tes@mailinator.com';
+        $email = 'admin@admin.com';
+        // $user = User::where('email', $email)->first();
+        // Auth::login($user);
+        // $credentials = ['email' => $user->email, 'password' => $user->password];
+
+        // if (Auth::attempt($credentials)) {
         Mail::to($email)->send(new OrderValidationMail($order, $productsOrders));
+        //     # code...
+        // }
+
+
 
         return new JsonResponse([
             'order' => $order,
@@ -209,10 +229,10 @@ class OrderController extends Controller
         $order = Order::with('provider')->with('salePoint')->findOrFail($id);
         // $providers = Provider::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productOrders = ProductOrder::where('order_id',$order->id)->with('product')->with('unity')->get();
+        $productOrders = ProductOrder::where('order_id', $order->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'order' => $order,
-            'datas' => [ 'productOrders' => $productOrders]
+            'datas' => ['productOrders' => $productOrders]
         ], 200);
     }
 
@@ -360,6 +380,7 @@ class OrderController extends Controller
 
     public function validateOrder($id)
     {
+        // dd(URL::previous());
         // dd('order validate');
         $this->authorize('ROLE_ORDER_VALIDATE', Order::class);
         $order = Order::findOrFail($id);
@@ -399,7 +420,7 @@ class OrderController extends Controller
                 'message' => $message,
             ], 400);
         }
-        return back();
+        // return redirect(url()->previous());
     }
 
     public function rejectOrder($id)
@@ -425,6 +446,16 @@ class OrderController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function orderReports(Request $request)
+    {
+        try {
+            $orders = $this->orderRepository->orderReport($request->code, $request->reference, $request->order_date, $request->delivery_date, $request->date_of_processing, $request->total_amount, $request->state, $request->observation, $request->provider, $request->sale_point, $request->start_order_date, $request->end_order_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            return new JsonResponse(['datas' => ['orders' => $orders]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

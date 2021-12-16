@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\Truck;
+use App\Repositories\TruckRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TruckController extends Controller
 {
+    public $truckRepository;
+
+    public function __construct(TruckRepository $truckRepository)
+    {
+        $this->truckRepository = $truckRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_TRUCK_READ', Truck::class);
@@ -163,5 +171,15 @@ class TruckController extends Controller
         return new JsonResponse([
             'truck' => $truck
         ], 200);
+    }
+
+    public function truckReports(Request $request)
+    {
+        try {
+            $trucks = $this->truckRepository->truckReport($request->reference, $request->truck_registration, $request->provider, $request->compartment, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['trucks' => $trucks]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

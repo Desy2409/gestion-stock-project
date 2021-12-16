@@ -23,7 +23,7 @@
         @foreach ($productsTransfersDemandsLines as $productTransferDemandLine)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td style="margin-left: 50px">{{ $productTransferDemandLine->product->wording }}</td>
+                <td>&nbsp;&nbsp;{{ $productTransferDemandLine->product->wording }}</td>
                 <td class="text-center">{{ $productTransferDemandLine->unity->wording }}</td>
                 <td class="text-center">{{ $productTransferDemandLine->quantity }}</td>
             </tr>

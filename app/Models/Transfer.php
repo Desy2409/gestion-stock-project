@@ -14,6 +14,16 @@ class Transfer extends Model
         'date_of_receipt'
     ];
 
+    protected $appends =  ['transmitter','receiver'];
+
+    public function getTransmitterAttribute(){
+        return SalePoint::where('id',$this->transmitter_id)->first();
+    }
+
+    public function getReceiverAttribute(){
+        return SalePoint::where('id',$this->receiver_id)->first();
+    }
+    
     public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);

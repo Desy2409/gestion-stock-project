@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Compartment;
+use App\Repositories\CompartmentRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CompartmentController extends Controller
 {
+    public $compartmentRepository;
+
+    public function __construct(CompartmentRepository $compartmentRepository)
+    {
+        $this->compartmentRepository = $compartmentRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
@@ -126,7 +134,7 @@ class CompartmentController extends Controller
                 $compartment->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Ce compartiment ne peut être supprimé car il a servi dans des traitements.";
             }
@@ -153,5 +161,15 @@ class CompartmentController extends Controller
         return new JsonResponse([
             'compartment' => $compartment
         ], 200);
+    }
+
+    public function compartmentReports(Request $request)
+    {
+        try {
+            $compartments = $this->compartmentRepository->compartmentReport($request->reference, $request->number, $request->capacity, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['compartments' => $compartments]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

@@ -41,7 +41,7 @@
         @foreach ($productPurchases as $productPurchase)
             <tr>
                 <th scope="row" class="text-center">{{ $i++ }}</th>
-                <td class="ml-2">&nbsp;{{ $productPurchase->product->wording }}</td>
+                <td class="ml-2">&nbsp;&nbsp;{{ $productPurchase->product->wording }}</td>
                 <td class="text-center">{{ $productPurchase->unity->wording }}</td>
                 <td class="text-center">{{ $productPurchase->unit_price }}</td>
                 <td class="text-center">{{ $productPurchase->quantity }}</td>

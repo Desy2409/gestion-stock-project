@@ -9,6 +9,7 @@ use App\Models\ProductRegister;
 use App\Models\StockType;
 use App\Models\SubCategory;
 use App\Models\Unity;
+use App\Repositories\ProductRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,13 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     use UtilityTrait;
+
+    public $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
 
     public function index()
     {
@@ -276,6 +284,16 @@ class ProductController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function productReports(Request $request)
+    {
+        try {
+            $products = $this->productRepository->productReport($request->code, $request->reference, $request->wording, $request->description, $request->price, $request->start_date, $request->end_date, $request->sub_category);
+            return new JsonResponse(['datas' => ['products' => $products]],200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

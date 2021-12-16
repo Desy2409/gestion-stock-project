@@ -6,12 +6,20 @@ use App\Models\Compartment;
 use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\Tank;
+use App\Repositories\TankRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TankController extends Controller
 {
+    public $tankRepository;
+
+    public function __construct(TankRepository $tankRepository)
+    {
+        $this->tankRepository = $tankRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_TANK_READ', Tank::class);
@@ -172,5 +180,15 @@ class TankController extends Controller
         return new JsonResponse([
             'tank' => $tank
         ], 200);
+    }
+
+    public function tankReports(Request $request)
+    {
+        try {
+            $tanks = $this->tankRepository->tankReport($request->reference, $request->tank_registration, $request->provider, $request->compartment, $request->start_date, $request->end_date);
+            return new JsonResponse(['datas' => ['tanks' => $tanks]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

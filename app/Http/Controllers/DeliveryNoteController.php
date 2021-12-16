@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\StockTrait;
 use App\Http\Traits\UtilityTrait;
+use App\Mail\DeliveryNoteValidationMail;
 use App\Models\DeliveryNote;
 use App\Models\DeliveryNoteRegister;
 use App\Models\Order;
@@ -10,14 +12,25 @@ use App\Models\Product;
 use App\Models\ProductDeliveryNote;
 use App\Models\ProductPurchase;
 use App\Models\Purchase;
+use App\Models\Stock;
+use App\Repositories\DeliveryNoteRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
 
 class DeliveryNoteController extends Controller
 {
     use UtilityTrait;
+    use StockTrait;
+
+    public $deliveryNoteRepository;
+
+    public function __construct(DeliveryNoteRepository $deliveryNoteRepository)
+    {
+        $this->deliveryNoteRepository = $deliveryNoteRepository;
+    }
 
     public function index()
     {
@@ -71,7 +84,7 @@ class DeliveryNoteController extends Controller
         $array = [];
 
         foreach ($productPurchases as $key => $value) {
-            array_push($array,$value::remainingQuantity());
+            array_push($array, $value::remainingQuantity());
         }
         // dd($array);
         return new JsonResponse([
@@ -183,6 +196,10 @@ class DeliveryNoteController extends Controller
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $deliveryNote = DeliveryNote::with('purchase')->with('productDeliveryNotes')->findOrFail($id);
         $productDeliveryNotes = $deliveryNote ? $deliveryNote->productDeliveryNotes : null; //ProductDeliveryNote::where('purchase_id', $purchase->id)->get();
+
+        $email = 'tes@mailinator.com';
+        Mail::to($email)->send(new DeliveryNoteValidationMail($deliveryNote, $productDeliveryNotes));
+
 
         return new JsonResponse([
             'deliveryNote' => $deliveryNote,
@@ -330,6 +347,8 @@ class DeliveryNoteController extends Controller
             $deliveryNote->date_of_processing = date('Y-m-d', strtotime(now()));
             $deliveryNote->save();
 
+            $this->increment($deliveryNote);
+
             $success = true;
             $message = "Bon de livraison validé avec succès.";
             return new JsonResponse([
@@ -338,6 +357,7 @@ class DeliveryNoteController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de la validation du bon de livraison.";
             return new JsonResponse([
@@ -345,6 +365,7 @@ class DeliveryNoteController extends Controller
                 'message' => $message,
             ], 400);
         }
+        // return back();
     }
 
     public function rejectDeliveryNote($id)
@@ -370,6 +391,43 @@ class DeliveryNoteController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function returnOfMerchandises($id)
+    {
+        $this->authorize('ROLE_DELIVERY_NOTE_REJECT', DeliveryNote::class);
+        $deliveryNote = DeliveryNote::where('id', $id)->where('state', '=', 'S')->first();
+        // dd($deliveryNote);
+        try {
+
+            $this->decrementByRetunringDeliveryNote($deliveryNote);
+
+            $success = true;
+            $message = "Marchandises rendues avec succès.";
+            return new JsonResponse([
+                'deliveryNote' => $deliveryNote,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            dd($e);
+            $success = false;
+            $message = "Erreur survenue lors du retour des marchandises.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function deliveryNoteReports(Request $request)
+    {
+        try {
+            $deliveryNotes = $this->deliveryNoteRepository->deliveryNoteReport($request->code, $request->reference, $request->delivery_date, $request->date_of_processing, $request->total_amount, $request->state, $request->observation, $request->purchase, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            return new JsonResponse(['datas' => ['deliveryNotes' => $deliveryNotes]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

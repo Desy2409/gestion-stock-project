@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\StockTrait;
 use App\Http\Traits\UtilityTrait;
+use App\Mail\ClientDeliveryNoteValidationMail;
 use App\Models\ClientDeliveryNote;
 use App\Models\ClientDeliveryNoteRegister;
 use App\Models\Product;
@@ -10,13 +12,24 @@ use App\Models\ProductClientDeliveryNote;
 use App\Models\ProductSale;
 use App\Models\PurchaseOrder;
 use App\Models\Sale;
+use App\Models\Stock;
+use App\Repositories\ClientDeliveryNoteRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ClientDeliveryNoteController extends Controller
 {
     use UtilityTrait;
+    use StockTrait;
+
+    public $clientDeliveryNoteRepository;
+
+    public function __construct(ClientDeliveryNoteRepository $clientDeliveryNoteRepository)
+    {
+        $this->clientDeliveryNoteRepository = $clientDeliveryNoteRepository;
+    }
 
     public function index()
     {
@@ -24,7 +37,7 @@ class ClientDeliveryNoteController extends Controller
         // $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->get();
         $clientDeliveryNotes = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_date')->get();
         $purchasesBasedOnPurchaseOrderId = Sale::select('purchase_order_id')->distinct()->where('purchase_order_id', '!=', null)->pluck('purchase_order_id')->toArray();
-        $purchaseOrders = PurchaseOrder::whereIn('id',$purchasesBasedOnPurchaseOrderId)->with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
+        $purchaseOrders = PurchaseOrder::whereIn('id', $purchasesBasedOnPurchaseOrderId)->with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastClientDeliveryNoteRegister = ClientDeliveryNoteRegister::latest()->first();
 
@@ -76,7 +89,7 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale' => 'required',
                 'reference' => 'required|unique:client_delivery_notes',
-                'delivery_date' => 'required|date|before:today',//|date_format:Ymd
+                'delivery_date' => 'required|date|before:today', //|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'clientDeliveryNoteProducts' => 'required',
@@ -155,6 +168,9 @@ class ClientDeliveryNoteController extends Controller
         $clientDeliveryNote = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->findOrFail($id);
         $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null; //ProductClientDeliveryNote::where('purchase_order_id', $clientDeliveryNote->id)->get();
 
+        $email = 'tes@mailinator.com';
+        Mail::to($email)->send(new ClientDeliveryNoteValidationMail($clientDeliveryNote, $productClientDeliveryNotes));
+
         return new JsonResponse([
             'clientDeliveryNote' => $clientDeliveryNote,
             'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]
@@ -181,7 +197,7 @@ class ClientDeliveryNoteController extends Controller
             [
                 'sale' => 'required',
                 'reference' => 'required',
-                'delivery_date' => 'required|date|before:today',//|date_format:Ymd
+                'delivery_date' => 'required|date|before:today', //|date_format:Ymd
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'clientDeliveryNoteProducts' => 'required',
@@ -261,7 +277,7 @@ class ClientDeliveryNoteController extends Controller
                 $clientDeliveryNote->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Cette livraison ne peut être supprimée car elle a servi dans des traitements.";
             }
@@ -290,6 +306,8 @@ class ClientDeliveryNoteController extends Controller
             $clientDeliveryNote->state = 'S';
             $clientDeliveryNote->date_of_processing = date('Y-m-d', strtotime(now()));
             $clientDeliveryNote->save();
+
+            $this->decrement($clientDeliveryNote);
 
             $success = true;
             $message = "Bon de livraison validé avec succès.";
@@ -331,6 +349,43 @@ class ClientDeliveryNoteController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function returnOfMerchandises($id)
+    {
+        $this->authorize('ROLE_DELIVERY_NOTE_REJECT', ClientDeliveryNote::class);
+        $clientDeliveryNote = ClientDeliveryNote::where('id', $id)->where('state', '=', 'S')->first();
+        // dd($clientDeliveryNote);
+        try {
+
+            $this->decrementByRetunringClientDeliveryNote($clientDeliveryNote);
+
+            $success = true;
+            $message = "Marchandises rendues avec succès.";
+            return new JsonResponse([
+                'clientDeliveryNote' => $clientDeliveryNote,
+                'success' => $success,
+                'message' => $message,
+            ], 200);
+        } catch (Exception $e) {
+            dd($e);
+            $success = false;
+            $message = "Erreur survenue lors du retour des marchandises.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        }
+    }
+
+    public function clientDeliveryNoteReports(Request $request)
+    {
+        try {
+            $clientDeliveryNotes = $this->clientDeliveryNoteRepository->clientDeliveryNoteReport($request->code, $request->reference, $request->delivery_date, $request->date_of_processing, $request->total_amount, $request->state, $request->observation, $request->sale, $request->tourn, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            return new JsonResponse(['datas' => ['clientDeliveryNotes' => $clientDeliveryNotes]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }
