@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Operation;
 use App\Models\PageOperation;
 use App\Models\Role;
 use App\Models\User;
@@ -17,10 +18,11 @@ class UserTypeController extends Controller
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         // $roles = Role::with('operation')->with('pageOperation')->get();
         $pageOperations = PageOperation::all();
+        $operations = Operation::all();
         // $roles = Role::all();
         $userTypes = UserType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['pageOperations' => $pageOperations, 'userTypes' => $userTypes]
+            'datas' => ['pageOperations' => $pageOperations,'operations'=>$operations, 'userTypes' => $userTypes]
         ], 200);
     }
 
