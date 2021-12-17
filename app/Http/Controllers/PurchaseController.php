@@ -126,9 +126,9 @@ class PurchaseController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('ROLE_PURCHASE_READ', Sale::class);
+        $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
         $purchase = Purchase::with('order')->with('provider')->with('salePoint')->findOrFail($id);
-        $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+        $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'purchase' => $purchase,
             'datas' => ['productPurchases' => $productPurchases]
@@ -505,7 +505,7 @@ class PurchaseController extends Controller
                     'datas' => ['productPurchases' => $productPurchases],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([

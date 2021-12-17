@@ -21,7 +21,7 @@ class UserController extends Controller
     //     $user = Auth::user();
     //     $this->user = $user;
     // }
-    
+
     public function index()
     {
         $this->authorize('ROLE_USER_READ', User::class);
@@ -63,15 +63,15 @@ class UserController extends Controller
             ]
         );
 
-        $existingUser = UserType::where('last_name', $request->last_name)->where('first_name', $request->first_name)->get();
-        if (!empty($existingUser) && sizeof($existingUser) >= 1) {
-            $success = false;
-            return new JsonResponse([
-                'success' => $success,
-                'existingUserType' => $existingUser[0],
-                'message' => "Cet utilisateur existe déjà"
-            ], 200);
-        }
+        // $existingUser = UserType::where('last_name', $request->last_name)->where('first_name', $request->first_name)->get();
+        // if (!empty($existingUser) && sizeof($existingUser) >= 1) {
+        //     $success = false;
+        //     return new JsonResponse([
+        //         'success' => $success,
+        //         'existingUserType' => $existingUser[0],
+        //         'message' => "Cet utilisateur existe déjà"
+        //     ], 200);
+        // }
 
         try {
             $user = new User();
@@ -92,7 +92,7 @@ class UserController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -256,7 +256,7 @@ class UserController extends Controller
         $user = Auth::user();
 
         $userSalePoints = SalePoint::whereIn('id', $user->sale_points)->get();
-        dd('userSalePoints', $userSalePoints);
+        // dd('userSalePoints', $userSalePoints);
 
 
         $this->authorize('ROLE_USER_CREATE', User::class);
@@ -274,7 +274,7 @@ class UserController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'affectation des points de vente à l'utilisateur.";
             return new JsonResponse([
