@@ -429,7 +429,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // User routes
         Route::get('', [UserController::class, 'index']);
         Route::post('', [UserController::class, 'store']);
-        Route::get('{id}/show', [UserController::class, 'show']);
+        Route::get('{id}/edit', [UserController::class, 'edit']);
         Route::patch('{id}/update', [UserController::class, 'update']);
         Route::delete('{id}/destroy', [UserController::class, 'destroy']);
         Route::patch('{id}/user-type-config', [UserController::class, 'userTypeConfiguration']);
