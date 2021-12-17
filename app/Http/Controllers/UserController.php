@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Person;
 use App\Models\SalePoint;
 use App\Models\User;
 use App\Models\UserType;
@@ -21,7 +22,7 @@ class UserController extends Controller
     //     $user = Auth::user();
     //     $this->user = $user;
     // }
-    
+
     public function index()
     {
         $this->authorize('ROLE_USER_READ', User::class);
@@ -102,6 +103,13 @@ class UserController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $this->authorize('ROLE_USER_UPDATE', User::class);
+        $user = User::findOrFail($id);
+        return new JsonResponse(['user' => $user], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $this->authorize('ROLE_USER_UPDATE', User::class);
@@ -132,12 +140,12 @@ class UserController extends Controller
             ]
         );
 
-        $existingUser = UserType::where('last_name', $request->last_name)->where('first_name', $request->first_name)->get();
+        $existingUser = Person::where('last_name', $request->last_name)->where('first_name', $request->first_name)->get();
         if (!empty($existingUser) && sizeof($existingUser) >= 1) {
             $success = false;
             return new JsonResponse([
                 'success' => $success,
-                'existingUserType' => $existingUser[0],
+                'existingUser' => $existingUser[0],
                 'message' => "Cet utilisateur existe déjà"
             ], 200);
         }
