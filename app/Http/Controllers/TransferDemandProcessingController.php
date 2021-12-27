@@ -35,10 +35,10 @@ class TransferDemandProcessingController extends Controller
         // dd($productsTransfersDemandsLines);
         $email = 'tes@mailinator.com';
         try {
-            // $transferDemand->state = 'S';
-            // $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
-            // $transferDemand->save();
-            Mail::to($email)->send(new TransferDemandProcessingMail($transferDemand, $productsTransfersDemandsLines));
+            $transferDemand->state = 'S';
+            $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
+            $transferDemand->save();
+            // Mail::to($email)->send(new TransferDemandProcessingMail($transferDemand, $productsTransfersDemandsLines));
             $success = true;
             $message = "Demande de transfert validée avec succès.";
             return new JsonResponse([

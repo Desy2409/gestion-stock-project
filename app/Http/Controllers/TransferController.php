@@ -174,12 +174,12 @@ class TransferController extends Controller
     {
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $transfer = Transfer::with('productsTransfersLines')->findOrFail($id);
-        $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
+        $productsTransfersLines = ProductTransferLine::where('transfer_id',$transfer->id)->with('product')->with('unity')->get();
+        // $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
 
         return new JsonResponse([
             'transfer' => $transfer,
-            'datas' => ['products' => $products, 'productsTransfersLines' => $productsTransfersLines]
+            'datas' => ['productsTransfersLines' => $productsTransfersLines]
         ], 200);
     }
 

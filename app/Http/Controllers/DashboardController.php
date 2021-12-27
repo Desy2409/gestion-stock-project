@@ -80,7 +80,7 @@ class DashboardController extends Controller
         $numberOfPendingOrder = count(Order::where('sale_point_id', $id)->whereBetween('order_date', [$startDate, $endDate])->where('state', 'P')->get());
         return $numberOfPendingOrder;
     }
-    
+
     public function graphicsValues(Request $request)
     {
         try {
@@ -100,14 +100,16 @@ class DashboardController extends Controller
 
     private function purchasesTotalAmountsBetweenDates($startDate, $endDate)
     {
-        $purchasesTotalAmountsBetweenDates = Purchase::whereBetween('purchase_date', [$startDate, $endDate])->pluck('total_amount','purchase_date')->toArray();
+        $purchasesTotalAmountsBetweenDates = Purchase::whereBetween('purchase_date', [$startDate, $endDate])->pluck('total_amount')->toArray();
+        // $purchasesTotalAmountsBetweenDates = Purchase::whereBetween('purchase_date', [$startDate, $endDate])->pluck('total_amount','purchase_date')->toArray();
         // $purchasesTotalAmountsBetweenDates = count(Order::where('state', 'S')->whereBetween('order_date', [$startDate, $endDate])->get());
         return $purchasesTotalAmountsBetweenDates;
     }
 
     private function salesTotalAmountsBetweenDates($startDate, $endDate)
     {
-        $salesTotalAmountsBetweenDates = Sale::whereBetween('sale_date', [$startDate, $endDate])->pluck('total_amount','sale_date')->toArray();
+        $salesTotalAmountsBetweenDates = Sale::whereBetween('sale_date', [$startDate, $endDate])->pluck('total_amount')->toArray();
+        // $salesTotalAmountsBetweenDates = Sale::whereBetween('sale_date', [$startDate, $endDate])->pluck('total_amount','sale_date')->toArray();
         // $salesTotalAmountsBetweenDates = count(PurchaseOrder::whereDate('purchase_date','>=', $startDate)->whereDate('purchase_date','<=', $endDate)->get());
         // $salesTotalAmountsBetweenDates = count(PurchaseOrder::where('state', 'S')->whereBetween('purchase_date', [$startDate, $endDate])->get());
         return $salesTotalAmountsBetweenDates;

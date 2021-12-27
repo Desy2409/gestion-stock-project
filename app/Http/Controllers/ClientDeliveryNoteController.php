@@ -237,8 +237,8 @@ class ClientDeliveryNoteController extends Controller
             foreach ($request->clientDeliveryNoteProducts as $key => $product) {
                 $productClientDeliveryNote = new ProductClientDeliveryNote();
                 $productClientDeliveryNote->quantity = $product["quantity"];
-                $productClientDeliveryNote->unity_id = $product["unity"];
-                $productClientDeliveryNote->product_id = $product["product"];
+                $productClientDeliveryNote->unity_id = $product["unity"]["id"];
+                $productClientDeliveryNote->product_id = $product["product"]["id"];
                 $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                 $productClientDeliveryNote->save();
 
@@ -254,7 +254,7 @@ class ClientDeliveryNoteController extends Controller
                 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([

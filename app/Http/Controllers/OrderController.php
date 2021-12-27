@@ -331,7 +331,7 @@ class OrderController extends Controller
                 'datas' => ['productsOrders' => $productsOrders],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
@@ -406,7 +406,7 @@ class OrderController extends Controller
 
 
             $success = true;
-            $message = "Bon de commande validé avec succès.";
+            $message = 'Bon de commande validé avec succès.';
             return new JsonResponse([
                 'order' => $order,
                 'success' => $success,

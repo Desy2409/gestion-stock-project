@@ -210,7 +210,7 @@ class DeliveryNoteController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', Sale::class);
-        $deliveryNote = DeliveryNote::with('purchase')->with('provider')->with('salePoint')->findOrFail($id);
+        $deliveryNote = DeliveryNote::with('purchase')->findOrFail($id);
         $productDeliveryNotes = ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'deliveryNote' => $deliveryNote,
@@ -227,13 +227,13 @@ class DeliveryNoteController extends Controller
             [
                 'purchase' => 'required',
                 'reference' => 'required',
-                'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|date_format:Ymd|after:purchase_date',
+                // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date',
                 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'deliveryNoteProducts' => 'required',
-                'quantities' => 'required|min:0',
-                'unities' => 'required',
+                // 'quantities' => 'required|min:0',
+                // 'unities' => 'required',
             ],
             [
                 'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
@@ -259,7 +259,7 @@ class DeliveryNoteController extends Controller
             $purchase = Purchase::where('order_id', $request->order)->first();
 
             $deliveryNote->reference = $request->reference;
-            $deliveryNote->delivery_date   = $request->delivery_date;
+            $deliveryNote->delivery_date = $request->delivery_date;
             $deliveryNote->total_amount = $request->total_amount;
             $deliveryNote->observation = $request->observation;
             $deliveryNote->place_of_delivery = $request->place_of_delivery;
@@ -272,8 +272,8 @@ class DeliveryNoteController extends Controller
             foreach ($request->deliveryNoteProducts as $key => $product) {
                 $productDeliveryNote = new ProductDeliveryNote();
                 $productDeliveryNote->quantity = $product["quantity"];
-                $productDeliveryNote->unity_id = $product["unity"];
-                $productDeliveryNote->product_id = $product["product"];
+                $productDeliveryNote->unity_id =  $product["unity"]["id"];
+                $productDeliveryNote->product_id = $product["product"]["id"];
                 $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                 $productDeliveryNote->save();
 
@@ -294,7 +294,7 @@ class DeliveryNoteController extends Controller
                 'datas' => ['productDeliveryNotes' => $productDeliveryNotes],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([

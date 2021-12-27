@@ -110,7 +110,7 @@ class SaleController extends Controller
         $this->authorize('ROLE_SALE_READ', Sale::class);
         $sale = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->findOrFail($id);
         $productSales = $sale ? $sale->productSales : null; //ProductPurchase::where('order_id', $sale->id)->get();
-        
+
         $email = 'tes@mailinator.com';
         Mail::to($email)->send(new SaleValidationMail($sale, $productSales));
 
@@ -129,7 +129,7 @@ class SaleController extends Controller
             'sale' => $sale,
             'datas' => [ 'productSales' => $productSales]
         ], 200);
-    }    
+    }
 
     public function store(Request $request)
     {
@@ -338,7 +338,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
@@ -357,7 +357,7 @@ class SaleController extends Controller
             $this->validate(
                 $request,
                 [
-                    'reference' => 'required|unique:sales',
+                    'reference' => 'required',
                     'sale_date' => 'required|date|before:today', //|date_format:Ymd
                     'observation' => 'max:255',
                     'saleProducts' => 'required',
@@ -404,36 +404,36 @@ class SaleController extends Controller
                 $sale->sale_point_id = $request->salePoint;
                 $sale->save();
 
-                $clientDeliveryNote = $sale ? $sale->clientDeliveryNote : null;
+                // $clientDeliveryNote = $sale ? $sale->clientDeliveryNote : null;
 
-                $clientDeliveryNote->reference = $request->reference;
-                $clientDeliveryNote->delivery_date   = $request->delivery_date;
-                $clientDeliveryNote->total_amount = $request->total_amount;
-                $clientDeliveryNote->observation = $request->observation;
-                $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
-                $clientDeliveryNote->sale_id = $sale->id;
-                $clientDeliveryNote->save();
+                // $clientDeliveryNote->reference = $request->reference;
+                // $clientDeliveryNote->delivery_date   = $request->delivery_date;
+                // $clientDeliveryNote->total_amount = $request->total_amount;
+                // $clientDeliveryNote->observation = $request->observation;
+                // $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
+                // $clientDeliveryNote->sale_id = $sale->id;
+                // $clientDeliveryNote->save();
 
                 ProductSale::where('sale_id', $sale->id)->delete();
 
-                ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->delete();
+                // ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->delete();
 
                 $productSales = [];
                 foreach ($request->saleProducts as $key => $product) {
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product["product"];
+                    $productSale->unity_id = $product["unity"]["id"];
+                    $productSale->product_id = $product["product"]["id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
-                    $productClientDeliveryNote = new ProductClientDeliveryNote();
-                    $productClientDeliveryNote->quantity = $product["quantity"];
-                    $productClientDeliveryNote->unity_id = $product["unity"];
-                    $productClientDeliveryNote->product_id = $product["product"];
-                    $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
-                    $productClientDeliveryNote->save();
+                    // $productClientDeliveryNote = new ProductClientDeliveryNote();
+                    // $productClientDeliveryNote->quantity = $product["quantity"];
+                    // $productClientDeliveryNote->unity_id = $product["unity"];
+                    // $productClientDeliveryNote->product_id = $product["product"];
+                    // $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
+                    // $productClientDeliveryNote->save();
 
                     array_push($productSales, $productSale);
                 }
@@ -442,7 +442,7 @@ class SaleController extends Controller
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'sale' => $sale,
-                    'clientDeliveryNote' => $clientDeliveryNote,
+                    // 'clientDeliveryNote' => $clientDeliveryNote,
                     'success' => $success,
                     'message' => $message,
                     'datas' => ['productSales' => $productSales],
@@ -459,8 +459,8 @@ class SaleController extends Controller
             $this->validate(
                 $request,
                 [
-                    'purchase_order' => 'required',
-                    'reference' => 'required|unique:sales',
+                    'purchaseOrder' => 'required',
+                    'reference' => 'required',
                     'sale_date' => 'required|date|before:today', //|date_format:Ymd
                     'observation' => 'max:255',
                     'saleProducts' => 'required',
@@ -469,7 +469,7 @@ class SaleController extends Controller
                     // 'unities' => 'required',
                 ],
                 [
-                    'purchase_order.required' => "Le choix d'un bon de commande est obligatoire.",
+                    'purchaseOrder.required' => "Le choix d'un bon de commande est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Cette vente existe déjà.",
                     'sale_date.required' => "La date du bon est obligatoire.",
@@ -504,20 +504,20 @@ class SaleController extends Controller
             // }
 
             try {
-                $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order);
+                $purchaseOrder = PurchaseOrder::findOrFail($request->purchaseOrder);
 
                 $sale->reference = $request->reference;
                 $sale->sale_date   = $request->sale_date;
-                $sale->total_amount = $purchaseOrder->total_amount;
-                $sale->amount_gross = $purchaseOrder->total_amount;
+                $sale->total_amount = $request->total_amount;
+                $sale->amount_gross = $request->amount_gross;
                 $sale->ht_amount = $request->ht_amount;
                 $sale->discount = $request->discount;
                 $sale->amount_token = $request->amount_token;
                 $sale->tva = $request->tva;
                 $sale->observation = $request->observation;
                 $sale->order_id = $purchaseOrder->id;
-                $sale->client_id = $purchaseOrder->client->id;
-                $sale->sale_point_id = $purchaseOrder->salePoint->id;
+                $sale->client_id = $request->client;
+                $sale->sale_point_id = $request->salePoint;
                 $sale->save();
 
                 $productSales = [];
