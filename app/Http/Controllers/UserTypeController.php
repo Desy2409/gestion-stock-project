@@ -29,7 +29,7 @@ class UserTypeController extends Controller
     // public function onPageOperationSelected($id)
     // {
     //     $pageOperation=PageOperation::findOrFail($id);
-        
+
     // }
 
     public function store(Request $request)
@@ -42,7 +42,7 @@ class UserTypeController extends Controller
                 'code' => 'required|unique:user_types',
                 'wording' => 'required|unique:user_types|max:150',
                 'description' => 'max:255',
-                'checkedRoles' => 'required',
+                'roles' => 'required',
             ],
             [
                 'code.required' => "Le code est obligatoire.",
@@ -51,7 +51,7 @@ class UserTypeController extends Controller
                 'wording.unique' => "Ce type existe déjà.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'checkedRoles' => "Le choix d'au moins un rôle est obligatoire.",
+                'roles' => "Le choix d'au moins un rôle est obligatoire.",
             ]
         );
 
@@ -60,7 +60,7 @@ class UserTypeController extends Controller
             $userType->code = strtoupper(str_replace(' ', '_', $request->code));
             $userType->wording = $request->wording;
             $userType->description = $request->description;
-            $userType->roles = $request->checkedRoles;
+            $userType->roles = $request->roles;
             $userType->save();
 
 
@@ -72,7 +72,7 @@ class UserTypeController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -92,14 +92,14 @@ class UserTypeController extends Controller
                 'code' => 'required',
                 'wording' => 'required|max:150',
                 'description' => 'max:255',
-                'checkedRoles' => 'required',
+                'roles' => 'required',
             ],
             [
                 'code.required' => "Le code est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
                 'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                 'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'checkedRoles' => "Le choix d'au moins un rôle est obligatoire.",
+                'roles' => "Le choix d'au moins un rôle est obligatoire.",
             ]
         );
 
@@ -127,13 +127,13 @@ class UserTypeController extends Controller
             $userType->code = strtoupper(str_replace(' ', '_', $request->code));
             $userType->wording = $request->wording;
             $userType->description = $request->description;
-            $userType->roles = $request->checkedRoles;
+            $userType->roles = $request->roles;
             $userType->save();
 
             $usersOfThisType = User::where('user_type_id', $userType)->get();
             if (!empty($usersOfThisType) && sizeof($usersOfThisType) > 0) {
                 foreach ($usersOfThisType as $key => $user) {
-                    $user->roles = $request->checkedRoles;
+                    $user->roles = $request->roles;
                     $user->save();
                 }
             }
