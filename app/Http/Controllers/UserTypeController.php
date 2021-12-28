@@ -22,14 +22,14 @@ class UserTypeController extends Controller
         // $roles = Role::all();
         $userTypes = UserType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['pageOperations' => $pageOperations,'operations'=>$operations, 'userTypes' => $userTypes]
+            'datas' => ['pageOperations' => $pageOperations, 'operations' => $operations, 'userTypes' => $userTypes]
         ], 200);
     }
 
     // public function onPageOperationSelected($id)
     // {
     //     $pageOperation=PageOperation::findOrFail($id);
-        
+
     // }
 
     public function store(Request $request)
@@ -58,19 +58,19 @@ class UserTypeController extends Controller
         try {
 
             // Liste des opérations et pages opérations sélectionnées
-
-            
-            foreach ($request->roles as $key => $role) {
-                
-            }
+            // $checkedRoles = [];
+            // $checkedRoles = json_decode();
+            // foreach ($request->roles as $key => $role) {
+            //     $checkedRole = Role::where('operation_id', '=', $role->operation_id)->where('page_operation_id', '=', $role->page_operation->id)->first();
+            //     array_push($checkedRoles, $checkedRole->code);
+            // }
 
             $userType = new UserType();
             $userType->code = strtoupper(str_replace(' ', '_', $request->code));
             $userType->wording = $request->wording;
             $userType->description = $request->description;
-            $userType->roles = $request->checkedRoles;
-            $userType->save();
-
+            $userType->roles = $checkedRoles;
+            // $userType->save();
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";

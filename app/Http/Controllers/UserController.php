@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Operation;
+use App\Models\PageOperation;
 use App\Models\Person;
 use App\Models\SalePoint;
 use App\Models\User;
@@ -28,10 +30,13 @@ class UserController extends Controller
         $this->authorize('ROLE_USER_READ', User::class);
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
-
+        // $roles = Role::with('operation')->with('pageOperation')->get();
+        $pageOperations = PageOperation::orderBy('wording')->get();
+        $operations = Operation::orderBy('wording')->get();
+        // $roles = Role::all();
         return new JsonResponse([
-            'datas' => ['users' => $users, 'userTypes' => $userTypes]
-        ]);
+            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations, 'operations' => $operations]
+        ], 200);
     }
 
     public function store(Request $request)
