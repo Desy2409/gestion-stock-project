@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class PageOperation extends Model
 {
-    protected $fillable = [
-        'code',
-        'wording',
-        'description'
-    ];
 
-    public function roles()
+    public function page()
     {
-        return $this->hasMany(Role::class);
+        return $this->belongsTo(Page::class);
+    }
+
+    public function operation()
+    {
+        return $this->belongsTo(Operation::class);
     }
 }

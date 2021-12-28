@@ -1,0 +1,129 @@
+[{
+    "code": "ROLE_DRIVER",
+    "title": "Driver",
+    "description": "Page de configuration d'un driver"
+}, {
+    "code": "ROLE_HOST",
+    "title": "Host",
+    "description": "Page de configuration d'un hôte"
+}, {
+    "code": "ROLE_EMAIL_CHANNEL_PARAM",
+    "title": "Email channel params",
+    "description": "Page de configuration de l'envoi de mail"
+}, {
+    "code": "ROLE_INSTITUTION",
+    "title": "Institution",
+    "description": "Page de configuration d'une instituion"
+}, {
+    "code": "ROLE_SALE_POINT",
+    "title": "Point de vente",
+    "description": "Page de configuration d'un point de vente"
+}, {
+    "code": "ROLE_CATEGORY",
+    "title": "Catégorie",
+    "description": "Page de configuration d'une catégorie"
+}, {
+    "code": "ROLE_SUB_CATEGORY",
+    "title": "Sous-catégorie",
+    "description": "Page de configuration d'une sous-catégorie"
+}, {
+    "code": "ROLE_PRODUCT",
+    "title": "Produit",
+    "description": "Page de configuration d'un produit"
+}, {
+    "code": "ROLE_CLIENT",
+    "title": "Client",
+    "description": "Page de configuration d'un client"
+}, {
+    "code": "ROLE_PROVIDER_TYPE",
+    "title": "Type fournisseur",
+    "description": "Page de configuration d'un type fournisseur"
+}, {
+    "code": "ROLE_PROVIDER",
+    "title": "Fournisseur",
+    "description": "Page de configuration d'un fournisseur"
+}, {
+    "code": "ROLE_UNITY",
+    "title": "Unité",
+    "description": "Page de configuration d'une unité"
+}, {
+    "code": "ROLE_STOCK_TYPE",
+    "title": "Type de stock",
+    "description": "Page de configuration d'un type de stock"
+}, {
+    "code": "ROLE_PURCHASE_ORDER",
+    "title": "Bon de commande",
+    "description": "Page de configuration d'un bon de commande"
+}, {
+    "code": "ROLE_PURCHASE",
+    "title": "Achat",
+    "description": "Page de configuration d'un bon d'achat auprès d'un fournisseur"
+}, {
+    "code": "ROLE_DELIVERY_NOTE",
+    "title": "Livraison (entrée)",
+    "description": "Page de configuration d'un bon de livraison (entrée)"
+}, {
+    "code": "ROLE_ORDER",
+    "title": "Commande",
+    "description": "Page de configuration d'une commande auprès du fournisseur"
+}, {
+    "code": "ROLE_SALE",
+    "title": "Vente",
+    "description": "Page de configuration d'une vente"
+}, {
+    "code": "ROLE_CLIENT_DELIVERY_NOTE",
+    "title": "Livraison (sortie)",
+    "description": "Page de configuration d'un bon de livraison (sortie)"
+}, {
+    "code": "ROLE_COMPARTMENT",
+    "title": "Compartiment",
+    "description": "Page de configuration d'un compartiment"
+}, {
+    "code": "ROLE_FOLDER",
+    "title": "Dossier",
+    "description": "Page de configuration d'un dossier"
+}, {
+    "code": "ROLE_TANK",
+    "title": "Citerne",
+    "description": "Page de configuration d'une citerne"
+}, {
+    "code": "ROLE_TRUCK",
+    "title": "Tracteur",
+    "description": "Page de configuration d'un tracteur"
+}, {
+    "code": "ROLE_TOURN",
+    "title": "Tournée",
+    "description": "Page de configuration d'une tournée"
+}, {
+    "code": "ROLE_DESTINATION",
+    "title": "Destination",
+    "description": "Page de configuration d'une destination"
+}, {
+    "code": "ROLE_GOOD_TO_REMOVE",
+    "title": "Bon à enlever",
+    "description": "Page de configuration d'un bon à enlever"
+}, {
+    "code": "ROLE_TRANSFER_DEMAND",
+    "title": "Demande de transfert",
+    "description": "Page de configuration d'une demande de transfert"
+}, {
+    "code": "ROLE_TRANSFER",
+    "title": "Transfert",
+    "description": "Page de configuration d'un transfert"
+}, {
+    "code": "ROLE_PHONE_OPERATOR",
+    "title": "Opérateur téléphonique",
+    "description": "Page de configuration d'un opérateur téléphonique"
+}, {
+    "code": "ROLE_DELIVERY_POINT",
+    "title": "Point de livraison",
+    "description": "Page de configuration d'un point de livraison"
+}, {
+    "code": "ROLE_USER",
+    "title": "Utilisateur",
+    "description": "Page de configuration d'un utilisateur"
+}, {
+    "code": "ROLE_USER_TYPE",
+    "title": "Type utilisateur",
+    "description": "Page de configuration d'un type d'utilisateur"
+}]

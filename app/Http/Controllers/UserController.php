@@ -30,12 +30,12 @@ class UserController extends Controller
         $this->authorize('ROLE_USER_READ', User::class);
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
-        // $roles = Role::with('operation')->with('pageOperation')->get();
-        $pageOperations = PageOperation::orderBy('title')->get();
-        $operations = Operation::orderBy('wording')->get();
-        // $roles = Role::all();
+        
+        $pageOperations = PageOperation::with('page')->with('operation')->get();
+        // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
+
         return new JsonResponse([
-            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations, 'operations' => $operations]
+            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations]
         ], 200);
     }
 

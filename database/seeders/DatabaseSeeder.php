@@ -19,9 +19,8 @@ class DatabaseSeeder extends Seeder
             ExtensionsTableSeeder::class,
             FileTypesTableSeeder::class,
             OperationsTableSeeder::class,
+            PagesTableSeeder::class,
             PageOperationsTableSeeder::class,
-            RolesTableSeeder::class,
-            RolesTableSeeder::class,
             CurrenciesTableSeeder::class,
         ]);
     }

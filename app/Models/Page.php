@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Operation extends Model
+class Page extends Model
 {
-    protected $fillable = [
-        'code',
-        'wording',
-        'description'
+
+    protected $casts = [
+        'operations' => 'array',
     ];
 
     public function pageOperations()
