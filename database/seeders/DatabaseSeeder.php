@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             PageOperationsTableSeeder::class,
             RolesTableSeeder::class,
             RolesTableSeeder::class,
+            CurrenciesTableSeeder::class,
         ]);
     }
 }

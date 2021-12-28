@@ -1,0 +1,851 @@
+[{
+        "code": "AED",
+        "wording": "United Arab Emirates Dirham",
+        "description": ""
+    },
+    {
+        "code": "AFN",
+        "wording": "Afghan Afghani",
+        "description": ""
+    },
+    {
+        "code": "ALL",
+        "wording": "Albanian Lek",
+        "description": ""
+    },
+    {
+        "code": "AMD",
+        "wording": "Armenian Dram",
+        "description": ""
+    },
+    {
+        "code": "ANG",
+        "wording": "Netherlands Antillean Guilder",
+        "description": ""
+    },
+    {
+        "code": "AOA",
+        "wording": "Angolan Kwanza",
+        "description": ""
+    },
+    {
+        "code": "ARS",
+        "wording": "Argentine Peso",
+        "description": ""
+    },
+    {
+        "code": "AUD",
+        "wording": "Australian Dollar",
+        "description": ""
+    },
+    {
+        "code": "AWG",
+        "wording": "Aruban Florin",
+        "description": ""
+    },
+    {
+        "code": "AZN",
+        "wording": "Azerbaijani Manat",
+        "description": ""
+    },
+    {
+        "code": "BAM",
+        "wording": "Bosnia-Herzegovina Convertible Mark",
+        "description": ""
+    },
+    {
+        "code": "BBD",
+        "wording": "Barbadian Dollar",
+        "description": ""
+    },
+    {
+        "code": "BDT",
+        "wording": "Bangladeshi Taka",
+        "description": ""
+    },
+    {
+        "code": "BGN",
+        "wording": "Bulgarian Lev",
+        "description": ""
+    },
+    {
+        "code": "BHD",
+        "wording": "Bahraini Dinar",
+        "description": ""
+    },
+    {
+        "code": "BIF",
+        "wording": "Burundian Franc",
+        "description": ""
+    },
+    {
+        "code": "BMD",
+        "wording": "Bermudan Dollar",
+        "description": ""
+    },
+    {
+        "code": "BND",
+        "wording": "Brunei Dollar",
+        "description": ""
+    },
+    {
+        "code": "BOB",
+        "wording": "Bolivian Boliviano",
+        "description": ""
+    },
+    {
+        "code": "BRL",
+        "wording": "Brazilian Real",
+        "description": ""
+    },
+    {
+        "code": "BSD",
+        "wording": "Bahamian Dollar",
+        "description": ""
+    },
+    {
+        "code": "BTC",
+        "wording": "Bitcoin",
+        "description": ""
+    },
+    {
+        "code": "BTN",
+        "wording": "Bhutanese Ngultrum",
+        "description": ""
+    },
+    {
+        "code": "BWP",
+        "wording": "Botswanan Pula",
+        "description": ""
+    },
+    {
+        "code": "BYN",
+        "wording": "Belarusian Ruble",
+        "description": ""
+    },
+    {
+        "code": "BZD",
+        "wording": "Belize Dollar",
+        "description": ""
+    },
+    {
+        "code": "CAD",
+        "wording": "Canadian Dollar",
+        "description": ""
+    },
+    {
+        "code": "CDF",
+        "wording": "Congolese Franc",
+        "description": ""
+    },
+    {
+        "code": "CHF",
+        "wording": "Swiss Franc",
+        "description": ""
+    },
+    {
+        "code": "CLF",
+        "wording": "Chilean Unit of Account (UF)",
+        "description": ""
+    },
+    {
+        "code": "CLP",
+        "wording": "Chilean Peso",
+        "description": ""
+    },
+    {
+        "code": "CNH",
+        "wording": "Chinese Yuan (Offshore)",
+        "description": ""
+    },
+    {
+        "code": "CNY",
+        "wording": "Chinese Yuan",
+        "description": ""
+    },
+    {
+        "code": "COP",
+        "wording": "Colombian Peso",
+        "description": ""
+    },
+    {
+        "code": "CRC",
+        "wording": "Costa Rican Colón",
+        "description": ""
+    },
+    {
+        "code": "CUC",
+        "wording": "Cuban Convertible Peso",
+        "description": ""
+    },
+    {
+        "code": "CUP",
+        "wording": "Cuban Peso",
+        "description": ""
+    },
+    {
+        "code": "CVE",
+        "wording": "Cape Verdean Escudo",
+        "description": ""
+    },
+    {
+        "code": "CZK",
+        "wording": "Czech Republic Koruna",
+        "description": ""
+    },
+    {
+        "code": "DJF",
+        "wording": "Djiboutian Franc",
+        "description": ""
+    },
+    {
+        "code": "DKK",
+        "wording": "Danish Krone",
+        "description": ""
+    },
+    {
+        "code": "DOP",
+        "wording": "Dominican Peso",
+        "description": ""
+    },
+    {
+        "code": "DZD",
+        "wording": "Algerian Dinar",
+        "description": ""
+    },
+    {
+        "code": "EGP",
+        "wording": "Egyptian Pound",
+        "description": ""
+    },
+    {
+        "code": "ERN",
+        "wording": "Eritrean Nakfa",
+        "description": ""
+    },
+    {
+        "code": "ETB",
+        "wording": "Ethiopian Birr",
+        "description": ""
+    },
+    {
+        "code": "EUR",
+        "wording": "Euro",
+        "description": ""
+    },
+    {
+        "code": "FJD",
+        "wording": "Fijian Dollar",
+        "description": ""
+    },
+    {
+        "code": "FKP",
+        "wording": "Falkland Islands Pound",
+        "description": ""
+    },
+    {
+        "code": "GBP",
+        "wording": "British Pound Sterling",
+        "description": ""
+    },
+    {
+        "code": "GEL",
+        "wording": "Georgian Lari",
+        "description": ""
+    },
+    {
+        "code": "GGP",
+        "wording": "Guernsey Pound",
+        "description": ""
+    },
+    {
+        "code": "GHS",
+        "wording": "Ghanaian Cedi",
+        "description": ""
+    },
+    {
+        "code": "GIP",
+        "wording": "Gibraltar Pound",
+        "description": ""
+    },
+    {
+        "code": "GMD",
+        "wording": "Gambian Dalasi",
+        "description": ""
+    },
+    {
+        "code": "GNF",
+        "wording": "Guinean Franc",
+        "description": ""
+    },
+    {
+        "code": "GTQ",
+        "wording": "Guatemalan Quetzal",
+        "description": ""
+    },
+    {
+        "code": "GYD",
+        "wording": "Guyanaese Dollar",
+        "description": ""
+    },
+    {
+        "code": "HKD",
+        "wording": "Hong Kong Dollar",
+        "description": ""
+    },
+    {
+        "code": "HNL",
+        "wording": "Honduran Lempira",
+        "description": ""
+    },
+    {
+        "code": "HRK",
+        "wording": "Croatian Kuna",
+        "description": ""
+    },
+    {
+        "code": "HTG",
+        "wording": "Haitian Gourde",
+        "description": ""
+    },
+    {
+        "code": "HUF",
+        "wording": "Hungarian Forint",
+        "description": ""
+    },
+    {
+        "code": "IDR",
+        "wording": "Indonesian Rupiah",
+        "description": ""
+    },
+    {
+        "code": "ILS",
+        "wording": "Israeli New Sheqel",
+        "description": ""
+    },
+    {
+        "code": "IMP",
+        "wording": "Manx pound",
+        "description": ""
+    },
+    {
+        "code": "INR",
+        "wording": "Indian Rupee",
+        "description": ""
+    },
+    {
+        "code": "IQD",
+        "wording": "Iraqi Dinar",
+        "description": ""
+    },
+    {
+        "code": "IRR",
+        "wording": "Iranian Rial",
+        "description": ""
+    },
+    {
+        "code": "ISK",
+        "wording": "Icelandic Króna",
+        "description": ""
+    },
+    {
+        "code": "JEP",
+        "wording": "Jersey Pound",
+        "description": ""
+    },
+    {
+        "code": "JMD",
+        "wording": "Jamaican Dollar",
+        "description": ""
+    },
+    {
+        "code": "JOD",
+        "wording": "Jordanian Dinar",
+        "description": ""
+    },
+    {
+        "code": "JPY",
+        "wording": "Japanese Yen",
+        "description": ""
+    },
+    {
+        "code": "KES",
+        "wording": "Kenyan Shilling",
+        "description": ""
+    },
+    {
+        "code": "KGS",
+        "wording": "Kyrgystani Som",
+        "description": ""
+    },
+    {
+        "code": "KHR",
+        "wording": "Cambodian Riel",
+        "description": ""
+    },
+    {
+        "code": "KMF",
+        "wording": "Comorian Franc",
+        "description": ""
+    },
+    {
+        "code": "KPW",
+        "wording": "North Korean Won",
+        "description": ""
+    },
+    {
+        "code": "KRW",
+        "wording": "South Korean Won",
+        "description": ""
+    },
+    {
+        "code": "KWD",
+        "wording": "Kuwaiti Dinar",
+        "description": ""
+    },
+    {
+        "code": "KYD",
+        "wording": "Cayman Islands Dollar",
+        "description": ""
+    },
+    {
+        "code": "KZT",
+        "wording": "Kazakhstani Tenge",
+        "description": ""
+    },
+    {
+        "code": "LAK",
+        "wording": "Laotian Kip",
+        "description": ""
+    },
+    {
+        "code": "LBP",
+        "wording": "Lebanese Pound",
+        "description": ""
+    },
+    {
+        "code": "LKR",
+        "wording": "Sri Lankan Rupee",
+        "description": ""
+    },
+    {
+        "code": "LRD",
+        "wording": "Liberian Dollar",
+        "description": ""
+    },
+    {
+        "code": "LSL",
+        "wording": "Lesotho Loti",
+        "description": ""
+    },
+    {
+        "code": "LYD",
+        "wording": "Libyan Dinar",
+        "description": ""
+    },
+    {
+        "code": "MAD",
+        "wording": "Moroccan Dirham",
+        "description": ""
+    },
+    {
+        "code": "MDL",
+        "wording": "Moldovan Leu",
+        "description": ""
+    },
+    {
+        "code": "MGA",
+        "wording": "Malagasy Ariary",
+        "description": ""
+    },
+    {
+        "code": "MKD",
+        "wording": "Macedonian Denar",
+        "description": ""
+    },
+    {
+        "code": "MMK",
+        "wording": "Myanma Kyat",
+        "description": ""
+    },
+    {
+        "code": "MNT",
+        "wording": "Mongolian Tugrik",
+        "description": ""
+    },
+    {
+        "code": "MOP",
+        "wording": "Macanese Pataca",
+        "description": ""
+    },
+    {
+        "code": "MRU",
+        "wording": "Mauritanian Ouguiya",
+        "description": ""
+    },
+    {
+        "code": "MUR",
+        "wording": "Mauritian Rupee",
+        "description": ""
+    },
+    {
+        "code": "MVR",
+        "wording": "Maldivian Rufiyaa",
+        "description": ""
+    },
+    {
+        "code": "MWK",
+        "wording": "Malawian Kwacha",
+        "description": ""
+    },
+    {
+        "code": "MXN",
+        "wording": "Mexican Peso",
+        "description": ""
+    },
+    {
+        "code": "MYR",
+        "wording": "Malaysian Ringgit",
+        "description": ""
+    },
+    {
+        "code": "MZN",
+        "wording": "Mozambican Metical",
+        "description": ""
+    },
+    {
+        "code": "NAD",
+        "wording": "Namibian Dollar",
+        "description": ""
+    },
+    {
+        "code": "NGN",
+        "wording": "Nigerian Naira",
+        "description": ""
+    },
+    {
+        "code": "NIO",
+        "wording": "Nicaraguan Córdoba",
+        "description": ""
+    },
+    {
+        "code": "NOK",
+        "wording": "Norwegian Krone",
+        "description": ""
+    },
+    {
+        "code": "NPR",
+        "wording": "Nepalese Rupee",
+        "description": ""
+    },
+    {
+        "code": "NZD",
+        "wording": "New Zealand Dollar",
+        "description": ""
+    },
+    {
+        "code": "OMR",
+        "wording": "Omani Rial",
+        "description": ""
+    },
+    {
+        "code": "PAB",
+        "wording": "Panamanian Balboa",
+        "description": ""
+    },
+    {
+        "code": "PEN",
+        "wording": "Peruvian Nuevo Sol",
+        "description": ""
+    },
+    {
+        "code": "PGK",
+        "wording": "Papua New Guinean Kina",
+        "description": ""
+    },
+    {
+        "code": "PHP",
+        "wording": "Philippine Peso",
+        "description": ""
+    },
+    {
+        "code": "PKR",
+        "wording": "Pakistani Rupee",
+        "description": ""
+    },
+    {
+        "code": "PLN",
+        "wording": "Polish Zloty",
+        "description": ""
+    },
+    {
+        "code": "PYG",
+        "wording": "Paraguayan Guarani",
+        "description": ""
+    },
+    {
+        "code": "QAR",
+        "wording": "Qatari Rial",
+        "description": ""
+    },
+    {
+        "code": "RON",
+        "wording": "Romanian Leu",
+        "description": ""
+    },
+    {
+        "code": "RSD",
+        "wording": "Serbian Dinar",
+        "description": ""
+    },
+    {
+        "code": "RUB",
+        "wording": "Russian Ruble",
+        "description": ""
+    },
+    {
+        "code": "RWF",
+        "wording": "Rwandan Franc",
+        "description": ""
+    },
+    {
+        "code": "SAR",
+        "wording": "Saudi Riyal",
+        "description": ""
+    },
+    {
+        "code": "SBD",
+        "wording": "Solomon Islands Dollar",
+        "description": ""
+    },
+    {
+        "code": "SCR",
+        "wording": "Seychellois Rupee",
+        "description": ""
+    },
+    {
+        "code": "SDG",
+        "wording": "Sudanese Pound",
+        "description": ""
+    },
+    {
+        "code": "SEK",
+        "wording": "Swedish Krona",
+        "description": ""
+    },
+    {
+        "code": "SGD",
+        "wording": "Singapore Dollar",
+        "description": ""
+    },
+    {
+        "code": "SHP",
+        "wording": "Saint Helena Pound",
+        "description": ""
+    },
+    {
+        "code": "SLL",
+        "wording": "Sierra Leonean Leone",
+        "description": ""
+    },
+    {
+        "code": "SOS",
+        "wording": "Somali Shilling",
+        "description": ""
+    },
+    {
+        "code": "SRD",
+        "wording": "Surinamese Dollar",
+        "description": ""
+    },
+    {
+        "code": "SSP",
+        "wording": "South Sudanese Pound",
+        "description": ""
+    },
+    {
+        "code": "STD",
+        "wording": "São Tomé and Príncipe Dobra (pre-2018)",
+        "description": ""
+    },
+    {
+        "code": "STN",
+        "wording": "São Tomé and Príncipe Dobra",
+        "description": ""
+    },
+    {
+        "code": "SVC",
+        "wording": "Salvadoran Colón",
+        "description": ""
+    },
+    {
+        "code": "SYP",
+        "wording": "Syrian Pound",
+        "description": ""
+    },
+    {
+        "code": "SZL",
+        "wording": "Swazi Lilangeni",
+        "description": ""
+    },
+    {
+        "code": "THB",
+        "wording": "Thai Baht",
+        "description": ""
+    },
+    {
+        "code": "TJS",
+        "wording": "Tajikistani Somoni",
+        "description": ""
+    },
+    {
+        "code": "TMT",
+        "wording": "Turkmenistani Manat",
+        "description": ""
+    },
+    {
+        "code": "TND",
+        "wording": "Tunisian Dinar",
+        "description": ""
+    },
+    {
+        "code": "TOP",
+        "wording": "Tongan Pa'anga",
+        "description": ""
+    },
+    {
+        "code": "TRY",
+        "wording": "Turkish Lira",
+        "description": ""
+    },
+    {
+        "code": "TTD",
+        "wording": "Trinidad and Tobago Dollar",
+        "description": ""
+    },
+    {
+        "code": "TWD",
+        "wording": "New Taiwan Dollar",
+        "description": ""
+    },
+    {
+        "code": "TZS",
+        "wording": "Tanzanian Shilling",
+        "description": ""
+    },
+    {
+        "code": "UAH",
+        "wording": "Ukrainian Hryvnia",
+        "description": ""
+    },
+    {
+        "code": "UGX",
+        "wording": "Ugandan Shilling",
+        "description": ""
+    },
+    {
+        "code": "USD",
+        "wording": "United States Dollar",
+        "description": ""
+    },
+    {
+        "code": "UYU",
+        "wording": "Uruguayan Peso",
+        "description": ""
+    },
+    {
+        "code": "UZS",
+        "wording": "Uzbekistan Som",
+        "description": ""
+    },
+    {
+        "code": "VEF",
+        "wording": "Venezuelan Bolívar Fuerte (Old)",
+        "description": ""
+    },
+    {
+        "code": "VES",
+        "wording": "Venezuelan Bolívar Soberano",
+        "description": ""
+    },
+    {
+        "code": "VND",
+        "wording": "Vietnamese Dong",
+        "description": ""
+    },
+    {
+        "code": "VUV",
+        "wording": "Vanuatu Vatu",
+        "description": ""
+    },
+    {
+        "code": "WST",
+        "wording": "Samoan Tala",
+        "description": ""
+    },
+    {
+        "code": "XAF",
+        "wording": "CFA Franc BEAC",
+        "description": ""
+    },
+    {
+        "code": "XAG",
+        "wording": "Silver Ounce",
+        "description": ""
+    },
+    {
+        "code": "XAU",
+        "wording": "Gold Ounce",
+        "description": ""
+    },
+    {
+        "code": "XCD",
+        "wording": "East Caribbean Dollar",
+        "description": ""
+    },
+    {
+        "code": "XDR",
+        "wording": "Special Drawing Rights",
+        "description": ""
+    },
+    {
+        "code": "XOF",
+        "wording": "CFA Franc BCEAO",
+        "description": ""
+    },
+    {
+        "code": "XPD",
+        "wording": "Palladium Ounce",
+        "description": ""
+    },
+    {
+        "code": "XPF",
+        "wording": "CFP Franc",
+        "description": ""
+    },
+    {
+        "code": "XPT",
+        "wording": "Platinum Ounce",
+        "description": ""
+    },
+    {
+        "code": "YER",
+        "wording": "Yemeni Rial",
+        "description": ""
+    },
+    {
+        "code": "ZAR",
+        "wording": "South African Rand",
+        "description": ""
+    },
+    {
+        "code": "ZMW",
+        "wording": "Zambian Kwacha",
+        "description": ""
+    },
+    {
+        "code": "ZWL",
+        "wording": "Zimbabwean Dollar",
+        "description": ""
+    }
+]
