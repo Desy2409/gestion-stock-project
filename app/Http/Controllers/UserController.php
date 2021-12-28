@@ -31,7 +31,7 @@ class UserController extends Controller
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
         // $roles = Role::with('operation')->with('pageOperation')->get();
-        $pageOperations = PageOperation::orderBy('wording')->get();
+        $pageOperations = PageOperation::orderBy('title')->get();
         $operations = Operation::orderBy('wording')->get();
         // $roles = Role::all();
         return new JsonResponse([
