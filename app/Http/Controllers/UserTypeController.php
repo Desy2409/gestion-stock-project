@@ -17,12 +17,13 @@ class UserTypeController extends Controller
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         // $roles = Role::with('operation')->with('pageOperation')->get();
-        $pageOperations = PageOperation::orderBy('title')->get();
-        $operations = Operation::orderBy('wording')->get();
+        $pageOperations = PageOperation::with('page')->with('operation')->get();
+        // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
+        // $operations = Operation::orderBy('wording')->get();
         // $roles = Role::all();
         $userTypes = UserType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['pageOperations' => $pageOperations, 'operations' => $operations, 'userTypes' => $userTypes]
+            'datas' => ['pageOperations' => $pageOperations, 'userTypes' => $userTypes]
         ], 200);
     }
 
@@ -58,7 +59,7 @@ class UserTypeController extends Controller
         try {
 
             // Liste des opérations et pages opérations sélectionnées
-            // $checkedRoles = [];
+            $checkedRoles = [];
             // $checkedRoles = json_decode();
             // foreach ($request->roles as $key => $role) {
             //     $checkedRole = Role::where('operation_id', '=', $role->operation_id)->where('page_operation_id', '=', $role->page_operation->id)->first();

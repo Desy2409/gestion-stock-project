@@ -420,11 +420,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::delete('/employee-function/{id}/destroy', [EmployeeFunctionController::class, 'destroy']);
 
         // Role routes
-        Route::get('/role', [RoleController::class, 'index']);
-        Route::post('/role', [RoleController::class, 'store']);
-        Route::get('/role/{id}/show', [RoleController::class, 'show']);
-        Route::patch('/role/{id}/update', [RoleController::class, 'update']);
-        Route::delete('/role/{id}/destroy', [RoleController::class, 'destroy']);
+        // Route::get('/role', [RoleController::class, 'index']);
+        // Route::post('/role', [RoleController::class, 'store']);
+        // Route::get('/role/{id}/show', [RoleController::class, 'show']);
+        // Route::patch('/role/{id}/update', [RoleController::class, 'update']);
+        // Route::delete('/role/{id}/destroy', [RoleController::class, 'destroy']);
 
         // User routes
         Route::get('', [UserController::class, 'index']);

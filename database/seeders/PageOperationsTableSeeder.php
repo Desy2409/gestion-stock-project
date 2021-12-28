@@ -24,6 +24,9 @@ class PageOperationsTableSeeder extends Seeder
                     'code' => $pageOperation->code,
                     'title' => $pageOperation->title,
                     'description' => $pageOperation->description,
+                    'role' => $pageOperation->role,
+                    'operation_id' => $pageOperation->operation_id,
+                    'page_id' => $pageOperation->page_id,
                 ]);
             }
         }
