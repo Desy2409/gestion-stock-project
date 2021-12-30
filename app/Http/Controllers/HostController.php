@@ -174,8 +174,9 @@ class HostController extends Controller
 
     public function hostReports(Request $request)
     {
+        $this->authorize('ROLE_HOST_PRINT', Host::class);
         try {
-            $hosts = $this->hostRepository->hostReport($request->code, $request->provider, $request->url, $request->host_name, $request->driver, $request->start_date, $request->end_date);
+            $hosts = $this->hostRepository->hostReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['hosts' => $hosts]], 200);
         } catch (Exception $e) {
             dd($e);

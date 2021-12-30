@@ -22,6 +22,8 @@ class ClientRepository_old extends Repository
                 // $q->where('person_type', '=', 'Personne morale');
             });
 
+            
+
 
 
             // $clients = Person::whereHas('personable', function ($q) use ($lastName) {

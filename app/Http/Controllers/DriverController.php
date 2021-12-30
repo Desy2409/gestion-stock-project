@@ -183,8 +183,9 @@ class DriverController extends Controller
 
     public function driverReports(Request $request)
     {
+        $this->authorize('ROLE_DRIVER_PRINT', Driver::class);
         try {
-            $drivers = $this->driverRepository->reportIncludeCode(Driver::class, $request->code, $request->wording, $request->description, $request->start_date, $request->end_date);
+            $drivers = $this->driverRepository->reportIncludeCode(Driver::class, $request->selected_default_fields);
             return new JsonResponse(['datas' => ['drivers' => $drivers]],200);
         } catch (Exception $e) {
             dd($e);

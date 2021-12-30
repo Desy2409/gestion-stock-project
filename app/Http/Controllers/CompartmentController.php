@@ -165,8 +165,9 @@ class CompartmentController extends Controller
 
     public function compartmentReports(Request $request)
     {
+        $this->authorize('ROLE_COMPARTMENT_PRINT', Compartment::class);
         try {
-            $compartments = $this->compartmentRepository->compartmentReport($request->reference, $request->number, $request->capacity, $request->start_date, $request->end_date);
+            $compartments = $this->compartmentRepository->compartmentReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['compartments' => $compartments]], 200);
         } catch (Exception $e) {
             dd($e);

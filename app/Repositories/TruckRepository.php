@@ -6,7 +6,31 @@ use App\Models\Truck;
 
 class TruckRepository extends Repository
 {
-    public function truckReport($reference = false, $truck_registration = false, $provider = false, $compartment = false, $startDate = null, $endDate = null)
+
+    public function truckReport($selectedDefaultFields)
+    {
+        if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
+            $trucks = null;
+        } else {
+            $trucks = Truck::select($selectedDefaultFields)->where('id', '!=', null);
+            if (in_array('provider_id',$selectedDefaultFields)) {
+                // dd('in_array');
+                $trucks->with('provider');
+            }
+            if (in_array('compartment_id',$selectedDefaultFields)) {
+                $trucks->with('compartment');
+            }
+            // if (in_array('start_date',$selectedDefaultFields)&&in_array('end_date',$selectedDefaultFields)) {
+            //     $trucks->whereBetween('created_at', [$startDate, $endDate]);
+            // }
+            // $trucks = $trucks->get($this->columns);
+        }
+
+        return $trucks->get();
+    }
+
+
+    public function truckReport_od($reference = false, $truck_registration = false, $provider = false, $compartment = false, $startDate = null, $endDate = null)
     {
         if (!$reference && !$truck_registration && !$provider &&!$compartment && $startDate == null && $endDate == null) {
             $trucks = null;

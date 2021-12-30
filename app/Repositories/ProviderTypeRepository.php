@@ -6,28 +6,17 @@ use App\Models\ProviderType;
 
 class ProviderTypeRepository extends Repository
 {
-    public function providerTypeReport($reference = false, $wording = false, $description = false, $type = false, $startDate = null, $endDate = null)
+    public function providerTypeReport($selectedDefaultFields)
     {
-        if (!$reference && !$wording && !$description &&!$type && $startDate == null && $endDate == null) {
+        if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
             $providerTypes = null;
         } else {
-            $providerTypes = ProviderType::where('id', '!=', null);
-            if ($reference) {
-                array_push($this->columns, 'reference');
-            }
-            if ($wording) {
-                array_push($this->columns, 'wording');
-            }
-            if ($description) {
-                array_push($this->columns, 'description');
-            }
-            if ($type) {
-                array_push($this->columns, 'type');
-            }
-            if ($startDate && $endDate) {
-                $providerTypes->whereBetween('created_at', [$startDate, $endDate]);
-            }
-            $providerTypes = $providerTypes->get($this->columns);
+            $providerTypes = ProviderType::select($selectedDefaultFields)->where('id', '!=', null)->get();
+            
+            
+            // if ($startDate && $endDate) {
+            //     $providerTypes->whereBetween('created_at', [$startDate, $endDate]);
+            // }
         }
 
         return $providerTypes;

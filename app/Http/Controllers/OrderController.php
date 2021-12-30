@@ -451,8 +451,9 @@ class OrderController extends Controller
 
     public function orderReports(Request $request)
     {
+        $this->authorize('ROLE_ORDER_PRINT', Order::class);
         try {
-            $orders = $this->orderRepository->orderReport($request->code, $request->reference, $request->order_date, $request->delivery_date, $request->date_of_processing, $request->total_amount, $request->state, $request->observation, $request->provider, $request->sale_point, $request->start_order_date, $request->end_order_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            $orders = $this->orderRepository->orderReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['orders' => $orders]], 200);
         } catch (Exception $e) {
             dd($e);

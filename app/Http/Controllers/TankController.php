@@ -184,8 +184,9 @@ class TankController extends Controller
 
     public function tankReports(Request $request)
     {
+        $this->authorize('ROLE_TANK_PRINT', Tank::class);
         try {
-            $tanks = $this->tankRepository->tankReport($request->reference, $request->tank_registration, $request->provider, $request->compartment, $request->start_date, $request->end_date);
+            $tanks = $this->tankRepository->tankReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['tanks' => $tanks]], 200);
         } catch (Exception $e) {
             dd($e);

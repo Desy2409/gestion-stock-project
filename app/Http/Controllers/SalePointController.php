@@ -224,8 +224,9 @@ class SalePointController extends Controller
 
     public function salePointReports(Request $request)
     {
+        $this->authorize('ROLE_SALE_POINT_PRINT', SalePoint::class);
         try {
-            $salePoints = $this->salePointRepository->salePointReport($request->rccm_number, $request->cc_number, $request->social_reason, $request->email, $request->phone_number, $request->address, $request->bp, $request->settings, $request->start_date, $request->end_date,$request->institution);
+            $salePoints = $this->salePointRepository->salePointReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['salePoints' => $salePoints]], 200);
         } catch (Exception $e) {
             dd($e);

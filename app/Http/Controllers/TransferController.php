@@ -10,6 +10,7 @@ use App\Models\SalePoint;
 use App\Models\Transfer;
 use App\Models\TransferDemand;
 use App\Models\TransferRegister;
+use App\Repositories\TransferRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,14 @@ use Illuminate\Http\Request;
 class TransferController extends Controller
 {
     use UtilityTrait;
+
+    
+    public $transferRepository;
+
+    public function __construct(TransferRepository $transferRepository)
+    {
+        $this->transferRepository = $transferRepository;
+    }
 
     public function index()
     {
@@ -297,6 +306,18 @@ class TransferController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    
+    public function transferReports(Request $request)
+    {
+        $this->authorize('ROLE_TRANSFER_DEMAND_PRINT', Tourn::class);
+        try {
+            $transfers = $this->transferRepository->transferReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['transfers' => $transfers]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

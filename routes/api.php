@@ -255,6 +255,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
     Route::patch('/transfer-demand/{id}/update', [TransferDemandController::class, 'update']);
     Route::delete('/transfer-demand/{id}/destroy', [TransferDemandController::class, 'destroy']);
+    Route::get('/transfer-demand-report', [TransferDemandController::class, 'transferDemandReports']);
 
     // Transfer demand processing routes
     Route::get('/transfer-demand-processing', [TransferDemandProcessingController::class, 'index']);
@@ -270,6 +271,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transfer/{id}/show', [TransferController::class, 'show']);
     Route::patch('/transfer/{id}/update', [TransferController::class, 'update']);
     Route::delete('/transfer/{id}/destroy', [TransferController::class, 'destroy']);
+    Route::get('/transfer-report', [TransferController::class, 'transferReports']);
 
     // Compartment routes
     Route::get('/compartment', [CompartmentController::class, 'index']);

@@ -158,8 +158,9 @@ class DestinationController extends Controller
 
     public function destinationReports(Request $request)
     {
+        $this->authorize('ROLE_DESTINATION_PRINT', Destination::class);
         try {
-            $destinations = $this->destinationRepository->reportIncludeReference(Destination::class, $request->reference, $request->wording, $request->description, $request->start_date, $request->end_date);
+            $destinations = $this->destinationRepository->reportIncludeReference(Destination::class, $request->selected_default_fields);
             return new JsonResponse(['datas' => ['destinations' => $destinations]],200);
         } catch (Exception $e) {
             dd($e);

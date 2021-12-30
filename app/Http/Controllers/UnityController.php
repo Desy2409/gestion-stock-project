@@ -94,7 +94,7 @@ class UnityController extends Controller
             ]
         );
 
-        $existingUnitiesOnSymbol = Unity::where('reference', $request->reference)->where('truck_registration', $request->truck_registration)->get();
+        $existingUnitiesOnSymbol = Unity::where('symbol', $request->symbol)->get();
         if (!empty($existingUnitiesOnSymbol) && sizeof($existingUnitiesOnSymbol) > 1) {
             $success = false;
             return new JsonResponse([
@@ -104,7 +104,7 @@ class UnityController extends Controller
             ], 400);
         }
 
-        $existingUnitiesOnWording = Unity::where('reference', $request->reference)->where('truck_registration', $request->truck_registration)->get();
+        $existingUnitiesOnWording = Unity::where('wording', $request->wording)->get();
         if (!empty($existingUnitiesOnWording) && sizeof($existingUnitiesOnWording) > 1) {
             $success = false;
             return new JsonResponse([
@@ -189,8 +189,9 @@ class UnityController extends Controller
 
     public function unityReports(Request $request)
     {
+        $this->authorize('ROLE_UNITY_PRINT', Truck::class);
         try {
-            $unities = $this->unityRepository->unityReport($request->code, $request->wording, $request->description, $request->symbol, $request->start_date, $request->end_date);
+            $unities = $this->unityRepository->unityReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['unities' => $unities]], 200);
         } catch (Exception $e) {
             dd($e);
