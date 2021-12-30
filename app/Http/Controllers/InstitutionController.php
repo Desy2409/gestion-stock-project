@@ -92,7 +92,7 @@ class InstitutionController extends Controller
     public function show($id)
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
-        $institution = Institution::with('salesPoints')->findOrFail($id);
+        $institution = Institution::findOrFail($id);
         return new JsonResponse([
             'institution' => $institution
         ], 200);
@@ -101,7 +101,7 @@ class InstitutionController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
-        $institution = Institution::with('salesPoints')->findOrFail($id);
+        $institution = Institution::findOrFail($id);
         return new JsonResponse([
             'institution' => $institution,
         ], 200);

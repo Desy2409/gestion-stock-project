@@ -525,8 +525,8 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product;
+                    $productSale->unity_id = $product["unity"]["id"];
+                    $productSale->product_id = $product["product"]["id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
@@ -547,7 +547,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([
@@ -646,7 +646,7 @@ class SaleController extends Controller
             ], 400);
         }
     }
-    
+
     public function saleReports(Request $request)
     {
         try {

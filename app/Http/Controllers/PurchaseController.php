@@ -586,8 +586,8 @@ class PurchaseController extends Controller
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product["product"];
+                    $productPurchase->unity_id = $product["unity"]["id"];
+                    $productPurchase->product_id = $product["product"]["id"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 

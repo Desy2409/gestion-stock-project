@@ -189,7 +189,7 @@ class ClientController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
