@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Extension;
 use App\Models\FileType;
+use App\Repositories\FileTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,14 @@ use Illuminate\Support\Str;
 
 class FileTypeController extends Controller
 {
+
+    public $fileTypeRepository;
+
+    public function __construct(FileTypeRepository $fileTypeRepository)
+    {
+        $this->fileTypeRepository = $fileTypeRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_FILE_TYPE_READ', FileType::class);
@@ -137,5 +146,16 @@ class FileTypeController extends Controller
         return new JsonResponse([
             'fileType' => $fileType
         ], 200);
+    }
+
+    public function fileTypeReports(Request $request)
+    {
+        $this->authorize('ROLE_FILE_TYPE_PRINT', FileType::class);
+        try {
+            $fileTypes = $this->fileTypeRepository->fileTypeReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['fileTypes' => $fileTypes]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

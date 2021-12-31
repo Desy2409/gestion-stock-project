@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CorrespondenceChannel;
 use App\Models\Driver;
 use App\Models\EmailChannelParam;
+use App\Repositories\EmailChannelParamRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,14 @@ use Illuminate\Support\Facades\Hash;
 
 class EmailChannelParamController extends Controller
 {
+
+    public $emailChannelParamRepository;
+
+    public function __construct(EmailChannelParamRepository $emailChannelParamRepository)
+    {
+        $this->emailChannelParamRepository = $emailChannelParamRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_READ', EmailChannelParam::class);
@@ -471,5 +480,16 @@ class EmailChannelParamController extends Controller
         return new JsonResponse([
             'emailChannelParam' => $emailChannelParam
         ], 200);
+    }
+
+    public function emailChannelParamReports(Request $request)
+    {
+        $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_PRINT', EmailChannelParam::class);
+        try {
+            $emailChannelParams = $this->emailChannelParamRepository->emailChannelParamReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['emailChannelParams' => $emailChannelParams]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

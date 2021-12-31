@@ -335,6 +335,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/extension/{id}/show', [ExtensionController::class, 'show']);
     Route::patch('/extension/{id}/update', [ExtensionController::class, 'update']);
     Route::delete('/extension/{id}/destroy', [ExtensionController::class, 'destroy']);
+    Route::get('/extension-report', [ExtensionController::class, 'extensionReports']);
 
     // FileType routes
     Route::get('/file-type', [FileTypeController::class, 'index']);
@@ -342,6 +343,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/file-type/{id}/show', [FileTypeController::class, 'show']);
     Route::patch('/file-type/{id}/update', [FileTypeController::class, 'update']);
     Route::delete('/file-type/{id}/destroy', [FileTypeController::class, 'destroy']);
+    Route::get('/file-type-report', [FileTypeController::class, 'fileTypeReports']);
 
     // Folder routes
     Route::get('/folder', [FolderController::class, 'index']);
@@ -349,6 +351,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/folder/{id}/show', [FolderController::class, 'show']);
     Route::patch('/folder/{id}/update', [FolderController::class, 'update']);
     Route::delete('/folder/{id}/destroy', [FolderController::class, 'destroy']);
+    Route::get('/folder-report', [FolderController::class, 'folderReports']);
 
     // PhoneOperator routes
     Route::get('/phone-operator', [PhoneOperatorController::class, 'index']);
@@ -356,6 +359,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/phone-operator/{id}/show', [PhoneOperatorController::class, 'show']);
     Route::patch('/phone-operator/{id}/update', [PhoneOperatorController::class, 'update']);
     Route::delete('/phone-operator/{id}/destroy', [PhoneOperatorController::class, 'destroy']);
+    Route::get('/phone-operator-report', [PhoneOperatorController::class, 'phoneOperatorReports']);
 
     // DeliveryPoint routes
     Route::get('/delivery-point', [DeliveryPointController::class, 'index']);
@@ -363,6 +367,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
     Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
     Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
+    Route::get('/delivery-point-report', [DeliveryPointController::class, 'deliveryPointReports']);
 
     // Driver routes
     Route::get('/driver', [DriverController::class, 'index']);
@@ -387,6 +392,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/email-channel-param/{id}/show', [EmailChannelParamController::class, 'show']);
     Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::class, 'update']);
     Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
+    Route::get('/email-channel-param-report', [EmailChannelParamController::class, 'emailChannelParamReports']);
 
     Route::prefix('user')->group(function () {
         // Operation routes
@@ -411,6 +417,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user-type/{id}/show', [UserTypeController::class, 'show']);
         Route::patch('/user-type/{id}/update', [UserTypeController::class, 'update']);
         Route::delete('/user-type/{id}/destroy', [UserTypeController::class, 'destroy']);
+        Route::get('/user-type-report', [UserTypeController::class, 'userTypeReports']);
 
         // Employee function routes
         // Route::get('/employee-function', [EmployeeFunctionController::class, 'index']);
@@ -435,5 +442,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{id}/user-type-config', [UserController::class, 'userTypeConfiguration']);
         Route::patch('{id}/roles-config', [UserController::class, 'rolesConfiguration']);
         Route::patch('{id}/sale-points-config', [UserController::class, 'salePointsConfiguration']);
+        Route::get('/user-report', [UserController::class, 'userReports']);
     });
 });

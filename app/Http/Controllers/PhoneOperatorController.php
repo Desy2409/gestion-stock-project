@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Country;
 use App\Models\PhoneOperator;
 use App\Models\StartNumber;
+use App\Repositories\PhoneOperatorRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,14 @@ use Illuminate\Support\Str;
 
 class PhoneOperatorController extends Controller
 {
+
+    public $phoneOperatorRepository;
+
+    public function __construct(PhoneOperatorRepository $phoneOperatorRepository)
+    {
+        $this->phoneOperatorRepository = $phoneOperatorRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_PHONE_OPERATOR_READ', PhoneOperator::class);
@@ -186,5 +195,16 @@ class PhoneOperatorController extends Controller
         return new JsonResponse([
             'phoneOperator' => $phoneOperator
         ], 200);
+    }
+
+    public function phoneOperatorReports(Request $request)
+    {
+        $this->authorize('ROLE_PHONE_OPERATOR_PRINT', PhoneOperator::class);
+        try {
+            $phoneOperators = $this->phoneOperatorRepository->phoneOperatorReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['phoneOperators' => $phoneOperators]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

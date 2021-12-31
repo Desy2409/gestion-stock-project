@@ -7,12 +7,21 @@ use App\Models\PageOperation;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserType;
+use App\Repositories\UserTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserTypeController extends Controller
 {
+
+    public $userTypeRepository;
+
+    public function __construct(UserTypeRepository $userTypeRepository)
+    {
+        $this->userTypeRepository = $userTypeRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
@@ -203,5 +212,16 @@ class UserTypeController extends Controller
         return new JsonResponse([
             'userType' => $userType
         ], 200);
+    }
+
+    public function userTypeReports(Request $request)
+    {
+        $this->authorize('ROLE_USER_TYPE_PRINT', UserType::class);
+        try {
+            $userTypes = $this->userTypeRepository->userTypeReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['userTypes' => $userTypes]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

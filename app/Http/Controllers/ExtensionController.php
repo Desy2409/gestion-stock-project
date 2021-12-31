@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Extension;
+use App\Repositories\ExtensionRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,14 @@ use Illuminate\Support\Str;
 
 class ExtensionController extends Controller
 {
+
+    public $extensionRepository;
+
+    public function __construct(ExtensionRepository $extensionRepository)
+    {
+        $this->extensionRepository = $extensionRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_EXTENSION_READ', Extension::class);
@@ -122,5 +131,16 @@ class ExtensionController extends Controller
         return new JsonResponse([
             'extension' => $extension
         ], 200);
+    }
+
+    public function extensionReports(Request $request)
+    {
+        $this->authorize('ROLE_EXTENSION_PRINT', Extension::class);
+        try {
+            $extensions = $this->extensionRepository->extensionReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['extensions' => $extensions]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }
