@@ -36,7 +36,8 @@ class SaleController extends Controller
     public function saleOnPurchaseOrder()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
+        // $sales = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('clientDeliveryNotes')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -47,7 +48,7 @@ class SaleController extends Controller
         }
         $saleRegister->save();
 
-        $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->orderBy('code')->get();
+        $purchaseOrders = PurchaseOrder::orderBy('code')->get();
         return new JsonResponse([
             'datas' => ['purchaseOrders' => $purchaseOrders, 'sales' => $sales]
         ]);
@@ -56,7 +57,8 @@ class SaleController extends Controller
     public function directSale()
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sales = Sale::with('client')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
+        // $sales = Sale::with('client')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::with('clientDeliveryNotes')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -80,13 +82,13 @@ class SaleController extends Controller
     public function datasFromPurchaseOrder($id)
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $client = $purchaseOrder ? $purchaseOrder->client : null;
-        $salePoint = $purchaseOrder ? $purchaseOrder->salePoint : null;
+        $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->findOrFail($id);
+        // $client = $purchaseOrder ? $purchaseOrder->client : null;
+        // $salePoint = $purchaseOrder ? $purchaseOrder->salePoint : null;
 
-        $productPurchaseOrders = ProductPurchaseOrder::with('product')->with('unity')->where('purchase_order_id', $purchaseOrder->id)->get();
+        $productPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->with('product')->with('unity')->get();
         return new JsonResponse([
-            'client' => $client, 'salePoint' => $salePoint, 'datas' => ['productPurchaseOrders' => $productPurchaseOrders]
+         'purchaseOrder' => $purchaseOrder, 'datas' => ['productPurchaseOrders' => $productPurchaseOrders]
         ], 200);
     }
 
@@ -123,7 +125,7 @@ class SaleController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
-        $sale = Sale::with('purchaseOrder')->with('client')->with('salePoint')->findOrFail($id);
+        $sale = Sale::with('purchaseOrder')->findOrFail($id);
         $productSales = ProductSale::where('sale_id',$sale->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'sale' => $sale,
@@ -189,7 +191,7 @@ class SaleController extends Controller
                 $sale->tva = $request->tva;
                 $sale->observation = $request->observation;
                 $sale->client_id = $request->client;
-                $sale->sale_point_id = $request->SalePoint;
+                $sale->sale_point_id = $request->sale_point;
                 $sale->save();
 
                 $lastClientDeliveryNote = ClientDeliveryNote::latest()->first();
@@ -213,15 +215,15 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"];
-                    $productSale->product_id = $product["product"];
+                    $productSale->unity_id = $product["unity_id"];
+                    $productSale->product_id = $product["product_id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
                     $productClientDeliveryNote = new ProductClientDeliveryNote();
                     $productClientDeliveryNote->quantity = $product["quantity"];
-                    $productClientDeliveryNote->unity_id = $product["unity"];
-                    $productClientDeliveryNote->product_id = $product["product"];
+                    $productClientDeliveryNote->unity_id = $product["unity_id"];
+                    $productClientDeliveryNote->product_id = $product["product_id"];
                     $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
                     $productClientDeliveryNote->save();
 
@@ -238,7 +240,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
@@ -246,7 +248,7 @@ class SaleController extends Controller
                     'message' => $message,
                 ], 400);
             }
-        } else {
+        } elseif ($request->saleType == "Vente sur commande"){
             $this->validate(
                 $request,
                 [
@@ -299,8 +301,8 @@ class SaleController extends Controller
                 $sale->reference = $request->reference;
                 $sale->sale_date   = $request->sale_date;
                 // $sale->delivery_date   = $request->delivery_date;
-                $sale->total_amount = $purchaseOrder->total_amount;
-                $sale->amount_gross = $purchaseOrder->total_amount;
+                $sale->total_amount = $request->total_amount;
+                $sale->amount_gross = $request->amount_gross;
                 $sale->ht_amount = $request->ht_amount;
                 $sale->discount = $request->discount;
                 $sale->amount_token = $request->amount_token;
@@ -316,8 +318,8 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"]["id"];
-                    $productSale->product_id = $product["product"]["id"];
+                    $productSale->unity_id = $product["unity_id"];
+                    $productSale->product_id = $product["product_id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
@@ -338,7 +340,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                // dd($e);
+                dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
@@ -423,8 +425,8 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"]["id"];
-                    $productSale->product_id = $product["product"]["id"];
+                    $productSale->unity_id = $product["unity_id"];
+                    $productSale->product_id = $product["product_id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
@@ -448,6 +450,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
+                dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([
@@ -455,7 +458,7 @@ class SaleController extends Controller
                     'message' => $message,
                 ], 400);
             }
-        } else {
+        } elseif ($request->saleType == "Vente sur commande") {
             $this->validate(
                 $request,
                 [
@@ -515,7 +518,7 @@ class SaleController extends Controller
                 $sale->amount_token = $request->amount_token;
                 $sale->tva = $request->tva;
                 $sale->observation = $request->observation;
-                $sale->order_id = $purchaseOrder->id;
+                $sale->purchase_order_id = $purchaseOrder->id;
                 $sale->client_id = $request->client;
                 $sale->sale_point_id = $request->salePoint;
                 $sale->save();
@@ -525,8 +528,8 @@ class SaleController extends Controller
                     $productSale = new ProductSale();
                     $productSale->quantity = $product["quantity"];
                     $productSale->unit_price = $product["unit_price"];
-                    $productSale->unity_id = $product["unity"]["id"];
-                    $productSale->product_id = $product["product"]["id"];
+                    $productSale->unity_id = $product["unity_id"];
+                    $productSale->product_id = $product["product_id"];
                     $productSale->sale_id = $sale->id;
                     $productSale->save();
 
@@ -547,7 +550,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                // dd($e);
+                dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([

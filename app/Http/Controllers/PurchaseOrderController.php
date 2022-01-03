@@ -32,9 +32,10 @@ class PurchaseOrderController extends Controller
     public function index()
     {
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
-        $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
+        // $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
+        $purchaseOrders = PurchaseOrder::orderBy('purchase_date')->get();
         $clients = Client::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $products = Product::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
         $unities = Unity::orderBy('wording')->get();
 
@@ -74,7 +75,7 @@ class PurchaseOrderController extends Controller
         $this->validate(
             $request,
             [
-                'salePoint' => 'required',
+                'sale_point' => 'required',
                 'client' => 'required',
                 'reference' => 'required|unique:purchase_orders',
                 'purchase_date' => 'required|date|before:today', //|date_format:Ymd
@@ -87,7 +88,7 @@ class PurchaseOrderController extends Controller
                 // 'unity' => 'required',
             ],
             [
-                'salePoint.required' => "Le choix du point de vente est obligatoire.",
+                'sale_point.required' => "Le choix du point de vente est obligatoire.",
                 'client.required' => "Le choix du client est obligatoire.",
                 'reference.required' => "La référence de la commande est obligatoire.",
                 'reference.unique' => "Cette commande existe déjà.",
@@ -129,12 +130,12 @@ class PurchaseOrderController extends Controller
                 $purchaseOrder->code = $this->formateNPosition('BC', 1, 8);
             }
             $purchaseOrder->reference = $request->reference;
-            $purchaseOrder->purchase_date   = $request->purchase_date;
-            $purchaseOrder->delivery_date   = $request->delivery_date;
+            $purchaseOrder->purchase_date = $request->purchase_date;
+            $purchaseOrder->delivery_date = $request->delivery_date;
             $purchaseOrder->total_amount = $request->total_amount;
             $purchaseOrder->observation = $request->observation;
             $purchaseOrder->client_id = $request->client;
-            $purchaseOrder->sale_point_id = $request->salePoint;
+            $purchaseOrder->sale_point_id = $request->sale_point;
             $purchaseOrder->save();
 
             // dd($purchaseOrder);
@@ -145,9 +146,9 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder = new ProductPurchaseOrder();
                 $productPurchaseOrder->quantity = $product["quantity"];
                 $productPurchaseOrder->unit_price = $product["unit_price"];
-                $productPurchaseOrder->product_id = $product["product"];
+                $productPurchaseOrder->product_id = $product["product_id"];
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
-                $productPurchaseOrder->unity_id = $product["unity"];
+                $productPurchaseOrder->unity_id = $product["unity_id"];
                 $productPurchaseOrder->save();
 
                 array_push($productsPurchaseOrders, $productPurchaseOrder);
@@ -196,15 +197,15 @@ class PurchaseOrderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
-        $purchaseOrder = PurchaseOrder::with('client')->with('salePoint')->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::with('productPurchaseOrders')->findOrFail($id);
         // $clients = Client::with('person')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->with('product')->with('unity')->get();
+        // $productsPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->with('product')->with('unity')->get();
 
         return new JsonResponse([
             'purchaseOrder' => $purchaseOrder,
             // 'datas' => ['clients' => $clients, 'products' => $products, 'productsPurchaseOrders' => $productsPurchaseOrders]
-            'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders]
+            // 'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders]
         ], 200);
     }
 
@@ -275,8 +276,8 @@ class PurchaseOrderController extends Controller
                 $productPurchaseOrder = new ProductPurchaseOrder();
                 $productPurchaseOrder->quantity = $product['quantity'];
                 $productPurchaseOrder->unit_price = $product['unit_price'];
-                $productPurchaseOrder->unity_id = $product["unity"]["id"];
-                $productPurchaseOrder->product_id = $product['product']["id"];
+                $productPurchaseOrder->unity_id = $product["unity_id"];
+                $productPurchaseOrder->product_id = $product['product_id'];
                 $productPurchaseOrder->purchase_order_id = $purchaseOrder->id;
                 $productPurchaseOrder->save();
 

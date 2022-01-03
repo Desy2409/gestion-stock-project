@@ -37,9 +37,9 @@ class OrderController extends Controller
     {
         // dd("OrderController");
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $orders = Order::with('provider')->with('productOrders')->orderBy('order_date')->get();
+        $orders = Order::orderBy('order_date')->get();
         $providers = Provider::with('person')->get();
-        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $products = Product::orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
 
@@ -149,9 +149,9 @@ class OrderController extends Controller
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $productOrderLine['quantity'];
                 $productOrder->unit_price = $productOrderLine['unit_price'];
-                $productOrder->product_id = $productOrderLine['product'];
+                $productOrder->product_id = $productOrderLine['product_id'];
                 $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $productOrderLine['unity'];
+                $productOrder->unity_id = $productOrderLine['unity_id'];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);
@@ -215,8 +215,6 @@ class OrderController extends Controller
         //     # code...
         // }
 
-
-
         return new JsonResponse([
             'order' => $order,
             'datas' => ['productsOrders' => $productsOrders]
@@ -226,13 +224,10 @@ class OrderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $order = Order::with('provider')->with('productOrders')->findOrFail($id);
-        // $providers = Provider::with('person')->get();
-        // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $productOrders = ProductOrder::where('order_id', $order->id)->with('product')->with('unity')->get();
+        $order = Order::with('productOrders')->findOrFail($id);
+        // $productOrders = ProductOrder::where('order_id', $order->id)->get();
         return new JsonResponse([
             'order' => $order,
-            'datas' => ['productOrders' => $productOrders]
         ], 200);
     }
 
@@ -309,9 +304,9 @@ class OrderController extends Controller
                 $productOrder = new ProductOrder();
                 $productOrder->quantity = $product["quantity"];
                 $productOrder->unit_price = $product["unit_price"];
-                $productOrder->product_id = $product["product"]["id"];
+                $productOrder->product_id = $product["product_id"];
                 $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $product["unity"]["id"];
+                $productOrder->unity_id = $product["unity_id"];
                 $productOrder->save();
 
                 array_push($productsOrders, $productOrder);

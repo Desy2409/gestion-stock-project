@@ -37,7 +37,7 @@ class PurchaseController extends Controller
 
     public function purchaseOnOrder()
     {
-        $purchases = Purchase::with('provider')->with('order')->with('deliveryNotes')->with('productPurchases')->where('order_id', '!=', null)->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('deliveryNotes')->where('order_id', '!=', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
@@ -49,7 +49,7 @@ class PurchaseController extends Controller
         }
         $purchaseRegister->save();
 
-        $orders = Order::with('provider')->with('salePoint')->orderBy('code')->get();
+        $orders = Order::orderBy('code')->get();
         return new JsonResponse([
             'datas' => ['orders' => $orders, 'purchases' => $purchases]
         ]);
@@ -57,7 +57,7 @@ class PurchaseController extends Controller
 
     public function directPurchase()
     {
-        $purchases = Purchase::with('provider')->with('deliveryNotes')->with('productPurchases')->where('order_id', '=', null)->orderBy('code')->orderBy('purchase_date')->get();
+        $purchases = Purchase::with('deliveryNotes')->where('order_id', '=', null)->orderBy('code')->orderBy('purchase_date')->get();
 
         $lastPurchaseRegister = PurchaseRegister::latest()->first();
 
@@ -71,7 +71,7 @@ class PurchaseController extends Controller
 
         $providers = Provider::with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
-        $products = Product::with('subCategory')->get();
+        $products = Product::orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'purchases' => $purchases, 'unities' => $unities]
@@ -81,15 +81,13 @@ class PurchaseController extends Controller
     public function datasFromOrder($id)
     {
         $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
-        $order = Order::findOrFail($id);
-        $provider = $order ? $order->provider : null;
-        $salePoint = $order ? $order->salePoint : null;
-
+        $order = Order::with('provider')->with('salePoint')->findOrFail($id);
         $productOrders = ProductOrder::where('order_id', $order->id)->with('product')->with('unity')->get();
         // dd($productOrders);
         // dd($order);
         return new JsonResponse([
-            'provider' => $provider, 'salePoint' => $salePoint, 'datas' => ['productOrders' => $productOrders]
+            'order' => $order,
+            'product_orders' => $productOrders
         ], 200);
     }
 
@@ -127,11 +125,11 @@ class PurchaseController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_PURCHASE_READ', Purchase::class);
-        $purchase = Purchase::with('order')->with('provider')->with('salePoint')->findOrFail($id);
+        $purchase = Purchase::with('productPurchases')->findOrFail($id);
         $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'purchase' => $purchase,
-            'datas' => ['productPurchases' => $productPurchases]
+            'product_purchases' => $productPurchases
         ], 200);
     }
 
@@ -142,7 +140,7 @@ class PurchaseController extends Controller
             $this->validate(
                 $request,
                 [
-                    'salePoint' => 'required',
+                    'sale_point' => 'required',
                     'provider' => 'required',
                     'reference' => 'required|unique:purchases',
                     'purchase_date' => 'required|date|before:today', //|date_format:Ymd
@@ -155,7 +153,7 @@ class PurchaseController extends Controller
                     // 'unities' => 'required'
                 ],
                 [
-                    'salePoint.required' => "Le choix du point de vente est obligatoire.",
+                    'sale_point.required' => "Le choix du point de vente est obligatoire.",
                     'provider.required' => "Le choix du fournisseur est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Ce bon d'achat existe déjà.",
@@ -209,7 +207,7 @@ class PurchaseController extends Controller
                 $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->salePoint;
+                $purchase->sale_point_id = $request->sale_point;
                 $purchase->save();
 
                 // Enregistrement de la livraison affiliée à l'achat direct
@@ -234,15 +232,15 @@ class PurchaseController extends Controller
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product["product"];
+                    $productPurchase->unity_id = $product["unity_id"];
+                    $productPurchase->product_id = $product["product_id"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
                     $productDeliveryNote = new ProductDeliveryNote();
                     $productDeliveryNote->quantity = $product["quantity"];
-                    $productDeliveryNote->unity_id = $product["unity"];
-                    $productDeliveryNote->product_id = $product["product"];
+                    $productDeliveryNote->unity_id = $product["unity_id"];
+                    $productDeliveryNote->product_id = $product["product_id"];
                     $productDeliveryNote->delivery_note_id = $deliveryNote->id;
                     $productDeliveryNote->save();
 
@@ -339,8 +337,8 @@ class PurchaseController extends Controller
                 $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->order_id = $order->id;
-                $purchase->provider_id = $order->provider->id;
-                $purchase->sale_point_id = $order->salePoint->id;
+                $purchase->provider_id = $request->provider;
+                $purchase->sale_point_id = $request->sale_point;
                 $purchase->save();
 
                 $productPurchases = [];
@@ -352,8 +350,8 @@ class PurchaseController extends Controller
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"]["id"];
-                    $productPurchase->product_id = $product["product"]["id"];
+                    $productPurchase->unity_id = $product["unity_id"];
+                    $productPurchase->product_id = $product["product_id"];
                     // $productPurchase->quantity = $product[$i]["quantity"];
                     // $productPurchase->unit_price = $product[$i]["unit_price"];
                     // $productPurchase->unity_id = $product[$i]["unity"];
@@ -400,7 +398,7 @@ class PurchaseController extends Controller
             $this->validate(
                 $request,
                 [
-                    'salePoint' => 'required',
+                    'sale_point' => 'required',
                     'provider' => 'required',
                     'reference' => 'required',
                     'purchase_date' => 'required|date|before:today', //|date_format:Ymd
@@ -413,7 +411,7 @@ class PurchaseController extends Controller
                     // 'unities' => 'required'
                 ],
                 [
-                    'salePoint.required' => "Le choix du point de vente est obligatoire.",
+                    'sale_point.required' => "Le choix du point de vente est obligatoire.",
                     'provider.required' => "Le choix du fournisseur est obligatoire.",
                     'reference.required' => "La référence du bon est obligatoire.",
                     'reference.unique' => "Ce bon d'achat existe déjà.",
@@ -458,7 +456,7 @@ class PurchaseController extends Controller
                 $purchase->tva = $request->tva;
                 $purchase->observation = $request->observation;
                 $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->salePoint;
+                $purchase->sale_point_id = $request->sale_point;
                 $purchase->save();
 
                 // $deliveryNote = $purchase ? $purchase->deliveryNote : null;
@@ -480,8 +478,8 @@ class PurchaseController extends Controller
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"];
-                    $productPurchase->product_id = $product["product"];
+                    $productPurchase->unity_id = $product["unity_id"];
+                    $productPurchase->product_id = $product["product_id"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
@@ -586,8 +584,8 @@ class PurchaseController extends Controller
                     $productPurchase = new ProductPurchase();
                     $productPurchase->quantity = $product["quantity"];
                     $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity"]["id"];
-                    $productPurchase->product_id = $product["product"]["id"];
+                    $productPurchase->unity_id = $product["unity_id"];
+                    $productPurchase->product_id = $product["product_id"];
                     $productPurchase->purchase_id = $purchase->id;
                     $productPurchase->save();
 
@@ -608,7 +606,7 @@ class PurchaseController extends Controller
                     'datas' => ['productPurchases' => $productPurchases],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([
