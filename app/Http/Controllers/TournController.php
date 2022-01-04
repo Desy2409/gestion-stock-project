@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
-use App\Models\GoodToRemove;
+use App\Models\RemovalOrder;
 use App\Models\Tourn;
 use App\Models\TournRegister;
 use App\Repositories\TournRepository;
@@ -26,7 +26,7 @@ class TournController extends Controller
     {
         $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $tourns = Tourn::orderBy('reference')->get();
-        $goodToRemoves = GoodToRemove::orderBy('voucher_date')->orderBy('reference')->get();
+        // $removalOrders = RemovalOrder::orderBy('voucher_date')->orderBy('reference')->get();
 
         $lastTournRegister = TournRegister::latest()->first();
 
@@ -39,7 +39,7 @@ class TournController extends Controller
         $tournRegister->save();
 
         return new JsonResponse([
-            'datas' => ['tourns' => $tourns, 'goodToRemoves' => $goodToRemoves]
+            'datas' => ['tourns' => $tourns]//, 'removalOrders' => $removalOrders
         ], 200);
     }
 

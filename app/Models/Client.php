@@ -3,20 +3,10 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'code',
-        'reference',
-        'settings',
-        'exemption_reference',
-        'limit_date_exemption'
-    ];
 
     public function person()
     {
@@ -34,8 +24,8 @@ class Client extends Model
         return $this->hasMany(Sale::class);
     }
     
-    public function goodToRemoves()
+    public function removalOrders()
     {
-        return $this->hasMany(GoodToRemove::class);
+        return $this->hasMany(RemovalOrder::class);
     }
 }

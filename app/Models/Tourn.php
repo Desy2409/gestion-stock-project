@@ -27,13 +27,13 @@ class Tourn extends Model
         return $this->belongsTo(Destination::class);
     }
 
-    public function goodToRemove()
+    public function removalOrder()
     {
-        return $this->belongsTo(GoodToRemove::class);
+        return $this->belongsTo(RemovalOrder::class);
     }
 
-    public function clientDeliveryNotes()
+    public function clientDeliveryNote()
     {
-        return $this->hasMany(ClientDeliveryNote::class);
+        return $this->belongsTo(ClientDeliveryNote::class);
     }
 }

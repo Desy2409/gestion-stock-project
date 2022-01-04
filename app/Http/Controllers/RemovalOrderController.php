@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
-use App\Models\GoodToRemove;
-use App\Models\GoodToRemoveRegister;
+use App\Models\RemovalOrder;
+use App\Models\RemovalOrderRegister;
 use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\SalePoint;
@@ -15,7 +15,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class GoodToRemoveController extends Controller
+class RemovalOrderController extends Controller
 {
 
     use UtilityTrait;
@@ -26,11 +26,11 @@ class GoodToRemoveController extends Controller
     public function index()
     {
 
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
         $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
 
-        $goodToRemoves = GoodToRemove::orderBy('voucher_date')->orderBy('reference')->get();
+        $removalOrders = RemovalOrder::orderBy('voucher_date')->orderBy('reference')->get();
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
@@ -38,19 +38,19 @@ class GoodToRemoveController extends Controller
         $clients = Client::with('person.address')->get();
         $transfers = Transfer::orderBy('code')->get();
 
-        $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
+        $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
-        $goodToRemoveRegister = new GoodToRemoveRegister();
-        if ($lastGoodToRemoveRegister) {
-            $goodToRemoveRegister->code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
+        $removalOrderRegister = new RemovalOrderRegister();
+        if ($lastRemovalOrderRegister) {
+            $removalOrderRegister->code = $this->formateNPosition('BE', $lastRemovalOrderRegister->id + 1, 8);
         } else {
-            $goodToRemoveRegister->code = $this->formateNPosition('BE', 1, 8);
+            $removalOrderRegister->code = $this->formateNPosition('BE', 1, 8);
         }
-        $goodToRemoveRegister->save();
+        $removalOrderRegister->save();
 
         return new JsonResponse([
             'datas' => [
-                'goodToRemoves' => $goodToRemoves, 'voucherTypes' => $this->voucherTypes,
+                'removalOrders' => $removalOrders, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
                 'stockTypes' => $stockTypes, 'clients' => $clients,
@@ -61,10 +61,10 @@ class GoodToRemoveController extends Controller
 
     public function showNextCode()
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
-        $lastGoodToRemoveRegister = GoodToRemoveRegister::latest()->first();
-        if ($lastGoodToRemoveRegister) {
-            $code = $this->formateNPosition('BE', $lastGoodToRemoveRegister->id + 1, 8);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
+        if ($lastRemovalOrderRegister) {
+            $code = $this->formateNPosition('BE', $lastRemovalOrderRegister->id + 1, 8);
         } else {
             $code = $this->formateNPosition('BE', 1, 8);
         }
@@ -76,7 +76,7 @@ class GoodToRemoveController extends Controller
 
     public function salePointsFromTransfer($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
         $transfer = Transfer::findOrFail($id);
         $transmitter = SalePoint::findOrFail($transfer->transmitter_id);
         $receiver = SalePoint::findOrFail($transfer->receiver_id);
@@ -86,7 +86,7 @@ class GoodToRemoveController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_CREATE', GoodToRemove::class);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_CREATE', RemovalOrder::class);
         $this->validate(
             $request,
             [
@@ -121,32 +121,32 @@ class GoodToRemoveController extends Controller
         );
 
         try {
-            $lastGoodToRemove = GoodToRemove::latest()->first();
+            $lastRemovalOrder = RemovalOrder::latest()->first();
 
-            $goodToRemove = new GoodToRemove();
-            if ($lastGoodToRemove) {
-                $goodToRemove->code = $this->formateNPosition('BE', $lastGoodToRemove->id + 1, 8);
+            $removalOrder = new RemovalOrder();
+            if ($lastRemovalOrder) {
+                $removalOrder->code = $this->formateNPosition('BE', $lastRemovalOrder->id + 1, 8);
             } else {
-                $goodToRemove->code = $this->formateNPosition('BE', 1, 8);
+                $removalOrder->code = $this->formateNPosition('BE', 1, 8);
             }
-            $goodToRemove->reference = $request->reference;
-            $goodToRemove->voucher_date = $request->voucher_date;
-            $goodToRemove->delivery_date_wished = $request->delivery_date_wished;
-            $goodToRemove->place_of_delivery = $request->place_of_delivery;
-            $goodToRemove->voucher_type = $request->voucher_type;
-            $goodToRemove->customs_regime = $request->customs_regime;
-            $goodToRemove->storage_unit_id = $request->storage_unit;
-            $goodToRemove->carrier_id = $request->carrier;
-            $goodToRemove->transmitter_id = $request->transmitter;
-            $goodToRemove->receiver_id = $request->receiver;
-            $goodToRemove->client_id = $request->client;
-            $goodToRemove->stock_type_id = $request->stock_type;
-            $goodToRemove->save();
+            $removalOrder->reference = $request->reference;
+            $removalOrder->voucher_date = $request->voucher_date;
+            $removalOrder->delivery_date_wished = $request->delivery_date_wished;
+            $removalOrder->place_of_delivery = $request->place_of_delivery;
+            $removalOrder->voucher_type = $request->voucher_type;
+            $removalOrder->customs_regime = $request->customs_regime;
+            $removalOrder->storage_unit_id = $request->storage_unit;
+            $removalOrder->carrier_id = $request->carrier;
+            $removalOrder->transmitter_id = $request->transmitter;
+            $removalOrder->receiver_id = $request->receiver;
+            $removalOrder->client_id = $request->client;
+            $removalOrder->stock_type_id = $request->stock_type;
+            $removalOrder->save();
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
-                'goodToRemove' => $goodToRemove,
+                'removalOrder' => $removalOrder,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -162,26 +162,26 @@ class GoodToRemoveController extends Controller
 
     public function show($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
-        $goodToRemove = GoodToRemove::with('salePoint')->findOrFail($id);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $removalOrder = RemovalOrder::with('salePoint')->findOrFail($id);
         return new JsonResponse([
-            'goodToRemove' => $goodToRemove
+            'removalOrder' => $removalOrder
         ], 200);
     }
 
     public function edit($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', GoodToRemove::class);
-        $goodToRemove = GoodToRemove::with('salePoint')->findOrFail($id);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $removalOrder = RemovalOrder::with('salePoint')->findOrFail($id);
         return new JsonResponse([
-            'goodToRemove' => $goodToRemove,
+            'removalOrder' => $removalOrder,
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_UPDATE', GoodToRemove::class);
-        $goodToRemove = GoodToRemove::findOrFail($id);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_UPDATE', RemovalOrder::class);
+        $removalOrder = RemovalOrder::findOrFail($id);
         $this->validate(
             $request,
             [
@@ -215,35 +215,35 @@ class GoodToRemoveController extends Controller
             ],
         );
 
-        $existingGoodToRemoves = GoodToRemove::where('reference', $request->reference)->get();
-        if (!empty($existingGoodToRemoves) && sizeof($existingGoodToRemoves) > 1) {
+        $existingRemovalOrders = RemovalOrder::where('reference', $request->reference)->get();
+        if (!empty($existingRemovalOrders) && sizeof($existingRemovalOrders) > 1) {
             $success = false;
             return new JsonResponse([
-                'existingGoodToRemove' => $existingGoodToRemoves[0],
+                'existingRemovalOrder' => $existingRemovalOrders[0],
                 'success' => $success,
-                'message' => "Le bon à enlever portant la référence " . $existingGoodToRemoves[0]->reference . " existe déjà."
+                'message' => "Le bon à enlever portant la référence " . $existingRemovalOrders[0]->reference . " existe déjà."
             ], 200);
         }
 
         try {
-            $goodToRemove->reference = $request->reference;
-            $goodToRemove->voucher_date = $request->voucher_date;
-            $goodToRemove->delivery_date_wished = $request->delivery_date_wished;
-            $goodToRemove->place_of_delivery = $request->place_of_delivery;
-            $goodToRemove->voucher_type = $request->voucher_type;
-            $goodToRemove->customs_regime = $request->customs_regime;
-            $goodToRemove->storage_unit_id = $request->storage_unit;
-            $goodToRemove->carrier_id = $request->carrier;
-            $goodToRemove->transmitter_id = $request->transmitter;
-            $goodToRemove->receiver_id = $request->receiver;
-            $goodToRemove->client_id = $request->client;
-            $goodToRemove->stock_type_id = $request->stock_type;
-            $goodToRemove->save();
+            $removalOrder->reference = $request->reference;
+            $removalOrder->voucher_date = $request->voucher_date;
+            $removalOrder->delivery_date_wished = $request->delivery_date_wished;
+            $removalOrder->place_of_delivery = $request->place_of_delivery;
+            $removalOrder->voucher_type = $request->voucher_type;
+            $removalOrder->customs_regime = $request->customs_regime;
+            $removalOrder->storage_unit_id = $request->storage_unit;
+            $removalOrder->carrier_id = $request->carrier;
+            $removalOrder->transmitter_id = $request->transmitter;
+            $removalOrder->receiver_id = $request->receiver;
+            $removalOrder->client_id = $request->client;
+            $removalOrder->stock_type_id = $request->stock_type;
+            $removalOrder->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
-                'goodToRemove' => $goodToRemove,
+                'removalOrder' => $removalOrder,
                 'success' => $success,
                 'message' => $message,
             ], 200);
@@ -259,15 +259,15 @@ class GoodToRemoveController extends Controller
 
     public function destroy($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_DELETE', GoodToRemove::class);
-        $goodToRemove = GoodToRemove::findOrFail($id);
+        $this->authorize('ROLE_GOOD_TO_REMOVE_DELETE', RemovalOrder::class);
+        $removalOrder = RemovalOrder::findOrFail($id);
         try {
-            $goodToRemove->delete();
+            $removalOrder->delete();
 
             $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
-                'goodToRemove' => $goodToRemove,
+                'removalOrder' => $removalOrder,
                 'success' => $success,
                 'message' => $message,
             ], 200);

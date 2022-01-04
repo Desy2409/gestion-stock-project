@@ -255,7 +255,7 @@ class ProviderController extends Controller
             if (
                 empty($provider->orders) || sizeof($provider->orders) == 0 &&
                 empty($provider->purchases) || sizeof($provider->purchases) == 0 &&
-                empty($provider->goodToRemoves) || sizeof($provider->goodToRemoves) == 0 &&
+                empty($provider->removalOrders) || sizeof($provider->removalOrders) == 0 &&
                 empty($provider->tanks) || sizeof($provider->tanks) == 0 &&
                 empty($provider->trucks) || sizeof($provider->trucks) == 0
             ) {
