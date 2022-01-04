@@ -145,8 +145,9 @@ class StockTypeController extends Controller
 
     public function stockTypeReports(Request $request)
     {
+        $this->authorize('ROLE_STOCK_TYPE_PRINT', StockType::class);
         try {
-            $stockTypes = $this->stockTypeRepository->reportIncludeCode(StockType::class, $request->code, $request->wording, $request->description, $request->start_date, $request->end_date);
+            $stockTypes = $this->stockTypeRepository->reportIncludeCode(StockType::class, $request->selected_default_fields);
             return new JsonResponse(['datas' => ['stockTypes' => $stockTypes]], 200);
         } catch (Exception $e) {
             dd($e);

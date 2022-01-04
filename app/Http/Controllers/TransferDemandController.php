@@ -11,6 +11,7 @@ use App\Models\Transfer;
 use App\Models\TransferDemand;
 use App\Models\TransferDemandRegister;
 use App\Models\Unity;
+use App\Repositories\TransferDemandRepository;
 use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,15 @@ use Illuminate\Support\Facades\Date;
 class TransferDemandController extends Controller
 {
     use UtilityTrait;
+
+    
+    public $transferDemandRepository;
+
+    public function __construct(TransferDemandRepository $transferDemandRepository)
+    {
+        $this->transferDemandRepository = $transferDemandRepository;
+    }
+
     public function index()
     {
         // $user = Auth::user();
@@ -315,6 +325,17 @@ class TransferDemandController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function transferDemandReports(Request $request)
+    {
+        $this->authorize('ROLE_TRANSFER_DEMAND_PRINT', Tourn::class);
+        try {
+            $transferDemands = $this->transferDemandRepository->transferDemandReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['transferDemands' => $transferDemands]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

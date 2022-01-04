@@ -6,32 +6,25 @@ use App\Models\Tank;
 
 class TankRepository extends Repository
 {
-    public function tankReport($reference = false, $tank_registration = false, $provider = false, $compartment = false, $startDate = null, $endDate = null)
+    public function tankReport($selectedDefaultFields)
     {
-        if (!$reference && !$tank_registration && !$provider && !$compartment && $startDate == null && $endDate == null) {
+        if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
             $tanks = null;
         } else {
-            $tanks = Tank::where('id', '!=', null);
-            if ($reference) {
-                array_push($this->columns, 'reference');
-            }
-            if ($tank_registration) {
-                array_push($this->columns, 'tank_registration');
-            }
-            if ($provider) {
-                array_push($this->columns, 'provider_id');
+            $tanks = Tank::select($selectedDefaultFields)->where('id', '!=', null);
+            if (in_array('provider_id',$selectedDefaultFields)) {
+                // dd('in_array');
                 $tanks->with('provider');
             }
-            if ($compartment) {
-                array_push($this->columns, 'compartment_id');
+            if (in_array('compartment_id',$selectedDefaultFields)) {
                 $tanks->with('compartment');
             }
-            if ($startDate && $endDate) {
-                $tanks->whereBetween('created_at', [$startDate, $endDate]);
-            }
-            $tanks = $tanks->get($this->columns);
+            // if (in_array('start_date',$selectedDefaultFields)&&in_array('end_date',$selectedDefaultFields)) {
+            //     $tanks->whereBetween('created_at', [$startDate, $endDate]);
+            // }
+            // $tanks = $tanks->get($this->columns);
         }
 
-        return $tanks;
+        return $tanks->get();
     }
 }

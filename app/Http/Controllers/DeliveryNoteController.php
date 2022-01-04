@@ -423,8 +423,9 @@ class DeliveryNoteController extends Controller
 
     public function deliveryNoteReports(Request $request)
     {
+        $this->authorize('ROLE_DELIVERY_NOTE_PRINT', DeliveryNote::class);
         try {
-            $deliveryNotes = $this->deliveryNoteRepository->deliveryNoteReport($request->code, $request->reference, $request->delivery_date, $request->date_of_processing, $request->total_amount, $request->state, $request->observation, $request->purchase, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            $deliveryNotes = $this->deliveryNoteRepository->deliveryNoteReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['deliveryNotes' => $deliveryNotes]], 200);
         } catch (Exception $e) {
             dd($e);

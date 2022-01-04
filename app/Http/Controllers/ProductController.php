@@ -289,8 +289,9 @@ class ProductController extends Controller
 
     public function productReports(Request $request)
     {
+        $this->authorize('ROLE_PRODUCT_PRINT', Product::class);
         try {
-            $products = $this->productRepository->productReport($request->code, $request->reference, $request->wording, $request->description, $request->price, $request->start_date, $request->end_date, $request->sub_category);
+            $products = $this->productRepository->productReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['products' => $products]],200);
         } catch (Exception $e) {
             dd($e);

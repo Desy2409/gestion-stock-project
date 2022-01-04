@@ -176,8 +176,9 @@ class CategoryController extends Controller
 
     public function categoryReports(Request $request)
     {
+        $this->authorize('ROLE_CATEGORY_PRINT', Category::class);
         try {
-            $categories = $this->categoryRepository->reportIncludeReference(Category::class, $request->reference, $request->wording, $request->description, $request->start_date, $request->end_date);
+            $categories = $this->categoryRepository->reportIncludeReference(Category::class, $request->selected_default_fields);
             return new JsonResponse(['datas' => ['categories' => $categories]],200);
         } catch (Exception $e) {
             dd($e);

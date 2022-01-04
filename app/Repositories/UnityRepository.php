@@ -7,28 +7,16 @@ use App\Models\Unity;
 class UnityRepository extends Repository
 {
 
-    public function unityReport($code = false, $wording = false, $description = false, $symbol = false, $startDate = null, $endDate = null)
+    public function unityReport($selectedDefaultFields)
     {
-        if (!$code && !$wording && !$description && !$symbol && $startDate == null && $endDate == null) {
+        if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
             $unities = null;
         } else {
-            $unities = Unity::where('id', '!=', null);
-            if ($code) {
-                array_push($this->columns, 'code');
-            }
-            if ($wording) {
-                array_push($this->columns, 'wording');
-            }
-            if ($description) {
-                array_push($this->columns, 'description');
-            }
-            if ($symbol) {
-                array_push($this->columns, 'symbol');
-            }
-            if ($startDate && $endDate) {
-                $unities->whereBetween('created_at', [$startDate, $endDate]);
-            }
-            $unities = $unities->get($this->columns);
+            $unities = Unity::select($selectedDefaultFields)->where('id', '!=', null)->get();
+            // if (in_array('start_date',$selectedDefaultFields)&&in_array('end_date',$selectedDefaultFields)) {
+            //     $unities->whereBetween('created_at', [$startDate, $endDate]);
+            // }
+            // $unities = $unities->get($this->columns);
         }
 
         return $unities;

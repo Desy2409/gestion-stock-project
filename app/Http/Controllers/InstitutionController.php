@@ -206,7 +206,7 @@ class InstitutionController extends Controller
     public function institutionReports(Request $request)
     {
         try {
-            $institutions = $this->institutionRepository->institutionReport($request->rccm_number, $request->cc_number, $request->social_reason, $request->email, $request->phone_number, $request->address, $request->bp, $request->settings, $request->start_date, $request->end_date);
+            $institutions = $this->institutionRepository->institutionReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['institutions' => $institutions]], 200);
         } catch (Exception $e) {
             dd($e);

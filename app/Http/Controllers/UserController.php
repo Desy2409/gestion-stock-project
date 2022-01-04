@@ -8,6 +8,7 @@ use App\Models\Person;
 use App\Models\SalePoint;
 use App\Models\User;
 use App\Models\UserType;
+use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +25,13 @@ class UserController extends Controller
     //     $user = Auth::user();
     //     $this->user = $user;
     // }
+
+    public $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
     public function index()
     {
@@ -294,6 +302,17 @@ class UserController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function userReports(Request $request)
+    {
+        $this->authorize('ROLE_USER_PRINT', User::class);
+        try {
+            $users = $this->userRepository->userReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['users' => $users]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

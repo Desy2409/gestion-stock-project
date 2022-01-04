@@ -12,39 +12,22 @@ class TransferDemandRepository extends Repository
             $transferDemands = null;
         } else {
             $transferDemands = TransferDemand::where('id', '!=', null);
-            if ($code) {
-                array_push($this->columns, 'code');
-            }
-            if ($requestReason) {
-                array_push($this->columns, 'request_reason');
-            }
-            if ($dateOfDemand) {
-                array_push($this->columns, 'date_of_demand');
-            }
-            if ($deliveryDeadline) {
-                array_push($this->columns, 'delivery_deadline');
-            }
-            if ($state) {
-                array_push($this->columns, 'state');
-            }
-            if ($transmitter) {
-                array_push($this->columns, 'transmitter_id');
-                $transferDemands->with('transmitter');
-            }
-            if ($receiver) {
-                array_push($this->columns, 'receiver_id');
-                $transferDemands->with('receiver');
-            }
-            if ($dateOfProcessing) {
-                array_push($this->columns, 'date_of_processing');
-            }
-            if ($startDate && $endDate) {
-                $transferDemands->whereBetween('created_at', [$startDate, $endDate]);
-            }
-            if ($startProcessingDate && $endProcessingDate) {
-                $transferDemands->whereBetween('date_of_processing', [$startProcessingDate, $endProcessingDate]);
-            }
-            $transferDemands = $transferDemands->get($this->columns);
+
+            // if ($transmitter) {
+            //     array_push($this->columns, 'transmitter_id');
+            //     $transferDemands->with('transmitter');
+            // }
+            // if ($receiver) {
+            //     array_push($this->columns, 'receiver_id');
+            //     $transferDemands->with('receiver');
+            // }
+            // if ($startDate && $endDate) {
+            //     $transferDemands->whereBetween('created_at', [$startDate, $endDate]);
+            // }
+            // if ($startProcessingDate && $endProcessingDate) {
+            //     $transferDemands->whereBetween('date_of_processing', [$startProcessingDate, $endProcessingDate]);
+            // }
+
         }
 
         return $transferDemands;

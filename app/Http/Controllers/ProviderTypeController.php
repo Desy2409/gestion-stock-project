@@ -167,8 +167,9 @@ class ProviderTypeController extends Controller
 
     public function providerTypeReports(Request $request)
     {
+        $this->authorize('ROLE_PROVIDER_TYPE_PRINT', ProviderType::class);
         try {
-            $providerTypes = $this->providerTypeRepository->providerTypeReport($request->reference, $request->wording, $request->description, $request->type, $request->start_date, $request->end_date);
+            $providerTypes = $this->providerTypeRepository->providerTypeReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['providerTypes' => $providerTypes]], 200);
         } catch (Exception $e) {
             dd($e);
