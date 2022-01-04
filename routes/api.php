@@ -15,7 +15,7 @@ use App\Http\Controllers\EmployeeFunctionController;
 use App\Http\Controllers\ExtensionController;
 use App\Http\Controllers\FileTypeController;
 use App\Http\Controllers\FolderController;
-use App\Http\Controllers\GoodToRemoveController;
+use App\Http\Controllers\RemovalOrderController;
 use App\Http\Controllers\HostController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ProductController;
@@ -43,6 +43,7 @@ use App\Http\Controllers\TruckController;
 use App\Http\Controllers\UserTypeController;
 use App\Http\Controllers\UnityController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserProfileController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -327,12 +328,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/destination-report', [DestinationController::class, 'destinationReports']);
 
     // Good to remove routes
-    Route::get('/good-to-remove', [GoodToRemoveController::class, 'index']);
-    Route::get('/good-to-remove-code', [GoodToRemoveController::class, 'showNextCode']);
-    Route::post('/good-to-remove', [GoodToRemoveController::class, 'store']);
-    Route::get('/good-to-remove/{id}/show', [GoodToRemoveController::class, 'show']);
-    Route::patch('/good-to-remove/{id}/update', [GoodToRemoveController::class, 'update']);
-    Route::delete('/good-to-remove/{id}/destroy', [GoodToRemoveController::class, 'destroy']);
+    Route::get('/good-to-remove', [RemovalOrderController::class, 'index']);
+    Route::get('/good-to-remove-code', [RemovalOrderController::class, 'showNextCode']);
+    Route::post('/good-to-remove', [RemovalOrderController::class, 'store']);
+    Route::get('/good-to-remove/{id}/show', [RemovalOrderController::class, 'show']);
+    Route::patch('/good-to-remove/{id}/update', [RemovalOrderController::class, 'update']);
+    Route::delete('/good-to-remove/{id}/destroy', [RemovalOrderController::class, 'destroy']);
 
     // Extension routes
     Route::get('/extension', [ExtensionController::class, 'index']);
@@ -448,5 +449,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{id}/roles-config', [UserController::class, 'rolesConfiguration']);
         Route::patch('{id}/sale-points-config', [UserController::class, 'salePointsConfiguration']);
         Route::get('/user-report', [UserController::class, 'userReports']);
+
+        // User profile routes
+        Route::get('/profile', [UserProfileController::class, 'index']);
     });
 });

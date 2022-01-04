@@ -352,7 +352,7 @@ class ClientController extends Controller
             if (
                 empty($client->purchaseOrders) || sizeof($client->purchaseOrders) == 0 &&
                 empty($client->sales) || sizeof($client->sales) == 0 &&
-                empty($client->goodToRemoves) || sizeof($client->goodToRemoves) == 0
+                empty($client->removalOrders) || sizeof($client->removalOrders) == 0
             ) {
                 // dd('delete');
                 $client->delete();

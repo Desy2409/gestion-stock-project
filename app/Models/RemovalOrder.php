@@ -2,22 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GoodToRemove extends Model
+class RemovalOrder extends Model
 {
-    protected $fillable = [
-        'code',
-        'reference',
-        'voucher_date',
-        'delivery_date_wished',
-        'place_of_delivery',
-        'voucher_type',
-        'customs_regime',
-        'storage_unit',
-        'carrier',
-    ];
 
     public function provider()
     {
@@ -34,9 +22,9 @@ class GoodToRemove extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
-    public function tourns()
+    public function tourn()
     {
-        return $this->hasMany(Tourn::class);
+        return $this->hasOne(Tourn::class);
     }
 
     public function stockType()

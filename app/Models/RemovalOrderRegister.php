@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GoodToRemoveRegister extends Model
+class RemovalOrderRegister extends Model
 {
     protected $fillable = [
         'code'

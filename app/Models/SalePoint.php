@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SalePoint extends Model
@@ -79,8 +78,8 @@ class SalePoint extends Model
         return $this->hasMany(Purchase::class);
     }
 
-    public function goodToRemoves()
+    public function removalOrders()
     {
-        return $this->hasMany(GoodToRemove::class);
+        return $this->hasMany(RemovalOrder::class);
     }
 }

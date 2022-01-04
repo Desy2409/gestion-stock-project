@@ -195,7 +195,7 @@ class SalePointController extends Controller
                 empty($salePoint->purchases) || sizeof($salePoint->purchases) == 0 &&
                 empty($salePoint->purchaseOrders) || sizeof($salePoint->purchaseOrders) == 0 &&
                 empty($salePoint->sales) || sizeof($salePoint->sales) == 0 &&
-                empty($salePoint->goodToRemoves) || sizeof($salePoint->goodToRemoves) == 0 &&
+                empty($salePoint->removalOrders) || sizeof($salePoint->removalOrders) == 0 &&
                 empty($salePoint->transfersDemands) || sizeof($salePoint->transfersDemands) == 0 &&
                 empty($salePoint->transfers) || sizeof($salePoint->transfers) == 0
             ) {

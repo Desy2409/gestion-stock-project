@@ -45,8 +45,8 @@ class Provider extends Model
         return $this->hasMany(Tank::class);
     }
 
-    public function goodToRemoves()
+    public function removalOrders()
     {
-        return $this->hasMany(GoodToRemove::class);
+        return $this->hasMany(RemovalOrder::class);
     }
 }

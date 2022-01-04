@@ -32,8 +32,8 @@ class ClientDeliveryNote extends Model
         return $this->hasMany(ProductClientDeliveryNote::class);
     }
 
-    public function tourn()
+    public function tourns()
     {
-        return $this->belongsTo(Tourn::class);
+        return $this->hasMany(Tourn::class);
     }
 }
