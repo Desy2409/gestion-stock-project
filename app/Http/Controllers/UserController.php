@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Operation;
+use App\Models\Page;
 use App\Models\PageOperation;
 use App\Models\Person;
 use App\Models\SalePoint;
@@ -40,7 +41,7 @@ class UserController extends Controller
         $userTypes = UserType::orderBy('wording')->get();
 
         $pages = Page::all();
-        $operations = Page::all();
+        $operations = Operation::all();
         $pageOperations = PageOperation::with('page')->with('operation')->get();
         // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
 
