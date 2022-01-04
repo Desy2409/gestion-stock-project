@@ -28,7 +28,7 @@ class UserTypeController extends Controller
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         // $roles = Role::with('operation')->with('pageOperation')->get();
         $pages = Page::all();
-        $operations = Page::all();
+        $operations = Operation::all();
         $pageOperations = PageOperation::with('page')->with('operation')->get();
         // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
         // $operations = Operation::orderBy('wording')->get();
