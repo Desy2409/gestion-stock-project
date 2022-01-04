@@ -6,29 +6,32 @@ use App\Models\SubCategory;
 
 class SubCategoryRepository extends Repository
 {
-    public function subCategoryReport($reference = false, $wording = false, $description = false, $startDate = null, $endDate = null, $category = false)
+    public function subCategoryReport($selectedDefaultFields, $selectedParentFields)
     {
-        if (!$reference && !$wording && !$description && !$category && $startDate == null && $endDate == null) {
+        if (empty($selectedDefaultFields) || sizeof($selectedDefaultFields) == 0) {
             $subCategories = null;
         } else {
-            $subCategories = SubCategory::where('id', '!=', null);
-            if ($reference) {
-                array_push($this->columns, 'reference');
-            }
-            if ($wording) {
-                array_push($this->columns, 'wording');
-            }
-            if ($description) {
-                array_push($this->columns, 'description');
-            }
-            if ($category) {
-                array_push($this->columns, 'category_id');
-                $subCategories->with('category');
-            }
-            if ($startDate && $endDate) {
-                $subCategories->whereBetween('created_at', [$startDate, $endDate]);
-            }
-            $subCategories = $subCategories->get($this->columns);
+            // $subCategories = SubCategory::select($selectedDefaultFields)->where('id', '!=', null)->with('category')->get();
+
+
+            $stringTest = "category:id,";
+
+            // $stringTest .= implode(',', $selectedDefaultFields);
+            $stringTest .=implode(',', $selectedParentFields);
+            // $stringTest .= ',' . implode(',', $selectedParentFields);
+
+            // dd($stringTest);
+
+            // $subCategories = SubCategory::select('categories.reference')->where('id', '!=', null)->get(zzz);
+            $subCategories = SubCategory::with($stringTest)->where('id', '!=', null)->get();
+
+
+            // $subCategories = SubCategory::select($selectedDefaultFields)->where('id', '!=', null)
+            //     ->with(array($stringTest))->get();
+
+            // if ($startDate && $endDate) {
+            //     $subCategories->whereBetween('created_at', [$startDate, $endDate]);
+            // }
         }
 
         return $subCategories;

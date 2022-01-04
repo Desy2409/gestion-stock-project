@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Folder;
+use App\Repositories\FolderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,14 @@ use Illuminate\Support\Facades\Storage;
 
 class FolderController extends Controller
 {
+
+    public $folderRepository;
+
+    public function __construct(FolderRepository $folderRepository)
+    {
+        $this->folderRepository = $folderRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_FOLDER_READ', Folder::class);
@@ -335,5 +344,16 @@ class FolderController extends Controller
         return new JsonResponse([
             'folder' => $folder
         ], 200);
+    }
+
+    public function folderReports(Request $request)
+    {
+        $this->authorize('ROLE_FOLDER_PRINT', Folder::class);
+        try {
+            $folders = $this->folderRepository->folderReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['folders' => $folders]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

@@ -1,0 +1,161 @@
+[{
+    "code": "DRIVER",
+    "title": "Driver",
+    "description": "Page de configuration d'un driver",
+    "operations": {}
+}, {
+    "code": "HOST",
+    "title": "Host",
+    "description": "Page de configuration d'un hôte",
+    "operations": {}
+}, {
+    "code": "EMAIL_CHANNEL_PARAM",
+    "title": "Email channel params",
+    "description": "Page de configuration de l'envoi de mail",
+    "operations": {}
+}, {
+    "code": "INSTITUTION",
+    "title": "Institution",
+    "description": "Page de configuration d'une instituion",
+    "operations": {}
+}, {
+    "code": "SALE_POINT",
+    "title": "Point de vente",
+    "description": "Page de configuration d'un point de vente",
+    "operations": {}
+}, {
+    "code": "CATEGORY",
+    "title": "Catégorie",
+    "description": "Page de configuration d'une catégorie",
+    "operations": {}
+}, {
+    "code": "SUB_CATEGORY",
+    "title": "Sous-catégorie",
+    "description": "Page de configuration d'une sous-catégorie",
+    "operations": {}
+}, {
+    "code": "PRODUCT",
+    "title": "Produit",
+    "description": "Page de configuration d'un produit",
+    "operations": {}
+}, {
+    "code": "CLIENT",
+    "title": "Client",
+    "description": "Page de configuration d'un client",
+    "operations": {}
+}, {
+    "code": "PROVIDER_TYPE",
+    "title": "Type fournisseur",
+    "description": "Page de configuration d'un type fournisseur",
+    "operations": {}
+}, {
+    "code": "PROVIDER",
+    "title": "Fournisseur",
+    "description": "Page de configuration d'un fournisseur",
+    "operations": {}
+}, {
+    "code": "UNITY",
+    "title": "Unité",
+    "description": "Page de configuration d'une unité",
+    "operations": {}
+}, {
+    "code": "STOCK_TYPE",
+    "title": "Type de stock",
+    "description": "Page de configuration d'un type de stock",
+    "operations": {}
+}, {
+    "code": "PURCHASE_ORDER",
+    "title": "Bon de commande",
+    "description": "Page de configuration d'un bon de commande",
+    "operations": {}
+}, {
+    "code": "PURCHASE",
+    "title": "Achat",
+    "description": "Page de configuration d'un bon d'achat auprès d'un fournisseur",
+    "operations": {}
+}, {
+    "code": "DELIVERY_NOTE",
+    "title": "Livraison (entrée)",
+    "description": "Page de configuration d'un bon de livraison (entrée)",
+    "operations": {}
+}, {
+    "code": "ORDER",
+    "title": "Commande",
+    "description": "Page de configuration d'une commande auprès du fournisseur",
+    "operations": {}
+}, {
+    "code": "SALE",
+    "title": "Vente",
+    "description": "Page de configuration d'une vente",
+    "operations": {}
+}, {
+    "code": "CLIENT_DELIVERY_NOTE",
+    "title": "Livraison (sortie)",
+    "description": "Page de configuration d'un bon de livraison (sortie)",
+    "operations": {}
+}, {
+    "code": "COMPARTMENT",
+    "title": "Compartiment",
+    "description": "Page de configuration d'un compartiment",
+    "operations": {}
+}, {
+    "code": "FOLDER",
+    "title": "Dossier",
+    "description": "Page de configuration d'un dossier",
+    "operations": {}
+}, {
+    "code": "TANK",
+    "title": "Citerne",
+    "description": "Page de configuration d'une citerne",
+    "operations": {}
+}, {
+    "code": "TRUCK",
+    "title": "Tracteur",
+    "description": "Page de configuration d'un tracteur",
+    "operations": {}
+}, {
+    "code": "TOURN",
+    "title": "Tournée",
+    "description": "Page de configuration d'une tournée",
+    "operations": {}
+}, {
+    "code": "DESTINATION",
+    "title": "Destination",
+    "description": "Page de configuration d'une destination",
+    "operations": {}
+}, {
+    "code": "GOOD_TO_REMOVE",
+    "title": "Bon à enlever",
+    "description": "Page de configuration d'un bon à enlever",
+    "operations": {}
+}, {
+    "code": "TRANSFER_DEMAND",
+    "title": "Demande de transfert",
+    "description": "Page de configuration d'une demande de transfert",
+    "operations": {}
+}, {
+    "code": "TRANSFER",
+    "title": "Transfert",
+    "description": "Page de configuration d'un transfert",
+    "operations": {}
+}, {
+    "code": "PHONE_OPERATOR",
+    "title": "Opérateur téléphonique",
+    "description": "Page de configuration d'un opérateur téléphonique",
+    "operations": {}
+}, {
+    "code": "DELIVERY_POINT",
+    "title": "Point de livraison",
+    "description": "Page de configuration d'un point de livraison",
+    "operations": {}
+}, {
+    "code": "USER",
+    "title": "Utilisateur",
+    "description": "Page de configuration d'un utilisateur",
+    "operations": {}
+}, {
+    "code": "USER_TYPE",
+    "title": "Type utilisateur",
+    "description": "Page de configuration d'un type d'utilisateur",
+    "operations": {}
+}]

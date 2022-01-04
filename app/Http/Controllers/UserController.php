@@ -8,6 +8,7 @@ use App\Models\Person;
 use App\Models\SalePoint;
 use App\Models\User;
 use App\Models\UserType;
+use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,17 +26,24 @@ class UserController extends Controller
     //     $this->user = $user;
     // }
 
+    public $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_USER_READ', User::class);
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
-        // $roles = Role::with('operation')->with('pageOperation')->get();
-        $pageOperations = PageOperation::orderBy('title')->get();
-        $operations = Operation::orderBy('wording')->get();
-        // $roles = Role::all();
+        
+        $pageOperations = PageOperation::with('page')->with('operation')->get();
+        // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
+
         return new JsonResponse([
-            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations, 'operations' => $operations]
+            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations]
         ], 200);
     }
 
@@ -294,6 +302,17 @@ class UserController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function userReports(Request $request)
+    {
+        $this->authorize('ROLE_USER_PRINT', User::class);
+        try {
+            $users = $this->userRepository->userReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['users' => $users]], 200);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 }

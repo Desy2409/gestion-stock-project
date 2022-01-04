@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\DeliveryPoint;
 use App\Models\Institution;
+use App\Repositories\DeliveryPointRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,13 @@ use Illuminate\Http\Request;
 class DeliveryPointController extends Controller
 {
     use UtilityTrait;
+
+    public $deliveryPointRepository;
+
+    public function __construct(DeliveryPointRepository $deliveryPointRepository)
+    {
+        $this->deliveryPointRepository = $deliveryPointRepository;
+    }
     
     public function index()
     {
@@ -168,5 +176,16 @@ class DeliveryPointController extends Controller
         return new JsonResponse([
             'deliveryPoint' => $deliveryPoint
         ], 200);
+    }
+
+    public function deliveryPointReports(Request $request)
+    {
+        $this->authorize('ROLE_DELIVERY_POINT_PRINT', DeliveryPoint::class);
+        try {
+            $deliveryPoints = $this->deliveryPointRepository->deliveryPointReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['deliveryPoints' => $deliveryPoints]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

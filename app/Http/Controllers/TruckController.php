@@ -175,8 +175,10 @@ class TruckController extends Controller
 
     public function truckReports(Request $request)
     {
+        $this->authorize('ROLE_TRUCK_PRINT', Truck::class);
         try {
-            $trucks = $this->truckRepository->truckReport($request->reference, $request->truck_registration, $request->provider, $request->compartment, $request->start_date, $request->end_date);
+            // dd($request->selected_default_fields);
+            $trucks = $this->truckRepository->truckReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['trucks' => $trucks]], 200);
         } catch (Exception $e) {
             dd($e);

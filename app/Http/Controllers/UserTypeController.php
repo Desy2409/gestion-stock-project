@@ -7,22 +7,32 @@ use App\Models\PageOperation;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserType;
+use App\Repositories\UserTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserTypeController extends Controller
 {
+
+    public $userTypeRepository;
+
+    public function __construct(UserTypeRepository $userTypeRepository)
+    {
+        $this->userTypeRepository = $userTypeRepository;
+    }
+
     public function index()
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         // $roles = Role::with('operation')->with('pageOperation')->get();
-        $pageOperations = PageOperation::orderBy('title')->get();
-        $operations = Operation::orderBy('wording')->get();
+        $pageOperations = PageOperation::with('page')->with('operation')->get();
+        // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
+        // $operations = Operation::orderBy('wording')->get();
         // $roles = Role::all();
         $userTypes = UserType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['pageOperations' => $pageOperations, 'operations' => $operations, 'userTypes' => $userTypes]
+            'datas' => ['pageOperations' => $pageOperations, 'userTypes' => $userTypes]
         ], 200);
     }
 
@@ -58,7 +68,7 @@ class UserTypeController extends Controller
         try {
 
             // Liste des opérations et pages opérations sélectionnées
-            // $checkedRoles = [];
+            $checkedRoles = [];
             // $checkedRoles = json_decode();
             // foreach ($request->roles as $key => $role) {
             //     $checkedRole = Role::where('operation_id', '=', $role->operation_id)->where('page_operation_id', '=', $role->page_operation->id)->first();
@@ -203,5 +213,16 @@ class UserTypeController extends Controller
         return new JsonResponse([
             'userType' => $userType
         ], 200);
+    }
+
+    public function userTypeReports(Request $request)
+    {
+        $this->authorize('ROLE_USER_TYPE_PRINT', UserType::class);
+        try {
+            $userTypes = $this->userTypeRepository->userTypeReport($request->selected_default_fields);
+            return new JsonResponse(['datas' => ['userTypes' => $userTypes]], 200);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 }

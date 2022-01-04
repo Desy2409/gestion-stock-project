@@ -652,8 +652,9 @@ class SaleController extends Controller
 
     public function saleReports(Request $request)
     {
+        $this->authorize('ROLE_SALE_PRINT', Sale::class);
         try {
-            $sales = $this->saleRepository->saleReport($request->code, $request->reference, $request->sale_date, $request->date_of_processing, $request->state, $request->total_amount, $request->tva, $request->amount_token, $request->discount, $request->amount_gross, $request->ht_amount, $request->purchase_order, $request->client, $request->sale_point, $request->observation, $request->start_sale_date, $request->end_sale_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            $sales = $this->saleRepository->saleReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['sales' => $sales]], 200);
         } catch (Exception $e) {
             dd($e);

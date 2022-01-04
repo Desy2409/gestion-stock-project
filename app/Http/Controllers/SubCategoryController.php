@@ -177,8 +177,9 @@ class SubCategoryController extends Controller
 
     public function subCategoryReports(Request $request)
     {
+        $this->authorize('ROLE_SUB_CATEGORY_PRINT', SubCategory::class);
         try {
-            $subCategories = $this->subCategoryRepository->subCategoryReport($request->reference, $request->wording, $request->description, $request->start_date, $request->end_date, $request->category);
+            $subCategories = $this->subCategoryRepository->subCategoryReport($request->selected_default_fields,$request->selected_parent_fields);
             return new JsonResponse(['datas' => ['subCategories' => $subCategories]], 200);
         } catch (Exception $e) {
             dd($e);

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Role;
+use App\Models\PageOperation;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -29,12 +29,12 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-        if (Schema::hasTable('roles')) {
-            $roles = Role::all();
-            if ($roles) {
-                foreach ($roles as $key => $role) {
-                    Gate::define($role->code, function (User $user) use ($role) {
-                        return (in_array($role->code, $user->roles) || in_array('ADMIN', $user->roles)) ? Response::allow() : abort(403);
+        if (Schema::hasTable('page_operations')) {
+            $pageOperations = PageOperation::all();
+            if ($pageOperations) {
+                foreach ($pageOperations as $key => $pageOperation) {
+                    Gate::define($pageOperation->role, function (User $user) use ($pageOperation) {
+                        return (in_array($pageOperation->role, $user->roles) || in_array('ADMIN', $user->roles)) ? Response::allow() : abort(403);
                     });
                 }
             }

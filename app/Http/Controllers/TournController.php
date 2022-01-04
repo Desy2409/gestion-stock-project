@@ -199,8 +199,9 @@ class TournController extends Controller
 
     public function tournReports(Request $request)
     {
+        $this->authorize('ROLE_TOURN_PRINT', Tourn::class);
         try {
-            $tourns = $this->tournRepository->tournReport($request->code, $request->reference, $request->tank, $request->truck, $request->destination, $request->start_date, $request->end_date);
+            $tourns = $this->tournRepository->tournReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['tourns' => $tourns]], 200);
         } catch (Exception $e) {
             dd($e);

@@ -710,8 +710,9 @@ class PurchaseController extends Controller
 
     public function purchaseReports(Request $request)
     {
+        $this->authorize('ROLE_PURCHASE_PRINT', Purchase::class);
         try {
-            $purchases = $this->purchaseRepository->purchaseReport($request->code, $request->reference, $request->purchase_date, $request->delivery_date, $request->date_of_processing, $request->state, $request->total_amount, $request->tva, $request->amount_token, $request->discount, $request->amount_gross, $request->ht_amount, $request->order, $request->provider, $request->sale_point, $request->observation, $request->start_purchase_date, $request->end_purchase_date, $request->start_delivery_date, $request->end_delivery_date, $request->start_processing_date, $request->end_processing_date);
+            $purchases = $this->purchaseRepository->purchaseReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['purchases' => $purchases]], 200);
         } catch (Exception $e) {
             dd($e);
