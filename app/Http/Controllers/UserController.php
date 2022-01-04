@@ -38,12 +38,14 @@ class UserController extends Controller
         $this->authorize('ROLE_USER_READ', User::class);
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
-        
+
+        $pages = Page::all();
+        $operations = Page::all();
         $pageOperations = PageOperation::with('page')->with('operation')->get();
         // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
 
         return new JsonResponse([
-            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations]
+            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations, 'pages' => $pages, 'operations' => $operations]
         ], 200);
     }
 
