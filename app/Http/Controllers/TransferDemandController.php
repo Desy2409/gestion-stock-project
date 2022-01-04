@@ -146,8 +146,8 @@ class TransferDemandController extends Controller
             foreach ($request->transferDemandProducts as $key => $product) {
                 $transferDemandLine = new ProductTransferDemandLine();
                 $transferDemandLine->quantity = $product["quantity"];
-                $transferDemandLine->unity_id = $product["unity"];
-                $transferDemandLine->product_id = $product["product"];
+                $transferDemandLine->unity_id = $product["unity_id"];
+                $transferDemandLine->product_id = $product["product_id"];
                 $transferDemandLine->transfer_demand_id = $transferDemand->id;
                 $transferDemandLine->save();
 
@@ -201,13 +201,13 @@ class TransferDemandController extends Controller
         // $products = Product::orderBy('wording')->get();
         // $salesPoints = SalePoint::orderBy('social_reason')->get();
         // $productsTransferDemands = $transferDemand ? $transferDemand->productsTransfersDemandsLines : null;
-        $productsTransferDemands = ProductTransferDemandLine::where('transfer_demand_id',$transferDemand->id)->get();
+        // $productsTransferDemands = ProductTransferDemandLine::where('transfer_demand_id',$transferDemand->id)->get();
 
         return new JsonResponse([
             'transferDemand' => $transferDemand,
             // 'transmitter' => $transmitter,
             // 'receiver' => $receiver,
-            'datas' => ['productsTransferDemands' => $productsTransferDemands]
+            // 'datas' => ['productsTransferDemands' => $productsTransferDemands]
         ], 200);
     }
 
@@ -221,7 +221,7 @@ class TransferDemandController extends Controller
                 'transmitter' => 'required',
                 'receiver' => 'required',
                 'request_reason' => 'required',
-                'date_of_demand' => 'required|date|date_equals:today',
+                'date_of_demand' => 'required|date',
                 // 'delivery_deadline' => 'required|date|after:date_of_demand',
                 'date_of_processing' => 'date|after:date_of_demand',
                 'transferDemandProducts' => 'required',
@@ -262,8 +262,8 @@ class TransferDemandController extends Controller
             foreach ($request->transferDemandProducts as $key => $product) {
                 $transferDemandLine = new ProductTransferDemandLine();
                 $transferDemandLine->quantity = $product["quantity"];
-                $transferDemandLine->unity_id = $product["unity"];
-                $transferDemandLine->product_id = $product["product"];
+                $transferDemandLine->unity_id = $product["unity_id"];
+                $transferDemandLine->product_id = $product["product_id"];
                 $transferDemandLine->transfer_demand_id = $transferDemand->id;
                 $transferDemandLine->save();
 
@@ -284,7 +284,7 @@ class TransferDemandController extends Controller
                 'datas' => ['productTansferDemands' => $productTansferDemands]
             ], 200);
         } catch (Exception $e) {
-            // dd($e);
+            dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([

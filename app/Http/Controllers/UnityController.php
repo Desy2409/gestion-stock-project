@@ -151,7 +151,7 @@ class UnityController extends Controller
                 empty($unity->productDeliveryNotes) || sizeof($unity->productDeliveryNotes) == 0 &&
                 empty($unity->productPurchaseOrders) || sizeof($unity->productPurchaseOrders) == 0 &&
                 empty($unity->productSales) || sizeof($unity->productSales) == 0 &&
-                empty($unity->productClientDeliveryNotes) || sizeof($unity->productClientDeliveryNotes) == 0 
+                empty($unity->productClientDeliveryNotes) || sizeof($unity->productClientDeliveryNotes) == 0
             ) {
                 // dd('delete');
                 $unity->delete();
@@ -162,7 +162,7 @@ class UnityController extends Controller
                 // dd('not delete');
                 $message = "Cette unité ne peut être supprimée car elle a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'unity' => $unity,
                 'success' => $success,

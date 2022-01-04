@@ -83,9 +83,9 @@ class DeliveryNoteController extends Controller
         $productPurchases = ProductPurchase::with('product')->with('unity')->where('purchase_id', $purchase->id)->get();
         $array = [];
 
-        foreach ($productPurchases as $key => $value) {
-            array_push($array, $value::remainingQuantity());
-        }
+        // foreach ($productPurchases as $key => $value) {
+        //     array_push($array, $value::remainingQuantity());
+        // }
         // dd($array);
         return new JsonResponse([
             'purchase' => $purchase, 'datas' => ['productPurchases' => $productPurchases]
@@ -181,7 +181,7 @@ class DeliveryNoteController extends Controller
                 'datas' => ['productDeliveryNotes' => $productDeliveryNotes],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([

@@ -32,7 +32,8 @@ class TransferController extends Controller
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $transfers = Transfer::with('transferDemand')->with('productsTransfersLines')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
+        $transfers = Transfer::with('transferDemand')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
+        // $transfers = Transfer::with('transferDemand')->with('productsTransfersLines')->with('getTransmitterAttribute')->with('getReceiverAttribute')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
         // $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->where('state', 'S')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
 
@@ -182,7 +183,7 @@ class TransferController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
-        $transfer = Transfer::with('productsTransfersLines')->findOrFail($id);
+        $transfer = Transfer::with('productsTransfersLines')->with('transferDemand')->findOrFail($id);
         $productsTransfersLines = ProductTransferLine::where('transfer_id',$transfer->id)->with('product')->with('unity')->get();
         // $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
 
@@ -203,7 +204,7 @@ class TransferController extends Controller
                 // 'transmitter' => 'required',
                 // 'receiver' => 'required',
                 'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_equals:today', //|date_format:Ymd
+                'date_of_transfer' => 'required|date', //|date_format:Ymd
                 'date_of_receipt' => 'date|after:date_of_transfer', //|date_format:Ymd
                 'transferProducts' => 'required',
                 // 'quantities' => 'required|min:0',
@@ -244,8 +245,8 @@ class TransferController extends Controller
             foreach ($request->transferProducts as $key => $product) {
                 $transferLine = new ProductTransferLine();
                 $transferLine->quantity = $product["quantity"];
-                $transferLine->unity_id = $product['unity'];
-                $transferLine->product_id = $product['product'];
+                $transferLine->unity_id = $product['unity']["id"];
+                $transferLine->product_id = $product['product']["id"];
                 $transferLine->transfer_id = $transfer->id;
                 $transferLine->save();
 

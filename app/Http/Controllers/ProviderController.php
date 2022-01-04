@@ -149,7 +149,7 @@ class ProviderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_PROVIDER_READ', Provider::class);
-        $provider = Provider::with('person.address')->where('id', $id)->first();
+        $provider = Provider::with('person.address')->with('providerType')->where('id', $id)->first();
         return new JsonResponse(['provider' => $provider], 200);
     }
 
@@ -183,15 +183,15 @@ class ProviderController extends Controller
             ],
         );
 
-        $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
-        if (!empty($existingMoralPersons) && sizeof($existingMoralPersons) > 1) {
-            $success = false;
-            return new JsonResponse([
-                'existingMoralPerson' => $existingMoralPersons[0],
-                'success' => $success,
-                'message' => "Le provider " . $existingMoralPersons[0]->social_reason . " existe déjà."
-            ], 400);
-        }
+        // $existingMoralPersons = Person::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
+        // if (!empty($existingMoralPersons) && sizeof($existingMoralPersons) > 1) {
+        //     $success = false;
+        //     return new JsonResponse([
+        //         'existingMoralPerson' => $existingMoralPersons[0],
+        //         'success' => $success,
+        //         'message' => "Le provider " . $existingMoralPersons[0]->social_reason . " existe déjà."
+        //     ], 400);
+        // }
 
         try {
             $provider->reference = $request->reference;
@@ -268,7 +268,7 @@ class ProviderController extends Controller
                 // dd('not delete');
                 $message = "Ce fournisseur ne peut être supprimé car il a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'provider' => $provider,
                 'person' => $person,

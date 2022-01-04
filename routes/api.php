@@ -117,6 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client-code', [ClientController::class, 'showNextCode']);
     Route::post('/client', [ClientController::class, 'store']);
     Route::get('/client/{id}/show', [ClientController::class, 'show']);
+    Route::get('/client/{id}/edit', [ClientController::class, 'edit']);
     Route::patch('/client/{id}/update', [ClientController::class, 'update']);
     Route::delete('/client/{id}/destroy', [ClientController::class, 'destroy']);
     Route::get('/code', [ClientController::class, 'returnCode']);
@@ -127,7 +128,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/provider-code', [ProviderController::class, 'showNextCode']);
     Route::post('/provider', [ProviderController::class, 'store']);
     Route::get('/provider/{id}/show', [ProviderController::class, 'show']);
-    Route::get('/provider/{id}/update', [ProviderController::class, 'edit']);
+    Route::get('/provider/{id}/edit', [ProviderController::class, 'edit']);
     Route::patch('/provider/{id}/update', [ProviderController::class, 'update']);
     Route::delete('/provider/{id}/destroy', [ProviderController::class, 'destroy']);
 
@@ -135,7 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/provider-type', [ProviderTypeController::class, 'index']);
     Route::post('/provider-type', [ProviderTypeController::class, 'store']);
     Route::get('/provider-type/{id}/show', [ProviderTypeController::class, 'show']);
-    Route::get('/provider-type/{id}/update', [ProviderTypeController::class, 'edit']);
+    Route::get('/provider-type/{id}/edit', [ProviderTypeController::class, 'edit']);
     Route::patch('/provider-type/{id}/update', [ProviderTypeController::class, 'update']);
     Route::delete('/provider-type/{id}/destroy', [ProviderTypeController::class, 'destroy']);
     Route::get('/provider-type-report', [ProviderTypeController::class, 'providerTypeReports']);
@@ -235,6 +236,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/institution', [InstitutionController::class, 'index']);
     Route::post('/institution', [InstitutionController::class, 'store']);
     Route::get('/institution/{id}/show', [InstitutionController::class, 'show']);
+    Route::get('/institution/{id}/edit', [InstitutionController::class, 'edit']);
     Route::patch('/institution/{id}/update', [InstitutionController::class, 'update']);
     Route::delete('/institution/{id}/destroy', [InstitutionController::class, 'destroy']);
     Route::get('/institution-report', [InstitutionController::class, 'institutionReports']);
@@ -243,6 +245,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sale-point', [SalePointController::class, 'index']);
     Route::post('/sale-point', [SalePointController::class, 'store']);
     Route::get('/sale-point/{id}/show', [SalePointController::class, 'show']);
+    Route::get('/sale-point/{id}/edit', [SalePointController::class, 'edit']);
     Route::patch('/sale-point/{id}/update', [SalePointController::class, 'update']);
     Route::delete('/sale-point/{id}/destroy', [SalePointController::class, 'destroy']);
     Route::get('/sale-point-report', [SalePointController::class, 'salePointReports']);
