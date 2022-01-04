@@ -13,6 +13,7 @@ class SubCategoryRepository extends Repository
         } else {
             // $subCategories = SubCategory::select($selectedDefaultFields)->where('id', '!=', null)->with('category')->get();
 
+            // dd('test');
 
             $stringTest = "category:id,";
 
@@ -23,7 +24,7 @@ class SubCategoryRepository extends Repository
             // dd($stringTest);
 
             // $subCategories = SubCategory::select('categories.reference')->where('id', '!=', null)->get(zzz);
-            $subCategories = SubCategory::with($stringTest)->where('id', '!=', null)->get();
+            $subCategories = SubCategory::with($stringTest)->where('id', '!=', null)->get($selectedDefaultFields);
 
 
             // $subCategories = SubCategory::select($selectedDefaultFields)->where('id', '!=', null)
