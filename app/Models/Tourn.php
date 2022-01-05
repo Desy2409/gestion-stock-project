@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tourn extends Model
 {
-    protected $fillable = [
-        'code',
-        'reference',
+
+    protected $casts = [
+        'client_delivery_notes' => 'array'
     ];
 
     public function truck()
@@ -35,5 +35,10 @@ class Tourn extends Model
     public function clientDeliveryNote()
     {
         return $this->belongsTo(ClientDeliveryNote::class);
+    }
+
+    public function state()
+    {
+        return ($this->state == 'C') ? "Tournée clôturée" : "";
     }
 }

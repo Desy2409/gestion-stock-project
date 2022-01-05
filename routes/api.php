@@ -134,7 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/provider/{id}/destroy', [ProviderController::class, 'destroy']);
 
     // Provider type routes
-    Route::get('/provider-type', [ProviderTypeController::class, 'index']);
+    Route::get('/provider-type/{type}', [ProviderTypeController::class, 'index']);
     Route::post('/provider-type', [ProviderTypeController::class, 'store']);
     Route::get('/provider-type/{id}/show', [ProviderTypeController::class, 'show']);
     Route::get('/provider-type/{id}/edit', [ProviderTypeController::class, 'edit']);
@@ -328,12 +328,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/destination-report', [DestinationController::class, 'destinationReports']);
 
     // Good to remove routes
-    Route::get('/good-to-remove', [RemovalOrderController::class, 'index']);
-    Route::get('/good-to-remove-code', [RemovalOrderController::class, 'showNextCode']);
-    Route::post('/good-to-remove', [RemovalOrderController::class, 'store']);
-    Route::get('/good-to-remove/{id}/show', [RemovalOrderController::class, 'show']);
-    Route::patch('/good-to-remove/{id}/update', [RemovalOrderController::class, 'update']);
-    Route::delete('/good-to-remove/{id}/destroy', [RemovalOrderController::class, 'destroy']);
+    Route::get('/removal-order', [RemovalOrderController::class, 'index']);
+    Route::get('/removal-order-code', [RemovalOrderController::class, 'showNextCode']);
+    Route::post('/removal-order', [RemovalOrderController::class, 'store']);
+    Route::get('/removal-order/{id}/show', [RemovalOrderController::class, 'show']);
+    Route::patch('/removal-order/{id}/update', [RemovalOrderController::class, 'update']);
+    Route::delete('/removal-order/{id}/destroy', [RemovalOrderController::class, 'destroy']);
 
     // Extension routes
     Route::get('/extension', [ExtensionController::class, 'index']);
