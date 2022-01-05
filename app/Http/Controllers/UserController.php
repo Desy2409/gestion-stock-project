@@ -42,11 +42,10 @@ class UserController extends Controller
 
         $pages = Page::all();
         $operations = Operation::all();
-        $pageOperations = PageOperation::with('page')->with('operation')->get();
-        // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
+        // $pageOperations = PageOperation::with('page')->with('operation')->get();
 
         return new JsonResponse([
-            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pageOperations' => $pageOperations, 'pages' => $pages, 'operations' => $operations]
+            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pages' => $pages, 'operations' => $operations]
         ], 200);
     }
 

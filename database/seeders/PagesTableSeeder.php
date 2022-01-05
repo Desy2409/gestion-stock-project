@@ -24,6 +24,7 @@ class PagesTableSeeder extends Seeder
                     'code' => $page->code,
                     'title' => $page->title,
                     'description' => $page->description,
+                    'operations' => $page->operations,
                 ]);
             }
         }
