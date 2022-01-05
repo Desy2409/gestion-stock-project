@@ -34,9 +34,9 @@ class RemovalOrderController extends Controller
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
-        $stockTypes = StockType::orderBy('wording')->get();
+        // $stockTypes = StockType::orderBy('wording')->get();
         $clients = Client::with('person.address')->get();
-        $transfers = Transfer::orderBy('code')->get();
+        // $transfers = Transfer::orderBy('code')->get();
 
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
@@ -53,8 +53,9 @@ class RemovalOrderController extends Controller
                 'removalOrders' => $removalOrders, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
-                'stockTypes' => $stockTypes, 'clients' => $clients,
-                'transfers' => $transfers
+                // 'stockTypes' => $stockTypes, 
+                'clients' => $clients,
+                // 'transfers' => $transfers
             ]
         ], 200);
     }
@@ -93,8 +94,8 @@ class RemovalOrderController extends Controller
                 'client' => 'required',
                 'stock_type' => 'required',
                 'reference' => 'required|unique:good_to_removes',
-                'voucher_date' => 'required|date|date_format:Ymd|date_equals:today',
-                'delivery_date_wished' => 'required|date|date_format:Ymd|after:voucher_date',
+                'voucher_date' => 'required|date|date_equals:today',//|date_format:Ymd
+                'delivery_date_wished' => 'required|date|after:voucher_date',//|date_format:Ymd
                 'voucher_type' => 'required',
                 'customs_regime' => 'required',
                 'storage_unit' => 'required',
@@ -107,11 +108,11 @@ class RemovalOrderController extends Controller
                 'reference.unique' => "Cette référence existe déjà.",
                 'voucher_date.required' => "La date du bon à enlever est obligatoire.",
                 'voucher_date.date' => "La date du bon à enlever est incorrecte.",
-                'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
+                // 'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
                 'voucher_date.date_equals' => "La date du bon à enlever ne peut être qu'aujourd'hui.",
                 'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
                 'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
-                'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : Année Mois Jour.",
+                // 'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : Année Mois Jour.",
                 'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
                 'voucher_type.required' => "Le type de bon est obligatoire.",
                 'customs_regime.required' => "Le régime douanier est obligatoire.",

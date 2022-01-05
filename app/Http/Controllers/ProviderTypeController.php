@@ -17,15 +17,38 @@ class ProviderTypeController extends Controller
         $this->providerTypeRepository = $providerTypeRepository;
     }
 
-    private $types = ["Raffinerie", "Unité de stockage", "Transport", "Autre fournisseur"];
+    private $types = ["Raffinerie", "Unité de stockage", "Transport", "Autres fournisseurs"];
 
-    public function index()
+    public function index($type)
     {
         $this->authorize('ROLE_PROVIDER_TYPE_READ', ProviderType::class);
-        $listTypes = $this->types;
-        $providerTypes = ProviderType::with('providers')->orderBy('wording')->get();
+
+        
+        switch ($type) {
+            case 'Raffinerie':
+                $providerTypes = ProviderType::where('type','=','Raffinerie')->with('providers')->orderBy('wording')->get();
+                break;
+
+            case 'Unité de stockage':
+                $providerTypes = ProviderType::where('type','=','Unité de stockage')->with('providers')->orderBy('wording')->get();
+                break;
+
+            case 'Transport':
+                $providerTypes = ProviderType::where('type','=','Transport')->with('providers')->orderBy('wording')->get();
+                break;
+
+            case 'Autres fournisseurs':
+                $providerTypes = ProviderType::where('type','=','Autres fournisseurs')->with('providers')->orderBy('wording')->get();
+                break;
+
+            default:
+            $providerTypes = [];
+                break;
+        }
+
+        // $providerTypes = 
         return new JsonResponse([
-            'datas' => ['listTypes' => $listTypes, 'providerTypes' => $providerTypes]
+            'datas' => ['listTypes' => $this->types, 'providerTypes' => $providerTypes]
         ], 200);
     }
 
@@ -136,7 +159,7 @@ class ProviderTypeController extends Controller
                 $providerType->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Ce type de forunisseur ne peut être supprimé car il a servi dans des traitements.";
             }
