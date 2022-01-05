@@ -26,24 +26,14 @@ class UserTypeController extends Controller
     public function index()
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
-        // $roles = Role::with('operation')->with('pageOperation')->get();
         $pages = Page::all();
         $operations = Operation::all();
-        $pageOperations = PageOperation::with('page')->with('operation')->get();
-        // $pageOperations = PageOperation::with('page')->with('operation')->orderBy('title')->get();
-        // $operations = Operation::orderBy('wording')->get();
-        // $roles = Role::all(); 
+        // $pageOperations = PageOperation::with('page')->with('operation')->get();
         $userTypes = UserType::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['pages' => $pages, 'operations' => $operations, 'pageOperations' => $pageOperations, 'userTypes' => $userTypes]
+            'datas' => ['pages' => $pages, 'operations' => $operations, 'userTypes' => $userTypes]
         ], 200);
     }
-
-    // public function onPageOperationSelected($id)
-    // {
-    //     $pageOperation=PageOperation::findOrFail($id);
-
-    // }
 
     public function store(Request $request)
     {

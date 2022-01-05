@@ -1207,14 +1207,6 @@
         "page_id": 27
     },
     {
-        "code": "TRANSFER_DEMAND_TRANSFORM",
-        "title": "Transformer une demande de transfert en transfert",
-        "description": "Transformer une demande de transfert en transfert",
-        "role": "ROLE_TRANSFER_DEMAND_TRANSFORM",
-        "operation_id": 7,
-        "page_id": 27
-    },
-    {
         "code": "TRANSFER_READ",
         "title": "Consultation des transferts",
         "description": "Consultation des transferts",
