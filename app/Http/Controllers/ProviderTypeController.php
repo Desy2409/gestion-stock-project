@@ -11,19 +11,18 @@ use Illuminate\Http\Request;
 class ProviderTypeController extends Controller
 {
     public $providerTypeRepository;
+    private $types = ["Raffinerie", "Unité de stockage", "Transport", "Autres fournisseurs"];
 
     public function __construct(ProviderTypeRepository $providerTypeRepository)
     {
         $this->providerTypeRepository = $providerTypeRepository;
     }
 
-    private $types = ["Raffinerie", "Unité de stockage", "Transport", "Autres fournisseurs"];
 
     public function index($type)
     {
         $this->authorize('ROLE_PROVIDER_TYPE_READ', ProviderType::class);
 
-        
         switch ($type) {
             case 'Raffinerie':
                 $providerTypes = ProviderType::where('type','=','Raffinerie')->with('providers')->orderBy('wording')->get();
@@ -45,8 +44,6 @@ class ProviderTypeController extends Controller
             $providerTypes = [];
                 break;
         }
-
-        // $providerTypes = 
         return new JsonResponse([
             'datas' => ['listTypes' => $this->types, 'providerTypes' => $providerTypes]
         ], 200);
