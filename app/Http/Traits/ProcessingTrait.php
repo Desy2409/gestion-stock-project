@@ -10,15 +10,17 @@ trait ProcessingTrait
 
     function processing($model, $id, $action)
     {
-        dd($model, $id, $action);
-        if (in_array($model, $this->firstLevelOfStates)) {
+        // dd($model, $id, $action,str_replace("App\Models\\",'',$model));
+        if (in_array(str_replace("App\Models\\",'',$model), $this->firstLevelOfStates)) {
             if ($action == "validate") {
+                // dd('validate');
                 $element = $model::findOrFail($id);
                 $element->state = 'S';
                 $element->date_of_processing = date('Y-m-d', strtotime(now()));
                 $element->save();
             }
             if ($action == "reject") {
+                // dd('reject');
                 $element = $model::findOrFail($id);
                 $element->state = 'A';
                 $element->date_of_processing = date('Y-m-d', strtotime(now()));

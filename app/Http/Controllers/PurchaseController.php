@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\PurchaseValidationMail;
 use App\Models\DeliveryNote;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Mail;
 class PurchaseController extends Controller
 {
     use UtilityTrait;
+    use ProcessingTrait;
 
     private $directPurchase = "Achat direct";
     private $purchaseOnOrder = "Achat sur commande";
@@ -655,52 +657,30 @@ class PurchaseController extends Controller
         }
     }
 
-    public function validatePurchase($id)
+    public function purchaseProcessing($id, $action)
     {
-        $this->authorize('ROLE_PURCHASE_VALIDATE', Purchase::class);
-        $purchase = Purchase::findOrFail($id);
         try {
-            $purchase->state = 'S';
-            $purchase->date_of_processing = date('Y-m-d', strtotime(now()));
-            $purchase->save();
+            $this->processing(Purchase::class, $id, $action);
 
             $success = true;
-            $message = "Bon d'achat validé avec succès.";
+            if ($action == 'validate') {
+                $message = "Bon d'achat validé avec succès.";
+            }
+            if ($action == 'reject') {
+                $message = "Bon d'achat rejeté avec succès.";
+            }
             return new JsonResponse([
-                'purchase' => $purchase,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
-        } catch (Exception $e) {
-            // dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de la validation du bon d'achat.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
-
-    public function rejectPurchase($id)
-    {
-        $this->authorize('ROLE_PURCHASE_REJECT', Purchase::class);
-        $purchase = Purchase::findOrFail($id);
-        try {
-            $purchase->state = 'A';
-            $purchase->date_of_processing = date('Y-m-d', strtotime(now()));
-            $purchase->save();
-
-            $success = true;
-            $message = "Bon d'achat annulé avec succès.";
-            return new JsonResponse([
-                'purchase' => $purchase,
                 'success' => $success,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de l'annulation du bon d'achat.";
+            if ($action == 'validate') {
+                $message = "Erreur survenue lors de la validation du bon d'achat.";
+            }
+            if ($action == 'reject') {
+                $message = "Erreur survenue lors de l'annulation du bon d'achat.";
+            }
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
