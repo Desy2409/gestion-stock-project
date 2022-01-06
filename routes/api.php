@@ -161,8 +161,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/order/{id}/update', [OrderController::class, 'update']);
     Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
     Route::get('/order/{id}/edit', [OrderController::class, 'edit']);
-    Route::patch('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
-    Route::get('/order/{id}/reject', [OrderController::class, 'rejectOrder'])->name('reject_order');
+    Route::patch('/order/{id}/{action}', [OrderController::class, 'orderProcessing']);
+    // Route::patch('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
+    // Route::get('/order/{id}/reject', [OrderController::class, 'rejectOrder'])->name('reject_order');
     Route::get('/order-report', [OrderController::class, 'orderReports']);
 
     // Purchase routes
