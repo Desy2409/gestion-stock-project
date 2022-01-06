@@ -165,7 +165,18 @@ class TankTruckController extends Controller
     public function show($id)
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
-        $tankTruck = TankTruck::findOrFail($id);
+        $tankTruck = TankTruck::with('truck')->with('tank')->findOrFail($id);
+        
+        return new JsonResponse([
+            'tankTruck' => $tankTruck
+        ], 200);
+    }
+
+    public function edit($id)
+    {
+        $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
+        $tankTruck = TankTruck::with('truck')->with('tank')->findOrFail($id);
+
         return new JsonResponse([
             'tankTruck' => $tankTruck
         ], 200);

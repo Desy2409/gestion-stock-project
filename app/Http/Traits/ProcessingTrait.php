@@ -2,15 +2,16 @@
 
 namespace App\Http\Traits;
 
-trait UtilityTrait
+trait ProcessingTrait
 {
 
-    private $stateFirstLevels = ["Order", "Purchase", "DeliveryNote", "PurchaseOrder", "Sale", "ClientDeliveryNote", "TransferDemand"];
-    private $stateSecondLevels = [""];
+    private $firstLevelOfStates = ["Order", "Purchase", "DeliveryNote", "PurchaseOrder", "Sale", "ClientDeliveryNote", "TransferDemand"];
+    private $secondLevelOfStates = ["Tourn"];
 
     function processing($model, $id, $action)
     {
-        if (in_array($model, $this->stateFirstLevels)) {
+        dd($model, $id, $action);
+        if (in_array($model, $this->firstLevelOfStates)) {
             if ($action == "validate") {
                 $element = $model::findOrFail($id);
                 $element->state = 'S';
@@ -24,8 +25,8 @@ trait UtilityTrait
                 $element->save();
             }
         }
-        if (in_array($model, $this->stateSecondLevels)) {
-            if ($action == "clode") {
+        if (in_array($model, $this->secondLevelOfStates)) {
+            if ($action == "close") {
                 // $element = $model::findOrFail($id);
                 // $order->state = 'S';
                 // $order->date_of_processing = date('Y-m-d', strtotime(now()));

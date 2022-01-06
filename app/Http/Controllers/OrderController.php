@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\OrderValidationMail;
 use App\Models\Institution;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
     use UtilityTrait;
+    use ProcessingTrait;
 
     public $orderRepository;
 
@@ -371,6 +373,15 @@ class OrderController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 400);
+        }
+    }
+
+    public function orderProcessing($id, $action)
+    {
+        try {
+            $this->processing(Order::class, $id, $action);
+        } catch (Exception $e) {
+            dd($e);
         }
     }
 
