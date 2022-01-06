@@ -12,8 +12,8 @@ class Compartment extends Model
         'capacity'
     ];
 
-    public function tanks()
+    public function tank()
     {
-        return $this->hasMany(Tank::class);
+        return $this->belongsTo(Tank::class);
     }
 }

@@ -79,6 +79,26 @@ class TankController extends Controller
             ], 400);
         }
     }
+    
+    public function show($id)
+    {
+        $this->authorize('ROLE_TANK_READ', Tank::class);
+        $tank = Tank::with('compartments')->findOrFail($id);
+
+        return new JsonResponse([
+            'tank' => $tank
+        ], 200);
+    }
+
+    public function edit($id)
+    {
+        $this->authorize('ROLE_TANK_READ', Tank::class);
+        $tank = Tank::with('compartments')->findOrFail($id);
+
+        return new JsonResponse([
+            'tank' => $tank
+        ], 200);
+    }
 
     // Mise à jour d'une citerne
     public function update(Request $request, $id)
@@ -171,15 +191,6 @@ class TankController extends Controller
                 'message' => $message,
             ], 400);
         }
-    }
-
-    public function show($id)
-    {
-        $this->authorize('ROLE_TANK_READ', Tank::class);
-        $tank = Tank::findOrFail($id);
-        return new JsonResponse([
-            'tank' => $tank
-        ], 200);
     }
 
     public function tankReports(Request $request)

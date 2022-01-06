@@ -169,6 +169,17 @@ class TruckController extends Controller
     {
         $this->authorize('ROLE_TRUCK_READ', Truck::class);
         $truck = Truck::findOrFail($id);
+        
+        return new JsonResponse([
+            'truck' => $truck
+        ], 200);
+    }
+
+    public function edit($id)
+    {
+        $this->authorize('ROLE_TRUCK_READ', Truck::class);
+        $truck = Truck::findOrFail($id);
+
         return new JsonResponse([
             'truck' => $truck
         ], 200);
