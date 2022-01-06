@@ -5,10 +5,10 @@ namespace App\Http\Traits;
 trait UtilityTrait
 {
 
-    function state($code)
+    function state($element)
     {
         $value = "";
-        switch ($code) {
+        switch ($element->state) {
             case 'P':
                 $value = "En attente";
                 break;

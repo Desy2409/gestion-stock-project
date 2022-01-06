@@ -7,16 +7,35 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = [
-        'code',
-        'reference',
-        'order_date',
-        'delivery_date',
-        'total_amount',
-        'observation',
-        'state',
-        'date_of_processing',
-    ];
+
+    protected $append =  ['state'];
+
+    public function getStateAttribute(){
+        $value = "";
+        switch ($this->state) {
+            case 'P':
+                $value = "En attente";
+                break;
+
+            case 'S':
+                $value = "Validé(e)";
+                break;
+
+            case 'A':
+                $value = "Annulé(e)";
+                break;
+
+            case 'C':
+                $value = "Clôturée";
+                break;
+
+            default:
+                $value = "En attente";
+                break;
+        }
+        return $value;
+    }
+
     public function provider()
     {
         return $this->belongsTo(Provider::class);
@@ -35,5 +54,10 @@ class Order extends Model
     public function salePoint()
     {
         return $this->belongsTo(SalePoint::class);
+    }
+
+    public function state()
+    {
+        return ($this->state == "P" ? "En attente" : "");
     }
 }

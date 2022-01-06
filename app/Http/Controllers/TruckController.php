@@ -22,12 +22,13 @@ class TruckController extends Controller
     public function index()
     {
         $this->authorize('ROLE_TRUCK_READ', Truck::class);
-        $trucks = Truck::orderBy('truck_registration')->get();
+        $trucks = Truck::with('provider')->orderBy('truck_registration')->get();
 
-        $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
-        $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
+        // $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
+        // $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
+
         return new JsonResponse([
-            'datas' => ['trucks' => $trucks, 'carriers' => $carriers]
+            'datas' => ['trucks' => $trucks]
         ], 200);
     }
 
