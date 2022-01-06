@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\SaleValidationMail;
 use App\Models\Client;
@@ -26,6 +27,7 @@ use Illuminate\Support\Facades\Mail;
 class SaleController extends Controller
 {
     use UtilityTrait;
+    use ProcessingTrait;
 
     public $saleRepository;
     public function __construct(SaleRepository $saleRepository)
@@ -598,51 +600,30 @@ class SaleController extends Controller
         }
     }
 
-    public function validateSale($id)
+    public function saleProcessing($id, $action)
     {
-        $this->authorize('ROLE_SALE_VALIDATE', Sale::class);
-        $sale = Sale::findOrFail($id);
         try {
-            $sale->state = 'S';
-            $sale->date_of_processing = date('Y-m-d', strtotime(now()));
-            $sale->save();
+            $this->processing(Sale::class, $id, $action);
 
             $success = true;
-            $message = "Vente validée avec succès.";
+            if ($action == 'validate') {
+                $message = "Vente validée avec succès.";
+            }
+            if ($action == 'reject') {
+                $message = "Vente rejetée avec succès.";
+            }
             return new JsonResponse([
-                'sale' => $sale,
                 'success' => $success,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de la validation de la vente.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-    }
-
-    public function rejectSale($id)
-    {
-        $this->authorize('ROLE_SALE_REJECT', Sale::class);
-        $sale = Sale::findOrFail($id);
-        try {
-            $sale->state = 'A';
-            $sale->date_of_processing = date('Y-m-d', strtotime(now()));
-            $sale->save();
-
-            $success = true;
-            $message = "Vente annulée avec succès.";
-            return new JsonResponse([
-                'sale' => $sale,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
-        } catch (Exception $e) {
-            $success = false;
-            $message = "Erreur survenue lors de l'annulation de la vente.";
+            if ($action == 'validate') {
+                $message = "Erreur survenue lors de la validation de la vente.";
+            }
+            if ($action == 'reject') {
+                $message = "Erreur survenue lors de l'annulation de la vente.";
+            }
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

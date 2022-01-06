@@ -11,6 +11,7 @@ use App\Models\OrderRegister;
 use App\Models\Product;
 use App\Models\ProductOrder;
 use App\Models\Provider;
+use App\Models\Purchase;
 use App\Models\SalePoint;
 use App\Models\Unity;
 use App\Models\User;
@@ -39,7 +40,7 @@ class OrderController extends Controller
     {
         // dd("OrderController");
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $orders = Order::with('state')->orderBy('order_date')->get();
+        $orders = Order::orderBy('order_date')->get();
         // $orders = Order::orderBy('order_date')->with('')->get();
         $providers = Provider::with('person')->get();
         $products = Product::orderBy('wording')->get();
@@ -380,75 +381,26 @@ class OrderController extends Controller
     {
         try {
             $this->processing(Order::class, $id, $action);
-        } catch (Exception $e) {
-            dd($e);
-        }
-    }
-
-    public function validateOrder($id)
-    {
-        // dd(URL::previous());
-        // dd('order validate');
-        $this->authorize('ROLE_ORDER_VALIDATE', Order::class);
-        $order = Order::findOrFail($id);
-        try {
-            $order->state = 'S';
-            $order->date_of_processing = date('Y-m-d', strtotime(now()));
-            $order->save();
-
-            // $success = false;
-            // $message = "";
-            // if ($order->state = 'P') {
-            //     $order->state = 'S';
-            //     $order->date_of_processing = date('Y-m-d', strtotime(now()));
-            //     $order->save();
-
-            //     $success = true;
-            //     $message = "Bon de commande validé avec succès.";
-            // } elseif ($order->state = 'S') {
-            //     $message = "Impossible de valider ce bon de commande car il a déjà été validé.";
-            // } elseif ($order->state = 'A') {
-            //     $message = "Impossible de valider ce bon de commande car il a été annulé.";
-            // }
-
 
             $success = true;
-            $message = 'Bon de commande validé avec succès.';
+            if ($action == 'validate') {
+                $message = "Commande validée avec succès.";
+            }
+            if ($action == 'reject') {
+                $message = "Commande rejetée avec succès.";
+            }
             return new JsonResponse([
-                'order' => $order,
                 'success' => $success,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de la validation du bon de commande.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-        // return redirect(url()->previous());
-    }
-
-    public function rejectOrder($id)
-    {
-        $this->authorize('ROLE_ORDER_REJECT', Order::class);
-        $order = Order::findOrFail($id);
-        try {
-            $order->state = 'A';
-            $order->date_of_processing = date('Y-m-d', strtotime(now()));
-            $order->save();
-
-            $success = true;
-            $message = "Bon de commande annulé avec succès.";
-            return new JsonResponse([
-                'order' => $order,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
-        } catch (Exception $e) {
-            $success = false;
-            $message = "Erreur survenue lors de l'annulation du bon de commande.";
+            if ($action == 'validate') {
+                $message = "Erreur survenue lors de la validation de la commande.";
+            }
+            if ($action == 'reject') {
+                $message = "Erreur survenue lors de l'annulation de la commande.";
+            }
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
