@@ -22,9 +22,9 @@ class Tank extends Model
         return $this->hasMany(Tourn::class);
     }
 
-    public function compartment()
+    public function compartments()
     {
-        return $this->belongsTo(Compartment::class);
+        return $this->hasMany(Compartment::class);
     }
     
     public function tankTrucks()

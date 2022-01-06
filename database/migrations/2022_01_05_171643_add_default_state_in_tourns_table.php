@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DropClientDeliveryNoteIdInTournsTable extends Migration
+class AddDefaultStateInTournsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class DropClientDeliveryNoteIdInTournsTable extends Migration
     public function up()
     {
         Schema::table('tourns', function (Blueprint $table) {
-            $table->string('state');
-            $table->string('client_delivery_notes');
+            $table->string('state')->default('P')->change();
         });
     }
 

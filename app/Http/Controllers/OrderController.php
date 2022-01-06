@@ -37,7 +37,8 @@ class OrderController extends Controller
     {
         // dd("OrderController");
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $orders = Order::orderBy('order_date')->get();
+        $orders = Order::with('state')->orderBy('order_date')->get();
+        // $orders = Order::orderBy('order_date')->with('')->get();
         $providers = Provider::with('person')->get();
         $products = Product::orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
