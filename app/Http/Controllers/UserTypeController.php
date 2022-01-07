@@ -203,9 +203,13 @@ class UserTypeController extends Controller
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         $userType = UserType::findOrFail($id);
+        // $pageOperations = PageOperation::whereIn('role', $userType->role)->get();
+
+        // $pages = Page::all();
+        // $operations = Operation::all();
 
         return new JsonResponse([
-            'userType' => $userType
+            'userType' => $userType, //'pageOperations' => $pageOperations
         ], 200);
     }
 
@@ -213,7 +217,7 @@ class UserTypeController extends Controller
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         $userType = UserType::findOrFail($id);
-        
+
         return new JsonResponse([
             'userType' => $userType
         ], 200);

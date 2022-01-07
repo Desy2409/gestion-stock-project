@@ -9,7 +9,7 @@ class FileTypeRepository extends Repository
     public function fileTypeReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $fileTypes = null;
+            $fileTypes = FileType::all();
         } else {
             $fileTypes = FileType::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

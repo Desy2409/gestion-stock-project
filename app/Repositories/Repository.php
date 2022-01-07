@@ -14,7 +14,7 @@ class Repository
     public function reportIncludeCode($model, $selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $elements = null;
+            $elements = $model::all();
         } else {
             $elements = $model::select($selectedDefaultFields)->where('id', '!=', null)->get();
             // if ($startDate && $endDate) {
@@ -28,7 +28,7 @@ class Repository
     public function reportIncludeReference($model, $selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $elements = null;
+            $elements = $model::all();
         } else {
             $elements = $model::select($selectedDefaultFields)->where('id', '!=', null)->get();
             // if ($startDate && $endDate) {
@@ -42,7 +42,7 @@ class Repository
     public function registerReport($model, $selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $elements = null;
+            $elements = $model::all();
         } else {
             $elements = $model::select($selectedDefaultFields)->where('id', '!=', null)->get();
             // if ($startDate && $endDate) {

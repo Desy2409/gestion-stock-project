@@ -10,7 +10,7 @@ class CountryRepository  extends Repository
     public function countryReport($code = false, $apha2 = false, $apha3 = false, $name_en = false, $name_fr = false, $indicative = false)
     {
         if (!$code && !$apha2 && !$apha3 && !$name_en && !$name_fr && !$indicative) {
-            $countries = null;
+            $countries = Country::all();
         } else {
             $countries=Country::where('id','!=',null);
             if ($code) {

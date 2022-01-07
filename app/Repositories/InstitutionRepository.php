@@ -9,7 +9,7 @@ class InstitutionRepository extends Repository
     public function institutionReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields) || sizeof($selectedDefaultFields) == 0) {
-            $institutions = null;
+            $institutions = Institution::all();
         } else {
             $institutions = Institution::select($selectedDefaultFields)->where('id', '!=', null)->get();
 

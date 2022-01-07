@@ -9,7 +9,7 @@ class HostRepository extends Repository
     public function hostReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $hosts = null;
+            $hosts = Host::all();
         } else {
             $hosts = Host::select($selectedDefaultFields)->where('id', '!=', null)->get();
             
