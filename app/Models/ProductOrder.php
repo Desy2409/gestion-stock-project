@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductOrder extends Model
 {
-    protected $fillable = [
-        'quantity',
-        'unit_price',
-    ];
+    protected $appends=['remainingQuantity'];
 
     public function order()
     {
@@ -26,4 +23,5 @@ class ProductOrder extends Model
     {
         return $this->belongsTo(Unity::class);
     }
+    
 }
