@@ -9,7 +9,7 @@ class EmailChannelParamRepository extends Repository
     public function emailChannelParamReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $emailChannelParams = null;
+            $emailChannelParams = EmailChannelParam::all();
         } else {
             $emailChannelParams = EmailChannelParam::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

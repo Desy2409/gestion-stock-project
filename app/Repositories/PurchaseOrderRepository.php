@@ -9,7 +9,7 @@ class PurchaseOrderRepository extends Repository
     public function purchaseOrderReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $purchaseOrders = null;
+            $purchaseOrders = PurchaseOrder::all();
         } else {
             $purchaseOrders = PurchaseOrder::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

@@ -9,7 +9,7 @@ class CompartmentRepository extends Repository
     public function compartmentReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields) || sizeof($selectedDefaultFields) == 0) {
-            $compartments = null;
+            $compartments = Compartment::all();
         } else {
             $compartments = Compartment::select($selectedDefaultFields)->where('id', '!=', null);
 

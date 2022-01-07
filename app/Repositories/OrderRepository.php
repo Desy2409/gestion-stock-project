@@ -9,7 +9,7 @@ class OrderRepository extends Repository
     public function orderReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $orders = null;
+            $orders = Order::all();
         } else {
             $orders = Order::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

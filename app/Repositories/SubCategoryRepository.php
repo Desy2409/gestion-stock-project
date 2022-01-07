@@ -10,7 +10,7 @@ class SubCategoryRepository extends Repository
     public function subCategoryReport($selectedDefaultFields, $selectedParentFields)
     {
         if (empty($selectedDefaultFields) || sizeof($selectedDefaultFields) == 0) {
-            $subCategories = null;
+            $subCategories = SubCategory::all();
         } else {
             // $subCategories = SubCategory::select($selectedDefaultFields)->where('id', '!=', null)->with('category')->get();
 

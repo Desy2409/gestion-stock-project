@@ -11,7 +11,7 @@ class ProductRepository
     public function productReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $products = null;
+            $products = Product::all();
         } else {
             $products = Product::select($selectedDefaultFields)->where('id', '!=', null)->get();
 

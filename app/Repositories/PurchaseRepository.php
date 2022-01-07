@@ -9,7 +9,7 @@ class PurchaseRepository extends Repository
     public function purchaseReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $purchases = null;
+            $purchases = Purchase::all();
         } else {
             $purchases = Purchase::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

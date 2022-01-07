@@ -9,7 +9,7 @@ class SalePointRepository extends Repository
     public function salePointReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $salePoints = null;
+            $salePoints = SalePoint::all();
         } else {
             $salePoints = SalePoint::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

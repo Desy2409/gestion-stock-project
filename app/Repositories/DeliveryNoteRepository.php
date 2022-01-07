@@ -10,7 +10,7 @@ class DeliveryNoteRepository extends Repository
     public function deliveryNoteReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $deliveryNotes = null;
+            $deliveryNotes = DeliveryNote::all();
         } else {
             $deliveryNotes = DeliveryNote::select($selectedDefaultFields)->where('id', '!=', null)->get();
             
