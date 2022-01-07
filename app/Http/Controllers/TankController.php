@@ -24,9 +24,10 @@ class TankController extends Controller
     {
         $this->authorize('ROLE_TANK_READ', Tank::class);
         $tanks = Tank::orderBy('tank_registration')->get();
-        $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
+        $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $compartments = Compartment::orderBy('reference')->orderBy('number')->get();
+        
         return new JsonResponse([
             'datas' => ['tanks' => $tanks, 'carriers' => $carriers, 'compartments' => $compartments]
         ], 200);
