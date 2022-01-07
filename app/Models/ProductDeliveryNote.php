@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductDeliveryNote extends Model
 {
-    protected $fillable = [
-        'quantity',
-    ];
+    
+    protected $appends=['remainingQuantity'];
 
     public function product()
     {
@@ -26,7 +25,7 @@ class ProductDeliveryNote extends Model
         return $this->belongsTo(Unity::class);
     }
 
-    public static function remainingQuantity()
+    public static function getRemainingQuantityAttribute()
     {
         // $purchase = $this->deliveryNote()->purchase;
         $purchase = parent::deliveryNote()->purchase;

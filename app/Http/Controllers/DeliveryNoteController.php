@@ -83,7 +83,7 @@ class DeliveryNoteController extends Controller
         // dd($purchase->verifyQuantity);
 
         $productPurchases = ProductPurchase::with('product')->with('unity')->where('purchase_id', $purchase->id)->get();
-        $array = [];
+        // $array = [];
 
         // foreach ($productPurchases as $key => $value) {
         //     array_push($array, $value::remainingQuantity());

@@ -26,9 +26,10 @@ class TankController extends Controller
         $tanks = Tank::orderBy('tank_registration')->get();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
-        $compartments = Compartment::orderBy('reference')->orderBy('number')->get();
+        // $compartments = Compartment::orderBy('reference')->orderBy('number')->get();
+
         return new JsonResponse([
-            'datas' => ['tanks' => $tanks, 'carriers' => $carriers, 'compartments' => $compartments]
+            'datas' => ['tanks' => $tanks, 'carriers' => $carriers]
         ], 200);
     }
 
@@ -40,13 +41,13 @@ class TankController extends Controller
             $request,
             [
                 'provider'=>'required',
-                'compartment'=>'required',
+                // 'capacity'=>'required',
                 'reference' => 'required|unique:tanks',
                 'tank_registration' => 'required|unique:tanks',
             ],
             [
                 'provider.required'=>"Le choix du fornisseur est obligatoire.",
-                'compartment.required'=>"Le choix du compartiment est obligatoire.",
+                // 'capacity.required'=>"Le choix du compartiment est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",
                 'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
@@ -58,7 +59,7 @@ class TankController extends Controller
             $tank = new Tank();
             $tank->reference = $request->reference;
             $tank->tank_registration = $request->tank_registration;
-            $tank->compartment_id = $request->compartment;
+            $tank->capacity = $request->capacity;
             $tank->provider_id = $request->provider;
             $tank->save();
 
@@ -109,13 +110,13 @@ class TankController extends Controller
             $request,
             [
                 'provider'=>'required',
-                'compartment'=>'required',
+                // 'compartment'=>'required',
                 'reference' => 'required',
                 'tank_registration' => 'required',
             ],
             [
                 'provider.required'=>"Le choix du fornisseur est obligatoire.",
-                'compartment.required'=>"Le choix du compartiment est obligatoire.",
+                // 'compartment.required'=>"Le choix du compartiment est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
                 'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
@@ -135,7 +136,7 @@ class TankController extends Controller
         try {
             $tank->reference = $request->reference;
             $tank->tank_registration = $request->tank_registration;
-            $tank->compartment_id = $request->compartment;
+            $tank->capacity = $request->capacity;
             $tank->provider_id = $request->provider;
             $tank->save();
 
@@ -166,6 +167,7 @@ class TankController extends Controller
             $message = "";
             if (
                 empty($tank->tourns) || sizeof($tank->tourns) == 0 &&
+                empty($tank->compartments) || sizeof($tank->compartments) == 0 &&
                 empty($tank->tankTrucks) || sizeof($tank->tankTrucks) == 0
             ) {
                 // dd('delete');
