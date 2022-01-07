@@ -299,6 +299,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Truck routes
     Route::get('/truck', [TruckController::class, 'index']);
     Route::post('/truck', [TruckController::class, 'store']);
+    Route::get('/truck/{id}/edit', [TruckController::class, 'edit']);
     Route::get('/truck/{id}/show', [TruckController::class, 'show']);
     Route::patch('/truck/{id}/update', [TruckController::class, 'update']);
     Route::delete('/truck/{id}/destroy', [TruckController::class, 'destroy']);

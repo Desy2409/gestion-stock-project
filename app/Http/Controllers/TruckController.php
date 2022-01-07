@@ -24,11 +24,11 @@ class TruckController extends Controller
         $this->authorize('ROLE_TRUCK_READ', Truck::class);
         $trucks = Truck::with('provider')->orderBy('truck_registration')->get();
 
-        // $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
-        // $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
+        $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
+        $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
 
         return new JsonResponse([
-            'datas' => ['trucks' => $trucks]
+            'datas' => ['trucks' => $trucks, 'carriers'=>$carriers]
         ], 200);
     }
 
@@ -138,7 +138,7 @@ class TruckController extends Controller
             $message = "";
             if (
                 empty($truck->tourns) || sizeof($truck->tourns) == 0 &&
-                empty($truck->tankTrucks) || sizeof($truck->tankTrucks) == 0 
+                empty($truck->tankTrucks) || sizeof($truck->tankTrucks) == 0
             ) {
                 // dd('delete');
                 $truck->delete();
@@ -149,7 +149,7 @@ class TruckController extends Controller
                 // dd('not delete');
                 $message = "Ce camion ne peut être supprimé car il a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'truck' => $truck,
                 'success' => $success,
@@ -169,7 +169,7 @@ class TruckController extends Controller
     {
         $this->authorize('ROLE_TRUCK_READ', Truck::class);
         $truck = Truck::findOrFail($id);
-        
+
         return new JsonResponse([
             'truck' => $truck
         ], 200);
