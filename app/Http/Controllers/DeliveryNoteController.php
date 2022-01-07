@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\StockTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\DeliveryNoteValidationMail;
@@ -24,6 +25,7 @@ class DeliveryNoteController extends Controller
 {
     use UtilityTrait;
     use StockTrait;
+    use ProcessingTrait;
 
     public $deliveryNoteRepository;
 
@@ -338,55 +340,30 @@ class DeliveryNoteController extends Controller
         }
     }
 
-    public function validateDeliveryNote($id)
+    public function deliveryNoteProcessing($id, $action)
     {
-        $this->authorize('ROLE_DELIVERY_NOTE_VALIDATE', DeliveryNote::class);
-        $deliveryNote = DeliveryNote::findOrFail($id);
         try {
-            $deliveryNote->state = 'S';
-            $deliveryNote->date_of_processing = date('Y-m-d', strtotime(now()));
-            $deliveryNote->save();
-
-            $this->increment($deliveryNote);
+            $this->processing(DeliveryNote::class, $id, $action);
 
             $success = true;
-            $message = "Bon de livraison validé avec succès.";
+            if ($action == 'validate') {
+                $message = "Livraison validée avec succès.";
+            }
+            if ($action == 'reject') {
+                $message = "Livraison rejetée avec succès.";
+            }
             return new JsonResponse([
-                'deliveryNote' => $deliveryNote,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
-        } catch (Exception $e) {
-            dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de la validation du bon de livraison.";
-            return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-            ], 400);
-        }
-        // return back();
-    }
-
-    public function rejectDeliveryNote($id)
-    {
-        $this->authorize('ROLE_DELIVERY_NOTE_REJECT', DeliveryNote::class);
-        $deliveryNote = DeliveryNote::findOrFail($id);
-        try {
-            $deliveryNote->state = 'A';
-            $deliveryNote->date_of_processing = date('Y-m-d', strtotime(now()));
-            $deliveryNote->save();
-
-            $success = true;
-            $message = "Bon de livraison annulé avec succès.";
-            return new JsonResponse([
-                'deliveryNote' => $deliveryNote,
                 'success' => $success,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             $success = false;
-            $message = "Erreur survenue lors de l'annulation du bon de livraison.";
+            if ($action == 'validate') {
+                $message = "Erreur survenue lors de la validation de la livraison.";
+            }
+            if ($action == 'reject') {
+                $message = "Erreur survenue lors de l'annulation de la livraison.";
+            }
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,

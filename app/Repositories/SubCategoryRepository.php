@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\SubCategory;
+use Illuminate\Database\Eloquent\Builder;
 
 class SubCategoryRepository extends Repository
 {
@@ -19,13 +20,16 @@ class SubCategoryRepository extends Repository
 
             // $stringTest .= implode(',', $selectedDefaultFields);
             $stringTest .=implode(',', $selectedParentFields);
+            //dd($stringTest);
             // $stringTest .= ',' . implode(',', $selectedParentFields);
 
             // dd($stringTest);
 
-            // $subCategories = SubCategory::select('categories.reference')->where('id', '!=', null)->get(zzz);
-            $subCategories = SubCategory::with($stringTest)->where('id', '!=', null)->get($selectedDefaultFields);
-
+            // $subCategories = SubCategory::select('categories.reference')->where('id', '!=', null)->get();
+            
+            
+            $subCategories = SubCategory::with('category')->select('wording')->get();
+            //$subCategories = SubCategory::with($stringTest)
 
             // $subCategories = SubCategory::select($selectedDefaultFields)->where('id', '!=', null)
             //     ->with(array($stringTest))->get();

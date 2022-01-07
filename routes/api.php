@@ -162,8 +162,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/order/{id}/destroy', [OrderController::class, 'destroy']);
     Route::get('/order/{id}/edit', [OrderController::class, 'edit']);
     Route::patch('/order/{id}/{action}', [OrderController::class, 'orderProcessing']);
-    // Route::patch('/order/{id}/validate', [OrderController::class, 'validateOrder'])->name('validate_order');
-    // Route::get('/order/{id}/reject', [OrderController::class, 'rejectOrder'])->name('reject_order');
     Route::get('/order-report', [OrderController::class, 'orderReports']);
 
     // Purchase routes
@@ -176,8 +174,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase/{id}/edit', [PurchaseController::class, 'edit']);
     Route::patch('/purchase/{id}/update', [PurchaseController::class, 'update']);
     Route::delete('/purchase/{id}/destroy', [PurchaseController::class, 'destroy']);
-    Route::get('/purchase/{id}/validate', [PurchaseController::class, 'validatePurchase'])->name('validate_purchase');
-    Route::get('/purchase/{id}/reject', [PurchaseController::class, 'rejectPurchase'])->name('reject_purchase');
+    Route::get('/purchase/{id}/{action}', [PurchaseController::class, 'purchaseProcessing']);
     Route::get('/purchase-report', [PurchaseController::class, 'purchaseReports']);
 
     // Delivery note routes
@@ -189,8 +186,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/delivery-note/{id}/edit', [DeliveryNoteController::class, 'edit']);
     Route::patch('/delivery-note/{id}/update', [DeliveryNoteController::class, 'update']);
     Route::delete('/delivery-note/{id}/destroy', [DeliveryNoteController::class, 'destroy']);
-    Route::get('/delivery-note/{id}/validate', [DeliveryNoteController::class, 'validateDeliveryNote'])->name('validate_delivery_note');
-    Route::get('/delivery-note/{id}/reject', [DeliveryNoteController::class, 'rejectDeliveryNote'])->name('reject_delivery_note');
+    Route::get('/delivery-note/{id}/{action}', [DeliveryNoteController::class, 'deliveryNoteProcessing']);
     Route::get('/delivery-note/{id}/return', [DeliveryNoteController::class, 'returnOfMerchandises']);
     Route::get('/delivery-note-report', [DeliveryNoteController::class, 'deliveryNoteReports']);
 
@@ -202,8 +198,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-order/{id}/edit', [PurchaseOrderController::class, 'edit']);
     Route::patch('/purchase-order/{id}/update', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchase-order/{id}/destroy', [PurchaseOrderController::class, 'destroy']);
-    Route::get('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate_purchase_order');
-    Route::get('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder'])->name('reject_purchase_order');
+    Route::get('/purchase-order/{id}/{action}', [PurchaseOrderController::class, 'purchaseOrderProcessing']);
+    // Route::get('/purchase-order/{id}/validate', [PurchaseOrderController::class, 'validatePurchaseOrder'])->name('validate_purchase_order');
+    // Route::get('/purchase-order/{id}/reject', [PurchaseOrderController::class, 'rejectPurchaseOrder'])->name('reject_purchase_order');
     Route::get('/purchase-order-report', [PurchaseOrderController::class, 'purchaseOrderReports']);
 
     // Sale routes
@@ -216,8 +213,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sale/{id}/edit', [SaleController::class, 'edit']);
     Route::patch('/sale/{id}/update', [SaleController::class, 'update']);
     Route::delete('/sale/{id}/destroy', [SaleController::class, 'destroy']);
-    Route::get('/sale/{id}/validate', [SaleController::class, 'validateSale'])->name('validate_sale');
-    Route::get('/sale/{id}/reject', [SaleController::class, 'rejectSale'])->name('reject_sale');
+    Route::get('/sale/{id}/{action}', [SaleController::class, 'saleProcessing']);
+    // Route::get('/sale/{id}/validate', [SaleController::class, 'validateSale'])->name('validate_sale');
+    // Route::get('/sale/{id}/reject', [SaleController::class, 'rejectSale'])->name('reject_sale');
     Route::get('/sale-report', [SaleController::class, 'saleReports']);
 
     // Client delivery note routes
@@ -229,8 +227,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client-delivery-note/{id}/edit', [ClientDeliveryNoteController::class, 'edit']);
     Route::patch('/client-delivery-note/{id}/update', [ClientDeliveryNoteController::class, 'update']);
     Route::delete('/client-delivery-note/{id}/destroy', [ClientDeliveryNoteController::class, 'destroy']);
-    Route::get('/client-delivery-note/{id}/validate', [ClientDeliveryNoteController::class, 'validateClientDeliveryNote'])->name('validate_client_delivery_note');
-    Route::get('/client-delivery-note/{id}/reject', [ClientDeliveryNoteController::class, 'rejectClientDeliveryNote'])->name('reject_client_delivery_note');
+    Route::get('/client-delivery-note/{id}/{action}', [ClientDeliveryNoteController::class, 'clientDeliveryNoteProcessing']);
+    // Route::get('/client-delivery-note/{id}/validate', [ClientDeliveryNoteController::class, 'validateClientDeliveryNote'])->name('validate_client_delivery_note');
+    // Route::get('/client-delivery-note/{id}/reject', [ClientDeliveryNoteController::class, 'rejectClientDeliveryNote'])->name('reject_client_delivery_note');
     Route::get('/client-delivery-note/{id}/return', [ClientDeliveryNoteController::class, 'returnOfMerchandises']);
     Route::get('/client-delivery-note-report', [ClientDeliveryNoteController::class, 'clientDeliveryNoteReports']);
 

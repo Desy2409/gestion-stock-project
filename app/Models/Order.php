@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
 
-    protected $append =  ['state'];
+    protected $appends =  ['orderState'];
 
-    public function getStateAttribute(){
+    public function getOrderStateAttribute(){
         $value = "";
         switch ($this->state) {
             case 'P':
