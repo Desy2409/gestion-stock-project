@@ -199,10 +199,21 @@ class UserTypeController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
+        $userType = UserType::findOrFail($id);
+
+        return new JsonResponse([
+            'userType' => $userType
+        ], 200);
+    }
+
     public function show($id)
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         $userType = UserType::findOrFail($id);
+        
         return new JsonResponse([
             'userType' => $userType
         ], 200);

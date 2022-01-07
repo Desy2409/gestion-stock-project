@@ -30,12 +30,15 @@ class ProductPurchase extends Model
         // $purchase = $this->deliveryNote()->purchase;
         // $purchase = $this->parent::purchase();
         // dd($this->purchase);
-
+        $quantityToDeliver =0;
         $quantityToDeliver = ProductPurchase::where('purchase_id', $this->purchase->id)->first()->quantity;
         // dd($quantityToDeliver);
         $deliveredQuantity = 0;
-        $deliveredQuantity += ProductDeliveryNote::join('delivery_notes', 'delivery_notes.id', '=', 'product_delivery_notes.delivery_note_id')
-            ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->where('purchases.id', $this->purchase->id)->sum('quantity');
+        $deliveredQuantity = ProductDeliveryNote::join('delivery_notes', 'delivery_notes.id', '=', 'product_delivery_notes.delivery_note_id')
+            ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->where('purchases.id', $this->purchase->id)->where('product_id','=', $this->product->id)->sum('quantity');
+
+
+            // dd($quantityToDeliver,$deliveredQuantity);
 
         return ($quantityToDeliver > $deliveredQuantity) ? ($quantityToDeliver - $deliveredQuantity) : 0;
         // return $quantityToDeliver;
