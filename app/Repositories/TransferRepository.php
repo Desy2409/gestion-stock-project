@@ -9,7 +9,7 @@ class TransferRepository extends Repository
     public function transferReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $transfers = null;
+            $transfers = Transfer::all();
         } else {
             $transfers = Transfer::select($selectedDefaultFields)->where('id', '!=', null)->get();
 
