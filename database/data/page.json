@@ -121,6 +121,12 @@
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
     },
     {
+        "code": "TANK_TRUCK",
+        "title": "Tracteur associcé à une citerne",
+        "description": "Page de configuration d'association d'un tracteur à une citerne",
+        "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
+    },
+    {
         "code": "TOURN",
         "title": "Tournée",
         "description": "Page de configuration d'une tournée",
@@ -133,7 +139,7 @@
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
     },
     {
-        "code": "GOOD_TO_REMOVE",
+        "code": "REMOVAL_ORDER",
         "title": "Bon à enlever",
         "description": "Page de configuration d'un bon à enlever",
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT", "VALIDATE", "REJECT"]
