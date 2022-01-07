@@ -38,7 +38,7 @@ class TankTruckController extends Controller
             [
                 'truck' => 'required',
                 'tank' => 'required',
-                'validity_date' => 'required|date|date_format:Ymd|before:today',
+                'validity_date' => 'required|date|before:today',
                 'gauging_certificate' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [
@@ -166,7 +166,7 @@ class TankTruckController extends Controller
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         $tankTruck = TankTruck::with('truck')->with('tank')->findOrFail($id);
-        
+
         return new JsonResponse([
             'tankTruck' => $tankTruck
         ], 200);
