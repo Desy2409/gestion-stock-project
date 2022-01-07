@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PageOperation extends Model
 {
+    protected $fillable=['code','title','description','role'];
 
     public function page()
     {

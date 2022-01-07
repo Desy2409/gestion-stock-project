@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductPurchase extends Model
 {
 
-    protected $appends=['remainingQuantity'];
+    protected $appends=['remaining_quantity'];
 
     public function product()
     {
@@ -28,16 +28,16 @@ class ProductPurchase extends Model
      public function getRemainingQuantityAttribute()
     {
         // $purchase = $this->deliveryNote()->purchase;
-        $purchase = $this->parent::purchase();
-        dd($purchase);
+        // $purchase = $this->parent::purchase();
+        // dd($this->purchase);
 
-        $quantityToDeliver = ProductPurchase::where('purchase_id', $purchase->id)->first()->quantity;
+        $quantityToDeliver = ProductPurchase::where('purchase_id', $this->purchase->id)->first()->quantity;
         // dd($quantityToDeliver);
-        // $deliveredQuantity = 0;
-        // $deliveredQuantity += ProductDeliveryNote::join('delivery_notes', 'delivery_notes.id', '=', 'product_delivery_notes.delivery_note_id')
-        //     ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->where('purchases.id', $purchase->id)->sum('quantity');
+        $deliveredQuantity = 0;
+        $deliveredQuantity += ProductDeliveryNote::join('delivery_notes', 'delivery_notes.id', '=', 'product_delivery_notes.delivery_note_id')
+            ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->where('purchases.id', $this->purchase->id)->sum('quantity');
 
-        // return ($quantityToDeliver > $deliveredQuantity) ? ($quantityToDeliver - $deliveredQuantity) : 0;
-        return $quantityToDeliver;
+        return ($quantityToDeliver > $deliveredQuantity) ? ($quantityToDeliver - $deliveredQuantity) : 0;
+        // return $quantityToDeliver;
     }
 }

@@ -26,7 +26,7 @@ class RemovalOrderController extends Controller
     public function index()
     {
 
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
         $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
 
@@ -62,7 +62,7 @@ class RemovalOrderController extends Controller
 
     public function showNextCode()
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
         if ($lastRemovalOrderRegister) {
             $code = $this->formateNPosition('BE', $lastRemovalOrderRegister->id + 1, 8);
@@ -77,7 +77,7 @@ class RemovalOrderController extends Controller
 
     public function salePointsFromTransfer($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
         $transfer = Transfer::findOrFail($id);
         $transmitter = SalePoint::findOrFail($transfer->transmitter_id);
         $receiver = SalePoint::findOrFail($transfer->receiver_id);
@@ -87,7 +87,7 @@ class RemovalOrderController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_CREATE', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
         $this->validate(
             $request,
             [
@@ -163,7 +163,7 @@ class RemovalOrderController extends Controller
 
     public function show($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
         $removalOrder = RemovalOrder::with('salePoint')->findOrFail($id);
         return new JsonResponse([
             'removalOrder' => $removalOrder
@@ -172,7 +172,7 @@ class RemovalOrderController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_READ', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
         $removalOrder = RemovalOrder::with('salePoint')->findOrFail($id);
         return new JsonResponse([
             'removalOrder' => $removalOrder,
@@ -181,7 +181,7 @@ class RemovalOrderController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_UPDATE', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_UPDATE', RemovalOrder::class);
         $removalOrder = RemovalOrder::findOrFail($id);
         $this->validate(
             $request,
@@ -260,7 +260,7 @@ class RemovalOrderController extends Controller
 
     public function destroy($id)
     {
-        $this->authorize('ROLE_GOOD_TO_REMOVE_DELETE', RemovalOrder::class);
+        $this->authorize('ROLE_REMOVAL_ORDER_DELETE', RemovalOrder::class);
         $removalOrder = RemovalOrder::findOrFail($id);
         try {
             $removalOrder->delete();

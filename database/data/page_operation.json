@@ -1015,6 +1015,46 @@
         "page_id": 23
     },
     {
+        "code": "TANK_TRUCK_READ",
+        "title": "Consultation des tracteurs associés à des citernes",
+        "description": "Consultation des tracteurs associés à des citernes",
+        "role": "ROLE_TANK_TRUCK_READ",
+        "operation_id": 1,
+        "page_id": 23
+    },
+    {
+        "code": "TANK_TRUCK_CREATE",
+        "title": "Nouvelle association d'un tracteur à une citerne",
+        "description": "Nouvelle association d'un tracteur à une citerne",
+        "role": "ROLE_TANK_TRUCK_CREATE",
+        "operation_id": 2,
+        "page_id": 23
+    },
+    {
+        "code": "TANK_TRUCK_UPDATE",
+        "title": "Mise à jour de l'association d'un tracteur à une citerne",
+        "description": "Mise à jour de l'association d'un tracteur à une citerne",
+        "role": "ROLE_TANK_TRUCK_UPDATE",
+        "operation_id": 3,
+        "page_id": 23
+    },
+    {
+        "code": "TANK_TRUCK_DELETE",
+        "title": "Suppression de l'association d'un tracteur à une citerne",
+        "description": "Suppression de l'association d'un tracteur à une citerne",
+        "role": "ROLE_TANK_TRUCK_DELETE",
+        "operation_id": 4,
+        "page_id": 23
+    },
+    {
+        "code": "TANK_TRUCK_PRINT",
+        "title": "Impression de tracteurs associés à des citernes",
+        "description": "Impression de tracteurs associés à des citernes",
+        "role": "ROLE_TANK_TRUCK_PRINT",
+        "operation_id": 5,
+        "page_id": 23
+    },
+    {
         "code": "TOURN_READ",
         "title": "Consultation des tournées",
         "description": "Consultation des tournées",
@@ -1095,58 +1135,58 @@
         "page_id": 25
     },
     {
-        "code": "GOOD_TO_REMOVE_READ",
+        "code": "REMOVAL_ORDER_READ",
         "title": "Consultation des bons à enlever",
         "description": "Consultation des bons à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_READ",
+        "role": "ROLE_REMOVAL_ORDER_READ",
         "operation_id": 1,
         "page_id": 26
     },
     {
-        "code": "GOOD_TO_REMOVE_CREATE",
+        "code": "REMOVAL_ORDER_CREATE",
         "title": "Création d'un nouveau bon à enlever",
         "description": "Création d'un nouveau bon à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_CREATE",
+        "role": "ROLE_REMOVAL_ORDER_CREATE",
         "operation_id": 2,
         "page_id": 26
     },
     {
-        "code": "GOOD_TO_REMOVE_UPDATE",
+        "code": "REMOVAL_ORDER_UPDATE",
         "title": "Mise à jour d'un bon à enlever",
         "description": "Mise à jour d'un bon à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_UPDATE",
+        "role": "ROLE_REMOVAL_ORDER_UPDATE",
         "operation_id": 3,
         "page_id": 26
     },
     {
-        "code": "GOOD_TO_REMOVE_DELETE",
+        "code": "REMOVAL_ORDER_DELETE",
         "title": "Suppression d'un bon à enlever",
         "description": "Suppression d'un bon à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_DELETE",
+        "role": "ROLE_REMOVAL_ORDER_DELETE",
         "operation_id": 4,
         "page_id": 26
     },
     {
-        "code": "GOOD_TO_REMOVE_PRINT",
+        "code": "REMOVAL_ORDER_PRINT",
         "title": "Impression de bons à enlever",
         "description": "Impression de bons à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_PRINT",
+        "role": "ROLE_REMOVAL_ORDER_PRINT",
         "operation_id": 5,
         "page_id": 26
     },
     {
-        "code": "GOOD_TO_REMOVE_VALIDATE",
+        "code": "REMOVAL_ORDER_VALIDATE",
         "title": "Validation d'un bon à enlever",
         "description": "Validation d'un bon à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_VALIDATE",
+        "role": "ROLE_REMOVAL_ORDER_VALIDATE",
         "operation_id": 6,
         "page_id": 26
     },
     {
-        "code": "GOOD_TO_REMOVE_REJECT",
+        "code": "REMOVAL_ORDER_REJECT",
         "title": "Rejet d'un bon à enlever",
         "description": "Rejet d'un bon à enlever",
-        "role": "ROLE_GOOD_TO_REMOVE_REJECT",
+        "role": "ROLE_REMOVAL_ORDER_REJECT",
         "operation_id": 7,
         "page_id": 26
     },
