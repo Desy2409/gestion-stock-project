@@ -8,17 +8,29 @@ use phpDocumentor\Reflection\Types\This;
 
 class Purchase extends Model
 {
-    protected $fillable = [
-        'code',
-        'reference',
-        'purchase_date',
-        'delivery_date',
-        'amount_gross',
-        'ht_amount',
-        'discount',
-        'amount_token',
-        'observation'
-    ];
+    protected $appends =  ['purchase_state'];
+
+    public function getPurchaseStateAttribute(){
+        $value = "";
+        switch ($this->state) {
+            case 'P':
+                $value = "En attente";
+                break;
+
+            case 'S':
+                $value = "Validé(e)";
+                break;
+
+            case 'A':
+                $value = "Annulé(e)";
+                break;
+
+            default:
+                $value = "En attente";
+                break;
+        }
+        return $value;
+    }
 
     public function provider()
     {

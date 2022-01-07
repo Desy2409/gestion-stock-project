@@ -9,7 +9,7 @@ class TransferDemandRepository extends Repository
     public function transferDemandReport($code = false, $requestReason = false, $dateOfDemand = false, $deliveryDeadline = false, $state = false, $transmitter = false, $receiver = false, $dateOfProcessing = false, $startDate = null, $endDate = null, $startProcessingDate = null, $endProcessingDate = null)
     {
         if (!$code && !$dateOfDemand && !$requestReason && !$deliveryDeadline && !$state && !$transmitter && !$receiver && !$dateOfProcessing && $startDate == null && $endDate == null && $startProcessingDate==null && $endProcessingDate==null) {
-            $transferDemands = null;
+            $transferDemands = TransferDemand::all();
         } else {
             $transferDemands = TransferDemand::where('id', '!=', null);
 

@@ -7,14 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 
 class DeliveryNote extends Model
 {
-    protected $fillable = [
-        'code',
-        'reference',
-        'delivery_date',
-        'total_amount',
-        'observation',
-        'place_of_delivery'
-    ];
+    protected $appends =  ['delivery_note_state'];
+
+    public function getDeliveryNoteStateAttribute(){
+        $value = "";
+        switch ($this->state) {
+            case 'P':
+                $value = "En attente";
+                break;
+
+            case 'S':
+                $value = "Validé(e)";
+                break;
+
+            case 'A':
+                $value = "Annulé(e)";
+                break;
+
+            default:
+                $value = "En attente";
+                break;
+        }
+        return $value;
+    }
 
     public function purchase()
     {

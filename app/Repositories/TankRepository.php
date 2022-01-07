@@ -9,7 +9,7 @@ class TankRepository extends Repository
     public function tankReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $tanks = null;
+            $tanks = Tank::all();
         } else {
             $tanks = Tank::select($selectedDefaultFields)->where('id', '!=', null);
             if (in_array('provider_id',$selectedDefaultFields)) {

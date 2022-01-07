@@ -10,7 +10,7 @@ class TournRepository extends Repository
     public function tournReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $tourns = null;
+            $tourns = Tourn::all();
         } else {
             $tourns = Tourn::select($selectedDefaultFields)->where('id', '!=', null)->get();
 
