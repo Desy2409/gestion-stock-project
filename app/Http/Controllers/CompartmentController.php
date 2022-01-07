@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Compartment;
+use App\Models\Tank;
 use App\Repositories\CompartmentRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -21,8 +22,10 @@ class CompartmentController extends Controller
     {
         $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
         $compartments = Compartment::orderBy('reference')->get();
+        $tanks = Tank::orderBy('tank_registration')->get();
+
         return new JsonResponse([
-            'datas' => ['compartments' => $compartments]
+            'datas' => ['compartments' => $compartments, 'tanks' => $tanks]
         ], 200);
     }
 
