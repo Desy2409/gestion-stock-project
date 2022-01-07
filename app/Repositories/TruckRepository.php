@@ -10,7 +10,7 @@ class TruckRepository extends Repository
     public function truckReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $trucks = null;
+            $trucks = Truck::all();
         } else {
             $trucks = Truck::select($selectedDefaultFields)->where('id', '!=', null);
             if (in_array('provider_id',$selectedDefaultFields)) {

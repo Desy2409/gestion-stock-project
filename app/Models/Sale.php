@@ -7,14 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
-    protected $fillable = [
-        'code',
-        'reference',
-        'sale_date',
-        'delivery_date',
-        'total_amount',
-        'observation'
-    ];
+    protected $appends =  ['sale_state'];
+
+    public function getSaleStateAttribute(){
+        $value = "";
+        switch ($this->state) {
+            case 'P':
+                $value = "En attente";
+                break;
+
+            case 'S':
+                $value = "Validé(e)";
+                break;
+
+            case 'A':
+                $value = "Annulé(e)";
+                break;
+
+            default:
+                $value = "En attente";
+                break;
+        }
+        return $value;
+    }
 
     public function client()
     {

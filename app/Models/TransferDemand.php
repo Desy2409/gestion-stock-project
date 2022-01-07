@@ -7,16 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransferDemand extends Model
 {
-    protected $fillable = [
-        'code',
-        'request_reason',
-        'date_of_demand',
-        'delivery_deadline',
-        'date_of_processing',
-        'state'
-    ];
-
-    protected $appends =  ['transmitter','receiver'];
+      protected $appends =  ['transmitter','receiver','transfer_demand_state'];
 
     public function getTransmitterAttribute(){
         return SalePoint::where('id',$this->transmitter_id)->first();
@@ -24,6 +15,28 @@ class TransferDemand extends Model
 
     public function getReceiverAttribute(){
         return SalePoint::where('id',$this->receiver_id)->first();
+    }
+
+    public function getTransferDemandStateAttribute(){
+        $value = "";
+        switch ($this->state) {
+            case 'P':
+                $value = "En attente";
+                break;
+
+            case 'S':
+                $value = "Validé(e)";
+                break;
+
+            case 'A':
+                $value = "Annulé(e)";
+                break;
+
+            default:
+                $value = "En attente";
+                break;
+        }
+        return $value;
     }
 
     public function transfers()

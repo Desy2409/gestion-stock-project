@@ -9,7 +9,7 @@ class FolderRepository extends Repository
     public function folderReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $folders = null;
+            $folders = Folder::all();
         } else {
             $folders = Folder::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

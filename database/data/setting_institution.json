@@ -6,8 +6,8 @@
         "majuscule": true,
         "special_characters": true,
         "min_length": "",
-        "old_password>": "",
-        "new_password>": ""
+        "old_password": "",
+        "new_password": ""
     },
     "client_code_length": "",
     "provider_code_length": "",

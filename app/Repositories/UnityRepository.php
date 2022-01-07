@@ -10,7 +10,7 @@ class UnityRepository extends Repository
     public function unityReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $unities = null;
+            $unities = Unity::all();
         } else {
             $unities = Unity::select($selectedDefaultFields)->where('id', '!=', null)->get();
             // if (in_array('start_date',$selectedDefaultFields)&&in_array('end_date',$selectedDefaultFields)) {

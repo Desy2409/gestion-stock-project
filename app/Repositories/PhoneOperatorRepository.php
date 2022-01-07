@@ -9,7 +9,7 @@ class PhoneOperatorRepository extends Repository
     public function phoneOperatorReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $phoneOperators = null;
+            $phoneOperators = PhoneOperator::all();
         } else {
             $phoneOperators = PhoneOperator::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

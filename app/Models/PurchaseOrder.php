@@ -2,24 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends Model
 {
-    use HasFactory;
+    protected $appends =  ['purchase_order_state'];
 
-    protected $fillable = [
-        'code',
-        'reference',
-        'purchase_date',
-        'delivery_date',
-        'total_amount',
-        'observation',
-        'state',
-        'date_of_processing',
-    ];
+    public function getPurchaseOrderStateAttribute(){
+        $value = "";
+        switch ($this->state) {
+            case 'P':
+                $value = "En attente";
+                break;
 
+            case 'S':
+                $value = "Validé(e)";
+                break;
+
+            case 'A':
+                $value = "Annulé(e)";
+                break;
+
+            default:
+                $value = "En attente";
+                break;
+        }
+        return $value;
+    }
     
     public function client()
     {

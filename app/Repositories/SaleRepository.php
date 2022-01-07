@@ -8,7 +8,7 @@ class SaleRepository extends Repository{
     public function saleReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $sales = null;
+            $sales = Sale::all();
         } else {
             $sales = Sale::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

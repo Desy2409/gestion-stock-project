@@ -9,7 +9,7 @@ class ProviderTypeRepository extends Repository
     public function providerTypeReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $providerTypes = null;
+            $providerTypes = ProviderType::all();
         } else {
             $providerTypes = ProviderType::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

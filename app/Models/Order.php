@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
 
-    protected $appends =  ['orderState'];
+    protected $appends =  ['order_state'];
 
     public function getOrderStateAttribute(){
         $value = "";

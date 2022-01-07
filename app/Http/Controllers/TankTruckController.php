@@ -38,12 +38,14 @@ class TankTruckController extends Controller
             [
                 'truck' => 'required',
                 'tank' => 'required',
+                'gauging_certificate_number' => 'required',
                 'validity_date' => 'required|date|before:today',
                 'gauging_certificate' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [
                 'truck.required' => "Le choix d'un camion est obligatoire.",
                 'tank.required' => "Le choix d'une citerne est obligatoire.",
+                'gauging_certificate_number.required' => "Le numéro certificat de jaugeage est obligatoire.",
                 'validity_date.required' => "La date de validité est obligatoire.",
                 'validity_date.date' => "La date de validité saisie est incorrecte.",
                 'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
@@ -60,6 +62,7 @@ class TankTruckController extends Controller
             $tankTruck = new TankTruck();
             $tankTruck->gauging_certificate = $request->gauging_certificate;
             $tankTruck->validity_date = $request->validity_date;
+            $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
             $tankTruck->file_type_id = $this->tankTruckAuthorizedFiles()->id;
             $tankTruck->save();
 
@@ -89,12 +92,14 @@ class TankTruckController extends Controller
             [
                 'truck' => 'required',
                 'tank' => 'required',
+                'gauging_certificate_number' => 'required',
                 'validity_date' => 'required|date|date_format:Ymd|before:today',
                 'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [
                 'truck.required' => "Le choix d'un camion est obligatoire.",
                 'tank.required' => "Le choix d'une citerne est obligatoire.",
+                'gauging_certificate_number.required' => "Le numéro certificat de jaugeage est obligatoire.",
                 'validity_date.required' => "La date de validité est obligatoire.",
                 'validity_date.date' => "La date de validité saisie est incorrecte.",
                 'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
@@ -110,6 +115,7 @@ class TankTruckController extends Controller
         try {
             // $tankTruck->gauging_certificate = $request->gauging_certificate;
             $tankTruck->validity_date = $request->validity_date;
+            $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
             $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->gauging_certificate->getClientOriginalExtension();
             $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
             $tankTruck->save();

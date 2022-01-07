@@ -9,7 +9,7 @@ class ExtensionRepository extends Repository
     public function extensionReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $extensions = null;
+            $extensions = Extension::all();
         } else {
             $extensions = Extension::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

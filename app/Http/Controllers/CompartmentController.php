@@ -72,6 +72,41 @@ class CompartmentController extends Controller
         }
     }
 
+    public function associateCompartmentsToTank(Request $request)
+    {
+        if (empty($request->compartments) && sizeof($request->compartments) == 0) {
+            $success = false;
+            $message = "Vous n'avez sélectionné aucun compartiment.";
+            return new JsonResponse([
+                'success' => $success,
+                'message' => $message,
+            ], 400);
+        } else {
+            try {
+                foreach ($request->compartments as $key => $compartment) {
+                    $compartment->tank_id = $request->tank;
+                    $compartment->save();
+                }
+
+                $success = true;
+                $message = "Compartiments affectés à la citerne avec succès.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ], 400);
+            } catch (Exception $e) {
+                dd($e);
+                
+                $success = false;
+                $message = "Erreur survenue lors de l'association des compartiments à la citerne.";
+                return new JsonResponse([
+                    'success' => $success,
+                    'message' => $message,
+                ], 400);
+            }
+        }
+    }
+
     // Mise à jour d'un compartiment
     public function update(Request $request, $id)
     {

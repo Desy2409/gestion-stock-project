@@ -9,7 +9,7 @@ class DeliveryPointRepository extends Repository
     public function deliveryPointReport($selectedDefaultFields)
     {
         if (empty($selectedDefaultFields)||sizeof($selectedDefaultFields)==0) {
-            $deliveryPoints = null;
+            $deliveryPoints = DeliveryPoint::all();
         } else {
             $deliveryPoints = DeliveryPoint::select($selectedDefaultFields)->where('id', '!=', null)->get();
             

@@ -282,6 +282,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Compartment routes
     Route::get('/compartment', [CompartmentController::class, 'index']);
     Route::post('/compartment', [CompartmentController::class, 'store']);
+    Route::post('/compartment/{compartments}/{tank}', [CompartmentController::class, 'associateCompartmentsToTank']);
     Route::get('/compartment/{id}/show', [CompartmentController::class, 'show']);
     Route::patch('/compartment/{id}/update', [CompartmentController::class, 'update']);
     Route::delete('/compartment/{id}/destroy', [CompartmentController::class, 'destroy']);
