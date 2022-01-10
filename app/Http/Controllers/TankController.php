@@ -27,7 +27,7 @@ class TankController extends Controller
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         // $compartments = Compartment::orderBy('reference')->orderBy('number')->get();
-        
+
         return new JsonResponse([
             'datas' => ['tanks' => $tanks, 'carriers' => $carriers]
         ], 200);
@@ -80,7 +80,7 @@ class TankController extends Controller
             ], 400);
         }
     }
-    
+
     public function show($id)
     {
         $this->authorize('ROLE_TANK_READ', Tank::class);
@@ -168,7 +168,7 @@ class TankController extends Controller
             if (
                 empty($tank->tourns) || sizeof($tank->tourns) == 0 &&
                 empty($tank->compartments) || sizeof($tank->compartments) == 0 &&
-                empty($tank->tankTrucks) || sizeof($tank->tankTrucks) == 0 
+                empty($tank->tankTrucks) || sizeof($tank->tankTrucks) == 0
             ) {
                 // dd('delete');
                 $tank->delete();

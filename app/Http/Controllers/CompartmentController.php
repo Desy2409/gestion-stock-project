@@ -96,7 +96,7 @@ class CompartmentController extends Controller
                 ], 400);
             } catch (Exception $e) {
                 dd($e);
-                
+
                 $success = false;
                 $message = "Erreur survenue lors de l'association des compartiments à la citerne.";
                 return new JsonResponse([
@@ -193,6 +193,15 @@ class CompartmentController extends Controller
     }
 
     public function show($id)
+    {
+        $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
+        $compartment = Compartment::findOrFail($id);
+        return new JsonResponse([
+            'compartment' => $compartment
+        ], 200);
+    }
+
+    public function edit($id)
     {
         $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
         $compartment = Compartment::findOrFail($id);

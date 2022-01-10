@@ -56,8 +56,4 @@ class Order extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
-    public function state()
-    {
-        return ($this->state == "P" ? "En attente" : "");
-    }
 }
