@@ -336,6 +336,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Good to remove routes
     Route::get('/removal-order', [RemovalOrderController::class, 'index']);
     Route::get('/removal-order-code', [RemovalOrderController::class, 'showNextCode']);
+    Route::get('/removal-order/{id}/on-select', [RemovalOrderController::class, 'onCarrierSelect']);
     Route::post('/removal-order', [RemovalOrderController::class, 'store']);
     Route::get('/removal-order/{id}/show', [RemovalOrderController::class, 'show']);
     Route::patch('/removal-order/{id}/update', [RemovalOrderController::class, 'update']);
