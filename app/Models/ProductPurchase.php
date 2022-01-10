@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductPurchase extends Model
 {
 
-    protected $appends=['remaining_quantity'];
+    protected $appends = ['quantity_to_deliver', 'delivered_quantity', 'remaining_quantity'];
 
     public function product()
     {
@@ -25,22 +25,21 @@ class ProductPurchase extends Model
         return $this->belongsTo(Unity::class);
     }
 
-     public function getRemainingQuantityAttribute()
+    public function getQuantityToDeliverAttribute()
     {
-        // $purchase = $this->deliveryNote()->purchase;
-        // $purchase = $this->parent::purchase();
-        // dd($this->purchase);
-        $quantityToDeliver =0;
-        $quantityToDeliver = ProductPurchase::where('purchase_id', $this->purchase->id)->first()->quantity;
-        // dd($quantityToDeliver);
+        return ProductPurchase::where('purchase_id', $this->purchase->id)->where('product_id', '=', $this->product->id)->first()->quantity;
+    }
+
+    public function getDeliveredQuantityAttribute()
+    {
         $deliveredQuantity = 0;
         $deliveredQuantity = ProductDeliveryNote::join('delivery_notes', 'delivery_notes.id', '=', 'product_delivery_notes.delivery_note_id')
-            ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->where('purchases.id', $this->purchase->id)->where('product_id','=', $this->product->id)->sum('quantity');
+            ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->where('purchases.id', $this->purchase->id)->where('product_id', '=', $this->product->id)->sum('quantity');
+        return $deliveredQuantity;
+    }
 
-
-            // dd($quantityToDeliver,$deliveredQuantity);
-
-        return ($quantityToDeliver > $deliveredQuantity) ? ($quantityToDeliver - $deliveredQuantity) : 0;
-        // return $quantityToDeliver;
+    public function getRemainingQuantityAttribute()
+    {
+        return ($this->getQuantityToDeliverAttribute() > $this->getDeliveredQuantityAttribute()) ? ($this->getQuantityToDeliverAttribute() - $this->getDeliveredQuantityAttribute()) : 0;
     }
 }

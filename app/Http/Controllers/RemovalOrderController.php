@@ -85,6 +85,12 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['transmitter' => $transmitter, 'receiver' => $receiver]);
     }
 
+    public function onCarrierSelect($id)
+    {
+        $provider = Provider::with('person')->with('trucks')->findOrFail($id);
+        return new JsonResponse(['provider' => $provider], 200);
+    }
+
     public function store(Request $request)
     {
         $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
@@ -94,8 +100,8 @@ class RemovalOrderController extends Controller
                 'client' => 'required',
                 'stock_type' => 'required',
                 'reference' => 'required|unique:good_to_removes',
-                'voucher_date' => 'required|date|date_equals:today',//|date_format:Ymd
-                'delivery_date_wished' => 'required|date|after:voucher_date',//|date_format:Ymd
+                'voucher_date' => 'required|date|date_equals:today', //|date_format:Ymd
+                'delivery_date_wished' => 'required|date|after:voucher_date', //|date_format:Ymd
                 'voucher_type' => 'required',
                 'customs_regime' => 'required',
                 'storage_unit' => 'required',
