@@ -284,6 +284,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/compartment', [CompartmentController::class, 'store']);
     Route::post('/compartment/{compartments}/{tank}', [CompartmentController::class, 'associateCompartmentsToTank']);
     Route::get('/compartment/{id}/show', [CompartmentController::class, 'show']);
+    Route::get('/compartment/{id}/edit', [CompartmentController::class, 'edit']);
     Route::patch('/compartment/{id}/update', [CompartmentController::class, 'update']);
     Route::delete('/compartment/{id}/destroy', [CompartmentController::class, 'destroy']);
     Route::get('/compartment-report', [CompartmentController::class, 'compartmentReports']);
@@ -292,6 +293,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tank', [TankController::class, 'index']);
     Route::post('/tank', [TankController::class, 'store']);
     Route::get('/tank/{id}/show', [TankController::class, 'show']);
+    Route::get('/tank/{id}/edit', [TankController::class, 'edit']);
     Route::patch('/tank/{id}/update', [TankController::class, 'update']);
     Route::delete('/tank/{id}/destroy', [TankController::class, 'destroy']);
     Route::get('/tank-report', [TankController::class, 'tankReports']);
@@ -309,6 +311,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tank-truck', [TankTruckController::class, 'index']);
     Route::post('/tank-truck', [TankTruckController::class, 'store']);
     Route::get('/tank-truck/{id}/show', [TankTruckController::class, 'show']);
+    Route::get('/tank-truck/{id}/edit', [TankTruckController::class, 'edit']);
     Route::patch('/tank-truck/{id}/update', [TankTruckController::class, 'update']);
     Route::delete('/tank-truck/{id}/destroy', [TankTruckController::class, 'destroy']);
 
