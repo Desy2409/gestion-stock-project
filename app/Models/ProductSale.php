@@ -18,7 +18,7 @@ class ProductSale extends Model
     {
         return $this->belongsTo(Sale::class);
     }
-    
+
     public function unity()
     {
         return $this->belongsTo(Unity::class);
@@ -32,7 +32,7 @@ class ProductSale extends Model
     public function getDeliveredQuantityAttribute()
     {
         $deliveredQuantity = 0;
-        $deliveredQuantity = ProductDeliveryNote::join('client_delivery_notes', 'client_delivery_notes.id', '=', 'product_client_delivery_notes.delivery_note_id')
+        $deliveredQuantity = ProductDeliveryNote::join('client_delivery_notes', 'client_delivery_notes.id', '=', 'product_client_delivery_notes.client_delivery_note_id')
             ->join('sales', 'sales.id', '=', 'client_delivery_notes.sale_id')->where('sales.id', $this->sale->id)->where('product_id', '=', $this->product->id)->sum('quantity');
         return $deliveredQuantity;
     }
