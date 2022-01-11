@@ -147,6 +147,15 @@ class DestinationController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $this->authorize('ROLE_DESTINATION_READ', Destination::class);
+        $destination = Destination::findOrFail($id);
+        return new JsonResponse([
+            'destination' => $destination
+        ], 200);
+    }
+
     public function show($id)
     {
         $this->authorize('ROLE_DESTINATION_READ', Destination::class);

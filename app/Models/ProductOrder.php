@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductOrder extends Model
 {
-    protected $appends=['remainingQuantity'];
-
     public function order()
     {
         return $this->belongsTo(Order::class);

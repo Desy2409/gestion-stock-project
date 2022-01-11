@@ -10,6 +10,10 @@ class UploadFile extends Model
     protected $fillable=[
         'code',
         'name',
-        'personalized_name'
+        'personalized_name',
+        'original_file_name',
+        'path',
+        'size',
+        'extension',
     ];
 }

@@ -6,6 +6,7 @@ use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\PurchaseValidationMail;
 use App\Models\DeliveryNote;
+use App\Models\Folder;
 use App\Models\Product;
 use App\Models\ProductPurchase;
 use App\Models\ProductOrder;
@@ -20,6 +21,7 @@ use App\Repositories\PurchaseRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -30,11 +32,14 @@ class PurchaseController extends Controller
 
     private $directPurchase = "Achat direct";
     private $purchaseOnOrder = "Achat sur commande";
+    private Folder $folder;
 
     public $purchaseRepository;
-    public function __construct(PurchaseRepository $purchaseRepository)
+    public function __construct(PurchaseRepository $purchaseRepository, Folder $folder)
     {
         $this->purchaseRepository = $purchaseRepository;
+        $this->folder = $folder;
+        $this->user = Auth::user();
     }
 
     public function purchaseOnOrder()
@@ -247,6 +252,17 @@ class PurchaseController extends Controller
                     $productDeliveryNote->save();
 
                     array_push($productPurchases, $productPurchase);
+                }
+
+                $folder = Folder::findOrFail($request->folder);
+
+                $check = $this->checkFileType($purchase);
+                if (!$check) {
+                    $success = false;
+                    $message = "Les formats de fichiers autorisés sont : pdf, docx et xls";
+                    return new JsonResponse(['success' => $success, 'message' => $message], 400);
+                } else {
+                    $this->storeFile($this->user, $purchase, $folder, $request->upload_files);
                 }
 
                 $success = true;
