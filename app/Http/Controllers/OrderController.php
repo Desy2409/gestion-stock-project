@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\FileTrait;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\OrderValidationMail;
+use App\Models\Folder;
 use App\Models\Institution;
 use App\Models\Order;
 use App\Models\OrderRegister;
@@ -28,12 +30,16 @@ class OrderController extends Controller
 {
     use UtilityTrait;
     use ProcessingTrait;
+    use FileTrait;
 
     public $orderRepository;
+    private Folder $folder;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository, Folder $folder)
     {
         $this->orderRepository = $orderRepository;
+        $this->folder = $folder;
+        $this->user = Auth::user();
     }
 
     public function index()
@@ -166,6 +172,17 @@ class OrderController extends Controller
             if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
                 $order->delete();
             }*/
+
+            $folder = Folder::findOrFail($request->folder);
+
+            $check = $this->checkFileType($order);
+            if (!$check) {
+                $success = false;
+                $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
+                return new JsonResponse(['success' => $success, 'message' => $message], 400);
+            } else {
+                $this->storeFile($this->user, $order, $folder, $request->upload_files);
+            }
 
 
 

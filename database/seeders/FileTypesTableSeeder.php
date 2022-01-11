@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\FileType;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class FileTypesTableSeeder extends Seeder
 {
@@ -15,12 +15,19 @@ class FileTypesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('file_types')->insert([
-            ['code' => "BC", 'wording' => "Bon de commande", 'description' => '', 'authorized_files' => "pdf,docx,xls", 'max_size' => "5120"],
-            ['code' => "BA", 'wording' => "Bon d'achat", 'description' => '', 'authorized_files' => "pdf,docx,xls", 'max_size' => "5120"],
-            ['code' => "BL", 'wording' => "Bon de livraison", 'description' => '', 'authorized_files' => "pdf,docx,xls", 'max_size' => "5120"],
-            ['code' => "VT", 'wording' => "Vente", 'description' => '', 'authorized_files' => "pdf,docx,xls", 'max_size' => "5120"],
-            ['code' => "CJ", 'wording' => "Certificat de jaugeage", 'description' => '', 'authorized_files' => "pdf,docx,xls", 'max_size' => "5120"],
-        ]);
+        $json_file_type = File::get("database/data/file_type.json");
+        $fileTypes = json_decode($json_file_type);
+        foreach ($fileTypes as $key => $fileType) {
+            $existingFileType = FileType::where('code', $fileType->code)->first();
+            if (!$existingFileType) {
+                FileType::create([
+                    'code' => $fileType->code,
+                    'wording' => $fileType->wording,
+                    'description' => $fileType->description,
+                    'authorized_files' => $fileType->authorized_files,
+                    'max_size' => $fileType->max_size,
+                ]);
+            }
+        }
     }
 }
