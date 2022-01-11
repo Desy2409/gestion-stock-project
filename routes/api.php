@@ -329,6 +329,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/destination', [DestinationController::class, 'index']);
     Route::post('/destination', [DestinationController::class, 'store']);
     Route::get('/destination/{id}/show', [DestinationController::class, 'show']);
+    Route::get('/destination/{id}/edit', [DestinationController::class, 'edit']);
     Route::patch('/destination/{id}/update', [DestinationController::class, 'update']);
     Route::delete('/destination/{id}/destroy', [DestinationController::class, 'destroy']);
     Route::get('/destination-report', [DestinationController::class, 'destinationReports']);
