@@ -32,13 +32,11 @@ class PurchaseController extends Controller
 
     private $directPurchase = "Achat direct";
     private $purchaseOnOrder = "Achat sur commande";
-    private Folder $folder;
 
     public $purchaseRepository;
-    public function __construct(PurchaseRepository $purchaseRepository, Folder $folder)
+    public function __construct(PurchaseRepository $purchaseRepository)
     {
         $this->purchaseRepository = $purchaseRepository;
-        $this->folder = $folder;
         $this->user = Auth::user();
     }
 
@@ -254,17 +252,6 @@ class PurchaseController extends Controller
                     array_push($productPurchases, $productPurchase);
                 }
 
-                $folder = Folder::findOrFail($request->folder);
-
-                $check = $this->checkFileType($purchase);
-                if (!$check) {
-                    $success = false;
-                    $message = "Les formats de fichiers autorisés sont : pdf, docx et xls";
-                    return new JsonResponse(['success' => $success, 'message' => $message], 400);
-                } else {
-                    $this->storeFile($this->user, $purchase, $folder, $request->upload_files);
-                }
-
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
@@ -387,6 +374,17 @@ class PurchaseController extends Controller
                 // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
                 //     $purchase->delete();
                 // }
+
+                $folder = Folder::findOrFail($request->folder);
+
+                $check = $this->checkFileType($purchase);
+                if (!$check) {
+                    $success = false;
+                    $message = "Les formats de fichiers autorisés sont : pdf, docx et xls";
+                    return new JsonResponse(['success' => $success, 'message' => $message], 400);
+                } else {
+                    $this->storeFile($this->user, $purchase, $folder, $request->upload_files);
+                }
 
                 $success = true;
                 $message = "Enregistrement effectué avec succès.";

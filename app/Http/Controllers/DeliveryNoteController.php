@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\FileTrait;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\StockTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\DeliveryNoteValidationMail;
 use App\Models\DeliveryNote;
 use App\Models\DeliveryNoteRegister;
+use App\Models\Folder;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductDeliveryNote;
@@ -19,6 +21,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class DeliveryNoteController extends Controller
@@ -26,12 +29,14 @@ class DeliveryNoteController extends Controller
     use UtilityTrait;
     use StockTrait;
     use ProcessingTrait;
+    use FileTrait;
 
     public $deliveryNoteRepository;
 
     public function __construct(DeliveryNoteRepository $deliveryNoteRepository)
     {
         $this->deliveryNoteRepository = $deliveryNoteRepository;
+        $this->user = Auth::user();
     }
 
     public function index()
@@ -169,6 +174,17 @@ class DeliveryNoteController extends Controller
             // if (empty($savedProductDeliveryNotes) || sizeof($savedProductDeliveryNotes) == 0) {
             //     $deliveryNote->delete();
             // }
+
+            $folder = Folder::findOrFail($request->folder);
+
+            $check = $this->checkFileType($deliveryNote);
+            if (!$check) {
+                $success = false;
+                $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
+                return new JsonResponse(['success' => $success, 'message' => $message], 400);
+            } else {
+                $this->storeFile($this->user, $deliveryNote, $folder, $request->upload_files);
+            }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";

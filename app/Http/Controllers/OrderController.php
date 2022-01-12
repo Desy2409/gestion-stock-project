@@ -33,12 +33,10 @@ class OrderController extends Controller
     use FileTrait;
 
     public $orderRepository;
-    private Folder $folder;
 
-    public function __construct(OrderRepository $orderRepository, Folder $folder)
+    public function __construct(OrderRepository $orderRepository)
     {
         $this->orderRepository = $orderRepository;
-        $this->folder = $folder;
         $this->user = Auth::user();
     }
 
