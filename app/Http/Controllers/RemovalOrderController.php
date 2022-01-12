@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
+use App\Models\Order;
 use App\Models\RemovalOrder;
 use App\Models\RemovalOrderRegister;
 use App\Models\Provider;
@@ -83,6 +84,16 @@ class RemovalOrderController extends Controller
         $receiver = SalePoint::findOrFail($transfer->receiver_id);
 
         return new JsonResponse(['transmitter' => $transmitter, 'receiver' => $receiver]);
+    }
+
+    public function datasOnOrderSelect($id){
+        $order= Order::findOrFail($id);
+        // $product=
+    }
+
+    public function onClientSelect($id){
+        $client = Client::findOrFail($id);
+        return new JsonResponse(['exemption_reference'=>$client->exemption_reference],200);
     }
 
     public function onCarrierSelect($id)
