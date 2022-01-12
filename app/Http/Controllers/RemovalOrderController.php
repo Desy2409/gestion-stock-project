@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
+use App\Models\ClientDeliveryNote;
 use App\Models\Order;
 use App\Models\ProductTourn;
 use App\Models\RemovalOrder;
@@ -11,6 +12,7 @@ use App\Models\RemovalOrderRegister;
 use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\PurchaseOrder;
+use App\Models\Sale;
 use App\Models\SalePoint;
 use App\Models\StockType;
 use App\Models\Tourn;
@@ -40,6 +42,8 @@ class RemovalOrderController extends Controller
     {
 
         $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
+        $purchaseOrders = $this->purchaseOrderRepository->purchaseOrderBasedOnClientDeliveryNote();
+
         $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
 
@@ -73,6 +77,7 @@ class RemovalOrderController extends Controller
 
         return new JsonResponse([
             'datas' => [
+                'purchaseOrders' => $purchaseOrders,
                 'removalOrders' => $removalOrders, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
