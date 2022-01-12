@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\FileTrait;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\PurchaseOrderValidationMail;
 use App\Models\Client;
+use App\Models\Folder;
 use App\Models\Product;
 use App\Models\ProductPurchaseOrder;
 use App\Models\PurchaseOrder;
@@ -16,6 +18,7 @@ use App\Repositories\PurchaseOrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class PurchaseOrderController extends Controller
@@ -23,12 +26,14 @@ class PurchaseOrderController extends Controller
 
     use UtilityTrait;
     use ProcessingTrait;
+    use FileTrait;
 
     public $purchaseOrderRepository;
 
     public function __construct(PurchaseOrderRepository $purchaseOrderRepository)
     {
         $this->purchaseOrderRepository = $purchaseOrderRepository;
+        $this->user = Auth::user();
     }
 
     public function index()
@@ -160,6 +165,17 @@ class PurchaseOrderController extends Controller
             // if (empty($savedProductPurchaseOrders) || sizeof($savedProductPurchaseOrders) == 0) {
             //     $purchaseOrder->delete();
             // }
+
+            $folder = Folder::findOrFail($request->folder);
+
+            $check = $this->checkFileType($purchaseOrder);
+            if (!$check) {
+                $success = false;
+                $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
+                return new JsonResponse(['success' => $success, 'message' => $message], 400);
+            } else {
+                $this->storeFile($this->user, $purchaseOrder, $folder, $request->upload_files);
+            }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";

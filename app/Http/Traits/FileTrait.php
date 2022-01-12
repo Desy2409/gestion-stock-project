@@ -43,6 +43,7 @@ trait FileTrait
 
     function storeFile($user,$entity,$folder,$files)
     {
+        $fileType=FileType::where('code','=',substr($entity->code,0,2))->first();
         if (!empty($files)&&sizeof($files)>0) {
             foreach ($files as $key => $file) {
                 $uploadFile = UploadFile::create([
@@ -53,6 +54,7 @@ trait FileTrait
                     'path'=>$this->storePath($user,$entity,$file,$folder),
                     'size'=>$file->personalized_name,
                     'extension'=>$file->getClientOriginalExtension(),
+                    'file_type_id'=>$fileType->id,
                 ]);
             }  
         }

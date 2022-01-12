@@ -8,6 +8,7 @@ use App\Http\Traits\UtilityTrait;
 use App\Mail\ClientDeliveryNoteValidationMail;
 use App\Models\ClientDeliveryNote;
 use App\Models\ClientDeliveryNoteRegister;
+use App\Models\Folder;
 use App\Models\Product;
 use App\Models\ProductClientDeliveryNote;
 use App\Models\ProductSale;
@@ -31,6 +32,7 @@ class ClientDeliveryNoteController extends Controller
     public function __construct(ClientDeliveryNoteRepository $clientDeliveryNoteRepository)
     {
         $this->clientDeliveryNoteRepository = $clientDeliveryNoteRepository;
+        $this->user = Auth::user();
     }
 
     public function index()
@@ -143,6 +145,17 @@ class ClientDeliveryNoteController extends Controller
                 $productClientDeliveryNote->save();
 
                 array_push($productClientDeliveryNotes, $productClientDeliveryNote);
+            }
+
+            $folder = Folder::findOrFail($request->folder);
+
+            $check = $this->checkFileType($clientDeliveryNote);
+            if (!$check) {
+                $success = false;
+                $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
+                return new JsonResponse(['success' => $success, 'message' => $message], 400);
+            } else {
+                $this->storeFile($this->user, $clientDeliveryNote, $folder, $request->upload_files);
             }
 
             $success = true;
