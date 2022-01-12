@@ -12,6 +12,7 @@ use App\Models\ProviderType;
 use App\Models\SalePoint;
 use App\Models\StockType;
 use App\Models\Transfer;
+use App\Repositories\OrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,13 @@ class RemovalOrderController extends Controller
 
     private $voucherTypes = ["Externe", "Interne"];
     private $customsRegimes = ["HT", "TTC"];
+
+    public $orderRepository;
+
+    public function __construct(OrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
 
     public function index()
     {
@@ -86,14 +94,17 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['transmitter' => $transmitter, 'receiver' => $receiver]);
     }
 
-    public function datasOnOrderSelect($id){
-        $order= Order::findOrFail($id);
-        // $product=
+    public function datasOnOrderSelect($id)
+    {
+        $order = Order::findOrFail($id);
+        $productDeliveryNotes = $this->orderRepository->orderDeliveredProducts($order);
+        return new JsonResponse(['datas' => ['productDeliveryNotes' => $productDeliveryNotes]], 200);
     }
 
-    public function onClientSelect($id){
+    public function onClientSelect($id)
+    {
         $client = Client::findOrFail($id);
-        return new JsonResponse(['exemption_reference'=>$client->exemption_reference],200);
+        return new JsonResponse(['exemption_reference' => $client->exemption_reference], 200);
     }
 
     public function onCarrierSelect($id)

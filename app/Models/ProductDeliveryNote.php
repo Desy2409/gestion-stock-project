@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProductDeliveryNote extends Model
 {
 
-
     public function product()
     {
         return $this->belongsTo(Product::class);
@@ -23,6 +22,4 @@ class ProductDeliveryNote extends Model
     {
         return $this->belongsTo(Unity::class);
     }
-
-
 }

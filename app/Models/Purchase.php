@@ -62,25 +62,25 @@ class Purchase extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
-    public function verifyQuantity(Product $product)
-    {
-        $deliveredQuantity = 0;
-        $allProductDeliveryNotes = [];
+    // public function verifyQuantity(Product $product)
+    // {
+    //     $deliveredQuantity = 0;
+    //     $allProductDeliveryNotes = [];
 
-        $productPurchase = ProductPurchase::where('product_id', $product->id)->first();
-        $quantityToDeliver = $productPurchase->quantity;
+    //     $productPurchase = ProductPurchase::where('product_id', $product->id)->first();
+    //     $quantityToDeliver = $productPurchase->quantity;
 
-        foreach ($this->deliveryNotes as $key => $deliveryNote) {
-            $productDeliveryNotes = ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->where('product_id', $product->id)->get();
-            foreach ($allProductDeliveryNotes as $key => $productDeliveryNotes) {
-                $deliveredQuantity += $productDeliveryNotes->quantity;
-            }
-        }
+    //     foreach ($this->deliveryNotes as $key => $deliveryNote) {
+    //         $productDeliveryNotes = ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->where('product_id', $product->id)->get();
+    //         foreach ($allProductDeliveryNotes as $key => $productDeliveryNotes) {
+    //             $deliveredQuantity += $productDeliveryNotes->quantity;
+    //         }
+    //     }
 
-        if ($quantityToDeliver > $deliveredQuantity) {
-            $remainingQuantity = $quantityToDeliver - $deliveredQuantity;
-        }
+    //     if ($quantityToDeliver > $deliveredQuantity) {
+    //         $remainingQuantity = $quantityToDeliver - $deliveredQuantity;
+    //     }
 
-        return $remainingQuantity;
-    }
+    //     return $remainingQuantity;
+    // }
 }
