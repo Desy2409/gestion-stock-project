@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\Order;
+use App\Models\ProductTourn;
 use App\Models\RemovalOrder;
 use App\Models\RemovalOrderRegister;
 use App\Models\Provider;
@@ -12,6 +13,8 @@ use App\Models\ProviderType;
 use App\Models\PurchaseOrder;
 use App\Models\SalePoint;
 use App\Models\StockType;
+use App\Models\Tourn;
+use App\Models\TournRegister;
 use App\Models\Transfer;
 use App\Repositories\PurchaseOrderRepository;
 use Exception;
@@ -58,6 +61,16 @@ class RemovalOrderController extends Controller
         }
         $removalOrderRegister->save();
 
+        $lastTournRegister = TournRegister::latest()->first();
+
+        $tournRegister = new TournRegister();
+        if ($lastTournRegister) {
+            $tournRegister->code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
+        } else {
+            $tournRegister->code = $this->formateNPosition('TO', 1, 8);
+        }
+        $tournRegister->save();
+
         return new JsonResponse([
             'datas' => [
                 'removalOrders' => $removalOrders, 'voucherTypes' => $this->voucherTypes,
@@ -82,6 +95,21 @@ class RemovalOrderController extends Controller
 
         return new JsonResponse([
             'code' => $code
+        ], 200);
+    }
+
+    public function showTournNextCode()
+    {
+        $this->authorize('ROLE_TOURN_READ', Tourn::class);
+        $lastTournRegister = TournRegister::latest()->first();
+        if ($lastTournRegister) {
+            $code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
+        } else {
+            $code = $this->formateNPosition('TO', 1, 8);
+        }
+
+        return new JsonResponse([
+            'code_tourn' => $code
         ], 200);
     }
 
@@ -122,7 +150,8 @@ class RemovalOrderController extends Controller
             [
                 'client' => 'required',
                 'stock_type' => 'required',
-                'reference' => 'required|unique:good_to_removes',
+                'reference' => 'required|unique:removal_orders',
+                'reference_tourn' => 'required|unique:tourns',
                 'voucher_date' => 'required|date|date_equals:today', //|date_format:Ymd
                 'delivery_date_wished' => 'required|date|after:voucher_date', //|date_format:Ymd
                 'voucher_type' => 'required',
@@ -135,6 +164,8 @@ class RemovalOrderController extends Controller
                 'stock_type' => "Le choix du type de stock est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",
+                'reference_tourn.required' => "La référence de la tournée est obligatoire.",
+                'reference_tourn.unique' => "Cette référence de tournée existe déjà.",
                 'voucher_date.required' => "La date du bon à enlever est obligatoire.",
                 'voucher_date.date' => "La date du bon à enlever est incorrecte.",
                 // 'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
@@ -173,12 +204,47 @@ class RemovalOrderController extends Controller
             $removalOrder->stock_type_id = $request->stock_type;
             $removalOrder->save();
 
+            $lastTourn = Tourn::latest()->first();
+
+            $tourn = new Tourn();
+            if ($lastTourn) {
+                $tourn->code = $this->formateNPosition('BE', $lastTourn->id + 1, 8);
+            } else {
+                $tourn->code = $this->formateNPosition('BE', 1, 8);
+            }
+
+            $clientDeliveryNotes = [];
+            array_push($clientDeliveryNotes, $request->client_delivery_note);
+
+            $tourn->reference = $request->reference_tourn;
+            $tourn->date_of_edition = $request->date_of_edition;
+            $tourn->removal_order_id = $removalOrder->id;
+            $tourn->truck_id = $request->truck;
+            $tourn->truck_id = $request->truck;
+            $tourn->destination_id = $request->destination;
+            $tourn->client_delivery_notes = $clientDeliveryNotes;
+            $tourn->save();
+
+            $productsTourns = [];
+            foreach ($request->productTourns as $key => $productTournLine) {
+                // dd($productTournLine);
+                $productTourn = new ProductTourn();
+                $productTourn->quantity = $productTournLine['quantity'];
+                $productTourn->product_id = $productTournLine['product_id'];
+                $productTourn->tourn_id = $tourn->id;
+                $productTourn->unity_id = $productTournLine['unity_id'];
+                $productTourn->save();
+
+                array_push($productsTourns, $productTourn);
+            }
+
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
                 'success' => $success,
                 'message' => $message,
+                'datas' => ['productsTourns' => $productsTourns],
             ], 200);
         } catch (Exception $e) {
             $success = false;
@@ -217,7 +283,7 @@ class RemovalOrderController extends Controller
             [
                 'client' => 'required',
                 'stock_type' => 'required',
-                'reference' => 'required|unique:good_to_removes',
+                'reference' => 'required|unique:removal_orders',
                 'voucher_date' => 'required|date|date_format:Ymd|date_equals:today',
                 'delivery_date_wished' => 'required|date|date_format:Ymd|after:voucher_date',
                 'voucher_type' => 'required',
