@@ -53,4 +53,9 @@ class Unity extends Model
     {
         return $this->hasMany(ProductTransferLine::class);
     }
+
+    public function productTourns()
+    {
+        return $this->hasMany(ProductTourn::class);
+    }
 }

@@ -37,6 +37,11 @@ class Tourn extends Model
         return $this->belongsTo(ClientDeliveryNote::class);
     }
 
+    public function productTourns()
+    {
+        return $this->hasMany(ProductTourn::class);
+    }
+
     public function state()
     {
         return ($this->state == 'C') ? "Tournée clôturée" : "";
