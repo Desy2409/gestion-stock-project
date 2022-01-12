@@ -63,7 +63,7 @@ class RemovalOrderController extends Controller
                 'removalOrders' => $removalOrders, 'voucherTypes' => $this->voucherTypes,
                 'storageUnits' => $storageUnits, 'carriers' => $carriers,
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
-                // 'stockTypes' => $stockTypes, 
+                // 'stockTypes' => $stockTypes,
                 'clients' => $clients,
                 // 'transfers' => $transfers
             ]
@@ -98,7 +98,7 @@ class RemovalOrderController extends Controller
     public function datasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $productClientDeliveryNotes = $this->orderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
+        $productClientDeliveryNotes = $this->purchaseOrderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
         return new JsonResponse(['datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
     }
 
