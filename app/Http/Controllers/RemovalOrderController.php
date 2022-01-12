@@ -26,11 +26,11 @@ class RemovalOrderController extends Controller
     private $voucherTypes = ["Externe", "Interne"];
     private $customsRegimes = ["HT", "TTC"];
 
-    public $purchaseOrderDeliveredProducts;
+    public $purchaseOrderRepository;
 
-    public function __construct(PurchaseOrderRepository $purchaseOrderDeliveredProducts)
+    public function __construct(PurchaseOrderRepository $purchaseOrderRepository)
     {
-        $this->purchaseOrderDeliveredProducts = $purchaseOrderDeliveredProducts;
+        $this->purchaseOrderRepository = $purchaseOrderRepository;
     }
 
     public function index()
