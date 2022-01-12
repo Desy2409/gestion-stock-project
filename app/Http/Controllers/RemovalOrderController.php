@@ -9,6 +9,7 @@ use App\Models\RemovalOrder;
 use App\Models\RemovalOrderRegister;
 use App\Models\Provider;
 use App\Models\ProviderType;
+use App\Models\PurchaseOrder;
 use App\Models\SalePoint;
 use App\Models\StockType;
 use App\Models\Transfer;
@@ -94,10 +95,10 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['transmitter' => $transmitter, 'receiver' => $receiver]);
     }
 
-    public function datasOnOrderSelect($id)
+    public function datasOnPurchaseOrderSelect($id)
     {
-        $order = Order::findOrFail($id);
-        $productDeliveryNotes = $this->orderRepository->orderDeliveredProducts($order);
+        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $productDeliveryNotes = $this->orderRepository->orderDeliveredProducts($purchaseOrder);
         return new JsonResponse(['datas' => ['productDeliveryNotes' => $productDeliveryNotes]], 200);
     }
 
