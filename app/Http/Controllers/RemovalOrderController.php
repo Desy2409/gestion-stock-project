@@ -26,11 +26,11 @@ class RemovalOrderController extends Controller
     private $voucherTypes = ["Externe", "Interne"];
     private $customsRegimes = ["HT", "TTC"];
 
-    public $purchaseOrderDeliveredProducts;
+    public $purchaseOrderRepository;
 
-    public function __construct(PurchaseOrderRepository $purchaseOrderDeliveredProducts)
+    public function __construct(PurchaseOrderRepository $purchaseOrderRepository)
     {
-        $this->purchaseOrderDeliveredProducts = $purchaseOrderDeliveredProducts;
+        $this->purchaseOrderRepository = $purchaseOrderRepository;
     }
 
     public function index()
@@ -98,7 +98,7 @@ class RemovalOrderController extends Controller
     public function datasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $productClientDeliveryNotes = $this->orderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
+        $productClientDeliveryNotes = $this->purchaseOrderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
         return new JsonResponse(['datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
     }
 
