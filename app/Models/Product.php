@@ -76,28 +76,9 @@ class Product extends Model
     {
         return $this->hasMany(Stock::class);
     }
-
-    public function totalQuantityPurchased()
+    
+    public function productTourns()
     {
-        $productPurchases = $this->productPurchases();
-        $total = 0;
-        foreach ($productPurchases as $key => $productPurchase) {
-            $total += $productPurchase->quantity;
-        }
-        return $total;
-    }
-
-    public function totalQuantityDelivered()
-    {
-        $productDeliveryNotes = $this->productDeliveryNotes();
-        $total = 0;
-        foreach ($productDeliveryNotes as $key => $productDeliveryNote) {
-            $total += $productDeliveryNote->quantity;
-        }
-        return $total;
-    }
-
-    public function remainsToDeliver(){
-
+        return $this->hasMany(ProductTourn::class);
     }
 }
