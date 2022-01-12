@@ -13,7 +13,7 @@ use App\Models\PurchaseOrder;
 use App\Models\SalePoint;
 use App\Models\StockType;
 use App\Models\Transfer;
-use App\Repositories\OrderRepository;
+use App\Repositories\PurchaseOrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,11 +26,11 @@ class RemovalOrderController extends Controller
     private $voucherTypes = ["Externe", "Interne"];
     private $customsRegimes = ["HT", "TTC"];
 
-    public $orderRepository;
+    public $purchaseOrderDeliveredProducts;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(PurchaseOrderRepository $purchaseOrderDeliveredProducts)
     {
-        $this->orderRepository = $orderRepository;
+        $this->purchaseOrderDeliveredProducts = $purchaseOrderDeliveredProducts;
     }
 
     public function index()
@@ -98,7 +98,7 @@ class RemovalOrderController extends Controller
     public function datasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $productClientDeliveryNotes = $this->orderRepository->orderDeliveredProducts($purchaseOrder);
+        $productClientDeliveryNotes = $this->orderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
         return new JsonResponse(['datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
     }
 
