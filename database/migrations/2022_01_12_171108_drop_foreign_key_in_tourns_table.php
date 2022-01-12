@@ -14,7 +14,6 @@ class DropForeignKeyInTournsTable extends Migration
     public function up()
     {
         Schema::table('tourns', function (Blueprint $table) {
-            $table->dropForeign(['client_delivery_note_id']);
             $table->dropColumn('client_delivery_note_id');
         });
     }
