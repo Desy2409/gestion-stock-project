@@ -41,13 +41,13 @@ class OrderRepository extends Repository
 
     public function orderDeliveredProducts(PurchaseOrder $purchaseOrder)
     {
-        $productDeliveryNotes = ProductClientDeliveryNote::join('client_delivery_notes', 'client_delivery_notes.id', '=', 'product_client_delivery_notes.client_delivery_note_id')
+        $productClientDeliveryNotes = ProductClientDeliveryNote::join('client_delivery_notes', 'client_delivery_notes.id', '=', 'product_client_delivery_notes.client_delivery_note_id')
             ->join('sales', 'sales.id', '=', 'client_delivery_notes.sale_id')->join('purchase_orders', 'purchase_orders.id', '=', 'sales.purchase_order_id')
             ->join('products', 'products.id', '=', 'product_client_delivery_notes.product_id')->where('purchase_orders.id', $purchaseOrder->id)->get();
         // $productDeliveryNotes = ProductDeliveryNote::join('delivery_notes', 'delivery_notes.id', '=', 'product_delivery_notes.delivery_note_id')
         // ->join('purchases', 'purchases.id', '=', 'delivery_notes.purchase_id')->join('orders', 'orders.id', '=', 'purchases.order_id')
         // ->join('products', 'products.id', '=', 'product_delivery_notes.product_id')->where('orders.id', $order->id)->get();
 
-        return $productDeliveryNotes;
+        return $productClientDeliveryNotes;
     }
 }
