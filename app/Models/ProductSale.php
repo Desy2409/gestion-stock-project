@@ -18,7 +18,7 @@ class ProductSale extends Model
     {
         return $this->belongsTo(Sale::class);
     }
-    
+
     public function unity()
     {
         return $this->belongsTo(Unity::class);

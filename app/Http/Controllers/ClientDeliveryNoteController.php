@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\Mail;
 class ClientDeliveryNoteController extends Controller
 {
     use UtilityTrait;
-    use StockTrait; 
-    use ProcessingTrait; 
+    use StockTrait;
+    use ProcessingTrait;
 
     public $clientDeliveryNoteRepository;
 

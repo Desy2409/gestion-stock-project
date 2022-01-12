@@ -283,7 +283,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/compartment', [CompartmentController::class, 'index']);
     Route::post('/compartment', [CompartmentController::class, 'store']);
     // Route::post('/compartment/{compartments}/{tank}', [CompartmentController::class, 'associateCompartmentsToTank']);
-    Route::post('/compartment', [CompartmentController::class, 'associateCompartmentsToTank']);
+    Route::post('/associate-compartment', [CompartmentController::class, 'associateCompartmentsToTank']);
     Route::get('/compartment/{id}/show', [CompartmentController::class, 'show']);
     Route::get('/compartment/{id}/edit', [CompartmentController::class, 'edit']);
     Route::patch('/compartment/{id}/update', [CompartmentController::class, 'update']);

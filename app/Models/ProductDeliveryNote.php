@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductDeliveryNote extends Model
 {
-    
+
     public function product()
     {
         return $this->belongsTo(Product::class);

@@ -84,19 +84,19 @@ class CompartmentController extends Controller
         } else {
             try {
                 foreach ($request->compartments as $key => $compartment) {
+                    $compartment = Compartment::findOrFail($compartment);
                     $compartment->tank_id = $request->tank;
                     $compartment->save();
                 }
 
                 $success = true;
-                $message = "Compartiments affectés à la citerne avec succès.";
+                $message = "Compartiments associés à la citerne avec succès.";
                 return new JsonResponse([
                     'success' => $success,
                     'message' => $message,
                 ], 400);
             } catch (Exception $e) {
                 dd($e);
-
                 $success = false;
                 $message = "Erreur survenue lors de l'association des compartiments à la citerne.";
                 return new JsonResponse([
