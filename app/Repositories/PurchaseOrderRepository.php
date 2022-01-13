@@ -40,9 +40,12 @@ class PurchaseOrderRepository extends Repository
 
     public function purchaseOrderDeliveredProducts(PurchaseOrder $purchaseOrder)
     {
+        $columns = ['product_client_delivery_notes.id','product_client_delivery_notes.quantity','product_client_delivery_notes.product_id','product_client_delivery_notes.unity_id'];
+        
         $productClientDeliveryNotes = ProductClientDeliveryNote::join('client_delivery_notes', 'client_delivery_notes.id', '=', 'product_client_delivery_notes.client_delivery_note_id')
             ->join('sales', 'sales.id', '=', 'client_delivery_notes.sale_id')->join('purchase_orders', 'purchase_orders.id', '=', 'sales.purchase_order_id')
-            ->join('products', 'products.id', '=', 'product_client_delivery_notes.product_id')->where('purchase_orders.id', $purchaseOrder->id)->get();
+            ->join('products', 'products.id', '=', 'product_client_delivery_notes.product_id')->with('product')->with('unity')//join('unities', 'unities.id', '=', 'product_client_delivery_notes.unity_id')
+            ->where('purchase_orders.id', $purchaseOrder->id)->distinct()->get($columns);
 
         return $productClientDeliveryNotes;
     }
