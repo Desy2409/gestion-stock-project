@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\ProductTourn;
 use App\Models\RemovalOrder;
+use App\Models\Tank;
 use App\Models\Tourn;
 use App\Models\TournRegister;
+use App\Models\Truck;
 use App\Repositories\TournRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +30,8 @@ class TournController extends Controller
         $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $tourns = Tourn::orderBy('reference')->get();
         // $removalOrders = RemovalOrder::orderBy('voucher_date')->orderBy('reference')->get();
+        $tanks = Tank::all();
+        $trucks = Truck::all();
 
         $lastTournRegister = TournRegister::latest()->first();
 
@@ -39,7 +44,7 @@ class TournController extends Controller
         $tournRegister->save();
 
         return new JsonResponse([
-            'datas' => ['tourns' => $tourns]//, 'removalOrders' => $removalOrders
+            'datas' => ['tourns' => $tourns,'tanks' => $tanks,'trucks' => $trucks]//, 'removalOrders' => $removalOrders
         ], 200);
     }
 
@@ -65,11 +70,11 @@ class TournController extends Controller
         $this->validate(
             $request,
             [
-                'good_to_remove' => 'required',
+                'removal_order' => 'required',
                 'reference' => 'required|unique:tourns',
             ],
             [
-                'good_to_remove.required' => "Le choix du bon à enlever est obligatoire.",
+                'removal_order.required' => "Le choix du bon à enlever est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",
             ]
@@ -84,9 +89,30 @@ class TournController extends Controller
             } else {
                 $tourn->code = $this->formateNPosition('TO', 1, 8);
             }
-            $tourn->reference = $request->reference;
-            $tourn->good_to_remove_id = $request->good_to_remove;
+            $clientDeliveryNotes = [];
+            array_push($clientDeliveryNotes, $request->client_delivery_note);
+
+            $tourn->reference = $request->reference_tourn;
+            $tourn->date_of_edition = $request->date_of_edition;
+            $tourn->removal_order_id = $request->removal_order;
+            $tourn->truck_id = $request->truck;
+            $tourn->tank_id = $request->tank;
+            $tourn->destination_id = $request->destination;
+            $tourn->client_delivery_notes = $clientDeliveryNotes;
             $tourn->save();
+
+            $productsTourns = [];
+            foreach ($request->productTourns as $key => $productTournLine) {
+                // dd($productTournLine);
+                $productTourn = new ProductTourn();
+                $productTourn->quantity = $productTournLine['quantity'];
+                $productTourn->product_id = $productTournLine['product_id'];
+                $productTourn->tourn_id = $tourn->id;
+                $productTourn->unity_id = $productTournLine['unity_id'];
+                $productTourn->save();
+
+                array_push($productsTourns, $productTourn);
+            }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
@@ -94,6 +120,7 @@ class TournController extends Controller
                 'tourn' => $tourn,
                 'success' => $success,
                 'message' => $message,
+                'datas' => ['productsTourns' => $productsTourns],
             ], 200);
         } catch (Exception $e) {
             $success = false;
@@ -113,11 +140,11 @@ class TournController extends Controller
         $this->validate(
             $request,
             [
-                'good_to_remove' => 'required',
+                'removal_order' => 'required',
                 'reference' => 'required',
             ],
             [
-                'good_to_remove.required' => "Le choix du bon à enlever est obligatoire.",
+                'removal_order.required' => "Le choix du bon à enlever est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
             ]
         );
@@ -134,7 +161,7 @@ class TournController extends Controller
 
         try {
             $tourn->reference = $request->reference;
-            $tourn->good_to_remove_id = $request->good_to_remove;
+            $tourn->removal_order_id = $request->removal_order;
             $tourn->save();
 
             $success = true;
