@@ -57,9 +57,6 @@ class RemovalOrderController extends Controller
         $clients = Client::with('person.address')->get();
         // $transfers = Transfer::orderBy('code')->get();
 
-        $tanks = Tank::all();
-        $trucks = Truck::all();
-
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
         $removalOrderRegister = new RemovalOrderRegister();
@@ -70,16 +67,6 @@ class RemovalOrderController extends Controller
         }
         $removalOrderRegister->save();
 
-        $lastTournRegister = TournRegister::latest()->first();
-
-        $tournRegister = new TournRegister();
-        if ($lastTournRegister) {
-            $tournRegister->code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
-        } else {
-            $tournRegister->code = $this->formateNPosition('TO', 1, 8);
-        }
-        $tournRegister->save();
-
         return new JsonResponse([
             'datas' => [
                 'purchaseOrders' => $purchaseOrders,
@@ -88,7 +75,7 @@ class RemovalOrderController extends Controller
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
                 // 'stockTypes' => $stockTypes, 
                 'clients' => $clients,
-                'tanks' => $tanks,'trucks' => $trucks,
+
                 // 'transfers' => $transfers
             ]
         ], 200);
@@ -215,47 +202,12 @@ class RemovalOrderController extends Controller
             $removalOrder->stock_type_id = $request->stock_type;
             $removalOrder->save();
 
-            $lastTourn = Tourn::latest()->first();
-
-            $tourn = new Tourn();
-            if ($lastTourn) {
-                $tourn->code = $this->formateNPosition('BE', $lastTourn->id + 1, 8);
-            } else {
-                $tourn->code = $this->formateNPosition('BE', 1, 8);
-            }
-
-            $clientDeliveryNotes = [];
-            array_push($clientDeliveryNotes, $request->client_delivery_note);
-
-            $tourn->reference = $request->reference_tourn;
-            $tourn->date_of_edition = $request->date_of_edition;
-            $tourn->removal_order_id = $removalOrder->id;
-            $tourn->truck_id = $request->truck;
-            $tourn->truck_id = $request->truck;
-            $tourn->destination_id = $request->destination;
-            $tourn->client_delivery_notes = $clientDeliveryNotes;
-            $tourn->save();
-
-            $productsTourns = [];
-            foreach ($request->productTourns as $key => $productTournLine) {
-                // dd($productTournLine);
-                $productTourn = new ProductTourn();
-                $productTourn->quantity = $productTournLine['quantity'];
-                $productTourn->product_id = $productTournLine['product_id'];
-                $productTourn->tourn_id = $tourn->id;
-                $productTourn->unity_id = $productTournLine['unity_id'];
-                $productTourn->save();
-
-                array_push($productsTourns, $productTourn);
-            }
-
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
                 'success' => $success,
                 'message' => $message,
-                'datas' => ['productsTourns' => $productsTourns],
             ], 200);
         } catch (Exception $e) {
             $success = false;
