@@ -108,8 +108,9 @@ class RemovalOrderController extends Controller
     public function datasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $puchaseDate = $purchaseOrder->purchase_date;
         $productClientDeliveryNotes = $this->purchaseOrderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
-        return new JsonResponse(['datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
+        return new JsonResponse(['puchaseDate' => $puchaseDate, 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
     }
 
     public function onClientSelect($id)
