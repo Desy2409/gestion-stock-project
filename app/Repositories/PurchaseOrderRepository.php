@@ -49,7 +49,7 @@ class PurchaseOrderRepository extends Repository
 
     public function purchaseOrderBasedOnClientDeliveryNote()
     {
-        $purchaseOrdersColumns = ['purchase_orders.id','purchase_orders.reference'];
+        $purchaseOrdersColumns = ['purchase_orders.id','purchase_orders.reference','purchase_orders.purchase_date'];
         $purchaseOrders = PurchaseOrder::join('sales', 'sales.purchase_order_id', '=', 'purchase_orders.id')->join('client_delivery_notes','client_delivery_notes.sale_id','=','sales.id')
             ->where('purchase_orders.id', '!=', null)->distinct()->get($purchaseOrdersColumns);
 

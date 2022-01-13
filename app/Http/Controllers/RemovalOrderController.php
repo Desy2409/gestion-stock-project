@@ -75,7 +75,6 @@ class RemovalOrderController extends Controller
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
                 // 'stockTypes' => $stockTypes,
                 'clients' => $clients,
-
                 // 'transfers' => $transfers
             ]
         ], 200);
@@ -96,21 +95,6 @@ class RemovalOrderController extends Controller
         ], 200);
     }
 
-    public function showTournNextCode()
-    {
-        $this->authorize('ROLE_TOURN_READ', Tourn::class);
-        $lastTournRegister = TournRegister::latest()->first();
-        if ($lastTournRegister) {
-            $code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
-        } else {
-            $code = $this->formateNPosition('TO', 1, 8);
-        }
-
-        return new JsonResponse([
-            'code_tourn' => $code
-        ], 200);
-    }
-
     public function salePointsFromTransfer($id)
     {
         $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
@@ -124,8 +108,9 @@ class RemovalOrderController extends Controller
     public function datasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $puchaseDate = $purchaseOrder->purchase_date;
         $productClientDeliveryNotes = $this->purchaseOrderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
-        return new JsonResponse(['datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
+        return new JsonResponse(['puchaseDate' => $puchaseDate, 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
     }
 
     public function onClientSelect($id)
@@ -202,12 +187,47 @@ class RemovalOrderController extends Controller
             $removalOrder->stock_type_id = $request->stock_type;
             $removalOrder->save();
 
+            $lastTourn = Tourn::latest()->first();
+
+            $tourn = new Tourn();
+            if ($lastTourn) {
+                $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+            } else {
+                $tourn->code = $this->formateNPosition('TO', 1, 8);
+            }
+
+            $clientDeliveryNotes = [];
+            array_push($clientDeliveryNotes, $request->client_delivery_note);
+
+            $tourn->reference = $request->reference_tourn;
+            $tourn->date_of_edition = $request->date_of_edition;
+            $tourn->removal_order_id = $removalOrder->id;
+            $tourn->truck_id = $request->truck;
+            $tourn->tank_id = $request->tank;
+            $tourn->destination_id = $request->destination;
+            $tourn->client_delivery_notes = $clientDeliveryNotes;
+            $tourn->save();
+
+            $productsTourns = [];
+            foreach ($request->productTourns as $key => $productTournLine) {
+                // dd($productTournLine);
+                $productTourn = new ProductTourn();
+                $productTourn->quantity = $productTournLine['quantity'];
+                $productTourn->product_id = $productTournLine['product_id'];
+                $productTourn->tourn_id = $tourn->id;
+                $productTourn->unity_id = $productTournLine['unity_id'];
+                $productTourn->save();
+
+                array_push($productsTourns, $productTourn);
+            }
+
             $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
                 'success' => $success,
                 'message' => $message,
+                'datas' => ['productsTourns' => $productsTourns],
             ], 200);
         } catch (Exception $e) {
             $success = false;
