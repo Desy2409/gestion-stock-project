@@ -45,7 +45,7 @@ class RemovalOrderController extends Controller
         $purchaseOrders = $this->purchaseOrderRepository->purchaseOrderBasedOnClientDeliveryNote();
 
         $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
-        $idOfProviderTypeCarriers = ProviderType::where('type', "Transporteur")->pluck('id')->toArray();
+        $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
 
         $removalOrders = RemovalOrder::orderBy('voucher_date')->orderBy('reference')->get();
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
@@ -225,7 +225,7 @@ class RemovalOrderController extends Controller
             $tourn->date_of_edition = $request->date_of_edition;
             $tourn->removal_order_id = $removalOrder->id;
             $tourn->truck_id = $request->truck;
-            $tourn->truck_id = $request->truck;
+            $tourn->tank_id = $request->tank;
             $tourn->destination_id = $request->destination;
             $tourn->client_delivery_notes = $clientDeliveryNotes;
             $tourn->save();
