@@ -15,9 +15,11 @@ use App\Models\PurchaseOrder;
 use App\Models\Sale;
 use App\Models\SalePoint;
 use App\Models\StockType;
+use App\Models\Tank;
 use App\Models\Tourn;
 use App\Models\TournRegister;
 use App\Models\Transfer;
+use App\Models\Truck;
 use App\Repositories\PurchaseOrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -55,6 +57,9 @@ class RemovalOrderController extends Controller
         $clients = Client::with('person.address')->get();
         // $transfers = Transfer::orderBy('code')->get();
 
+        $tanks = Tank::all();
+        $trucks = Truck::all();
+
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
         $removalOrderRegister = new RemovalOrderRegister();
@@ -83,6 +88,7 @@ class RemovalOrderController extends Controller
                 'customsRegimes' => $this->customsRegimes, 'salePoints' => $salePoints,
                 // 'stockTypes' => $stockTypes,
                 'clients' => $clients,
+                'tanks' => $tanks,'trucks' => $trucks,
                 // 'transfers' => $transfers
             ]
         ], 200);
