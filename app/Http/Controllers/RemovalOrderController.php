@@ -53,7 +53,7 @@ class RemovalOrderController extends Controller
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
-        // $stockTypes = StockType::orderBy('wording')->get();
+        $stockTypes = StockType::orderBy('wording')->get();
         $clients = Client::with('person.address')->get();
         // $transfers = Transfer::orderBy('code')->get();
 
@@ -108,9 +108,9 @@ class RemovalOrderController extends Controller
     public function datasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
-        $puchaseDate = $purchaseOrder->purchase_date;
+        $purchaseDate = $purchaseOrder->purchase_date;
         $productClientDeliveryNotes = $this->purchaseOrderRepository->purchaseOrderDeliveredProducts($purchaseOrder);
-        return new JsonResponse(['puchaseDate' => $puchaseDate, 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
+        return new JsonResponse(['purchaseDate' => $purchaseDate, 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes]], 200);
     }
 
     public function onClientSelect($id)
@@ -134,8 +134,8 @@ class RemovalOrderController extends Controller
                 'client' => 'required',
                 'stock_type' => 'required',
                 'reference' => 'required|unique:removal_orders',
-                'reference_tourn' => 'required|unique:tourns',
-                'voucher_date' => 'required|date|date_equals:today', //|date_format:Ymd
+                // 'reference_tourn' => 'required|unique:tourns',
+                'voucher_date' => 'required|date', //|date_format:Ymd
                 'delivery_date_wished' => 'required|date|after:voucher_date', //|date_format:Ymd
                 'voucher_type' => 'required',
                 'customs_regime' => 'required',
@@ -143,7 +143,7 @@ class RemovalOrderController extends Controller
                 'carrier' => 'required',
             ],
             [
-                'stock_type' => "Le choix du client est obligatoire.",
+                'client' => "Le choix du client est obligatoire.",
                 'stock_type' => "Le choix du type de stock est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",

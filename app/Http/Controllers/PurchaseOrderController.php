@@ -311,7 +311,7 @@ class PurchaseOrderController extends Controller
                 'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([

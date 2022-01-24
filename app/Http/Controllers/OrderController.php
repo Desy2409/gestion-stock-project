@@ -95,7 +95,7 @@ class OrderController extends Controller
                 'reference' => 'required',
                 'order_date' => 'required|date|before:today', //|date_format:Ymd
                 'delivery_date' => 'required|date|after:order_date', //|date_format:Ymd
-                'total_amount' => 'required',
+                // 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'productOrders' => 'required',
                 // 'upload_files' => 'required',

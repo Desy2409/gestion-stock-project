@@ -19,7 +19,7 @@ class TransferController extends Controller
 {
     use UtilityTrait;
 
-    
+
     public $transferRepository;
 
     public function __construct(TransferRepository $transferRepository)
@@ -158,7 +158,7 @@ class TransferController extends Controller
                 'datas' => ['productTansfers' => $productTansfers]
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -310,7 +310,7 @@ class TransferController extends Controller
         }
     }
 
-    
+
     public function transferReports(Request $request)
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_PRINT', Tourn::class);
