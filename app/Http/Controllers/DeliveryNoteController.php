@@ -109,7 +109,7 @@ class DeliveryNoteController extends Controller
                 'reference' => 'required|unique:delivery_notes',
                 // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
                 'delivery_date' => 'required|date|before:today',//|after:',
-                'total_amount' => 'required',
+                // 'total_amount' => 'required',
                 'observation' => 'max:255',
                 'deliveryNoteProducts' => 'required',
                 // 'quantities' => 'required|min:0',

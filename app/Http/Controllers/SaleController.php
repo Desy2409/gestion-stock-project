@@ -358,7 +358,7 @@ class SaleController extends Controller
                     'datas' => ['productSales' => $productSales],
                 ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
