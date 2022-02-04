@@ -179,5 +179,17 @@
         "title": "Type utilisateur",
         "description": "Page de configuration d'un type d'utilisateur",
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
+    },
+    {
+        "code": "EXTENSION",
+        "title": "Extension",
+        "description": "Page de configuration d'une extension",
+        "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
+    },
+    {
+        "code": "FILE_TYPE",
+        "title": "Type utilisateur",
+        "description": "Page de configuration d'un type de fichier",
+        "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
     }
 ]

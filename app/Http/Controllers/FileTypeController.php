@@ -152,7 +152,7 @@ class FileTypeController extends Controller
     {
         $this->authorize('ROLE_FILE_TYPE_PRINT', FileType::class);
         try {
-            $fileTypes = $this->fileTypeRepository->fileTypeReport($request->selected_default_fields);
+            $fileTypes = $this->fileTypeRepository->oneJoinReport(FileType::class, 'file_types', 'extensions',  'filT', 'ext', 'extension_id', $request->child_selected_fields, $request->parent_selected_fields);
             return new JsonResponse(['datas' => ['fileTypes' => $fileTypes]], 200);
         } catch (Exception $e) {
             dd($e);

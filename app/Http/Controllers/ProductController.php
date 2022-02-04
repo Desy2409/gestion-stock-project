@@ -291,8 +291,8 @@ class ProductController extends Controller
     {
         $this->authorize('ROLE_PRODUCT_PRINT', Product::class);
         try {
-            $products = $this->productRepository->productReport($request->selected_default_fields);
-            return new JsonResponse(['datas' => ['products' => $products]],200);
+            $products = $this->productRepository->oneJoinReport(Product::class, 'products', 'sub_categories',  'prod', 'sub', 'sub_category_id', $request->child_selected_fields, $request->parent_selected_fields);
+            return new JsonResponse(['datas' => ['products' => $products]], 200);
         } catch (Exception $e) {
             dd($e);
         }

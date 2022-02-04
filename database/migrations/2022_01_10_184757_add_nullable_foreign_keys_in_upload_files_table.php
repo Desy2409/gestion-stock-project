@@ -18,12 +18,12 @@ class AddNullableForeignKeysInUploadFilesTable extends Migration
             $table->string('original_file_name');
             $table->string('size');
             $table->string('extension');
-            $table->foreignId('order_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('purchase_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('delivery_note_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('purchase_order_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('sale_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('client_delivery_note_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('order_id')->nullable()->constrained();
+            $table->foreignId('purchase_id')->nullable()->constrained();
+            $table->foreignId('delivery_note_id')->nullable()->constrained();
+            $table->foreignId('purchase_order_id')->nullable()->constrained();
+            $table->foreignId('sale_id')->nullable()->constrained();
+            $table->foreignId('client_delivery_note_id')->nullable()->constrained();
         });
     }
 
