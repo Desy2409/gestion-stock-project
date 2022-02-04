@@ -226,7 +226,7 @@ class SalePointController extends Controller
     {
         $this->authorize('ROLE_SALE_POINT_PRINT', SalePoint::class);
         try {
-            $salePoints = $this->salePointRepository->salePointReport($request->selected_default_fields);
+            $salePoints = $this->salePointRepository->oneJoinReport(SalePoint::class, 'sale_points', 'institutions',  'salP', 'inst', 'institution_id', $request->child_selected_fields, $request->parent_selected_fields);
             return new JsonResponse(['datas' => ['salePoints' => $salePoints]], 200);
         } catch (Exception $e) {
             dd($e);

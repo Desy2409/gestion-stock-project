@@ -8,6 +8,8 @@ class ClientDeliveryNote extends Model
 {
     protected $appends =  ['client_delivery_note_state'];
 
+    public static $code = 'BL';
+
     public function getClientDeliveryNoteStateAttribute(){
         $value = "";
         switch ($this->state) {

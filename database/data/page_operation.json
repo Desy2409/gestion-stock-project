@@ -1459,5 +1459,83 @@
         "role": "ROLE_USER_TYPE_PRINT",
         "operation_id": 5,
         "page_id": 32
+    }, {
+        "code": "EXTENSION_READ",
+        "title": "Consultation des extensions",
+        "description": "Consultation des extensions",
+        "role": "ROLE_EXTENSION_READ",
+        "operation_id": 1,
+        "page_id": 32
+    },
+    {
+        "code": "EXTENSION_CREATE",
+        "title": "Création d'une extension",
+        "description": "Création d'une extension",
+        "role": "ROLE_EXTENSION_CREATE",
+        "operation_id": 2,
+        "page_id": 32
+    },
+    {
+        "code": "EXTENSION_UPDATE",
+        "title": "Mise à jour des informations d'une extension",
+        "description": "Mise à jour des informations d'une extension",
+        "role": "ROLE_EXTENSION_UPDATE",
+        "operation_id": 3,
+        "page_id": 32
+    },
+    {
+        "code": "EXTENSION_DELETE",
+        "title": "Suppression d'une extension",
+        "description": "Suppression d'une extension",
+        "role": "ROLE_EXTENSION_DELETE",
+        "operation_id": 4,
+        "page_id": 32
+    },
+    {
+        "code": "EXTENSION_PRINT",
+        "title": "Impression d'extensions",
+        "description": "Impression d'extensions",
+        "role": "ROLE_EXTENSION_PRINT",
+        "operation_id": 5,
+        "page_id": 32
+    }, {
+        "code": "FILE_TYPE_READ",
+        "title": "Consultation des types de fichier",
+        "description": "Consultation des types de fichier",
+        "role": "ROLE_FILE_TYPE_READ",
+        "operation_id": 1,
+        "page_id": 32
+    },
+    {
+        "code": "FILE_TYPE_CREATE",
+        "title": "Création d'un type de fichier",
+        "description": "Création d'un type de fichier",
+        "role": "ROLE_FILE_TYPE_CREATE",
+        "operation_id": 2,
+        "page_id": 32
+    },
+    {
+        "code": "FILE_TYPE_UPDATE",
+        "title": "Mise à jour des informations d'un type de fichier",
+        "description": "Mise à jour des informations d'un type de fichier",
+        "role": "ROLE_FILE_TYPE_UPDATE",
+        "operation_id": 3,
+        "page_id": 32
+    },
+    {
+        "code": "FILE_TYPE_DELETE",
+        "title": "Suppression d'un type de fichier",
+        "description": "Suppression d'un type de fichier",
+        "role": "ROLE_FILE_TYPE_DELETE",
+        "operation_id": 4,
+        "page_id": 32
+    },
+    {
+        "code": "FILE_TYPE_PRINT",
+        "title": "Impression de types de fichier",
+        "description": "Impression de types de fichier",
+        "role": "ROLE_FILE_TYPE_PRINT",
+        "operation_id": 5,
+        "page_id": 32
     }
 ]

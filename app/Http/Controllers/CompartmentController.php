@@ -214,7 +214,7 @@ class CompartmentController extends Controller
     {
         $this->authorize('ROLE_COMPARTMENT_PRINT', Compartment::class);
         try {
-            $compartments = $this->compartmentRepository->compartmentReport($request->selected_default_fields);
+            $compartments = $this->compartmentRepository->oneJoinReport(SubCategory::class, 'compartments', 'tanks', 'cmp', 'tank', 'tank_id', $request->child_selected_fields, $request->parent_selected_fields);
             return new JsonResponse(['datas' => ['compartments' => $compartments]], 200);
         } catch (Exception $e) {
             dd($e);

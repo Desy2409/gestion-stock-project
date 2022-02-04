@@ -20,7 +20,6 @@ class ProviderController extends Controller
     {
         $this->authorize('ROLE_PROVIDER_READ', Provider::class);
         $providers = Provider::with(['person.address'])->with('providerType')->get();
-        $providerTypes = ProviderType::orderBy('wording')->get();
 
         $lastProviderRegister = ProviderRegister::latest()->first();
 
@@ -33,7 +32,7 @@ class ProviderController extends Controller
         $providerRegister->save();
 
         return new JsonResponse([
-            'datas' => ['providers' => $providers, 'providerTypes' => $providerTypes]
+            'datas' => ['providers' => $providers]
         ], 200);
     }
 
@@ -47,9 +46,16 @@ class ProviderController extends Controller
             $code = $this->formateNPosition('FS', 1, 8);
         }
 
-
         return new JsonResponse([
             'code' => $code
+        ], 200);
+    }
+
+    public function onProviderTypeSelect($type){
+        $providerTypes = ProviderType::where('type','=',$type)->get();
+
+        return new JsonResponse([
+            'datas' => ['providerTypes' => $providerTypes]
         ], 200);
     }
 

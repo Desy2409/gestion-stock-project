@@ -10,6 +10,8 @@ class Order extends Model
 
     protected $appends =  ['order_state'];
 
+    public static $code = 'BC';
+
     public function getOrderStateAttribute(){
         $value = "";
         switch ($this->state) {

@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         $this->call([
             UsersTableSeeder::class,
-            ExtensionsTableSeeder::class,
             FileTypesTableSeeder::class,
             OperationsTableSeeder::class,
             PagesTableSeeder::class,
             PageOperationsTableSeeder::class,
             CurrenciesTableSeeder::class,
+            ExtensionsTableSeeder::class,
         ]);
     }
 }

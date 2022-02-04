@@ -9,6 +9,8 @@ class DeliveryNote extends Model
 {
     protected $appends =  ['delivery_note_state'];
 
+    public static $code = 'BL';
+
     public function getDeliveryNoteStateAttribute(){
         $value = "";
         switch ($this->state) {

@@ -65,8 +65,6 @@ Route::post('/login', [AuthUserController::class, 'login']);
 Route::post('/register', [AuthUserController::class, 'register']);
 
 
-
-
 // Protected routes
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -127,6 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Provider routes
     Route::get('/provider', [ProviderController::class, 'index']);
     Route::get('/provider-code', [ProviderController::class, 'showNextCode']);
+    Route::get('/provider/on-type-select/{type}', [ProviderController::class, 'onProviderTypeSelect']);
     Route::post('/provider', [ProviderController::class, 'store']);
     Route::get('/provider/{id}/show', [ProviderController::class, 'show']);
     Route::get('/provider/{id}/edit', [ProviderController::class, 'edit']);

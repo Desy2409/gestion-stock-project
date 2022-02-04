@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Extension;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ExtensionsTableSeeder extends Seeder
 {
@@ -14,23 +15,17 @@ class ExtensionsTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('extensions')->insert([
-            ['code'=>'.jpg','extension'=>'JPG'],
-            ['code'=>'.jpeg','extension'=>'JPEG'],
-            ['code'=>'.bmp','extension'=>'BMP'],
-            ['code'=>'.webp','extension'=>'WEBP'],
-            ['code'=>'.png','extension'=>'PNG'],
-            ['code'=>'.gif','extension'=>'GIF'],
-            ['code'=>'.svg','extension'=>'SVG'],
-            ['code'=>'.avi','extension'=>'AVI'],
-            ['code'=>'.mpeg','extension'=>'MPEG'],
-            ['code'=>'.mp4','extension'=>'MP4'],
-            ['code'=>'.mkv','extension'=>'MKV'],
-            ['code'=>'.flv','extension'=>'FLV'],
-            ['code'=>'.mov','extension'=>'MOV'],
-            ['code'=>'.wmv','extension'=>'WMV'],
-            ['code'=>'.webm','extension'=>'WEBM'],
-            ['code'=>'.pdf','extension'=>'PDF'],
-        ]);
+        $json_extension = File::get('database/data/extension.json');
+        $extensions = json_decode($json_extension);
+
+        foreach ($extensions as $key => $extension) {
+            $existingExtension = Extension::where('code', $extension->code)->first();
+            if(!$existingExtension){
+                Extension:: create([
+                    'code'=>$extension->code,
+                    'extension'=>$extension->extension,
+                ]);
+            }
+        }
     }
 }

@@ -179,8 +179,7 @@ class SubCategoryController extends Controller
     {
         $this->authorize('ROLE_SUB_CATEGORY_PRINT', SubCategory::class);
         try {
-            $subCategories = $this->subCategoryRepository->subCategoryReport($request->selected_default_fields,$request->selected_parent_fields);
-            // $subCategories = $this->subCategoryRepository->subCategoryReport(["id"],['id','wording']);
+            $subCategories = $this->subCategoryRepository->oneJoinReport(SubCategory::class, 'sub_categories', 'categories', 'sub', 'cat', 'category_id', $request->child_selected_fields, $request->parent_selected_fields);
             return new JsonResponse(['datas' => ['subCategories' => $subCategories]], 200);
         } catch (Exception $e) {
             dd($e);

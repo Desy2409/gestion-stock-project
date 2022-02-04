@@ -176,7 +176,7 @@ class HostController extends Controller
     {
         $this->authorize('ROLE_HOST_PRINT', Host::class);
         try {
-            $hosts = $this->hostRepository->hostReport($request->selected_default_fields);
+            $hosts = $this->hostRepository->oneJoinReport(Host::class, 'hosts', 'drivers',  'host', 'driv', 'driver_id', $request->child_selected_fields, $request->parent_selected_fields);
             return new JsonResponse(['datas' => ['hosts' => $hosts]], 200);
         } catch (Exception $e) {
             dd($e);
