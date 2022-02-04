@@ -123,7 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client-report', [ClientController::class, 'clientReports']);
 
     // Provider routes
-    Route::get('/provider', [ProviderController::class, 'index']);
+    Route::get('/provider/{type}', [ProviderController::class, 'index']);
     Route::get('/provider-code', [ProviderController::class, 'showNextCode']);
     Route::get('/provider/on-type-select/{type}', [ProviderController::class, 'onProviderTypeSelect']);
     Route::post('/provider', [ProviderController::class, 'store']);

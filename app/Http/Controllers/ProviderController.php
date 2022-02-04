@@ -16,10 +16,31 @@ class ProviderController extends Controller
 {
     use UtilityTrait;
 
-    public function index()
+    public function index($type)
     {
         $this->authorize('ROLE_PROVIDER_READ', Provider::class);
-        $providers = Provider::with(['person.address'])->with('providerType')->get();
+        switch ($type) {
+            case 'Raffinerie':
+                $idOfProviderTypes = ProviderType::where('type', '=', 'Raffinerie')->with('providers')->pluck('id')->toArray();
+                break;
+
+            case 'Unité de stockage':
+                $idOfProviderTypes = ProviderType::where('type', '=', 'Unité de stockage')->with('providers')->pluck('id')->toArray();
+                break;
+
+            case 'Transport':
+                $idOfProviderTypes = ProviderType::where('type', '=', 'Transport')->with('providers')->pluck('id')->toArray();
+                break;
+
+            case 'Autres fournisseurs':
+                $idOfProviderTypes = ProviderType::where('type', '=', 'Autres fournisseurs')->with('providers')->pluck('id')->toArray();
+                break;
+
+            default:
+                $providerTypes = [];
+                break;
+        }
+        $providers = $idOfProviderTypes ? Provider::with(['person.address'])->whereIn('provider_type_id', $idOfProviderTypes)->get() : null;
 
         $lastProviderRegister = ProviderRegister::latest()->first();
 
@@ -51,8 +72,9 @@ class ProviderController extends Controller
         ], 200);
     }
 
-    public function onProviderTypeSelect($type){
-        $providerTypes = ProviderType::where('type','=',$type)->get();
+    public function onProviderTypeSelect($type)
+    {
+        $providerTypes = ProviderType::where('type', '=', $type)->get();
 
         return new JsonResponse([
             'datas' => ['providerTypes' => $providerTypes]
