@@ -14,6 +14,8 @@ class Transfer extends Model
         'date_of_receipt'
     ];
 
+    public static $code = 'TF';
+
     protected $appends =  ['transmitter','receiver'];
 
     public function getTransmitterAttribute(){

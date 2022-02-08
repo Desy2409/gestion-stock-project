@@ -23,12 +23,14 @@ class TransferDemandController extends Controller
 {
     use UtilityTrait;
 
-    
+
     public $transferDemandRepository;
+    protected $prefix;
 
     public function __construct(TransferDemandRepository $transferDemandRepository)
     {
         $this->transferDemandRepository = $transferDemandRepository;
+        $this->prefix = TransferDemand::$code;
     }
 
     public function index()
@@ -51,9 +53,9 @@ class TransferDemandController extends Controller
 
         $transferDemandRegister = new TransferDemandRegister();
         if ($lastTransferDemandRegister) {
-            $transferDemandRegister->code = $this->formateNPosition('DT', $lastTransferDemandRegister->id + 1, 8);
+            $transferDemandRegister->code = $this->formateNPosition($this->prefix, $lastTransferDemandRegister->id + 1, 8);
         } else {
-            $transferDemandRegister->code = $this->formateNPosition('DT', 1, 8);
+            $transferDemandRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $transferDemandRegister->save();
 
@@ -68,9 +70,9 @@ class TransferDemandController extends Controller
         $this->authorize('ROLE_TRANSFER_DEMAND_READ', TransferDemand::class);
         $lastTransferDemandRegister = TransferDemandRegister::latest()->first();
         if ($lastTransferDemandRegister) {
-            $code = $this->formateNPosition('DT', $lastTransferDemandRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastTransferDemandRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('DT', 1, 8);
+            $code = $this->formateNPosition($this->prefix, 1, 8);
         }
 
         return new JsonResponse([
@@ -130,9 +132,9 @@ class TransferDemandController extends Controller
 
             $transferDemand = new TransferDemand();
             if ($lastTransferDemand) {
-                $transferDemand->code = $this->formateNPosition('DT', $lastTransferDemand->id + 1, 8);
+                $transferDemand->code = $this->formateNPosition($this->prefix, $lastTransferDemand->id + 1, 8);
             } else {
-                $transferDemand->code = $this->formateNPosition('DT', 1, 8);
+                $transferDemand->code = $this->formateNPosition($this->prefix, 1, 8);
             }
             $transferDemand->request_reason = $request->request_reason;
             $transferDemand->date_of_demand = $request->date_of_demand;

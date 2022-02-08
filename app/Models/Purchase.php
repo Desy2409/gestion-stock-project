@@ -10,6 +10,8 @@ class Purchase extends Model
 {
     protected $appends =  ['purchase_state'];
 
+    public static $code = 'BA';
+
     public function getPurchaseStateAttribute(){
         $value = "";
         switch ($this->state) {
