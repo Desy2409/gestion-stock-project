@@ -9,6 +9,8 @@ class Sale extends Model
 {
     protected $appends =  ['sale_state'];
 
+    public static $code = 'VT';
+
     public function getSaleStateAttribute(){
         $value = "";
         switch ($this->state) {

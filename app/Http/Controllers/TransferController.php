@@ -19,12 +19,14 @@ class TransferController extends Controller
 {
     use UtilityTrait;
 
-    
+
     public $transferRepository;
+    protected $prefix;
 
     public function __construct(TransferRepository $transferRepository)
     {
         $this->transferRepository = $transferRepository;
+        $this->prefix = Transfer::$code;
     }
 
     public function index()
@@ -41,9 +43,9 @@ class TransferController extends Controller
 
         $transferRegister = new TransferRegister();
         if ($lastTransferRegister) {
-            $transferRegister->code = $this->formateNPosition('TF', $lastTransferRegister->id + 1, 8);
+            $transferRegister->code = $this->formateNPosition($this->prefix, $lastTransferRegister->id + 1, 8);
         } else {
-            $transferRegister->code = $this->formateNPosition('TF', 1, 8);
+            $transferRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $transferRegister->save();
 
@@ -69,9 +71,9 @@ class TransferController extends Controller
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $lastTransferRegister = TransferRegister::latest()->first();
         if ($lastTransferRegister) {
-            $code = $this->formateNPosition('TF', $lastTransferRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastTransferRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('TF', 1, 8);
+            $code = $this->formateNPosition($this->prefix, 1, 8);
         }
 
         return new JsonResponse([
@@ -120,9 +122,9 @@ class TransferController extends Controller
 
             $transfer = new Transfer();
             if ($lastTransfer) {
-                $transfer->code = $this->formateNPosition('TF', $lastTransfer->id + 1, 8);
+                $transfer->code = $this->formateNPosition($this->prefix, $lastTransfer->id + 1, 8);
             } else {
-                $transfer->code = $this->formateNPosition('TF', 1, 8);
+                $transfer->code = $this->formateNPosition($this->prefix, 1, 8);
             }
             $transfer->transfer_reason = $request->transfer_reason;
             $transfer->date_of_transfer = $request->date_of_transfer;
@@ -184,7 +186,7 @@ class TransferController extends Controller
     {
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $transfer = Transfer::with('productsTransfersLines')->with('transferDemand')->findOrFail($id);
-        $productsTransfersLines = ProductTransferLine::where('transfer_id',$transfer->id)->with('product')->with('unity')->get();
+        $productsTransfersLines = ProductTransferLine::where('transfer_id', $transfer->id)->with('product')->with('unity')->get();
         // $productsTransfersLines = $transfer ? $transfer->productsTransfersLines : null;
 
         return new JsonResponse([
@@ -310,7 +312,7 @@ class TransferController extends Controller
         }
     }
 
-    
+
     public function transferReports(Request $request)
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_PRINT', Tourn::class);

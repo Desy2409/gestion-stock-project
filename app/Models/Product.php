@@ -15,6 +15,8 @@ class Product extends Model
         'price',
     ];
 
+    public static $code='PR';
+
     protected $hidden = ['created_at'];
 
     public function subCategory()

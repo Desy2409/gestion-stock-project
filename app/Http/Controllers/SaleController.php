@@ -34,10 +34,12 @@ class SaleController extends Controller
     use FileTrait;
 
     public $saleRepository;
+    protected $prefix;
     public function __construct(SaleRepository $saleRepository)
     {
         $this->saleRepository = $saleRepository;
         $this->user = Auth::user();
+        $this->prefix = Sale::$code;
     }
 
     public function saleOnPurchaseOrder()
@@ -49,9 +51,9 @@ class SaleController extends Controller
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition($this->prefix, $lastSaleRegister->id + 1, 8);
         } else {
-            $saleRegister->code = $this->formateNPosition('VT', 1, 8);
+            $saleRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $saleRegister->save();
 
@@ -70,9 +72,9 @@ class SaleController extends Controller
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition($this->prefix, $lastSaleRegister->id + 1, 8);
         } else {
-            $saleRegister->code = $this->formateNPosition('VT', 1, 8);
+            $saleRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $saleRegister->save();
 
@@ -104,9 +106,9 @@ class SaleController extends Controller
         $this->authorize('ROLE_SALE_READ', Sale::class);
         $lastSaleRegister = SaleRegister::latest()->first();
         if ($lastSaleRegister) {
-            $code = $this->formateNPosition('VT', $lastSaleRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastSaleRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('VT', 1, 8);
+            $code = $this->formateNPosition($this->prefix, 1, 8);
         }
 
         return new JsonResponse([
@@ -184,9 +186,9 @@ class SaleController extends Controller
 
                 $sale = new Sale();
                 if ($lastSale) {
-                    $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
+                    $sale->code = $this->formateNPosition($this->prefix, $lastSale->id + 1, 8);
                 } else {
-                    $sale->code = $this->formateNPosition('VT', 1, 8);
+                    $sale->code = $this->formateNPosition($this->prefix, 1, 8);
                 }
                 $sale->reference = $request->reference;
                 $sale->sale_date   = $request->sale_date;
@@ -301,9 +303,9 @@ class SaleController extends Controller
 
                 $sale = new Sale();
                 if ($lastSale) {
-                    $sale->code = $this->formateNPosition('VT', $lastSale->id + 1, 8);
+                    $sale->code = $this->formateNPosition($this->prefix, $lastSale->id + 1, 8);
                 } else {
-                    $sale->code = $this->formateNPosition('VT', 1, 8);
+                    $sale->code = $this->formateNPosition($this->prefix, 1, 8);
                 }
                 $sale->reference = $request->reference;
                 $sale->sale_date   = $request->sale_date;

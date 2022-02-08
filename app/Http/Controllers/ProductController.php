@@ -21,10 +21,12 @@ class ProductController extends Controller
     use UtilityTrait;
 
     public $productRepository;
+    protected $prefix;
 
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
+        $this->prefix = Product::$code;
     }
 
     public function index()
@@ -37,9 +39,9 @@ class ProductController extends Controller
 
         $productRegister = new ProductRegister();
         if ($lastProductRegister) {
-            $productRegister->code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+            $productRegister->code = $this->formateNPosition($this->prefix, $lastProductRegister->id + 1, 8);
         } else {
-            $productRegister->code = $this->formateNPosition('', 1, 8);
+            $productRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $productRegister->save();
 
@@ -53,9 +55,9 @@ class ProductController extends Controller
         $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $lastProductRegister = ProductRegister::latest()->first();
         if ($lastProductRegister) {
-            $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastProductRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('', $lastProductRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastProductRegister->id + 1, 8);
         }
 
         return new JsonResponse([
@@ -88,9 +90,9 @@ class ProductController extends Controller
 
             $product = new Product();
             if ($lastProduct) {
-                $product->code = $this->formateNPosition('', $lastProduct->id + 1, 8);
+                $product->code = $this->formateNPosition($this->prefix, $lastProduct->id + 1, 8);
             } else {
-                $product->code = $this->formateNPosition('', 1, 8);
+                $product->code = $this->formateNPosition($this->prefix, 1, 8);
             }
             $product->reference = $request->reference;
             $product->wording = $request->wording;
