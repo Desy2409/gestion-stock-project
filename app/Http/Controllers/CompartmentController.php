@@ -21,7 +21,7 @@ class CompartmentController extends Controller
     public function index()
     {
         $this->authorize('ROLE_COMPARTMENT_READ', Compartment::class);
-        $compartments = Compartment::orderBy('reference')->get();
+        $compartments = Compartment::orderBy('reference')->with('tank')->get();
         $tanks = Tank::orderBy('tank_registration')->get();
 
         return new JsonResponse([
