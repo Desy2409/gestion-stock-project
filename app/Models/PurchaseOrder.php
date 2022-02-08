@@ -8,6 +8,8 @@ class PurchaseOrder extends Model
 {
     protected $appends =  ['purchase_order_state'];
 
+    public static $code = 'BC';
+
     public function getPurchaseOrderStateAttribute(){
         $value = "";
         switch ($this->state) {

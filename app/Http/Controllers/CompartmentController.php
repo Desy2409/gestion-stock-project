@@ -36,11 +36,13 @@ class CompartmentController extends Controller
         $this->validate(
             $request,
             [
+                // 'tank' => 'required',
                 'reference' => 'required|unique:compartments',
                 'number' => 'required',
                 'capacity' => 'required',
             ],
             [
+                // 'tank.required' => "La citerne est obligatoire.",
                 'reference.required' => "La référence est obligatoire.",
                 'reference.unique' => "Cette référence existe déjà.",
                 'number.required' => "Le numéro du compartiment est obligatoire.",
@@ -53,6 +55,7 @@ class CompartmentController extends Controller
             $compartment->reference = $request->reference;
             $compartment->number = $request->number;
             $compartment->capacity = $request->capacity;
+            $compartment->tank_id = $request->tank ? $request->tank : null;
             $compartment->save();
 
             $success = true;
@@ -140,6 +143,7 @@ class CompartmentController extends Controller
             $compartment->reference = $request->reference;
             $compartment->number = $request->number;
             $compartment->capacity = $request->capacity;
+            $compartment->tank_id = $request->tank;
             $compartment->save();
 
             $success = true;

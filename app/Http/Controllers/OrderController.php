@@ -33,11 +33,13 @@ class OrderController extends Controller
     use FileTrait;
 
     public $orderRepository;
+    protected $prefix;
 
     public function __construct(OrderRepository $orderRepository)
     {
         $this->orderRepository = $orderRepository;
         $this->user = Auth::user();
+        $this->prefix = Order::$code;
     }
 
     public function index()
@@ -55,9 +57,9 @@ class OrderController extends Controller
 
         $orderRegister = new OrderRegister();
         if ($lastOrderRegister) {
-            $orderRegister->code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
+            $orderRegister->code = $this->formateNPosition($this->prefix, $lastOrderRegister->id + 1, 8);
         } else {
-            $orderRegister->code = $this->formateNPosition('BC', 1, 8);
+            $orderRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $orderRegister->save();
 
@@ -71,9 +73,9 @@ class OrderController extends Controller
         $this->authorize('ROLE_ORDER_READ', Order::class);
         $lastOrderRegister = OrderRegister::latest()->first();
         if ($lastOrderRegister) {
-            $code = $this->formateNPosition('BC', $lastOrderRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastOrderRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('BC', 1, 8);
+            $code = $this->formateNPosition($this->prefix, 1, 8);
         }
 
         return new JsonResponse([
@@ -137,9 +139,9 @@ class OrderController extends Controller
 
             $order = new Order();
             if ($lastOrder) {
-                $order->code = $this->formateNPosition('BC', $lastOrder->id + 1, 8);
+                $order->code = $this->formateNPosition($this->prefix, $lastOrder->id + 1, 8);
             } else {
-                $order->code = $this->formateNPosition('BC', 1, 8);
+                $order->code = $this->formateNPosition($this->prefix, 1, 8);
             }
             $order->reference = $request->reference;
             $order->order_date   = $request->order_date;

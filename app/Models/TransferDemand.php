@@ -7,17 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransferDemand extends Model
 {
-      protected $appends =  ['transmitter','receiver','transfer_demand_state'];
+    public static $code = 'DT';
 
-    public function getTransmitterAttribute(){
-        return SalePoint::where('id',$this->transmitter_id)->first();
+    protected $appends =  ['transmitter', 'receiver', 'transfer_demand_state'];
+
+    public function getTransmitterAttribute()
+    {
+        return SalePoint::where('id', $this->transmitter_id)->first();
     }
 
-    public function getReceiverAttribute(){
-        return SalePoint::where('id',$this->receiver_id)->first();
+    public function getReceiverAttribute()
+    {
+        return SalePoint::where('id', $this->receiver_id)->first();
     }
 
-    public function getTransferDemandStateAttribute(){
+    public function getTransferDemandStateAttribute()
+    {
         $value = "";
         switch ($this->state) {
             case 'P':

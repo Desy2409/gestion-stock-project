@@ -19,10 +19,12 @@ class TournController extends Controller
     use UtilityTrait;
 
     public $tournRepository;
+    protected $prefix;
 
     public function __construct(TournRepository $tournRepository)
     {
         $this->tournRepository = $tournRepository;
+        $this->prefix = Tourn::$code;
     }
 
     public function index()
@@ -37,14 +39,14 @@ class TournController extends Controller
 
         $tournRegister = new TournRegister();
         if ($lastTournRegister) {
-            $tournRegister->code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
+            $tournRegister->code = $this->formateNPosition($this->prefix, $lastTournRegister->id + 1, 8);
         } else {
-            $tournRegister->code = $this->formateNPosition('TO', 1, 8);
+            $tournRegister->code = $this->formateNPosition($this->prefix, 1, 8);
         }
         $tournRegister->save();
 
         return new JsonResponse([
-            'datas' => ['tourns' => $tourns,'tanks' => $tanks,'trucks' => $trucks]//, 'removalOrders' => $removalOrders
+            'datas' => ['tourns' => $tourns, 'tanks' => $tanks, 'trucks' => $trucks] //, 'removalOrders' => $removalOrders
         ], 200);
     }
 
@@ -53,9 +55,9 @@ class TournController extends Controller
         $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $lastTournRegister = TournRegister::latest()->first();
         if ($lastTournRegister) {
-            $code = $this->formateNPosition('TO', $lastTournRegister->id + 1, 8);
+            $code = $this->formateNPosition($this->prefix, $lastTournRegister->id + 1, 8);
         } else {
-            $code = $this->formateNPosition('TO', 1, 8);
+            $code = $this->formateNPosition($this->prefix, 1, 8);
         }
 
         return new JsonResponse([
@@ -85,9 +87,9 @@ class TournController extends Controller
 
             $tourn = new Tourn();
             if ($lastTourn) {
-                $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+                $tourn->code = $this->formateNPosition($this->prefix, $lastTourn->id + 1, 8);
             } else {
-                $tourn->code = $this->formateNPosition('TO', 1, 8);
+                $tourn->code = $this->formateNPosition($this->prefix, 1, 8);
             }
             $clientDeliveryNotes = [];
             array_push($clientDeliveryNotes, $request->client_delivery_note);
@@ -199,7 +201,7 @@ class TournController extends Controller
                 // dd('not delete');
                 $message = "Cette tournée ne peut être supprimée car elle a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'tourn' => $tourn,
                 'success' => $success,

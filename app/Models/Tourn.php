@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tourn extends Model
 {
+    public static $code = 'TO';
 
     protected $casts = [
         'client_delivery_notes' => 'array'
