@@ -7,6 +7,7 @@ use App\Repositories\ExtensionRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ExtensionController extends Controller
@@ -31,16 +32,7 @@ class ExtensionController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_EXTENSION_CREATE', Extension::class);
-        $this->validate(
-            $request,
-            [
-                'extension' => 'required|unique:extensions'
-            ],
-            [
-                'extension.required' => "L'extension est obligatoire.",
-                'extension.unique' => "Cette extension existe déjà.",
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         try {
             $extension = new Extension();
@@ -61,6 +53,7 @@ class ExtensionController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -69,16 +62,7 @@ class ExtensionController extends Controller
     {
         $this->authorize('ROLE_EXTENSION_UPDATE', Extension::class);
         $extension = Extension::findOrfail($id);
-        $this->validate(
-            $request,
-            [
-                'extension' => 'required|unique:extensions'
-            ],
-            [
-                'extension.required' => "L'extension est obligatoire.",
-                'extension.unique' => "Cette extension existe déjà.",
-            ]
-        );
+        $errors = $this->validator('update', $request->all());
 
         try {
             $extension->extension = strtoupper($request->extension);
@@ -97,6 +81,7 @@ class ExtensionController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -141,6 +126,34 @@ class ExtensionController extends Controller
             return new JsonResponse(['datas' => ['extensions' => $extensions]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'extension' => 'required|unique:extensions'
+                ],
+                [
+                    'extension.required' => "L'extension est obligatoire.",
+                    'extension.unique' => "Cette extension existe déjà.",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'extension' => 'required|unique:extensions'
+                ],
+                [
+                    'extension.required' => "L'extension est obligatoire.",
+                    'extension.unique' => "Cette extension existe déjà.",
+                ]
+            );
         }
     }
 }
