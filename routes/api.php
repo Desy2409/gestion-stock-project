@@ -308,7 +308,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/truck-report', [TruckController::class, 'truckReports']);
 
     // Tank truck routes
-    Route::get('/tank-truck', [TankTruckController::class, 'index']);
+    Route::get('/tank-truck/{param}/{id}', [TankTruckController::class, 'index']);
     Route::post('/tank-truck', [TankTruckController::class, 'store']);
     Route::get('/tank-truck/{id}/show', [TankTruckController::class, 'show']);
     Route::get('/tank-truck/{id}/edit', [TankTruckController::class, 'edit']);
