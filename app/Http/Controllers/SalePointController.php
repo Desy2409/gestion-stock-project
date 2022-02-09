@@ -8,6 +8,7 @@ use App\Repositories\SalePointRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SalePointController extends Controller
 {
@@ -31,30 +32,7 @@ class SalePointController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_SALE_POINT_CREATE', SalePoint::class);
-        $this->validate(
-            $request,
-            [
-                'institution' => 'required',
-                'rccm_number' => 'required',
-                'cc_number' => 'required',
-                'social_reason' => 'required',
-                'email' => 'required|email',
-                'phone_number' => 'required',
-                'address' => 'required',
-                'bp' => 'required',
-            ],
-            [
-                'institution.required' => "Le choix de l'institution est obligatoire.",
-                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
-                'cc_number.required' => "Le numéro CC est obligatoire.",
-                'social_reason.required' => "La raison sociale est obligatoire.",
-                'email.required' => "L'adresse email est obligatoire.",
-                'email.email' => "L'adresse email est incorrecte.",
-                'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                'address.required' => "L'adresse est obligatoire.",
-                'bp.required' => "La boîte postale est obligatoire",
-            ],
-        );
+        $errors = $this->validator('store', $request->all());
 
         $existingSalePoint = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
         if ($existingSalePoint) {
@@ -92,6 +70,7 @@ class SalePointController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -120,30 +99,7 @@ class SalePointController extends Controller
     {
         $this->authorize('ROLE_SALE_POINT_UPDATE', SalePoint::class);
         $salePoint = SalePoint::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'institution' => 'required',
-                'rccm_number' => 'required',
-                'cc_number' => 'required',
-                'social_reason' => 'required',
-                'email' => 'required|email',
-                'phone_number' => 'required',
-                'address' => 'required',
-                'bp' => 'required',
-            ],
-            [
-                'institution.required' => "Le choix de l'institution est obligatoire.",
-                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
-                'cc_number.required' => "Le numéro CC est obligatoire.",
-                'social_reason.required' => "La raison sociale est obligatoire.",
-                'email.required' => "L'adresse email est obligatoire.",
-                'email.email' => "L'adresse email est incorrecte.",
-                'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                'address.required' => "L'adresse est obligatoire.",
-                'bp.required' => "La boîte postale est obligatoire",
-            ],
-        );
+        $errors = $this->validator('update', $request->all());
 
         $existingSalePoints = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
         if (!empty($existingSalePoints) && sizeof($existingSalePoints) > 1) {
@@ -179,6 +135,7 @@ class SalePointController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -230,6 +187,62 @@ class SalePointController extends Controller
             return new JsonResponse(['datas' => ['salePoints' => $salePoints]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'institution' => 'required',
+                    'rccm_number' => 'required',
+                    'cc_number' => 'required',
+                    'social_reason' => 'required',
+                    'email' => 'required|email',
+                    'phone_number' => 'required',
+                    'address' => 'required',
+                    'bp' => 'required',
+                ],
+                [
+                    'institution.required' => "Le choix de l'institution est obligatoire.",
+                    'rccm_number.required' => "Le numéro RRCM est obligatoire.",
+                    'cc_number.required' => "Le numéro CC est obligatoire.",
+                    'social_reason.required' => "La raison sociale est obligatoire.",
+                    'email.required' => "L'adresse email est obligatoire.",
+                    'email.email' => "L'adresse email est incorrecte.",
+                    'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'address.required' => "L'adresse est obligatoire.",
+                    'bp.required' => "La boîte postale est obligatoire",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'institution' => 'required',
+                    'rccm_number' => 'required',
+                    'cc_number' => 'required',
+                    'social_reason' => 'required',
+                    'email' => 'required|email',
+                    'phone_number' => 'required',
+                    'address' => 'required',
+                    'bp' => 'required',
+                ],
+                [
+                    'institution.required' => "Le choix de l'institution est obligatoire.",
+                    'rccm_number.required' => "Le numéro RRCM est obligatoire.",
+                    'cc_number.required' => "Le numéro CC est obligatoire.",
+                    'social_reason.required' => "La raison sociale est obligatoire.",
+                    'email.required' => "L'adresse email est obligatoire.",
+                    'email.email' => "L'adresse email est incorrecte.",
+                    'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'address.required' => "L'adresse est obligatoire.",
+                    'bp.required' => "La boîte postale est obligatoire",
+                ]
+            );
         }
     }
 }
