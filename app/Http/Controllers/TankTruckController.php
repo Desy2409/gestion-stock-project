@@ -39,7 +39,7 @@ class TankTruckController extends Controller
                 'truck' => 'required',
                 'tank' => 'required',
                 'gauging_certificate_number' => 'required',
-                'validity_date' => 'required|date|before:today',
+                'validity_date' => 'required|date|after:today',
                 'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [

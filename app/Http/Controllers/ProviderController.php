@@ -40,7 +40,7 @@ class ProviderController extends Controller
                 $providerTypes = [];
                 break;
         }
-        $providers = $idOfProviderTypes ? Provider::with(['person.address'])->whereIn('provider_type_id', $idOfProviderTypes)->get() : null;
+        $providers = $idOfProviderTypes ? Provider::with('providerType')->with(['person.address'])->whereIn('provider_type_id', $idOfProviderTypes)->get() : null;
 
         $lastProviderRegister = ProviderRegister::latest()->first();
 
