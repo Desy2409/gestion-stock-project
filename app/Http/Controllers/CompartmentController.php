@@ -143,7 +143,7 @@ class CompartmentController extends Controller
             $compartment->reference = $request->reference;
             $compartment->number = $request->number;
             $compartment->capacity = $request->capacity;
-            $compartment->tank_id = $request->tank;
+            $compartment->tank_id = $request->tank ? $request->tank : null;
             $compartment->save();
 
             $success = true;
