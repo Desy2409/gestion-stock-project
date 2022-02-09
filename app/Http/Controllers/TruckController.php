@@ -190,11 +190,17 @@ class TruckController extends Controller
                     'provider' => 'required',
                     'reference' => 'required|unique:trucks',
                     'truck_registration' => 'required|unique:trucks',
+                    'technical_visit'=>'required',
+                    'deadline'=>'required|date|after:today',
                 ],
                 [
                     'provider.required' => "Le choix du fornisseur est obligatoire.",
                     'reference.required' => "La référence est obligatoire.",
                     'reference.unique' => "Cette référence existe déjà.",
+                    'technical_visit.required' => "La visite technique est obligaoire.",
+                    'deadline.required' => "La date limite est obligatoire.",
+                    'deadline.date' => "La date limite doit être une date.",
+                    'deadline.after' => "La date limite doit être ultérieure à aujourd'hui.",
                     'truck_registration.required' => "L'immatriculation du tracteur est obligatoire.",
                     'truck_registration.unique' => "Cette immatriculation de tracteur existe déjà.",
                 ]
@@ -207,10 +213,16 @@ class TruckController extends Controller
                     'provider' => 'required',
                     'reference' => 'required',
                     'truck_registration' => 'required',
+                    'technical_visit'=>'required',
+                    'deadline'=>'required|date|after:today',
                 ],
                 [
                     'provider.required' => "Le choix du fornisseur est obligatoire.",
                     'reference.required' => "La référence est obligatoire.",
+                    'technical_visit.required' => "La visite technique est obligaoire.",
+                    'deadline.required' => "La date limite est obligatoire.",
+                    'deadline.date' => "La date limite doit être une date.",
+                    'deadline.after' => "La date limite doit être ultérieure à aujourd'hui.",
                     'truck_registration.required' => "L'immatriculation du tracteur est obligatoire.",
                 ]
             );

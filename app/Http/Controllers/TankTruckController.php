@@ -10,6 +10,7 @@ use App\Models\UploadFile;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class TankTruckController extends Controller
@@ -33,30 +34,7 @@ class TankTruckController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_TANK_TRUCK_CREATE', TankTruck::class);
-        $this->validate(
-            $request,
-            [
-                'truck' => 'required',
-                'tank' => 'required',
-                'gauging_certificate_number' => 'required',
-                'validity_date' => 'required|date|before:today',
-                'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
-            ],
-            [
-                'truck.required' => "Le choix d'un camion est obligatoire.",
-                'tank.required' => "Le choix d'une citerne est obligatoire.",
-                'gauging_certificate_number.required' => "Le numéro certificat de jaugeage est obligatoire.",
-                'validity_date.required' => "La date de validité est obligatoire.",
-                'validity_date.date' => "La date de validité saisie est incorrecte.",
-                'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
-                'validity_date.before' => "La date de validité doit être antérieure ou égale à aujourd'hui.",
-                'gauging_certificate.required' => "Le certificat de jaugeage est obligatoire.",
-                'gauging_certificate.file' => "Le certificat de jaugeage doit être un fichier.",
-                'gauging_certificate.mimes' => "Les formats de fichier autorisés sont : " . $this->tankTruckAuthorizedFiles()->authorized_files,
-                'gauging_certificate.size' => "La taille maximale du fichier est de : " . $this->tankTruckAuthorizedFiles()->max_size . 'Ko',
-                // 'validity_date.required'=>"",
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         try {
             $tankTruck = new TankTruck();
@@ -93,6 +71,7 @@ class TankTruckController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -101,30 +80,7 @@ class TankTruckController extends Controller
     {
         $this->authorize('ROLE_TANK_TRUCK_UPDATE', TankTruck::class);
         $tankTruck = TankTruck::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'truck' => 'required',
-                'tank' => 'required',
-                'gauging_certificate_number' => 'required',
-                'validity_date' => 'required|date|date_format:Ymd|before:today',
-                'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
-            ],
-            [
-                'truck.required' => "Le choix d'un camion est obligatoire.",
-                'tank.required' => "Le choix d'une citerne est obligatoire.",
-                'gauging_certificate_number.required' => "Le numéro certificat de jaugeage est obligatoire.",
-                'validity_date.required' => "La date de validité est obligatoire.",
-                'validity_date.date' => "La date de validité saisie est incorrecte.",
-                'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
-                'validity_date.before' => "La date de validité doit être antérieure ou égale à aujourd'hui.",
-                'gauging_certificate.required' => "Le certificat de jaugeage est obligatoire.",
-                'gauging_certificate.file' => "Le certificat de jaugeage doit être un fichier.",
-                'gauging_certificate.mimes' => "Les formats de fichier autorisés sont : " . $this->tankTruckAuthorizedFiles()->authorized_files,
-                'gauging_certificate.size' => "La taille maximale du fichier est de : " . $this->tankTruckAuthorizedFiles()->max_size . 'Ko',
-                // 'validity_date.required'=>"",
-            ]
-        );
+        $errors = $this->validator('update', $request->all());
 
         try {
             $tankTruck->gauging_certificate = $request->gauging_certificate;
@@ -157,6 +113,7 @@ class TankTruckController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -202,5 +159,61 @@ class TankTruckController extends Controller
         return new JsonResponse([
             'tankTruck' => $tankTruck
         ], 200);
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'truck' => 'required',
+                    'tank' => 'required',
+                    'gauging_certificate_number' => 'required',
+                    'validity_date' => 'required|date|before:today',
+                    'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
+                ],
+                [
+                    'truck.required' => "Le choix d'un camion est obligatoire.",
+                    'tank.required' => "Le choix d'une citerne est obligatoire.",
+                    'gauging_certificate_number.required' => "Le numéro certificat de jaugeage est obligatoire.",
+                    'validity_date.required' => "La date de validité est obligatoire.",
+                    'validity_date.date' => "La date de validité saisie est incorrecte.",
+                    'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
+                    'validity_date.before' => "La date de validité doit être antérieure ou égale à aujourd'hui.",
+                    'gauging_certificate.required' => "Le certificat de jaugeage est obligatoire.",
+                    'gauging_certificate.file' => "Le certificat de jaugeage doit être un fichier.",
+                    'gauging_certificate.mimes' => "Les formats de fichier autorisés sont : " . $this->tankTruckAuthorizedFiles()->authorized_files,
+                    'gauging_certificate.size' => "La taille maximale du fichier est de : " . $this->tankTruckAuthorizedFiles()->max_size . 'Ko',
+                    // 'validity_date.required'=>"",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'truck' => 'required',
+                    'tank' => 'required',
+                    'gauging_certificate_number' => 'required',
+                    'validity_date' => 'required|date|date_format:Ymd|before:today',
+                    'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
+                ],
+                [
+                    'truck.required' => "Le choix d'un camion est obligatoire.",
+                    'tank.required' => "Le choix d'une citerne est obligatoire.",
+                    'gauging_certificate_number.required' => "Le numéro certificat de jaugeage est obligatoire.",
+                    'validity_date.required' => "La date de validité est obligatoire.",
+                    'validity_date.date' => "La date de validité saisie est incorrecte.",
+                    'validity_date.date_format' => "La date de validité doit être au format : Année Mois Jour.",
+                    'validity_date.before' => "La date de validité doit être antérieure ou égale à aujourd'hui.",
+                    'gauging_certificate.required' => "Le certificat de jaugeage est obligatoire.",
+                    'gauging_certificate.file' => "Le certificat de jaugeage doit être un fichier.",
+                    'gauging_certificate.mimes' => "Les formats de fichier autorisés sont : " . $this->tankTruckAuthorizedFiles()->authorized_files,
+                    'gauging_certificate.size' => "La taille maximale du fichier est de : " . $this->tankTruckAuthorizedFiles()->max_size . 'Ko',
+                    // 'validity_date.required'=>"",
+                ]
+            );
+        }
     }
 }

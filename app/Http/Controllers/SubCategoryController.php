@@ -8,6 +8,7 @@ use App\Repositories\SubCategoryRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class SubCategoryController extends Controller
@@ -32,24 +33,7 @@ class SubCategoryController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_SUB_CATEGORY_CREATE', SubCategory::class);
-        $this->validate(
-            $request,
-            [
-                'category' => 'required',
-                'reference' => 'required|unique:sub_categories',
-                'wording' => 'required|unique:sub_categories|max:150',
-                'description' => 'max:255'
-            ],
-            [
-                'category.required' => "La catégorie est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette sous-catégorie existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
+        $errors = $this->validator('store',$request->all());
 
         try {
             $subCategory = new SubCategory();
@@ -72,6 +56,7 @@ class SubCategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -81,22 +66,7 @@ class SubCategoryController extends Controller
     {
         $this->authorize('ROLE_SUB_CATEGORY_UPDATE', SubCategory::class);
         $subCategory = SubCategory::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'category' => 'required',
-                'reference' => 'required',
-                'wording' => 'required|max:150',
-                'description' => 'max:255'
-            ],
-            [
-                'category.required' => "La catégorie est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
+        $errors = $this->validator('',$request->all());
 
         $existingSubCategories = SubCategory::where('wording', $request->wording)->get();
         if (!empty($existingSubCategories) && sizeof($existingSubCategories) > 1) {
@@ -128,6 +98,7 @@ class SubCategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -183,6 +154,41 @@ class SubCategoryController extends Controller
             return new JsonResponse(['datas' => ['subCategories' => $subCategories]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode,$data){
+        if ($mode=='store') {
+            return Validator::make($data,[
+                'category' => 'required',
+                'reference' => 'required|unique:sub_categories',
+                'wording' => 'required|unique:sub_categories|max:150',
+                'description' => 'max:255'
+            ],
+            [
+                'category.required' => "La catégorie est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.unique' => "Cette sous-catégorie existe déjà.",
+                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'description.max' => "La description ne doit pas dépasser 255 caractères."
+            ]);
+        }
+        if ($mode=='update') {
+            return Validator::make($data,[
+                'category' => 'required',
+                'reference' => 'required',
+                'wording' => 'required|max:150',
+                'description' => 'max:255'
+            ],
+            [
+                'category.required' => "La catégorie est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'description.max' => "La description ne doit pas dépasser 255 caractères."
+            ]);
         }
     }
 }

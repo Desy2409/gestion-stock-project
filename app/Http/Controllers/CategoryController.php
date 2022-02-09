@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\GlobalTrait;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Repositories\CategoryRepository;
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    use GlobalTrait;
 
     public $categoryRepository;
     public function __construct(CategoryRepository $categoryRepository)
@@ -42,7 +40,7 @@ class CategoryController extends Controller
     {
         $this->authorize('ROLE_CATEGORY_CREATE', Category::class);
 
-        $errors = $this->staticModelValidatonBasedOnReference('store', 'categories', $request->all());
+        $errors = $this->validator('store', $request->all());
 
         try {
             $category = new Category();
@@ -76,7 +74,7 @@ class CategoryController extends Controller
         $this->authorize('ROLE_CATEGORY_UPDATE', Category::class);
         $category = Category::findOrFail($id);
 
-        $errors = $this->staticModelValidatonBasedOnReference('store', 'categories', $request->all());
+        $errors = $this->validator('update', $request->all());
 
         $existingCategories = Category::where('wording', $request->wording)->get();
         if (!empty($existingCategories) && sizeof($existingCategories) > 1) {
@@ -165,4 +163,41 @@ class CategoryController extends Controller
         }
     }
 
+    protected function validator($mode, $data)
+    {
+        if ($mode == "store") {
+            return Validator::make(
+                $data,
+                [
+                    'reference' => 'required|unique:categories',
+                    'wording' => 'required|unique:categories|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'reference.required' => "La référence est obligatoire.",
+                    'reference.unique' => "Cette réference a déjà été attribuée.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Cette catégorie existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+        if ($mode == "update") {
+            return Validator::make(
+                $data,
+                [
+                    'reference' => 'required',
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'reference.required' => "La référence est obligatoire.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+    }
 }
