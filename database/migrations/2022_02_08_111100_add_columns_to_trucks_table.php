@@ -14,9 +14,9 @@ class AddColumnsToTrucksTable extends Migration
     public function up()
     {
         Schema::table('trucks', function (Blueprint $table) {
-            $table->string('technical_visit');
-            $table->date('deadline');
-            $table->string('documents');
+            $table->string('technical_visit')->nullable();
+            $table->date('deadline')->nullable();
+            $table->string('documents')->nullable();
         });
     }
 

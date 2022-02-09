@@ -9,6 +9,7 @@ use App\Repositories\DeliveryPointRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DeliveryPointController extends Controller
 {
@@ -20,7 +21,7 @@ class DeliveryPointController extends Controller
     {
         $this->deliveryPointRepository = $deliveryPointRepository;
     }
-    
+
     public function index()
     {
         $this->authorize('ROLE_DELIVERY_POINT_READ', DeliveryPoint::class);
@@ -34,22 +35,7 @@ class DeliveryPointController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_DELIVERY_POINT_CREATE', DeliveryPoint::class);
-        $this->validate($request, [
-            'code' => 'required|unique:delivery_points',
-            'wording' => 'required|unique:delivery_points|max:150',
-            'description' => 'max:255',
-            'latitude' => 'integer',
-            'longitude' => 'integer',
-        ], [
-            'code.required' => "Le code est obligatoire.",
-            'code.unique' => "Ce code existe déjà.",
-            'wording.required' => "Le libellé est obligatoire.",
-            'wording.unique' => "Ce lieu de livraison existe déjà.",
-            'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-            'latitude.integer' => "La latitude doit être un nombre.",
-            'longitude.integer' => "La longitude doit être un nombre.",
-            'description.max' => "La description ne doit pas dépasser 255 caractères.",
-        ]);
+        $errors = $this->validator('store', $request->all());
 
         try {
             $deliveryPoint = new DeliveryPoint();
@@ -69,12 +55,12 @@ class DeliveryPointController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -83,21 +69,7 @@ class DeliveryPointController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_POINT_UPDATE', DeliveryPoint::class);
         $deliveryPoint = DeliveryPoint::findOrFail($id);
-        $this->validate($request, [
-            'code' => 'required',
-            'wording' => 'required|max:150',
-            'description' => 'max:255',
-            'latitude' => 'integer',
-            'longitude' => 'integer',
-        ], [
-            'code.required' => "Le code est obligatoire.",
-            'wording.required' => "Le libellé est obligatoire.",
-            'wording.unique' => "Ce lieu de livraison existe déjà.",
-            'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-            'latitude.integer' => "La latitude doit être un nombre.",
-            'longitude.integer' => "La longitude doit être un nombre.",
-            'description.max' => "La description ne doit pas dépasser 255 caractères.",
-        ]);
+        $errors = $this->validator('update', $request->all());
 
         $existingDeliveryPointsOnCode = DeliveryPoint::where('wording', $request->wording)->get();
         if (!empty($existingDeliveryPointsOnCode) && sizeof($existingDeliveryPointsOnCode) >= 1) {
@@ -142,6 +114,7 @@ class DeliveryPointController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -186,6 +159,45 @@ class DeliveryPointController extends Controller
             return new JsonResponse(['datas' => ['deliveryPoints' => $deliveryPoints]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make($data, [
+                'code' => 'required|unique:delivery_points',
+                'wording' => 'required|unique:delivery_points|max:150',
+                'description' => 'max:255',
+                'latitude' => 'integer',
+                'longitude' => 'integer',
+            ], [
+                'code.required' => "Le code est obligatoire.",
+                'code.unique' => "Ce code existe déjà.",
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.unique' => "Ce lieu de livraison existe déjà.",
+                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'latitude.integer' => "La latitude doit être un nombre.",
+                'longitude.integer' => "La longitude doit être un nombre.",
+                'description.max' => "La description ne doit pas dépasser 255 caractères.",
+            ]);
+        }
+        if ($mode == 'update') {
+            return Validator::make($data, [
+                'code' => 'required',
+                'wording' => 'required|max:150',
+                'description' => 'max:255',
+                'latitude' => 'integer',
+                'longitude' => 'integer',
+            ], [
+                'code.required' => "Le code est obligatoire.",
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.unique' => "Ce lieu de livraison existe déjà.",
+                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                'latitude.integer' => "La latitude doit être un nombre.",
+                'longitude.integer' => "La longitude doit être un nombre.",
+                'description.max' => "La description ne doit pas dépasser 255 caractères.",
+            ]);
         }
     }
 }

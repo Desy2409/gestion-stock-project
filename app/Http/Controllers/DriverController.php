@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class DriverController extends Controller
@@ -49,19 +50,7 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_DRIVER_CREATE', Driver::class);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|unique:drivers|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce driver existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         try {
             $driver = new Driver();
@@ -83,6 +72,7 @@ class DriverController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -93,18 +83,7 @@ class DriverController extends Controller
     {
         $this->authorize('ROLE_DRIVER_UPDATE', Driver::class);
         $driver = Driver::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
+        $errors = $this->validator('update', $request->all());
 
         $existingDrivers = Driver::where('wording', $request->wording)->get();
         if (!empty($existingDrivers) && sizeof($existingDrivers) >= 1) {
@@ -134,6 +113,7 @@ class DriverController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -186,9 +166,42 @@ class DriverController extends Controller
         $this->authorize('ROLE_DRIVER_PRINT', Driver::class);
         try {
             $drivers = $this->driverRepository->reportIncludeCode(Driver::class, $request->selected_default_fields);
-            return new JsonResponse(['datas' => ['drivers' => $drivers]],200);
+            return new JsonResponse(['datas' => ['drivers' => $drivers]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|unique:drivers|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Ce driver existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
         }
     }
 }
