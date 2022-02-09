@@ -127,22 +127,22 @@ class TankTruckController extends Controller
         );
 
         try {
-            // $tankTruck->gauging_certificate = $request->gauging_certificate;
+            $tankTruck->gauging_certificate = $request->gauging_certificate;
             $tankTruck->validity_date = $request->validity_date;
             $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
-            $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->gauging_certificate->getClientOriginalExtension();
-            $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
+            // $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->gauging_certificate->getClientOriginalExtension();
+            // $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
             $tankTruck->tank_id = $request->tank;
             $tankTruck->truck_id = $request->truck;
             $tankTruck->save();
 
-            $uploadFile = new UploadFile();
-            $uploadFile->code = Str::random(10);
-            $uploadFile->name = $path;
-            $uploadFile->personalized_name = $request->personalized_name;
-            // $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
-            $uploadFile->tank_truck_id = $tankTruck->id;
-            $uploadFile->save();
+            // $uploadFile = new UploadFile();
+            // $uploadFile->code = Str::random(10);
+            // $uploadFile->name = $path;
+            // $uploadFile->personalized_name = $request->personalized_name;
+            // // $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
+            // $uploadFile->tank_truck_id = $tankTruck->id;
+            // $uploadFile->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";
