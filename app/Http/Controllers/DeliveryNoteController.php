@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class DeliveryNoteController extends Controller
 {
@@ -89,7 +90,7 @@ class DeliveryNoteController extends Controller
 
         // dd($purchase->verifyQuantity);
 
-            $productPurchases = ProductPurchase::with('product')->with('unity')->where('purchase_id', $purchase->id)->get();
+        $productPurchases = ProductPurchase::with('product')->with('unity')->where('purchase_id', $purchase->id)->get();
         // $array = [];
 
         // foreach ($productPurchases as $key => $value) {
@@ -104,35 +105,7 @@ class DeliveryNoteController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_DELIVERY_NOTE_CREATE', DeliveryNote::class);
-        $this->validate(
-            $request,
-            [
-                'purchase' => 'required',
-                'reference' => 'required|unique:delivery_notes',
-                // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|before:today',//|after:',
-                // 'total_amount' => 'required',
-                'observation' => 'max:255',
-                'deliveryNoteProducts' => 'required',
-                // 'quantities' => 'required|min:0',
-                // 'unities' => 'required',
-            ],
-            [
-                'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'reference.unique' => "Ce bon de livraison existe déjà.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
-                // 'delivery_date.after' => "La date de livraison doit être ultérieure à la date du bon de livraison.",
-                'delivery_date.before' => "La date de livraison doit être antérieure ou égale à aujourd'hui.",
-                'total_amount.required' => "Le montant total est obligatoire.",
-                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                // 'quantities.required' => "Les quantités sont obligatoires.",
-                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-            ]
-        );
+        $errors=$this->validator('store',$request->all());
 
         try {
 
@@ -203,6 +176,7 @@ class DeliveryNoteController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -238,38 +212,7 @@ class DeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_NOTE_UPDATE', DeliveryNote::class);
         $deliveryNote = DeliveryNote::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'purchase' => 'required',
-                'reference' => 'required',
-                // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
-                'delivery_date' => 'required|date|before:today',
-                'total_amount' => 'required',
-                'observation' => 'max:255',
-                'deliveryNoteProducts' => 'required',
-                // 'quantities' => 'required|min:0',
-                // 'unities' => 'required',
-            ],
-            [
-                'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
-                'reference.required' => "La référence du bon est obligatoire.",
-                'purchase_date.required' => "La date du bon est obligatoire.",
-                // 'purchase_date.date' => "La date du bon de livraison est incorrecte.",
-                // 'purchase_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
-                // 'purchase_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
-                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                'delivery_date.date' => "La date de livraison est incorrecte.",
-                'delivery_date.before' => "La date de livraison doit être antérieure ou égale à aujourd'hui.",
-                // 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
-                'total_amount.required' => "Le montant total est obligatoire.",
-                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                // 'quantities.required' => "Les quantités sont obligatoires.",
-                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-            ]
-        );
+        $errors=$this->validator('update',$request->all());
 
         try {
             $purchase = Purchase::where('order_id', $request->order)->first();
@@ -316,6 +259,7 @@ class DeliveryNoteController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -420,6 +364,69 @@ class DeliveryNoteController extends Controller
             return new JsonResponse(['datas' => ['deliveryNotes' => $deliveryNotes]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make($data,[
+                'purchase' => 'required',
+                'reference' => 'required|unique:delivery_notes',
+                // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|before:today',//|after:',
+                'total_amount' => 'required',
+                'observation' => 'max:255',
+                'deliveryNoteProducts' => 'required',
+                // 'quantities' => 'required|min:0',
+                // 'unities' => 'required',
+            ],
+            [
+                'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
+                'reference.required' => "La référence du bon est obligatoire.",
+                'reference.unique' => "Ce bon de livraison existe déjà.",
+                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                'delivery_date.date' => "La date de livraison est incorrecte.",
+                // 'delivery_date.after' => "La date de livraison doit être ultérieure à la date du bon de livraison.",
+                'delivery_date.before' => "La date de livraison doit être antérieure ou égale à aujourd'hui.",
+                'total_amount.required' => "Le montant total est obligatoire.",
+                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                // 'quantities.required' => "Les quantités sont obligatoires.",
+                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+            ]);
+        }
+        if ($mode == 'update') {
+            return Validator::make($data,[
+                'purchase' => 'required',
+                'reference' => 'required',
+                // 'purchase_date' => 'required|date|date_format:Ymd|before:today',
+                'delivery_date' => 'required|date|before:today',
+                'total_amount' => 'required',
+                'observation' => 'max:255',
+                'deliveryNoteProducts' => 'required',
+                // 'quantities' => 'required|min:0',
+                // 'unities' => 'required',
+            ],
+            [
+                'purchase.required' => "Le choix d'un bon de commande est obligatoire.",
+                'reference.required' => "La référence du bon est obligatoire.",
+                'purchase_date.required' => "La date du bon est obligatoire.",
+                // 'purchase_date.date' => "La date du bon de livraison est incorrecte.",
+                // 'purchase_date.date_format' => "La date livraison doit être sous le format : Année Mois Jour.",
+                // 'purchase_date.before' => "La date du bon de livraison doit être antérieure ou égale à aujourd'hui.",
+                'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                'delivery_date.date' => "La date de livraison est incorrecte.",
+                'delivery_date.before' => "La date de livraison doit être antérieure ou égale à aujourd'hui.",
+                // 'delivery_date.after' => "La date livraison doit être ultérieure à la date du bon de livraison.",
+                'total_amount.required' => "Le montant total est obligatoire.",
+                'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                'deliveryNoteProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                // 'quantities.required' => "Les quantités sont obligatoires.",
+                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+            ]);
         }
     }
 }

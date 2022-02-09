@@ -8,6 +8,7 @@ use App\Repositories\CompartmentRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CompartmentController extends Controller
 {
@@ -33,22 +34,7 @@ class CompartmentController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_COMPARTMENT_CREATE', Compartment::class);
-        $this->validate(
-            $request,
-            [
-                // 'tank' => 'required',
-                'reference' => 'required|unique:compartments',
-                'number' => 'required',
-                'capacity' => 'required',
-            ],
-            [
-                // 'tank.required' => "La citerne est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette référence existe déjà.",
-                'number.required' => "Le numéro du compartiment est obligatoire.",
-                'capacity.required' => "La capacité est obligatoire.",
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         try {
             $compartment = new Compartment();
@@ -71,6 +57,7 @@ class CompartmentController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -115,19 +102,7 @@ class CompartmentController extends Controller
     {
         $this->authorize('ROLE_COMPARTMENT_UPDATE', Compartment::class);
         $compartment = Compartment::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'reference' => 'required',
-                'number' => 'required',
-                'capacity' => 'required',
-            ],
-            [
-                'reference.required' => "La référence est obligatoire.",
-                'number.required' => "Le numéro du compartiment est obligatoire.",
-                'capacity.required' => "La capacité est obligatoire.",
-            ]
-        );
+        $errors = $this->validator('update', $request->all());
 
         $existingCompartments = Compartment::where('reference', $request->reference)->get();
         if (!empty($existingCompartments) && sizeof($existingCompartments) > 1) {
@@ -159,6 +134,7 @@ class CompartmentController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -222,6 +198,43 @@ class CompartmentController extends Controller
             return new JsonResponse(['datas' => ['compartments' => $compartments]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    // 'tank' => 'required',
+                    'reference' => 'required|unique:compartments',
+                    'number' => 'required',
+                    'capacity' => 'required',
+                ],
+                [
+                    // 'tank.required' => "La citerne est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'reference.unique' => "Cette référence existe déjà.",
+                    'number.required' => "Le numéro du compartiment est obligatoire.",
+                    'capacity.required' => "La capacité est obligatoire.",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'reference' => 'required',
+                    'number' => 'required',
+                    'capacity' => 'required',
+                ],
+                [
+                    'reference.required' => "La référence est obligatoire.",
+                    'number.required' => "Le numéro du compartiment est obligatoire.",
+                    'capacity.required' => "La capacité est obligatoire.",
+                ]
+            );
         }
     }
 }

@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -68,22 +69,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_PRODUCT_CREATE', Product::class);
-        $request->validate(
-            [
-                'sub_category' => 'required',
-                'reference' => 'required|unique:products',
-                'wording' => 'required|unique:products',
-                'description' => 'max:255',
-            ],
-            [
-                'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
-                'reference.required' => "Le libellé du produit est obligatoire.",
-                'reference.unique' => "Cette référence a déjà été attribuée.",
-                'wording.required' => "La référence est obligatoire.",
-                'wording.unique' => "Ce produit existe déjà.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         try {
             $lastProduct = Product::latest()->first();
@@ -114,6 +100,7 @@ class ProductController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -139,20 +126,7 @@ class ProductController extends Controller
     {
         $this->authorize('ROLE_PRODUCT_UPDATE', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
-        $request->validate(
-            [
-                'sub_category' => 'required',
-                'reference' => 'required',
-                'wording' => 'required',
-                'description' => 'max:255',
-            ],
-            [
-                'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
-                'reference.required' => "Le libellé du produit est obligatoire.",
-                'wording.required' => "La référence est obligatoire.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         $existingProductsOnReference = Product::where('reference', $request->reference)->get();
         if (!empty($existingProductsOnReference) && sizeof($existingProductsOnReference) > 1) {
@@ -189,12 +163,13 @@ class ProductController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -297,6 +272,46 @@ class ProductController extends Controller
             return new JsonResponse(['datas' => ['products' => $products]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'sub_category' => 'required',
+                    'reference' => 'required|unique:products',
+                    'wording' => 'required|unique:products',
+                    'description' => 'max:255',
+                ],
+                [
+                    'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
+                    'reference.required' => "Le libellé du produit est obligatoire.",
+                    'reference.unique' => "Cette référence a déjà été attribuée.",
+                    'wording.required' => "La référence est obligatoire.",
+                    'wording.unique' => "Ce produit existe déjà.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères.",
+                ]
+            );
+        }
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'sub_category' => 'required',
+                    'reference' => 'required',
+                    'wording' => 'required',
+                    'description' => 'max:255',
+                ],
+                [
+                    'sub_category.required' => "La sous-catégorie du produit est obligatoire.",
+                    'reference.required' => "Le libellé du produit est obligatoire.",
+                    'wording.required' => "La référence est obligatoire.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères.",
+                ]
+            );
         }
     }
 }
