@@ -10,6 +10,7 @@ use App\Repositories\TankRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TankController extends Controller
 {
@@ -37,23 +38,7 @@ class TankController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_TANK_CREATE', Tank::class);
-        $this->validate(
-            $request,
-            [
-                'provider'=>'required',
-                // 'capacity'=>'required',
-                'reference' => 'required|unique:tanks',
-                'tank_registration' => 'required|unique:tanks',
-            ],
-            [
-                'provider.required'=>"Le choix du fornisseur est obligatoire.",
-                // 'capacity.required'=>"Le choix du compartiment est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette référence existe déjà.",
-                'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
-                'tank_registration.unique' => "Cette immatriculation de citerne existe déjà.",
-            ]
-        );
+        $errors = $this->validator('store', $request->all());
 
         try {
             $tank = new Tank();
@@ -77,6 +62,7 @@ class TankController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -106,22 +92,7 @@ class TankController extends Controller
     {
         $this->authorize('ROLE_TANK_UPDATE', Tank::class);
         $tank = Tank::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'provider'=>'required',
-                // 'compartment'=>'required',
-                'reference' => 'required',
-                'tank_registration' => 'required',
-            ],
-            [
-                'provider.required'=>"Le choix du fornisseur est obligatoire.",
-                // 'compartment.required'=>"Le choix du compartiment est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
-                'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
-            ]
-        );
+        $errors = $this->validator('update', $request->all());
 
         $existingTanks = Tank::where('reference', $request->reference)->where('tank_registration', $request->tank_registration)->where('tank_registration', $request->tank_registration)->get();
         if (!empty($existingTanks) && sizeof($existingTanks) > 1) {
@@ -153,6 +124,7 @@ class TankController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -203,6 +175,47 @@ class TankController extends Controller
             return new JsonResponse(['datas' => ['tanks' => $tanks]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'provider' => 'required',
+                    // 'capacity'=>'required',
+                    'reference' => 'required|unique:tanks',
+                    'tank_registration' => 'required|unique:tanks',
+                ],
+                [
+                    'provider.required' => "Le choix du fornisseur est obligatoire.",
+                    // 'capacity.required'=>"Le choix du compartiment est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'reference.unique' => "Cette référence existe déjà.",
+                    'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
+                    'tank_registration.unique' => "Cette immatriculation de citerne existe déjà.",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'provider' => 'required',
+                    // 'compartment'=>'required',
+                    'reference' => 'required',
+                    'tank_registration' => 'required',
+                ],
+                [
+                    'provider.required' => "Le choix du fornisseur est obligatoire.",
+                    // 'compartment.required'=>"Le choix du compartiment est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
+                    'tank_registration.required' => "L'immatriculation de la citerne est obligatoire.",
+                ]
+            );
         }
     }
 }

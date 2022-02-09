@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\GlobalTrait;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Repositories\CategoryRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+    use GlobalTrait;
+
     public $categoryRepository;
     public function __construct(CategoryRepository $categoryRepository)
     {
@@ -37,22 +41,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_CATEGORY_CREATE', Category::class);
-        $this->validate(
-            $request,
-            [
-                'reference' => 'required|unique:categories',
-                'wording' => 'required|unique:categories|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette catégorie existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
+
+        $errors = $this->staticModelValidatonBasedOnReference('store', 'categories', $request->all());
 
         try {
             $category = new Category();
@@ -75,6 +65,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -84,20 +75,8 @@ class CategoryController extends Controller
     {
         $this->authorize('ROLE_CATEGORY_UPDATE', Category::class);
         $category = Category::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'reference' => 'required',
-                'wording' => 'required|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'reference.required' => "La référence est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
+
+        $errors = $this->staticModelValidatonBasedOnReference('store', 'categories', $request->all());
 
         $existingCategories = Category::where('wording', $request->wording)->get();
         if (!empty($existingCategories) && sizeof($existingCategories) > 1) {
@@ -128,6 +107,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
+                'errors' => $errors,
             ], 400);
         }
     }
@@ -179,9 +159,10 @@ class CategoryController extends Controller
         $this->authorize('ROLE_CATEGORY_PRINT', Category::class);
         try {
             $categories = $this->categoryRepository->reportIncludeReference(Category::class, $request->selected_default_fields);
-            return new JsonResponse(['datas' => ['categories' => $categories]],200);
+            return new JsonResponse(['datas' => ['categories' => $categories]], 200);
         } catch (Exception $e) {
             dd($e);
         }
     }
+
 }
