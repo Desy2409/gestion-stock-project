@@ -24,7 +24,7 @@ class TankTruckController extends Controller
     public function index()
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
-        $tankTrucks = TankTruck::orderBy('validity_date', 'desc')->get();
+        $tankTrucks = TankTruck::with('tank')->with('truck')->orderBy('validity_date', 'desc')->get();
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();
         return new JsonResponse(['datas' => ['tankTrucks' => $tankTrucks, 'tanks' => $tanks, 'trucks' => $trucks]], 200);
@@ -87,7 +87,7 @@ class TankTruckController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -107,7 +107,7 @@ class TankTruckController extends Controller
                 'truck' => 'required',
                 'tank' => 'required',
                 'gauging_certificate_number' => 'required',
-                'validity_date' => 'required|date|date_format:Ymd|before:today',
+                'validity_date' => 'required|date|after:today',
                 'gauging_certificate.*' => 'required|file|size:' . $this->tankTruckAuthorizedFiles()->max_size . '|mimes:' . $this->tankTruckAuthorizedFiles()->authorized_files,
             ],
             [
@@ -198,7 +198,6 @@ class TankTruckController extends Controller
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         $tankTruck = TankTruck::with('truck')->with('tank')->findOrFail($id);
-
         return new JsonResponse([
             'tankTruck' => $tankTruck
         ], 200);
