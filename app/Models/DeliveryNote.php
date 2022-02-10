@@ -43,7 +43,8 @@ class DeliveryNote extends Model
         return $this->hasMany(ProductDeliveryNote::class);
     }
 
-    public function products(){
-        
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
     }
 }

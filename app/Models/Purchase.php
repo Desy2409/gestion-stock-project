@@ -64,25 +64,8 @@ class Purchase extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
-    // public function verifyQuantity(Product $product)
-    // {
-    //     $deliveredQuantity = 0;
-    //     $allProductDeliveryNotes = [];
-
-    //     $productPurchase = ProductPurchase::where('product_id', $product->id)->first();
-    //     $quantityToDeliver = $productPurchase->quantity;
-
-    //     foreach ($this->deliveryNotes as $key => $deliveryNote) {
-    //         $productDeliveryNotes = ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->where('product_id', $product->id)->get();
-    //         foreach ($allProductDeliveryNotes as $key => $productDeliveryNotes) {
-    //             $deliveredQuantity += $productDeliveryNotes->quantity;
-    //         }
-    //     }
-
-    //     if ($quantityToDeliver > $deliveredQuantity) {
-    //         $remainingQuantity = $quantityToDeliver - $deliveredQuantity;
-    //     }
-
-    //     return $remainingQuantity;
-    // }
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
 }

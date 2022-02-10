@@ -22,4 +22,9 @@ class Folder extends Model
     {
         return $this->belongsTo(Folder::class);
     }
+
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
 }
