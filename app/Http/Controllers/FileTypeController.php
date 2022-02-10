@@ -8,6 +8,7 @@ use App\Repositories\FileTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class FileTypeController extends Controller
@@ -31,21 +32,10 @@ class FileTypeController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_FILE_TYPE_CREATE', FileType::class);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|unique:file_types|max:50',
-                'max_size' => 'numeric',
-                'authorized_files' => 'required',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce type de fichier existe déjà.",
-                'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
-                'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
-                'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
-            ]
-        );
+        // $this->validate(
+        //     $request,
+            
+        // );
 
         try {
             $fileType = new FileType();
@@ -77,20 +67,7 @@ class FileTypeController extends Controller
     {
         $this->authorize('ROLE_FILE_TYPE_UPDATE', FileType::class);
         $fileType = FileType::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|max:50',
-                'max_size' => 'numeric',
-                'authorized_files' => 'required',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
-                'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
-                'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
-            ]
-        );
+        // $errors=
 
         try {
             $fileType->wording = $request->wording;
@@ -156,6 +133,36 @@ class FileTypeController extends Controller
             return new JsonResponse(['datas' => ['fileTypes' => $fileTypes]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode,$data){
+        if ($mode=='store') {
+            return Validator::make($data,[
+                'wording' => 'required|unique:file_types|max:50',
+                'max_size' => 'numeric',
+                'authorized_files' => 'required',
+            ],
+            [
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.unique' => "Ce type de fichier existe déjà.",
+                'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
+                'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
+                'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
+            ]);
+        }
+        if ($mode=='update') {
+            return Validator::make($data,[
+                'wording' => 'required|max:50',
+                'max_size' => 'numeric',
+                'authorized_files' => 'required',
+            ],
+            [
+                'wording.required' => "Le libellé est obligatoire.",
+                'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
+                'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
+                'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
+            ]);
         }
     }
 }

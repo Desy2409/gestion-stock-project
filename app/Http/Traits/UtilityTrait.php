@@ -15,5 +15,9 @@ trait UtilityTrait {
         return $valueString . $suffixe;
     }
 
+    function errorMessages(){
+        
+    }
+
 
 }

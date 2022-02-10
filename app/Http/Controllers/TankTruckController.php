@@ -22,10 +22,14 @@ class TankTruckController extends Controller
         return $tankTruckAuthorizedFiles;
     }
 
-    public function index()
+    public function index($param,$id)
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
-        $tankTrucks = TankTruck::with('tank')->with('truck')->orderBy('validity_date', 'desc')->get();
+        if ($param == 'truck') {
+            $tankTrucks = TankTruck::where('truck_id',$id)->orderBy('created_at', 'desc')->get();
+        } else {
+            $tankTrucks = TankTruck::where('tank_id',$id)->orderBy('created_at', 'desc')->get();
+        }
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();
         return new JsonResponse(['datas' => ['tankTrucks' => $tankTrucks, 'tanks' => $tanks, 'trucks' => $trucks]], 200);
@@ -65,7 +69,6 @@ class TankTruckController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            // dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
