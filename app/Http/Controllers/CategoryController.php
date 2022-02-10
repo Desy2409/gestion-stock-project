@@ -192,6 +192,7 @@ class CategoryController extends Controller
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères."
                 ]
+                
             );
         }
         if ($mode == "update") {
