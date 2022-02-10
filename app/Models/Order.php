@@ -63,4 +63,8 @@ class Order extends Model
         return $this->hasMany(FileUpload::class);
     }
 
+    public function fileUpload(){
+        return $this->morphOne(FileUpload::class, 'fileable');
+    }
+
 }
