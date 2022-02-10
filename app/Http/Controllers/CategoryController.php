@@ -40,31 +40,40 @@ class CategoryController extends Controller
     {
         $this->authorize('ROLE_CATEGORY_CREATE', Category::class);
 
-        $errors = $this->validator('store', $request->all());
-
         try {
-            $category = new Category();
-            $category->reference = $request->reference;
-            $category->wording = $request->wording;
-            $category->description = $request->description;
-            $category->save();
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'category' => $category,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            $validation = $this->validator('store', $request->all());
+
+            if($validation->fails()){
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                    //'message' => 'Des donnees sont invalides',
+                ], 200);
+            }else{
+                $category = new Category();
+                $category->reference = $request->reference;
+                $category->wording = $request->wording;
+                $category->description = $request->description;
+                $category->save();
+
+                $success = true;
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'category' => $category,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
+
+
         } catch (Exception $e) {
-            // dd($e);
-            $success = false;
-            $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
-                'message' => $message,
-                'errors' => $errors,
-            ], 400);
+                'success' => false,
+                'message' => "Erreur survenue lors de l'enregistrement.",
+            ], 200);
         }
     }
 
@@ -75,6 +84,8 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $errors = $this->validator('update', $request->all());
+
+
 
         $existingCategories = Category::where('wording', $request->wording)->get();
         if (!empty($existingCategories) && sizeof($existingCategories) > 1) {
