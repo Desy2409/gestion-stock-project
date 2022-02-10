@@ -39,19 +39,17 @@ class TransferDemandProcessingController extends Controller
             $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
             $transferDemand->save();
             // Mail::to($email)->send(new TransferDemandProcessingMail($transferDemand, $productsTransfersDemandsLines));
-            $success = true;
             $message = "Demande de transfert validée avec succès.";
             return new JsonResponse([
                 'transferDemand' => $transferDemand,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la validation de la demande de transfert.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -66,18 +64,16 @@ class TransferDemandProcessingController extends Controller
             $transferDemand->date_of_processing = date('Y-m-d', strtotime(now()));
             $transferDemand->save();
 
-            $success = true;
             $message = "Demande de transfert annulée avec succès.";
             return new JsonResponse([
                 'transferDemand' => $transferDemand,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'annulation de la demande de transfert.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -119,20 +115,18 @@ class TransferDemandProcessingController extends Controller
                 }
             }
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'transferDemand' => $transferDemand,
                 'transfer' => $transfer,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productTransferLines' => $productTransferLines]
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la transformation de la demande de transfert en transfert.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }

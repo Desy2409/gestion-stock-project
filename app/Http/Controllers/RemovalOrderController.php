@@ -197,21 +197,19 @@ class RemovalOrderController extends Controller
                     array_push($productsTourns, $productTourn);
                 }
     
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'removalOrder' => $removalOrder,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                     'datas' => ['productsTourns' => $productsTourns],
                 ], 200); 
             }
             
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -242,10 +240,9 @@ class RemovalOrderController extends Controller
 
         $existingRemovalOrders = RemovalOrder::where('reference', $request->reference)->get();
         if (!empty($existingRemovalOrders) && sizeof($existingRemovalOrders) > 1) {
-            $success = false;
             return new JsonResponse([
                 'existingRemovalOrder' => $existingRemovalOrders[0],
-                'success' => $success,
+                'success' => false,
                 'message' => "Le bon à enlever portant la référence " . $existingRemovalOrders[0]->reference . " existe déjà."
             ], 200);
         }
@@ -275,20 +272,18 @@ class RemovalOrderController extends Controller
             $removalOrder->stock_type_id = $request->stock_type;
             $removalOrder->save();
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
             }
             
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -301,18 +296,16 @@ class RemovalOrderController extends Controller
         try {
             $removalOrder->delete();
 
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }

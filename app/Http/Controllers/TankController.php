@@ -57,19 +57,17 @@ class TankController extends Controller
                 $tank->provider_id = $request->provider;
                 $tank->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'tank' => $tank,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -103,12 +101,11 @@ class TankController extends Controller
 
         $existingTanks = Tank::where('reference', $request->reference)->where('tank_registration', $request->tank_registration)->where('tank_registration', $request->tank_registration)->get();
         if (!empty($existingTanks) && sizeof($existingTanks) > 1) {
-            $success = false;
             return new JsonResponse([
                 'existingTank' => $existingTanks[0],
-                'success' => $success,
+                'success' => false,
                 'message' => "Cette citerne existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
@@ -128,11 +125,10 @@ class TankController extends Controller
                 $tank->provider_id = $request->provider;
                 $tank->save();
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'tank' => $tank,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
@@ -174,12 +170,11 @@ class TankController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

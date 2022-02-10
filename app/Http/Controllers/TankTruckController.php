@@ -21,7 +21,7 @@ class TankTruckController extends Controller
 
     public function __construct()
     {
-        $this->fileUtil = new FileUtil('trucks', false);
+        $this->fileUtil = new FileUtil('TankTrucks', false);
     }
 
     private function tankTruckAuthorizedFiles()
@@ -70,22 +70,7 @@ class TankTruckController extends Controller
 
                 $file = $request->file('gauging_certificate');
 
-                if ($request->folder) {
-                    $fileUpload = $this->fileUtil->createFileInDefaultFolder($tankTruck, $file, $request->personalized_filename);
-                    // $this->fileUtil->setPath('isidore/desire/');
-                    // $this->fileUtil->setAddId('false');
-                } else {
-                    $fileUpload = $this->fileUtil->createFileInPersonalizedFolder($request->folder, $file, $request->personalized_filename);
-                }
-                $fileUpload->save();
-
-
-                // $fileUpload = $this->fileUtil->createFile($tankTruck, $file);
-                // $this->fileUtil->setPath('isidore/desire/');
-                // $this->fileUtil->setAddId('false');
-
-                // if($fileUpload){
-                // }
+                $fileUpload = $this->fileUtil->createFile($tankTruck, $file, $request->personalized_filename);
 
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
@@ -128,6 +113,9 @@ class TankTruckController extends Controller
                 $tankTruck->truck_id = $request->truck;
                 $tankTruck->save();
 
+                $file = $request->file('gauging_certificate');
+                $fileUpload = $this->fileUtil->createFile($tankTruck, $file, $request->personalized_filename);
+
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'tankTruck' => $tankTruck,
@@ -150,20 +138,18 @@ class TankTruckController extends Controller
         $tankTruck = TankTruck::findOrFail($id);
         try {
             $tankTruck->delete();
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'tankTruck' => $tankTruck,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

@@ -55,19 +55,17 @@ class DeliveryPointController extends Controller
                 $deliveryPoint->institution_id = $request->institution;
                 $deliveryPoint->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'deliveryPoint' => $deliveryPoint,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -117,20 +115,18 @@ class DeliveryPointController extends Controller
                 $deliveryPoint->institution_id = $request->institution;
                 $deliveryPoint->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'deliveryPoint' => $deliveryPoint,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -142,20 +138,18 @@ class DeliveryPointController extends Controller
         $deliveryPoint = DeliveryPoint::findOrFail($id);
         try {
             $deliveryPoint->delete();
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'deliveryPoint' => $deliveryPoint,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

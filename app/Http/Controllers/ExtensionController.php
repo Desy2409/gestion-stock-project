@@ -45,24 +45,21 @@ class ExtensionController extends Controller
                 ], 200);
             } else {
                 $extension = new Extension();
-            $extension->code = Str::lower('.' . $request->extension);
-            $extension->extension = strtoupper($request->extension);
-            $extension->save();
+                $extension->code = Str::lower('.' . $request->extension);
+                $extension->extension = strtoupper($request->extension);
+                $extension->save();
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'extension' => $extension,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'extension' => $extension,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
             }
-            
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -74,9 +71,8 @@ class ExtensionController extends Controller
         $extension = Extension::findOrfail($id);
         $existingExtensions = Extension::where('extension', $request->extension)->get();
         if (!empty($existingExtensions) && sizeof($existingExtensions) >= 1) {
-            $success = false;
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'existingExtension' => $existingExtensions[0],
                 'message' => "L'extension " . $existingExtensions[0]->extension . " existe déjà"
             ], 200);
@@ -94,22 +90,19 @@ class ExtensionController extends Controller
                 ], 200);
             } else {
                 $extension->extension = strtoupper($request->extension);
-            $extension->save();
+                $extension->save();
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'extension' => $extension,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'extension' => $extension,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
             }
-            
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -121,20 +114,18 @@ class ExtensionController extends Controller
         $extension = Extension::findOrFail($id);
         try {
             $extension->delete();
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'extension' => $extension,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

@@ -61,19 +61,17 @@ class InstitutionController extends Controller
                 $institution->phone_number = $request->phone_number;
                 $institution->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'institution' => $institution,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -132,19 +130,17 @@ class InstitutionController extends Controller
                 $institution->phone_number = $request->phone_number;
                 $institution->save();
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'institution' => $institution,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -173,10 +169,9 @@ class InstitutionController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }

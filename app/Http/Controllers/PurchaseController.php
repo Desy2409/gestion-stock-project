@@ -146,264 +146,190 @@ class PurchaseController extends Controller
     {
         $this->authorize('ROLE_PURCHASE_CREATE', Purchase::class);
         if ($request->purchaseType == "Achat direct") {
-            $this->validate(
-                $request,
-                [
-                    'sale_point' => 'required',
-                    'provider' => 'required',
-                    'reference' => 'required|unique:purchases',
-                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
-                    // 'total_amount' => 'required',
-                    'observation' => 'max:255',
-                    'purchaseProducts' => 'required',
-                    // 'quantities' => 'required|min:0',
-                    // 'unit_prices' => 'required|min:0',
-                    // 'unities' => 'required'
-                ],
-                [
-                    'sale_point.required' => "Le choix du point de vente est obligatoire.",
-                    'provider.required' => "Le choix du fournisseur est obligatoire.",
-                    'reference.required' => "La référence du bon est obligatoire.",
-                    'reference.unique' => "Ce bon d'achat existe déjà.",
-                    'purchase_date.required' => "La date du bon d'achat est obligatoire.",
-                    'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                    // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
-                    'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
-                    'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                    'delivery_date.date' => "La date de livraison prévue est incorrecte.",
-                    // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
-                    'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
-                    // 'total_amount.required' => "Le montant total est obligatoire.",
-                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                    // 'quantities.required' => "Les quantités sont obligatoires.",
-                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                ]
-            );
-
-            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-            //     $success = false;
-            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-            //     return new JsonResponse([
-            //         'success' => $success,
-            //         'message' => $message,
-            //     ]);
-            // }
 
             try {
-                // Enregistrement de l'achat direct avec les produits qui y sont liés
-                $lastPurchase = Purchase::latest()->first();
+                $validation = $this->validator('store', $request->purchaseType, $request->all());
 
-                $purchase = new Purchase();
-                if ($lastPurchase) {
-                    $purchase->code = $this->formateNPosition($this->prefix, $lastPurchase->id + 1, 8);
+                if ($validation->fails()) {
+                    $messages = $validation->errors()->all();
+                    $messages = implode('<br/>', $messages);
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $messages,
+                        //'message' => 'Des donnees sont invalides',
+                    ], 200);
                 } else {
-                    $purchase->code = $this->formateNPosition($this->prefix, 1, 8);
+                    // Enregistrement de l'achat direct avec les produits qui y sont liés
+                    $lastPurchase = Purchase::latest()->first();
+
+                    $purchase = new Purchase();
+                    if ($lastPurchase) {
+                        $purchase->code = $this->formateNPosition($this->prefix, $lastPurchase->id + 1, 8);
+                    } else {
+                        $purchase->code = $this->formateNPosition($this->prefix, 1, 8);
+                    }
+                    $purchase->reference = $request->reference;
+                    $purchase->purchase_date   = $request->purchase_date;
+                    $purchase->delivery_date   = $request->delivery_date;
+                    $purchase->total_amount = $request->total_amount;
+                    $purchase->amount_gross = $request->amount_gross;
+                    $purchase->ht_amount = $request->ht_amount;
+                    $purchase->discount = $request->discount;
+                    $purchase->amount_token = $request->amount_token;
+                    $purchase->tva = $request->tva;
+                    $purchase->observation = $request->observation;
+                    $purchase->provider_id = $request->provider;
+                    $purchase->sale_point_id = $request->sale_point;
+                    $purchase->save();
+
+                    // Enregistrement de la livraison affiliée à l'achat direct
+                    $lastDeliveryNote = DeliveryNote::latest()->first();
+
+                    $deliveryNote = new DeliveryNote();
+                    if ($lastDeliveryNote) {
+                        $deliveryNote->code = $this->formateNPosition('BL', $lastDeliveryNote->id + 1, 8);
+                    } else {
+                        $deliveryNote->code = $this->formateNPosition('BL', 1, 8);
+                    }
+                    $deliveryNote->reference = $request->reference;
+                    $deliveryNote->delivery_date   = $request->delivery_date;
+                    $deliveryNote->total_amount = $request->total_amount;
+                    $deliveryNote->observation = $request->observation;
+                    $deliveryNote->place_of_delivery = $request->place_of_delivery;
+                    $deliveryNote->purchase_id = $purchase->id;
+                    $deliveryNote->save();
+
+                    $productPurchases = [];
+                    foreach ($request->purchaseProducts as $key => $product) {
+                        $productPurchase = new ProductPurchase();
+                        $productPurchase->quantity = $product["quantity"];
+                        $productPurchase->unit_price = $product["unit_price"];
+                        $productPurchase->unity_id = $product["unity_id"];
+                        $productPurchase->product_id = $product["product_id"];
+                        $productPurchase->purchase_id = $purchase->id;
+                        $productPurchase->save();
+
+                        $productDeliveryNote = new ProductDeliveryNote();
+                        $productDeliveryNote->quantity = $product["quantity"];
+                        $productDeliveryNote->unity_id = $product["unity_id"];
+                        $productDeliveryNote->product_id = $product["product_id"];
+                        $productDeliveryNote->delivery_note_id = $deliveryNote->id;
+                        $productDeliveryNote->save();
+
+                        array_push($productPurchases, $productPurchase);
+                    }
+
+                    $message = "Enregistrement effectué avec succès.";
+                    return new JsonResponse([
+                        'purchase' => $purchase,
+                        'deliveryNote' => $deliveryNote,
+                        'success' => true,
+                        'message' => $message,
+                        'datas' => ['productPurchases' => $productPurchases],
+                    ], 200);
                 }
-                $purchase->reference = $request->reference;
-                $purchase->purchase_date   = $request->purchase_date;
-                $purchase->delivery_date   = $request->delivery_date;
-                $purchase->total_amount = $request->total_amount;
-                $purchase->amount_gross = $request->amount_gross;
-                $purchase->ht_amount = $request->ht_amount;
-                $purchase->discount = $request->discount;
-                $purchase->amount_token = $request->amount_token;
-                $purchase->tva = $request->tva;
-                $purchase->observation = $request->observation;
-                $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->sale_point;
-                $purchase->save();
-
-                // Enregistrement de la livraison affiliée à l'achat direct
-                $lastDeliveryNote = DeliveryNote::latest()->first();
-
-                $deliveryNote = new DeliveryNote();
-                if ($lastDeliveryNote) {
-                    $deliveryNote->code = $this->formateNPosition('BL', $lastDeliveryNote->id + 1, 8);
-                } else {
-                    $deliveryNote->code = $this->formateNPosition('BL', 1, 8);
-                }
-                $deliveryNote->reference = $request->reference;
-                $deliveryNote->delivery_date   = $request->delivery_date;
-                $deliveryNote->total_amount = $request->total_amount;
-                $deliveryNote->observation = $request->observation;
-                $deliveryNote->place_of_delivery = $request->place_of_delivery;
-                $deliveryNote->purchase_id = $purchase->id;
-                $deliveryNote->save();
-
-                $productPurchases = [];
-                foreach ($request->purchaseProducts as $key => $product) {
-                    $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $product["quantity"];
-                    $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity_id"];
-                    $productPurchase->product_id = $product["product_id"];
-                    $productPurchase->purchase_id = $purchase->id;
-                    $productPurchase->save();
-
-                    $productDeliveryNote = new ProductDeliveryNote();
-                    $productDeliveryNote->quantity = $product["quantity"];
-                    $productDeliveryNote->unity_id = $product["unity_id"];
-                    $productDeliveryNote->product_id = $product["product_id"];
-                    $productDeliveryNote->delivery_note_id = $deliveryNote->id;
-                    $productDeliveryNote->save();
-
-                    array_push($productPurchases, $productPurchase);
-                }
-
-                $success = true;
-                $message = "Enregistrement effectué avec succès.";
-                return new JsonResponse([
-                    'purchase' => $purchase,
-                    'deliveryNote' => $deliveryNote,
-                    'success' => $success,
-                    'message' => $message,
-                    'datas' => ['productPurchases' => $productPurchases],
-                ], 200);
             } catch (Exception $e) {
                 // dd($e);
-                $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
-                    'success' => $success,
+                    'success' => false,
                     'message' => $message,
-                ], 400);
+                ], 200);
             }
         } elseif ($request->purchaseType == "Achat sur commande") {
-            $this->validate(
-                $request,
-                [
-                    'order' => 'required',
-                    'reference' => 'required|unique:purchases',
-                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
-                    // 'total_amount' => 'required',
-                    'observation' => 'max:255',
-                    'purchaseProducts' => 'required',
-                    // 'quantities' => 'required|min:0',
-                    // 'unit_prices' => 'required|min:0',
-                    // 'unities' => 'required'
-                ],
-                [
-                    'order.required' => "Le choix d'une commande est obligatoire.",
-                    'reference.required' => "La référence du bon est obligatoire.",
-                    'reference.unique' => "Ce bon d'achat existe déjà.",
-                    'purchase_date.required' => "La date du bon d'achat est obligatoire.",
-                    'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                    // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
-                    'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
-                    'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                    'delivery_date.date' => "La date de livraison prévue est incorrecte.",
-                    // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
-                    'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
-                    // 'total_amount.required' => "Le montant total est obligatoire.",
-                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                    // 'quantities.required' => "Les quantités sont obligatoires.",
-                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                ]
-            );
-
-            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-            //     $success = false;
-            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-            //     return new JsonResponse([
-            //         'success' => $success,
-            //         'message' => $message,
-            //     ]);
-            // }
 
             try {
-                //dd($request->purchaseProducts);
-                //dd(json_encode($request->all()));
-                $order = Order::findOrFail($request->order);
+                $validation = $this->validator('store', $request->purchaseType, $request->all());
 
-                $lastPurchase = Purchase::latest()->first();
-
-                $purchase = new Purchase();
-                if ($lastPurchase) {
-                    $purchase->code = $this->formateNPosition($this->prefix, $lastPurchase->id + 1, 8);
+                if ($validation->fails()) {
+                    $messages = $validation->errors()->all();
+                    $messages = implode('<br/>', $messages);
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $messages,
+                        //'message' => 'Des donnees sont invalides',
+                    ], 200);
                 } else {
-                    $purchase->code = $this->formateNPosition($this->prefix, 1, 8);
+                    //dd($request->purchaseProducts);
+                    //dd(json_encode($request->all()));
+                    $order = Order::findOrFail($request->order);
+
+                    $lastPurchase = Purchase::latest()->first();
+
+                    $purchase = new Purchase();
+                    if ($lastPurchase) {
+                        $purchase->code = $this->formateNPosition($this->prefix, $lastPurchase->id + 1, 8);
+                    } else {
+                        $purchase->code = $this->formateNPosition($this->prefix, 1, 8);
+                    }
+                    $purchase->reference = $request->reference;
+                    $purchase->purchase_date   = $request->purchase_date;
+                    $purchase->delivery_date   = $request->delivery_date;
+                    $purchase->total_amount = $request->total_amount;
+                    $purchase->amount_gross = $request->amount_gross;
+                    $purchase->ht_amount = $request->ht_amount;
+                    $purchase->discount = $request->discount;
+                    $purchase->amount_token = $request->amount_token;
+                    $purchase->tva = $request->tva;
+                    $purchase->observation = $request->observation;
+                    $purchase->order_id = $order->id;
+                    $purchase->provider_id = $request->provider;
+                    $purchase->sale_point_id = $request->sale_point;
+                    $purchase->save();
+
+                    $productPurchases = [];
+                    $i = 0;
+                    // dd($request->purchaseProducts);
+                    foreach ($request->purchaseProducts as $key => $product) {
+                        // dd($product[1]["unit_price"]);
+                        // dd($product);
+                        $productPurchase = new ProductPurchase();
+                        $productPurchase->quantity = $product["quantity"];
+                        $productPurchase->unit_price = $product["unit_price"];
+                        $productPurchase->unity_id = $product["unity_id"];
+                        $productPurchase->product_id = $product["product_id"];
+                        // $productPurchase->quantity = $product[$i]["quantity"];
+                        // $productPurchase->unit_price = $product[$i]["unit_price"];
+                        // $productPurchase->unity_id = $product[$i]["unity"];
+                        // $productPurchase->product_id = $product[$i]["product"];
+                        $productPurchase->purchase_id = $purchase->id;
+                        $productPurchase->save();
+                        $i++;
+
+                        array_push($productPurchases, $productPurchase);
+                    }
+
+                    // dd($productPurchases);
+
+                    // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+                    // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
+                    //     $purchase->delete();
+                    // }
+
+                    $folder = Folder::findOrFail($request->folder);
+
+                    $check = $this->checkFileType($purchase);
+                    if (!$check) {
+                        $success = false;
+                        $message = "Les formats de fichiers autorisés sont : pdf, docx et xls";
+                        return new JsonResponse(['success' => $success, 'message' => $message], 400);
+                    } else {
+                        $this->storeFile($this->user, $purchase, $folder, $request->upload_files);
+                    }
+
+                    $message = "Enregistrement effectué avec succès.";
+                    return new JsonResponse([
+                        'purchase' => $purchase,
+                        'success' => true,
+                        'message' => $message,
+                        'datas' => ['productPurchases' => $productPurchases],
+                    ], 200);
                 }
-                $purchase->reference = $request->reference;
-                $purchase->purchase_date   = $request->purchase_date;
-                $purchase->delivery_date   = $request->delivery_date;
-                $purchase->total_amount = $request->total_amount;
-                $purchase->amount_gross = $request->amount_gross;
-                $purchase->ht_amount = $request->ht_amount;
-                $purchase->discount = $request->discount;
-                $purchase->amount_token = $request->amount_token;
-                $purchase->tva = $request->tva;
-                $purchase->observation = $request->observation;
-                $purchase->order_id = $order->id;
-                $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->sale_point;
-                $purchase->save();
-
-                $productPurchases = [];
-                $i = 0;
-                // dd($request->purchaseProducts);
-                foreach ($request->purchaseProducts as $key => $product) {
-                    // dd($product[1]["unit_price"]);
-                    // dd($product);
-                    $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $product["quantity"];
-                    $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity_id"];
-                    $productPurchase->product_id = $product["product_id"];
-                    // $productPurchase->quantity = $product[$i]["quantity"];
-                    // $productPurchase->unit_price = $product[$i]["unit_price"];
-                    // $productPurchase->unity_id = $product[$i]["unity"];
-                    // $productPurchase->product_id = $product[$i]["product"];
-                    $productPurchase->purchase_id = $purchase->id;
-                    $productPurchase->save();
-                    $i++;
-
-                    array_push($productPurchases, $productPurchase);
-                }
-
-                // dd($productPurchases);
-
-                // $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                // if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                //     $purchase->delete();
-                // }
-
-                $folder = Folder::findOrFail($request->folder);
-
-                $check = $this->checkFileType($purchase);
-                if (!$check) {
-                    $success = false;
-                    $message = "Les formats de fichiers autorisés sont : pdf, docx et xls";
-                    return new JsonResponse(['success' => $success, 'message' => $message], 400);
-                } else {
-                    $this->storeFile($this->user, $purchase, $folder, $request->upload_files);
-                }
-
-                $success = true;
-                $message = "Enregistrement effectué avec succès.";
-                return new JsonResponse([
-                    'purchase' => $purchase,
-                    'success' => $success,
-                    'message' => $message,
-                    'datas' => ['productPurchases' => $productPurchases],
-                ], 200);
             } catch (Exception $e) {
                 // dd($e);
-                $success = false;
                 $message = "Erreur survenue lors de l'enregistrement.";
                 return new JsonResponse([
-                    'success' => $success,
+                    'success' => false,
                     'message' => $message,
                 ], 400);
             }
@@ -415,224 +341,150 @@ class PurchaseController extends Controller
         $this->authorize('ROLE_PURCHASE_UPDATE', Purchase::class);
         $purchase = Purchase::findOrFail($id);
         if ($request->purchaseType == "Achat direct") {
-            $this->validate(
-                $request,
-                [
-                    'sale_point' => 'required',
-                    'provider' => 'required',
-                    'reference' => 'required',
-                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
-                    // 'total_amount' => 'required',
-                    'observation' => 'max:255',
-                    'purchaseProducts' => 'required',
-                    // 'quantities' => 'required|min:0',
-                    // 'unit_prices' => 'required|min:0',
-                    // 'unities' => 'required'
-                ],
-                [
-                    'sale_point.required' => "Le choix du point de vente est obligatoire.",
-                    'provider.required' => "Le choix du fournisseur est obligatoire.",
-                    'reference.required' => "La référence du bon est obligatoire.",
-                    'reference.unique' => "Ce bon d'achat existe déjà.",
-                    'purchase_date.required' => "La date du bon d'achat est obligatoire.",
-                    'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                    // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
-                    'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
-                    'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                    'delivery_date.date' => "La date de livraison prévue est incorrecte.",
-                    // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
-                    'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
-                    // 'total_amount.required' => "Le montant total est obligatoire.",
-                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                    // 'quantities.required' => "Les quantités sont obligatoires.",
-                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                ]
-            );
-
-            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-            //     $success = false;
-            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-            //     return new JsonResponse([
-            //         'success' => $success,
-            //         'message' => $message,
-            //     ]);
-            // }
 
             try {
-                $purchase->reference = $request->reference;
-                $purchase->purchase_date   = $request->purchase_date;
-                $purchase->delivery_date   = $request->delivery_date;
-                $purchase->total_amount = $request->total_amount;
-                $purchase->amount_gross = $request->amount_gross;
-                $purchase->ht_amount = $request->ht_amount;
-                $purchase->discount = $request->discount;
-                $purchase->amount_token = $request->amount_token;
-                $purchase->tva = $request->tva;
-                $purchase->observation = $request->observation;
-                $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->sale_point;
-                $purchase->save();
+                $validation = $this->validator('update', $request->purchaseType, $request->all());
 
-                // $deliveryNote = $purchase ? $purchase->deliveryNote : null;
-                // // if ($deliveryNote) {
-                // $deliveryNote->reference = $request->reference;
-                // $deliveryNote->delivery_date   = $request->delivery_date;
-                // $deliveryNote->total_amount = $request->total_amount;
-                // $deliveryNote->observation = $request->observation;
-                // $deliveryNote->place_of_delivery = $request->place_of_delivery;
-                // $deliveryNote->purchase_id = $purchase->id;
-                // $deliveryNote->save();
+                if ($validation->fails()) {
+                    $messages = $validation->errors()->all();
+                    $messages = implode('<br/>', $messages);
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $messages,
+                        //'message' => 'Des donnees sont invalides',
+                    ], 200);
+                } else {
+                    $purchase->reference = $request->reference;
+                    $purchase->purchase_date   = $request->purchase_date;
+                    $purchase->delivery_date   = $request->delivery_date;
+                    $purchase->total_amount = $request->total_amount;
+                    $purchase->amount_gross = $request->amount_gross;
+                    $purchase->ht_amount = $request->ht_amount;
+                    $purchase->discount = $request->discount;
+                    $purchase->amount_token = $request->amount_token;
+                    $purchase->tva = $request->tva;
+                    $purchase->observation = $request->observation;
+                    $purchase->provider_id = $request->provider;
+                    $purchase->sale_point_id = $request->sale_point;
+                    $purchase->save();
 
-                ProductPurchase::where('purchase_id', $purchase->id)->delete();
+                    // $deliveryNote = $purchase ? $purchase->deliveryNote : null;
+                    // // if ($deliveryNote) {
+                    // $deliveryNote->reference = $request->reference;
+                    // $deliveryNote->delivery_date   = $request->delivery_date;
+                    // $deliveryNote->total_amount = $request->total_amount;
+                    // $deliveryNote->observation = $request->observation;
+                    // $deliveryNote->place_of_delivery = $request->place_of_delivery;
+                    // $deliveryNote->purchase_id = $purchase->id;
+                    // $deliveryNote->save();
 
-                // ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
+                    ProductPurchase::where('purchase_id', $purchase->id)->delete();
 
-                $productPurchases = [];
-                foreach ($request->purchaseProducts as $key => $product) {
-                    $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $product["quantity"];
-                    $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity_id"];
-                    $productPurchase->product_id = $product["product_id"];
-                    $productPurchase->purchase_id = $purchase->id;
-                    $productPurchase->save();
+                    // ProductDeliveryNote::where('delivery_note_id', $deliveryNote->id)->delete();
 
-                    // $productDeliveryNote = new ProductDeliveryNote();
-                    // $productDeliveryNote->quantity = $product["quantity"];
-                    // $productDeliveryNote->unity_id =  $product["unity"]["id"];
-                    // $productDeliveryNote->product_id = $product["product"]["id"];
-                    // $productDeliveryNote->delivery_note_id = $deliveryNote->id;
-                    // $productDeliveryNote->save();
+                    $productPurchases = [];
+                    foreach ($request->purchaseProducts as $key => $product) {
+                        $productPurchase = new ProductPurchase();
+                        $productPurchase->quantity = $product["quantity"];
+                        $productPurchase->unit_price = $product["unit_price"];
+                        $productPurchase->unity_id = $product["unity_id"];
+                        $productPurchase->product_id = $product["product_id"];
+                        $productPurchase->purchase_id = $purchase->id;
+                        $productPurchase->save();
 
-                    array_push($productPurchases, $productPurchase);
+                        // $productDeliveryNote = new ProductDeliveryNote();
+                        // $productDeliveryNote->quantity = $product["quantity"];
+                        // $productDeliveryNote->unity_id =  $product["unity"]["id"];
+                        // $productDeliveryNote->product_id = $product["product"]["id"];
+                        // $productDeliveryNote->delivery_note_id = $deliveryNote->id;
+                        // $productDeliveryNote->save();
+
+                        array_push($productPurchases, $productPurchase);
+                    }
+
+                    $message = "Modification effectuée avec succès.";
+                    return new JsonResponse([
+                        'purchase' => $purchase,
+                        // 'deliveryNote' => $deliveryNote,
+                        'success' => true,
+                        'message' => $message,
+                        'datas' => ['productPurchases' => $productPurchases],
+                    ], 200);
                 }
-
-                $success = true;
-                $message = "Modification effectuée avec succès.";
-                return new JsonResponse([
-                    'purchase' => $purchase,
-                    // 'deliveryNote' => $deliveryNote,
-                    'success' => $success,
-                    'message' => $message,
-                    'datas' => ['productPurchases' => $productPurchases],
-                ], 200);
             } catch (Exception $e) {
                 // dd($e);
-                $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([
-                    'success' => $success,
+                    'success' => false,
                     'message' => $message,
-                ], 400);
+                ], 200);
             }
         } elseif ($request->purchaseType == "Achat sur commande") {
-            $this->validate(
-                $request,
-                [
-                    'order' => 'required',
-                    'reference' => 'required',
-                    'purchase_date' => 'required|date|before:today', //|date_format:Ymd
-                    'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
-                    // 'total_amount' => 'required',
-                    'observation' => 'max:255',
-                    'purchaseProducts' => 'required',
-                    // 'quantities' => 'required|min:0',
-                    // 'unit_prices' => 'required|min:0',
-                    // 'unities' => 'required'
-                ],
-                [
-                    'order.required' => "Le choix d'une commande est obligatoire.",
-                    'reference.required' => "La référence du bon est obligatoire.",
-                    // 'reference.unique' => "Ce bon d'achat existe déjà.",
-                    'purchase_date.required' => "La date du bon d'achat est obligatoire.",
-                    'purchase_date.date' => "La date du bon d'achat est incorrecte.",
-                    // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
-                    'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
-                    'delivery_date.required' => "La date de livraison prévue est obligatoire.",
-                    'delivery_date.date' => "La date de livraison prévue est incorrecte.",
-                    // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
-                    'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
-                    // 'total_amount.required' => "Le montant total est obligatoire.",
-                    'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
-                    'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
-                    // 'quantities.required' => "Les quantités sont obligatoires.",
-                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-                    // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
-                ]
-            );
-
-            // if (sizeof($request->purchaseProducts) != sizeof($request->quantities) || sizeof($request->purchaseProducts) != sizeof($request->unit_prices) || sizeof($request->unit_prices) != sizeof($request->quantities)) {
-            //     $success = false;
-            //     $message = "Un produit, une quantité ou un prix unitaire n'a pas été renseigné.";
-            //     return new JsonResponse([
-            //         'success' => $success,
-            //         'message' => $message,
-            //     ]);
-            // }
 
             try {
-                $order = Order::findOrFail($request->order);
+                $validation = $this->validator('update', $request->purchaseType, $request->all());
 
-                $purchase->reference = $request->reference;
-                $purchase->purchase_date   = $request->purchase_date;
-                $purchase->delivery_date   = $request->delivery_date;
-                $purchase->total_amount = $request->total_amount;
-                $purchase->amount_gross = $request->amount_gross;
-                $purchase->ht_amount = $request->ht_amount;
-                $purchase->discount = $request->discount;
-                $purchase->amount_token = $request->amount_token;
-                $purchase->tva = $request->tva;
-                $purchase->observation = $request->observation;
-                $purchase->order_id = $order->id;
-                $purchase->provider_id = $request->provider;
-                $purchase->sale_point_id = $request->sale_point;
-                $purchase->save();
+                if ($validation->fails()) {
+                    $messages = $validation->errors()->all();
+                    $messages = implode('<br/>', $messages);
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $messages,
+                        //'message' => 'Des donnees sont invalides',
+                    ], 200);
+                } else {
+                    $order = Order::findOrFail($request->order);
 
-                ProductPurchase::where('purchase_id', $purchase->id)->delete();
+                    $purchase->reference = $request->reference;
+                    $purchase->purchase_date   = $request->purchase_date;
+                    $purchase->delivery_date   = $request->delivery_date;
+                    $purchase->total_amount = $request->total_amount;
+                    $purchase->amount_gross = $request->amount_gross;
+                    $purchase->ht_amount = $request->ht_amount;
+                    $purchase->discount = $request->discount;
+                    $purchase->amount_token = $request->amount_token;
+                    $purchase->tva = $request->tva;
+                    $purchase->observation = $request->observation;
+                    $purchase->order_id = $order->id;
+                    $purchase->provider_id = $request->provider;
+                    $purchase->sale_point_id = $request->sale_point;
+                    $purchase->save();
 
-                $productPurchases = [];
-                foreach ($request->purchaseProducts as $key => $product) {
-                    $productPurchase = new ProductPurchase();
-                    $productPurchase->quantity = $product["quantity"];
-                    $productPurchase->unit_price = $product["unit_price"];
-                    $productPurchase->unity_id = $product["unity_id"];
-                    $productPurchase->product_id = $product["product_id"];
-                    $productPurchase->purchase_id = $purchase->id;
-                    $productPurchase->save();
+                    ProductPurchase::where('purchase_id', $purchase->id)->delete();
 
-                    array_push($productPurchases, $productPurchase);
+                    $productPurchases = [];
+                    foreach ($request->purchaseProducts as $key => $product) {
+                        $productPurchase = new ProductPurchase();
+                        $productPurchase->quantity = $product["quantity"];
+                        $productPurchase->unit_price = $product["unit_price"];
+                        $productPurchase->unity_id = $product["unity_id"];
+                        $productPurchase->product_id = $product["product_id"];
+                        $productPurchase->purchase_id = $purchase->id;
+                        $productPurchase->save();
+
+                        array_push($productPurchases, $productPurchase);
+                    }
+
+                    $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+                    if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
+                        $purchase->delete();
+                    }
+
+                    $message = 'Modification effectuée avec succès.';
+                    return new JsonResponse([
+                        'purchase' => $purchase,
+                        'success' => true,
+                        'message' => $message,
+                        'datas' => ['productPurchases' => $productPurchases],
+                    ], 200);
                 }
-
-                $savedProductPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                if (empty($savedProductPurchases) || sizeof($savedProductPurchases) == 0) {
-                    $purchase->delete();
-                }
-
-                $success = true;
-                $message = 'Modification effectuée avec succès.';
-                return new JsonResponse([
-                    'purchase' => $purchase,
-                    'success' => $success,
-                    'message' => $message,
-                    'datas' => ['productPurchases' => $productPurchases],
-                ], 200);
             } catch (Exception $e) {
                 // dd($e);
-                $success = false;
                 $message = "Erreur survenue lors de la modification.";
                 return new JsonResponse([
-                    'success' => $success,
+                    'success' => false,
                     'message' => $message,
-                ], 400);
+                ], 200);
             }
         }
     }
@@ -666,12 +518,11 @@ class PurchaseController extends Controller
                 'datas' => ['productPurchases' => $productPurchases],
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -680,7 +531,6 @@ class PurchaseController extends Controller
         try {
             $this->processing(Purchase::class, $id, $action);
 
-            $success = true;
             if ($action == 'validate') {
                 $message = "Bon d'achat validé avec succès.";
             }
@@ -688,11 +538,10 @@ class PurchaseController extends Controller
                 $message = "Bon d'achat rejeté avec succès.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             if ($action == 'validate') {
                 $message = "Erreur survenue lors de la validation du bon d'achat.";
             }
@@ -700,7 +549,7 @@ class PurchaseController extends Controller
                 $message = "Erreur survenue lors de l'annulation du bon d'achat.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -717,19 +566,169 @@ class PurchaseController extends Controller
         }
     }
 
-    protected function validator($mode, $data)
+    protected function validator($mode, $purchaseType, $data)
     {
         if ($mode == 'store') {
-            return Validator::make(
-                $data,
-                
-            );
+            if ($purchaseType == 'Achat direct') {
+                return Validator::make(
+                    $data,
+                    [
+                        'sale_point' => 'required',
+                        'provider' => 'required',
+                        'reference' => 'required|unique:purchases',
+                        'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                        'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
+                        // 'total_amount' => 'required',
+                        'observation' => 'max:255',
+                        'purchaseProducts' => 'required',
+                        // 'quantities' => 'required|min:0',
+                        // 'unit_prices' => 'required|min:0',
+                        // 'unities' => 'required'
+                    ],
+                    [
+                        'sale_point.required' => "Le choix du point de vente est obligatoire.",
+                        'provider.required' => "Le choix du fournisseur est obligatoire.",
+                        'reference.required' => "La référence du bon est obligatoire.",
+                        'reference.unique' => "Ce bon d'achat existe déjà.",
+                        'purchase_date.required' => "La date du bon d'achat est obligatoire.",
+                        'purchase_date.date' => "La date du bon d'achat est incorrecte.",
+                        // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
+                        'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
+                        'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                        'delivery_date.date' => "La date de livraison prévue est incorrecte.",
+                        // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
+                        'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
+                        // 'total_amount.required' => "Le montant total est obligatoire.",
+                        'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                        'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                        // 'quantities.required' => "Les quantités sont obligatoires.",
+                        // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                        // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    ]
+                );
+            } else {
+                return Validator::make(
+                    $data,
+                    [
+                        'order' => 'required',
+                        'reference' => 'required|unique:purchases',
+                        'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                        'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
+                        // 'total_amount' => 'required',
+                        'observation' => 'max:255',
+                        'purchaseProducts' => 'required',
+                        // 'quantities' => 'required|min:0',
+                        // 'unit_prices' => 'required|min:0',
+                        // 'unities' => 'required'
+                    ],
+                    [
+                        'order.required' => "Le choix d'une commande est obligatoire.",
+                        'reference.required' => "La référence du bon est obligatoire.",
+                        'reference.unique' => "Ce bon d'achat existe déjà.",
+                        'purchase_date.required' => "La date du bon d'achat est obligatoire.",
+                        'purchase_date.date' => "La date du bon d'achat est incorrecte.",
+                        // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
+                        'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
+                        'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                        'delivery_date.date' => "La date de livraison prévue est incorrecte.",
+                        // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
+                        'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
+                        // 'total_amount.required' => "Le montant total est obligatoire.",
+                        'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                        'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                        // 'quantities.required' => "Les quantités sont obligatoires.",
+                        // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                        // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    ]
+                );
+            }
         }
         if ($mode == 'update') {
-            return Validator::make(
-                $data,
-                
-            );
+            if ($purchaseType == 'Achat direct') {
+                return Validator::make(
+                    $data,
+                    [
+                        'sale_point' => 'required',
+                        'provider' => 'required',
+                        'reference' => 'required',
+                        'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                        'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
+                        // 'total_amount' => 'required',
+                        'observation' => 'max:255',
+                        'purchaseProducts' => 'required',
+                        // 'quantities' => 'required|min:0',
+                        // 'unit_prices' => 'required|min:0',
+                        // 'unities' => 'required'
+                    ],
+                    [
+                        'sale_point.required' => "Le choix du point de vente est obligatoire.",
+                        'provider.required' => "Le choix du fournisseur est obligatoire.",
+                        'reference.required' => "La référence du bon est obligatoire.",
+                        'reference.unique' => "Ce bon d'achat existe déjà.",
+                        'purchase_date.required' => "La date du bon d'achat est obligatoire.",
+                        'purchase_date.date' => "La date du bon d'achat est incorrecte.",
+                        // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
+                        'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
+                        'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                        'delivery_date.date' => "La date de livraison prévue est incorrecte.",
+                        // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
+                        'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
+                        // 'total_amount.required' => "Le montant total est obligatoire.",
+                        'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                        'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                        // 'quantities.required' => "Les quantités sont obligatoires.",
+                        // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                        // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    ]
+                );
+            } else {
+                return Validator::make(
+                    $data,
+                    [
+                        'order' => 'required',
+                        'reference' => 'required',
+                        'purchase_date' => 'required|date|before:today', //|date_format:Ymd
+                        'delivery_date' => 'required|date|after:purchase_date', //|date_format:Ymd
+                        // 'total_amount' => 'required',
+                        'observation' => 'max:255',
+                        'purchaseProducts' => 'required',
+                        // 'quantities' => 'required|min:0',
+                        // 'unit_prices' => 'required|min:0',
+                        // 'unities' => 'required'
+                    ],
+                    [
+                        'order.required' => "Le choix d'une commande est obligatoire.",
+                        'reference.required' => "La référence du bon est obligatoire.",
+                        // 'reference.unique' => "Ce bon d'achat existe déjà.",
+                        'purchase_date.required' => "La date du bon d'achat est obligatoire.",
+                        'purchase_date.date' => "La date du bon d'achat est incorrecte.",
+                        // 'purchase_date.date_format' => "La du bon d'achat doit être sous le format : Année Mois Jour.",
+                        'purchase_date.before' => "La date du bon d'achat doit être antérieure ou égale à aujourd'hui.",
+                        'delivery_date.required' => "La date de livraison prévue est obligatoire.",
+                        'delivery_date.date' => "La date de livraison prévue est incorrecte.",
+                        // 'delivery_date.date_format' => "La date de livraison prévue doit être sous le format : Année Mois Jour.",
+                        'delivery_date.after' => "La date de livraison prévue doit être ultérieure à la date du bon d'achat.",
+                        // 'total_amount.required' => "Le montant total est obligatoire.",
+                        'observation.max' => "L'observation ne doit pas dépasser 255 caractères.",
+                        'purchaseProducts.required' => "Vous devez ajouter au moins un produit au panier.",
+                        // 'quantities.required' => "Les quantités sont obligatoires.",
+                        // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                        // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                        // 'unities.required' => "Veuillez définir des unités à tous les produits ajoutés.",
+                    ]
+                );
+            }
         }
     }
 }

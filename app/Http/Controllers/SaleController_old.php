@@ -140,20 +140,18 @@ class SaleController_old extends Controller
                 array_push($productSales, $productSale);
             }
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'sale' => $sale,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
             ], 200);
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -228,20 +226,18 @@ class SaleController_old extends Controller
                 array_push($productSales, $productSale);
             }
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'sale' => $sale,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
             ], 200);
         } catch (Exception $e) {
             dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -334,20 +330,18 @@ class SaleController_old extends Controller
                 array_push($productSales, $productSale);
             }
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'sale' => $sale,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
             ], 200);
         } catch (Exception $e) {
             dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -433,20 +427,18 @@ class SaleController_old extends Controller
                 array_push($productSales, $productSale);
             }
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'sale' => $sale,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
             ], 200);
         } catch (Exception $e) {
             dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -459,21 +451,19 @@ class SaleController_old extends Controller
         try {
             $sale->delete();
 
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'sale' => $sale,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productSales' => $productSales],
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 }

@@ -108,11 +108,10 @@ class CategoryController extends Controller
                 $category->description = $request->description;
                 $category->save();
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'category' => $category,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
@@ -149,10 +148,9 @@ class CategoryController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }

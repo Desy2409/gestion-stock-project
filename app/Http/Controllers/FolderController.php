@@ -47,12 +47,11 @@ class FolderController extends Controller
         if ($request->affiliation == 'parent') {
             $existingFolders = Folder::where('folder_id', null)->where('name', $request->name)->get();
             if (!empty($existingFolders) && sizeof($existingFolders) > 1) {
-                $success = false;
                 return new JsonResponse([
                     'existingFolder' => $existingFolders[0],
-                    'success' => $success,
+                    'success' => false,
                     'message' => "Le dossier " . $existingFolders[0]->name . " existe déjà."
-                ], 400);
+                ], 200);
             }
             try {
                 $folder = new Folder();
@@ -62,12 +61,18 @@ class FolderController extends Controller
                 $folder->save();
 
                 Storage::makeDirectory($folder->path);
-            } catch (Exception $e) {
-                $success = true;
+
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'folder' => $folder,
-                    'success' => $success,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            } catch (Exception $e) {
+                $success = true;
+                $message = "Erreur survenue lors de l'enregistrement.";
+                return new JsonResponse([
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
@@ -86,12 +91,11 @@ class FolderController extends Controller
             // dd($existingFolders);
             if (!empty($existingFolders) && sizeof($existingFolders) >= 1) {
                 // dd('1');
-                $success = false;
                 return new JsonResponse([
                     'existingFolder' => $existingFolders[0],
-                    'success' => $success,
+                    'success' => false,
                     'message' => "Le dossier " . $existingFolders[0]->name . " existe déjà."
-                ], 400);
+                ], 200);
             }else{
                 // dd('2');
             }
@@ -115,12 +119,17 @@ class FolderController extends Controller
                 $folder->save();
 
                 Storage::makeDirectory($folder->path);
-            } catch (Exception $e) {
-                $success = true;
+
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'folder' => $folder,
-                    'success' => $success,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            } catch (Exception $e) {
+                $message = "Erreur survenue lors de l'enregistrement.";
+                return new JsonResponse([
+                    'success' => false,
                     'message' => $message,
                 ], 200);
             }
@@ -148,12 +157,11 @@ class FolderController extends Controller
             if ($request->affiliation == 'parent') {
                 $existingFolders = Folder::where('folder_id', null)->where('name', $request->name)->get();
                 if (!empty($existingFolders) && sizeof($existingFolders) > 1) {
-                    $success = false;
                     return new JsonResponse([
                         'existingFolder' => $existingFolders[0],
-                        'success' => $success,
+                        'success' => false,
                         'message' => "Le dossier " . $existingFolders[0]->name . " existe déjà."
-                    ], 400);
+                    ], 200);
                 }
                 try {
                     $folder->affiliation = $request->affiliation;
@@ -162,12 +170,17 @@ class FolderController extends Controller
                     $folder->save();
 
                     Storage::makeDirectory($folder->path);
-                } catch (Exception $e) {
-                    $success = true;
-                    $message = "Enregistrement effectué avec succès.";
+                    
+                    $message = "Modification effectuée avec succès.";
                     return new JsonResponse([
                         'folder' => $folder,
-                        'success' => $success,
+                        'success' => true,
+                        'message' => $message,
+                    ], 200);
+                } catch (Exception $e) {
+                    $message = "Erreur survenue lors de la modification.";
+                    return new JsonResponse([
+                        'success' => false,
                         'message' => $message,
                     ], 200);
                 }
@@ -184,12 +197,11 @@ class FolderController extends Controller
 
                 $existingFolders = Folder::where('folder_id', $request->folder)->where('name', $request->name)->get();
                 if (!empty($existingFolders) && sizeof($existingFolders) > 1) {
-                    $success = false;
                     return new JsonResponse([
                         'existingFolder' => $existingFolders[0],
-                        'success' => $success,
+                        'success' => false,
                         'message' => "Le dossier " . $existingFolders[0]->name . " existe déjà."
-                    ], 400);
+                    ], 200);
                 }
 
                 try {
@@ -211,12 +223,16 @@ class FolderController extends Controller
 
                     Storage::move($folder->name, $parentFolder->name . '/' . $folder->name);
                     // Storage::makeDirectory($folder->path);
-                } catch (Exception $e) {
-                    $success = true;
-                    $message = "Enregistrement effectué avec succès.";
+                    $message = "Modification effectuée avec succès.";
                     return new JsonResponse([
                         'folder' => $folder,
-                        'success' => $success,
+                        'success' => true,
+                        'message' => $message,
+                    ], 200);
+                } catch (Exception $e) {
+                    $message = "Erreur survenue lors de la modification.";
+                    return new JsonResponse([
+                        'success' => false,
                         'message' => $message,
                     ], 200);
                 }
@@ -235,12 +251,11 @@ class FolderController extends Controller
 
                 $existingFolders = Folder::where('folder_id', $request->folder)->where('name', $request->name)->get();
                 if (!empty($existingFolders) && sizeof($existingFolders) > 1) {
-                    $success = false;
                     return new JsonResponse([
                         'existingFolder' => $existingFolders[0],
-                        'success' => $success,
+                        'success' => false,
                         'message' => "Le dossier " . $existingFolders[0]->name . " existe déjà."
-                    ], 400);
+                    ], 200);
                 }
 
                 try {
@@ -265,24 +280,28 @@ class FolderController extends Controller
                         Storage::move($folder->name, $parentFolder->name . '/' . $folder->name);
                     }
                     // Storage::makeDirectory($folder->path);
-                } catch (Exception $e) {
-                    $success = true;
-                    $message = "Enregistrement effectué avec succès.";
+                    $message = "Modification effectuée avec succès.";
                     return new JsonResponse([
                         'folder' => $folder,
-                        'success' => $success,
+                        'success' => true,
+                        'message' => $message,
+                    ], 200);
+                } catch (Exception $e) {
+                    $message = "Erreur survenue lors la modification.";
+                    return new JsonResponse([
+                        'folder' => $folder,
+                        'success' => false,
                         'message' => $message,
                     ], 200);
                 }
             } else {
                 $existingFolders = Folder::where('folder_id', null)->where('name', $request->name)->get();
                 if (!empty($existingFolders) && sizeof($existingFolders) > 1) {
-                    $success = false;
                     return new JsonResponse([
                         'existingFolder' => $existingFolders[0],
-                        'success' => $success,
+                        'success' => false,
                         'message' => "Le dossier " . $existingFolders[0]->name . " existe déjà."
-                    ], 400);
+                    ], 200);
                 }
                 try {
                     $folder->affiliation = $request->affiliation;
@@ -291,12 +310,18 @@ class FolderController extends Controller
                     $folder->save();
 
                     Storage::move($parentFolder->name . '/' . $folder->name, $folder->name);
-                } catch (Exception $e) {
-                    $success = true;
-                    $message = "Enregistrement effectué avec succès.";
+                    
+                    $message = "Modification effectuée avec succès.";
                     return new JsonResponse([
                         'folder' => $folder,
-                        'success' => $success,
+                        'success' => true,
+                        'message' => $message,
+                    ], 200);
+                } catch (Exception $e) {
+                    $message = "Erreur survenue lors de la modification.";
+                    return new JsonResponse([
+                        'folder' => $folder,
+                        'success' => false,
                         'message' => $message,
                     ], 200);
                 }
@@ -320,6 +345,7 @@ class FolderController extends Controller
                     $message = "Suppression effectuée avec succès.";
                 }else{
                     // dd('not delete');
+                    $success = false;
                     $message = "Ce dossier ne peut être supprimé car il a servi dans des traitements.";
                 }
             return new JsonResponse([
@@ -328,12 +354,11 @@ class FolderController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

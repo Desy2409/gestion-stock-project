@@ -166,20 +166,18 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         try {
             $user->delete();
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'user' => $user,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -194,18 +192,16 @@ class UserController extends Controller
             $user->roles = $userType->roles;
             $user->save();
 
-            $success = true;
             $message = "Type d'utilisateur attribué avec succès.";
             return new JsonResponse([
                 'user' => $user,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'attribution d'un type à l'utilisateur.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -222,18 +218,16 @@ class UserController extends Controller
             $user->roles = $roles;
             $user->save();
 
-            $success = true;
             $message = "Rôle(s) affecté(s) avec succès.";
             return new JsonResponse([
                 'user' => $user,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'affectation des rôles à l'utilisateur.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -257,19 +251,17 @@ class UserController extends Controller
             $user->sale_points = $request->sale_points;
             $user->save();
 
-            $success = true;
             $message = "Point(s) de vente affecté(s) avec succès.";
             return new JsonResponse([
                 'user' => $user,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'affectation des points de vente à l'utilisateur.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
