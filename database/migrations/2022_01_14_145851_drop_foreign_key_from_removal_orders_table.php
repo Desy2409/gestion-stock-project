@@ -14,8 +14,8 @@ class DropForeignKeyFromRemovalOrdersTable extends Migration
     public function up()
     {
         Schema::table('removal_orders', function (Blueprint $table) {
-            $table->dropForeign(['stock_type_id']);
-            $table->dropColumn('stock_type_id');
+            // $table->dropForeign(['stock_type_id']);
+            // $table->dropColumn('stock_type_id');
         });
     }
 
