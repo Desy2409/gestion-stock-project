@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class PurchaseController extends Controller
 {
@@ -713,6 +714,22 @@ class PurchaseController extends Controller
             return new JsonResponse(['datas' => ['purchases' => $purchases]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                
+            );
         }
     }
 }

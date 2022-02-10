@@ -50,10 +50,19 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_DRIVER_CREATE', Driver::class);
-        $errors = $this->validator('store', $request->all());
 
         try {
-            $driver = new Driver();
+            $validation = $this->validator('store', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $driver = new Driver();
             $driver->code = Str::random(10);
             $driver->wording = $request->wording;
             $driver->description = $request->description;
@@ -66,14 +75,15 @@ class DriverController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -83,7 +93,6 @@ class DriverController extends Controller
     {
         $this->authorize('ROLE_DRIVER_UPDATE', Driver::class);
         $driver = Driver::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         $existingDrivers = Driver::where('wording', $request->wording)->get();
         if (!empty($existingDrivers) && sizeof($existingDrivers) >= 1) {
@@ -96,7 +105,17 @@ class DriverController extends Controller
         }
 
         try {
-            $driver->wording = $request->wording;
+            $validation = $this->validator('update', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $driver->wording = $request->wording;
             $driver->description = $request->description;
             $driver->save();
 
@@ -107,14 +126,15 @@ class DriverController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 

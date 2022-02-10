@@ -7,6 +7,7 @@ use App\Repositories\StockTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class StockTypeController extends Controller
@@ -30,41 +31,39 @@ class StockTypeController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_STOCK_TYPE_CREATE', StockType::class);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|unique:stock_types|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette unité existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         try {
-            $stockType = new StockType();
-            $stockType->code = Str::random(10);
-            $stockType->wording = $request->wording;
-            $stockType->description = $request->description;
-            $stockType->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'stockType' => $stockType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $stockType = new StockType();
+                $stockType->code = Str::random(10);
+                $stockType->wording = $request->wording;
+                $stockType->description = $request->description;
+                $stockType->save();
+
+                $success = true;
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'stockType' => $stockType,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -73,38 +72,37 @@ class StockTypeController extends Controller
     {
         $this->authorize('ROLE_STOCK_TYPE_UPDATE', StockType::class);
         $stockType = StockType::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         try {
-            $stockType->wording = $request->wording;
-            $stockType->description = $request->description;
-            $stockType->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'stockType' => $stockType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $stockType->wording = $request->wording;
+                $stockType->description = $request->description;
+                $stockType->save();
+
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'stockType' => $stockType,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -151,6 +149,39 @@ class StockTypeController extends Controller
             return new JsonResponse(['datas' => ['stockTypes' => $stockTypes]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|unique:stock_types|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Cette unité existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
         }
     }
 }

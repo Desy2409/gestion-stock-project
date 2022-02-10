@@ -32,10 +32,19 @@ class ExtensionController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_EXTENSION_CREATE', Extension::class);
-        $errors = $this->validator('store', $request->all());
 
         try {
-            $extension = new Extension();
+            $validation = $this->validator('store', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $extension = new Extension();
             $extension->code = Str::lower('.' . $request->extension);
             $extension->extension = strtoupper($request->extension);
             $extension->save();
@@ -47,14 +56,15 @@ class ExtensionController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -62,10 +72,28 @@ class ExtensionController extends Controller
     {
         $this->authorize('ROLE_EXTENSION_UPDATE', Extension::class);
         $extension = Extension::findOrfail($id);
-        $errors = $this->validator('update', $request->all());
+        $existingExtensions = Extension::where('extension', $request->extension)->get();
+        if (!empty($existingExtensions) && sizeof($existingExtensions) >= 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingExtension' => $existingExtensions[0],
+                'message' => "L'extension " . $existingExtensions[0]->extension . " existe déjà"
+            ], 200);
+        }
 
         try {
-            $extension->extension = strtoupper($request->extension);
+            $validation = $this->validator('update', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $extension->extension = strtoupper($request->extension);
             $extension->save();
 
             $success = true;
@@ -75,14 +103,15 @@ class ExtensionController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -147,11 +176,10 @@ class ExtensionController extends Controller
             return Validator::make(
                 $data,
                 [
-                    'extension' => 'required|unique:extensions'
+                    'extension' => 'required'
                 ],
                 [
                     'extension.required' => "L'extension est obligatoire.",
-                    'extension.unique' => "Cette extension existe déjà.",
                 ]
             );
         }

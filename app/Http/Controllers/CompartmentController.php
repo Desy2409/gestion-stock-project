@@ -34,10 +34,18 @@ class CompartmentController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_COMPARTMENT_CREATE', Compartment::class);
-        $errors = $this->validator('store', $request->all());
-
         try {
-            $compartment = new Compartment();
+            $validation = $this->validator('store', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $compartment = new Compartment();
             $compartment->reference = $request->reference;
             $compartment->number = $request->number;
             $compartment->capacity = $request->capacity;
@@ -51,14 +59,15 @@ class CompartmentController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -111,23 +120,34 @@ class CompartmentController extends Controller
                 'existingCompartment' => $existingCompartments[0],
                 'success' => $success,
                 'message' => "Ce camion existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
-            $compartment->reference = $request->reference;
-            $compartment->number = $request->number;
-            $compartment->capacity = $request->capacity;
-            $compartment->tank_id = $request->tank ? $request->tank : null;
-            $compartment->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'compartment' => $compartment,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $compartment->reference = $request->reference;
+                $compartment->number = $request->number;
+                $compartment->capacity = $request->capacity;
+                $compartment->tank_id = $request->tank ? $request->tank : null;
+                $compartment->save();
+
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'compartment' => $compartment,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
@@ -135,7 +155,7 @@ class CompartmentController extends Controller
                 'success' => $success,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 

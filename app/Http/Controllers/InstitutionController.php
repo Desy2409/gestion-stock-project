@@ -7,6 +7,7 @@ use App\Repositories\InstitutionRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class InstitutionController extends Controller
 {
@@ -28,28 +29,6 @@ class InstitutionController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_INSTITUTION_CREATE', Institution::class);
-        $this->validate(
-            $request,
-            [
-                'rccm_number' => 'required',
-                'cc_number' => 'required',
-                'social_reason' => 'required',
-                'email' => 'required|email',
-                'phone_number' => 'required',
-                'address' => 'required',
-                'bp' => 'required',
-            ],
-            [
-                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
-                'cc_number.required' => "Le numéro CC est obligatoire.",
-                'social_reason.required' => "La raison sociale est obligatoire.",
-                'email.required' => "L'adresse email est obligatoire.",
-                'email.email' => "L'adresse email est incorrecte.",
-                'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                'address.required' => "L'adresse est obligatoire.",
-                'bp.required' => "La boîte postale est obligatoire",
-            ],
-        );
 
         $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
         if ($existingInstitution) {
@@ -62,23 +41,34 @@ class InstitutionController extends Controller
         }
 
         try {
-            $institution = new Institution();
-            $institution->rccm_number = $request->rccm_number;
-            $institution->cc_number = $request->cc_number;
-            $institution->social_reason = $request->social_reason;
-            $institution->address = $request->address;
-            $institution->email = $request->email;
-            $institution->bp = $request->bp;
-            $institution->phone_number = $request->phone_number;
-            $institution->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'institution' => $institution,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $institution = new Institution();
+                $institution->rccm_number = $request->rccm_number;
+                $institution->cc_number = $request->cc_number;
+                $institution->social_reason = $request->social_reason;
+                $institution->address = $request->address;
+                $institution->email = $request->email;
+                $institution->bp = $request->bp;
+                $institution->phone_number = $request->phone_number;
+                $institution->save();
+
+                $success = true;
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'institution' => $institution,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
@@ -111,28 +101,6 @@ class InstitutionController extends Controller
     {
         $this->authorize('ROLE_INSTITUTION_UPDATE', Institution::class);
         $institution = Institution::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'rccm_number' => 'required',
-                'cc_number' => 'required',
-                'social_reason' => 'required',
-                'email' => 'required|email',
-                'phone_number' => 'required',
-                'address' => 'required',
-                'bp' => 'required',
-            ],
-            [
-                'rccm_number.required' => "Le numéro RRCM est obligatoire.",
-                'cc_number.required' => "Le numéro CC est obligatoire.",
-                'social_reason.required' => "La raison sociale est obligatoire.",
-                'email.required' => "L'adresse email est obligatoire.",
-                'email.email' => "L'adresse email est incorrecte.",
-                'phone_number.required' => "Le numéro de téléphone est obligatoire.",
-                'address.required' => "L'adresse est obligatoire.",
-                'bp.required' => "La boîte postale est obligatoire",
-            ],
-        );
 
         $existingInstitutions = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
         if (!empty($existingInstitutions) && sizeof($existingInstitutions) > 1) {
@@ -145,22 +113,33 @@ class InstitutionController extends Controller
         }
 
         try {
-            $institution->rccm_number = $request->rccm_number;
-            $institution->cc_number = $request->cc_number;
-            $institution->social_reason = $request->social_reason;
-            $institution->address = $request->address;
-            $institution->email = $request->email;
-            $institution->bp = $request->bp;
-            $institution->phone_number = $request->phone_number;
-            $institution->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'institution' => $institution,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $institution->rccm_number = $request->rccm_number;
+                $institution->cc_number = $request->cc_number;
+                $institution->social_reason = $request->social_reason;
+                $institution->address = $request->address;
+                $institution->email = $request->email;
+                $institution->bp = $request->bp;
+                $institution->phone_number = $request->phone_number;
+                $institution->save();
+
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'institution' => $institution,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
@@ -210,6 +189,58 @@ class InstitutionController extends Controller
             return new JsonResponse(['datas' => ['institutions' => $institutions]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    public function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'rccm_number' => 'required',
+                    'cc_number' => 'required',
+                    'social_reason' => 'required',
+                    'email' => 'required|email',
+                    'phone_number' => 'required',
+                    'address' => 'required',
+                    'bp' => 'required',
+                ],
+                [
+                    'rccm_number.required' => "Le numéro RRCM est obligatoire.",
+                    'cc_number.required' => "Le numéro CC est obligatoire.",
+                    'social_reason.required' => "La raison sociale est obligatoire.",
+                    'email.required' => "L'adresse email est obligatoire.",
+                    'email.email' => "L'adresse email est incorrecte.",
+                    'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'address.required' => "L'adresse est obligatoire.",
+                    'bp.required' => "La boîte postale est obligatoire",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'rccm_number' => 'required',
+                    'cc_number' => 'required',
+                    'social_reason' => 'required',
+                    'email' => 'required|email',
+                    'phone_number' => 'required',
+                    'address' => 'required',
+                    'bp' => 'required',
+                ],
+                [
+                    'rccm_number.required' => "Le numéro RRCM est obligatoire.",
+                    'cc_number.required' => "Le numéro CC est obligatoire.",
+                    'social_reason.required' => "La raison sociale est obligatoire.",
+                    'email.required' => "L'adresse email est obligatoire.",
+                    'email.email' => "L'adresse email est incorrecte.",
+                    'phone_number.required' => "Le numéro de téléphone est obligatoire.",
+                    'address.required' => "L'adresse est obligatoire.",
+                    'bp.required' => "La boîte postale est obligatoire",
+                ]
+            );
         }
     }
 }

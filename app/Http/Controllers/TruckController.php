@@ -38,33 +38,39 @@ class TruckController extends Controller
     {
         $this->authorize('ROLE_TRUCK_CREATE', Truck::class);
 
-        $errors = $this->validator('store', $request->all());
-
         try {
-            $truck = new Truck();
-            $truck->reference = $request->reference;
-            $truck->truck_registration = $request->truck_registration;
-            $truck->technical_visit = $request->technical_visit;
-            $truck->deadline = $request->deadline;
-            // $truck->documents = $request->documents;
-            $truck->provider_id = $request->provider;
-            $truck->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'truck' => $truck,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $truck = new Truck();
+                $truck->reference = $request->reference;
+                $truck->truck_registration = $request->truck_registration;
+                $truck->technical_visit = $request->technical_visit;
+                $truck->deadline = $request->deadline;
+                // $truck->documents = $request->documents;
+                $truck->provider_id = $request->provider;
+                $truck->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'truck' => $truck,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -73,7 +79,6 @@ class TruckController extends Controller
     {
         $this->authorize('ROLE_TRUCK_UPDATE', Truck::class);
         $truck = Truck::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         $existingTrucks = Truck::where('reference', $request->reference)->where('truck_registration', $request->truck_registration)->get();
         if (!empty($existingTrucks) && sizeof($existingTrucks) > 1) {
@@ -86,29 +91,37 @@ class TruckController extends Controller
         }
 
         try {
-            $truck->reference = $request->reference;
-            $truck->truck_registration = $request->truck_registration;
-            $truck->technical_visit = $request->technical_visit;
-            $truck->deadline = $request->deadline;
-            // $truck->documents = $request->documents;
-            $truck->provider_id = $request->provider;
-            $truck->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'truck' => $truck,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $truck->reference = $request->reference;
+                $truck->truck_registration = $request->truck_registration;
+                $truck->technical_visit = $request->technical_visit;
+                $truck->deadline = $request->deadline;
+                // $truck->documents = $request->documents;
+                $truck->provider_id = $request->provider;
+                $truck->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'truck' => $truck,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -190,8 +203,8 @@ class TruckController extends Controller
                     'provider' => 'required',
                     'reference' => 'required|unique:trucks',
                     'truck_registration' => 'required|unique:trucks',
-                    'technical_visit'=>'required',
-                    'deadline'=>'required|date|after:today',
+                    'technical_visit' => 'required',
+                    'deadline' => 'required|date|after:today',
                 ],
                 [
                     'provider.required' => "Le choix du fornisseur est obligatoire.",
@@ -213,8 +226,8 @@ class TruckController extends Controller
                     'provider' => 'required',
                     'reference' => 'required',
                     'truck_registration' => 'required',
-                    'technical_visit'=>'required',
-                    'deadline'=>'required|date|after:today',
+                    'technical_visit' => 'required',
+                    'deadline' => 'required|date|after:today',
                 ],
                 [
                     'provider.required' => "Le choix du fornisseur est obligatoire.",
