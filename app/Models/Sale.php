@@ -62,4 +62,9 @@ class Sale extends Model
     {
         return $this->hasOne(ClientDeliveryNote::class);
     }
+
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
 }

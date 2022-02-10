@@ -51,4 +51,9 @@ class PurchaseOrder extends Model
     {
         return $this->hasMany(ProductPurchaseOrder::class);
     }
+
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
 }
