@@ -42,6 +42,12 @@ class CategoryController extends Controller
 
         $errors = $this->validator('store', $request->all());
 
+        // if (count($errors) > 0) {
+        //     dd('> 0');
+        // } else {
+        //     dd('!> 0');
+        // }
+
         try {
             $category = new Category();
             $category->reference = $request->reference;
@@ -166,7 +172,7 @@ class CategoryController extends Controller
     protected function validator($mode, $data)
     {
         if ($mode == "store") {
-            return Validator::make(
+            $errors = Validator::make(
                 $data,
                 [
                     'reference' => 'required|unique:categories',
@@ -181,7 +187,10 @@ class CategoryController extends Controller
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères."
                 ]
-            );
+            )->customMessages;
+            // dd(array_values($errors));
+
+            return array_values($errors);
         }
         if ($mode == "update") {
             return Validator::make(
@@ -197,7 +206,7 @@ class CategoryController extends Controller
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères."
                 ]
-            );
+            )->customMessages;
         }
     }
 }
