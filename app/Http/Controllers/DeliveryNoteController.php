@@ -168,23 +168,21 @@ class DeliveryNoteController extends Controller
                     $this->storeFile($this->user, $deliveryNote, $folder, $request->upload_files);
                 }
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'deliveryNote' => $deliveryNote,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                     'datas' => ['productDeliveryNotes' => $productDeliveryNotes],
                 ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -260,21 +258,19 @@ class DeliveryNoteController extends Controller
                 //     $deliveryNote->delete();
                 // }
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'deliveryNote' => $deliveryNote,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                     'datas' => ['productDeliveryNotes' => $productDeliveryNotes],
                 ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -305,12 +301,11 @@ class DeliveryNoteController extends Controller
                 'datas' => ['productDeliveryNotes' => $productDeliveryNotes],
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -319,7 +314,6 @@ class DeliveryNoteController extends Controller
         try {
             $this->processing(DeliveryNote::class, $id, $action);
 
-            $success = true;
             if ($action == 'validate') {
                 $message = "Livraison validée avec succès.";
             }
@@ -327,11 +321,10 @@ class DeliveryNoteController extends Controller
                 $message = "Livraison rejetée avec succès.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             if ($action == 'validate') {
                 $message = "Erreur survenue lors de la validation de la livraison.";
             }
@@ -339,7 +332,7 @@ class DeliveryNoteController extends Controller
                 $message = "Erreur survenue lors de l'annulation de la livraison.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -354,19 +347,17 @@ class DeliveryNoteController extends Controller
 
             $this->decrementByRetunringDeliveryNote($deliveryNote);
 
-            $success = true;
             $message = "Marchandises rendues avec succès.";
             return new JsonResponse([
                 'deliveryNote' => $deliveryNote,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             dd($e);
-            $success = false;
             $message = "Erreur survenue lors du retour des marchandises.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }

@@ -95,20 +95,18 @@ class ProductController extends Controller
                 $product->sub_category_id = $request->sub_category;
                 $product->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'product' => $product,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -174,20 +172,18 @@ class ProductController extends Controller
                 $product->sub_category_id = $request->sub_category;
                 $product->save();
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'product' => $product,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
             ], 200);
@@ -227,12 +223,11 @@ class ProductController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -267,18 +262,16 @@ class ProductController extends Controller
             $productPricing->product_id = $product->id;
             $productPricing->save();
 
-            $success = true;
             $message = "Prix défini avec succès.";
             return new JsonResponse([
                 'product' => $product,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la définition de prix.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }

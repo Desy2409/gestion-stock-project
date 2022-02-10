@@ -148,22 +148,20 @@ class OrderController extends Controller
                 $this->storeFile($this->user, $order, $folder, $request->upload_files);
             }
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'order' => $order,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productsOrders' => $productsOrders],
             ], 200);
             }
             
         } catch (Exception $e) {
-            dd($e);
-            $success = false;
+            // dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -247,11 +245,10 @@ class OrderController extends Controller
                 $order->delete();
             }
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'order' => $order,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productsOrders' => $productsOrders],
             ], 200);
@@ -259,10 +256,9 @@ class OrderController extends Controller
             
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -296,12 +292,11 @@ class OrderController extends Controller
                 'datas' => ['productsOrders' => $productsOrders],
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -310,7 +305,6 @@ class OrderController extends Controller
         try {
             $this->processing(Order::class, $id, $action);
 
-            $success = true;
             if ($action == 'validate') {
                 $message = "Commande validée avec succès.";
             }
@@ -318,11 +312,10 @@ class OrderController extends Controller
                 $message = "Commande rejetée avec succès.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             if ($action == 'validate') {
                 $message = "Erreur survenue lors de la validation de la commande.";
             }
@@ -330,7 +323,7 @@ class OrderController extends Controller
                 $message = "Erreur survenue lors de l'annulation de la commande.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }

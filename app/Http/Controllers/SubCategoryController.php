@@ -52,19 +52,18 @@ class SubCategoryController extends Controller
                 $subCategory->category_id = $request->category;
                 $subCategory->save();
                 // dd($request->category);
-                $success = true;
+
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'subCategory' => $subCategory,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -143,12 +142,11 @@ class SubCategoryController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

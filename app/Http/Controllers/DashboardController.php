@@ -54,12 +54,11 @@ class DashboardController extends Controller
             }
             return new JsonResponse(['datas' => ['salePointsWithDatas' => $salePointsWithDatas]], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la recherche.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -89,12 +88,11 @@ class DashboardController extends Controller
                 'sales' => $this->salesTotalAmountsBetweenDates($request->start_date, $request->end_date),
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la recherche au niveau des graphes.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

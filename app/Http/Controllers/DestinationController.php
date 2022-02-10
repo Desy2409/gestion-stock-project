@@ -53,19 +53,17 @@ class DestinationController extends Controller
             $destination->description = $request->description;
             $destination->save();
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'destination' => $destination,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -97,18 +95,16 @@ class DestinationController extends Controller
             $destination->description = $request->description;
             $destination->save();
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'destination' => $destination,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -138,10 +134,9 @@ class DestinationController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }

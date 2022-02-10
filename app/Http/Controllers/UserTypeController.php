@@ -77,10 +77,9 @@ class UserTypeController extends Controller
             
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -93,9 +92,8 @@ class UserTypeController extends Controller
 
         $existingUserTypesOnCode = UserType::where('code', $request->code)->get();
         if (!empty($existingUserTypesOnCode) && sizeof($existingUserTypesOnCode) > 1) {
-            $success = false;
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'existingUserType' => $existingUserTypesOnCode[0],
                 'message' => "Le code " . $existingUserTypesOnCode[0]->wording . " existe déjà"
             ], 200);
@@ -175,12 +173,11 @@ class UserTypeController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

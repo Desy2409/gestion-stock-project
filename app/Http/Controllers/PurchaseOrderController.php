@@ -143,21 +143,19 @@ class PurchaseOrderController extends Controller
                     $this->storeFile($this->user, $purchaseOrder, $folder, $request->upload_files);
                 }
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'purchaseOrder' => $purchaseOrder,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                     'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
                 ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -233,21 +231,19 @@ class PurchaseOrderController extends Controller
                     array_push($productsPurchaseOrders, $productPurchaseOrder);
                 }
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'purchaseOrder' => $purchaseOrder,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                     'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
                 ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -281,12 +277,11 @@ class PurchaseOrderController extends Controller
                 'datas' => ['productsPurchaseOrders' => $productsPurchaseOrders],
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -296,7 +291,6 @@ class PurchaseOrderController extends Controller
         try {
             $this->processing(PurchaseOrder::class, $id, $action);
 
-            $success = true;
             if ($action == 'validate') {
                 $message = "Commande validée avec succès.";
             }
@@ -304,11 +298,10 @@ class PurchaseOrderController extends Controller
                 $message = "Commande rejetée avec succès.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             if ($action == 'validate') {
                 $message = "Erreur survenue lors de la validation de la commande.";
             }
@@ -316,7 +309,7 @@ class PurchaseOrderController extends Controller
                 $message = "Erreur survenue lors de l'annulation de la commande.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }

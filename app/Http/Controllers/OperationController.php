@@ -19,7 +19,7 @@ class OperationController extends Controller
             'datas' => ['operations' => $operations]
         ], 200);
     }
-    
+
     public function rolesOfOperation($id)
     {
         $this->authorize('ROLE_OPERATION_READ', Operation::class);
@@ -49,23 +49,21 @@ class OperationController extends Controller
 
         try {
             $operation = new Operation();
-            $operation->code = strtoupper(str_replace(' ','_',$request->code));
+            $operation->code = strtoupper(str_replace(' ', '_', $request->code));
             $operation->wording = $request->wording;
             $operation->description = $request->description;
             $operation->save();
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'operation' => $operation,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -111,7 +109,7 @@ class OperationController extends Controller
         }
 
         try {
-            $operation->code = strtoupper(str_replace(' ','_',$request->code));
+            $operation->code = strtoupper(str_replace(' ', '_', $request->code));
             $operation->wording = $request->wording;
             $operation->description = $request->description;
             $operation->save();
@@ -145,12 +143,11 @@ class OperationController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 }

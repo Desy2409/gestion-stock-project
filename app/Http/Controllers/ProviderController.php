@@ -137,21 +137,19 @@ class ProviderController extends Controller
                 $address->person_id = $person->id;
                 $address->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'person' => $person,
                     'provider' => $provider,
                     'address' => $address,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -219,13 +217,12 @@ class ProviderController extends Controller
                     $address->save();
                 }
 
-                $success = true;
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'person' => $person,
                     'provider' => $provider,
                     'address' => $address,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
@@ -234,7 +231,7 @@ class ProviderController extends Controller
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -272,12 +269,11 @@ class ProviderController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
