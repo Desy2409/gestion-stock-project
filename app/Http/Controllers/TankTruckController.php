@@ -7,6 +7,7 @@ use App\Models\Tank;
 use App\Models\TankTruck;
 use App\Models\Truck;
 use App\Models\UploadFile;
+use App\Utils\FileUtil;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,14 @@ use Illuminate\Support\Str;
 
 class TankTruckController extends Controller
 {
+
+    protected $fileUtil;
+
+    public function __construct()
+    {
+        $this->fileUtil = new FileUtil('trucks', false);
+    }
+
     private function tankTruckAuthorizedFiles()
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
@@ -22,13 +31,14 @@ class TankTruckController extends Controller
         return $tankTruckAuthorizedFiles;
     }
 
-    public function index($param,$id)
+    public function index($param, $id)
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         if ($param == 'truck') {
-            $tankTrucks = TankTruck::where('truck_id',$id)->with('tank')->with('truck')->orderBy('created_at', 'desc')->get();
+            $tankTrucks = TankTruck::where('truck_id', $id)->with('truck')->orderBy('created_at', 'desc')->get();
         } else {
-            $tankTrucks = TankTruck::where('tank_id',$id)->with('tank')->with('truck')->orderBy('created_at', 'desc')->get();
+            $tankTrucks = TankTruck::where('tank_id', $id)->with('tank')->orderBy('created_at', 'desc')->get();
+
         }
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();
@@ -50,16 +60,24 @@ class TankTruckController extends Controller
             // $tankTruck->file_type_id = $this->tankTruckAuthorizedFiles()->id;
             $tankTruck->save();
 
-            // $uploadFile = new UploadFile();
-            // $uploadFile->code = Str::random(10);
-            // $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->file($tankTruck->gauging_certificate);//$request->gauging_certificate->getClientOriginalExtension();
-            // // $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
-            // $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
-            // $uploadFile->name = $path;
-            // $uploadFile->personalized_name = $request->personalized_name;
-            // // $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
-            // $uploadFile->tank_truck_id = $tankTruck->id;
-            // $uploadFile->save();
+            $file = $request->file('gauging_certificate');
+
+            if ($request->folder) {
+                $fileUpload = $this->fileUtil->createFileInDefaultFolder($tankTruck, $file, $request->personalized_filename);
+                // $this->fileUtil->setPath('isidore/desire/');
+                // $this->fileUtil->setAddId('false');
+            } else {
+                $fileUpload = $this->fileUtil->createFileInPersonalizedFolder($request->folder, $file, $request->personalized_filename);
+            }
+            $fileUpload->save();
+
+
+            // $fileUpload = $this->fileUtil->createFile($tankTruck, $file);
+            // $this->fileUtil->setPath('isidore/desire/');
+            // $this->fileUtil->setAddId('false');
+
+            // if($fileUpload){
+            // }
 
             $success = true;
             $message = "Enregistrement effectué avec succès.";
@@ -94,14 +112,6 @@ class TankTruckController extends Controller
             $tankTruck->tank_id = $request->tank;
             $tankTruck->truck_id = $request->truck;
             $tankTruck->save();
-
-            // $uploadFile = new UploadFile();
-            // $uploadFile->code = Str::random(10);
-            // $uploadFile->name = $path;
-            // $uploadFile->personalized_name = $request->personalized_name;
-            // // $uploadFile->file_type_id = $request->$this->tankTruckAuthorizedFiles()->id;
-            // $uploadFile->tank_truck_id = $tankTruck->id;
-            // $uploadFile->save();
 
             $success = true;
             $message = "Modification effectuée avec succès.";

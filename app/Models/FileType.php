@@ -14,4 +14,9 @@ class FileType extends Model
         'authorized_files',
         'max_size'
     ];
+
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
 }
