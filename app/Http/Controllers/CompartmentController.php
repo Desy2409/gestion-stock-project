@@ -84,9 +84,9 @@ class CompartmentController extends Controller
                 return new JsonResponse([
                     'success' => $success,
                     'message' => $message,
-                ], 400);
+                ], 200);
             } catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 $success = false;
                 $message = "Erreur survenue lors de l'association des compartiments à la citerne.";
                 return new JsonResponse([

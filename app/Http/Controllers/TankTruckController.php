@@ -38,6 +38,7 @@ class TankTruckController extends Controller
             $tankTrucks = TankTruck::where('truck_id', $id)->with('truck')->orderBy('created_at', 'desc')->get();
         } else {
             $tankTrucks = TankTruck::where('tank_id', $id)->with('tank')->orderBy('created_at', 'desc')->get();
+
         }
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();
@@ -167,7 +168,6 @@ class TankTruckController extends Controller
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         $tankTruck = TankTruck::with('truck')->with('tank')->findOrFail($id);
-
         return new JsonResponse([
             'tankTruck' => $tankTruck
         ], 200);
