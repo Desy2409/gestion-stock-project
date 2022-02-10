@@ -181,7 +181,7 @@ class CategoryController extends Controller
     protected function validator($mode, $data)
     {
         if ($mode == "store") {
-            $errors = Validator::make(
+            return Validator::make(
                 $data,
                 [
                     'reference' => 'required|unique:categories',
