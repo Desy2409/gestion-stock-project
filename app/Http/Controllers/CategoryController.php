@@ -193,10 +193,8 @@ class CategoryController extends Controller
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères."
                 ]
-            )->customMessages;
-            // dd(array_values($errors));
 
-            return array_values($errors);
+            );
         }
         if ($mode == "update") {
             return Validator::make(
