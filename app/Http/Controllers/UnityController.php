@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class UnityController extends Controller
@@ -32,43 +33,36 @@ class UnityController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_UNITY_CREATE', Truck::class);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|unique:unities|max:150',
-                'symbol'=>'required|unique:unities',
-                'description' => 'max:255',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cette unité existe déjà.",
-                'symbol.required' => "Le symbole est obligatoire.",
-                'symbol.unique' => "Ce symbole a déjà été attribué.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         try {
-            $unity = new Unity();
-            $unity->code = Str::random(10);
-            $unity->wording = $request->wording;
-            $unity->symbol = $request->symbol;
-            $unity->description = $request->description;
-            $unity->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'unity' => $unity,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $unity = new Unity();
+                $unity->code = Str::random(10);
+                $unity->wording = $request->wording;
+                $unity->symbol = $request->symbol;
+                $unity->description = $request->description;
+                $unity->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'unity' => $unity,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -79,20 +73,6 @@ class UnityController extends Controller
     {
         $this->authorize('ROLE_UNITY_UPDATE', Truck::class);
         $unity = Unity::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'wording' => 'required|max:150',
-                'symbol'=>'required',
-                'description' => 'max:255',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'symbol.required' => "Le symbole est obligatoire.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         $existingUnitiesOnSymbol = Unity::where('symbol', $request->symbol)->get();
         if (!empty($existingUnitiesOnSymbol) && sizeof($existingUnitiesOnSymbol) > 1) {
@@ -115,25 +95,34 @@ class UnityController extends Controller
         }
 
         try {
-            $unity->wording = $request->wording;
-            $unity->symbol = $request->symbol;
-            $unity->description = $request->description;
-            $unity->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'unity' => $unity,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $unity->wording = $request->wording;
+                $unity->symbol = $request->symbol;
+                $unity->description = $request->description;
+                $unity->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'unity' => $unity,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -169,12 +158,11 @@ class UnityController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -195,6 +183,44 @@ class UnityController extends Controller
             return new JsonResponse(['datas' => ['unities' => $unities]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|unique:unities|max:150',
+                    'symbol' => 'required|unique:unities',
+                    'description' => 'max:255',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Cette unité existe déjà.",
+                    'symbol.required' => "Le symbole est obligatoire.",
+                    'symbol.unique' => "Ce symbole a déjà été attribué.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|max:150',
+                    'symbol' => 'required',
+                    'description' => 'max:255',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'symbol.required' => "Le symbole est obligatoire.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
         }
     }
 }

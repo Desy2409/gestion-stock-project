@@ -38,32 +38,38 @@ class TankController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_TANK_CREATE', Tank::class);
-        $errors = $this->validator('store', $request->all());
 
         try {
-            $tank = new Tank();
-            $tank->reference = $request->reference;
-            $tank->tank_registration = $request->tank_registration;
-            $tank->capacity = $request->capacity;
-            $tank->provider_id = $request->provider;
-            $tank->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'tank' => $tank,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $tank = new Tank();
+                $tank->reference = $request->reference;
+                $tank->tank_registration = $request->tank_registration;
+                $tank->capacity = $request->capacity;
+                $tank->provider_id = $request->provider;
+                $tank->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'tank' => $tank,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -92,40 +98,46 @@ class TankController extends Controller
     {
         $this->authorize('ROLE_TANK_UPDATE', Tank::class);
         $tank = Tank::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         $existingTanks = Tank::where('reference', $request->reference)->where('tank_registration', $request->tank_registration)->where('tank_registration', $request->tank_registration)->get();
         if (!empty($existingTanks) && sizeof($existingTanks) > 1) {
-            $success = false;
             return new JsonResponse([
                 'existingTank' => $existingTanks[0],
-                'success' => $success,
+                'success' => false,
                 'message' => "Cette citerne existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
-            $tank->reference = $request->reference;
-            $tank->tank_registration = $request->tank_registration;
-            $tank->capacity = $request->capacity;
-            $tank->provider_id = $request->provider;
-            $tank->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'tank' => $tank,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $tank->reference = $request->reference;
+                $tank->tank_registration = $request->tank_registration;
+                $tank->capacity = $request->capacity;
+                $tank->provider_id = $request->provider;
+                $tank->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'tank' => $tank,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -158,12 +170,11 @@ class TankController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

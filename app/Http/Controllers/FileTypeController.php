@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Extension;
 use App\Models\FileType;
 use App\Repositories\FileTypeRepository;
 use Exception;
@@ -25,41 +24,46 @@ class FileTypeController extends Controller
     {
         $this->authorize('ROLE_FILE_TYPE_READ', FileType::class);
         $fileTypes = FileType::orderBy('wording')->get();
-        $extensions = Extension::orderBy('extension')->get();
+        $extensions = FileType::orderBy('extension')->get();
         return new JsonResponse(['datas' => ['fileTypes' => $fileTypes, 'extensions' => $extensions]], 200);
     }
 
     public function store(Request $request)
     {
         $this->authorize('ROLE_FILE_TYPE_CREATE', FileType::class);
-        // $this->validate(
-        //     $request,
-            
-        // );
 
         try {
-            $fileType = new FileType();
-            $fileType->code = Str::random(10);
-            $fileType->wording = $request->wording;
-            $fileType->description = $request->description;
-            $fileType->max_size = $request->max_size;
-            $fileType->authorized_files = implode(',', $request->authorized_files);
-            $fileType->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'fileType' => $fileType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $fileType = new FileType();
+                $fileType->code = Str::random(10);
+                $fileType->wording = $request->wording;
+                $fileType->description = $request->description;
+                $fileType->max_size = $request->max_size;
+                $fileType->authorized_files = implode(',', $request->authorized_files);
+                $fileType->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'fileType' => $fileType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -67,29 +71,46 @@ class FileTypeController extends Controller
     {
         $this->authorize('ROLE_FILE_TYPE_UPDATE', FileType::class);
         $fileType = FileType::findOrFail($id);
-        // $errors=
+        $existingFileTypes = FileType::where('wording', $request->wording)->get();
+        if (!empty($existingFileTypes) && sizeof($existingFileTypes) >= 1) {
+            $success = false;
+            return new JsonResponse([
+                'success' => $success,
+                'existingFileType' => $existingFileTypes[0],
+                'message' => "Le type de fichier " . $existingFileTypes[0]->wording . " existe déjà"
+            ], 200);
+        }
 
         try {
-            $fileType->wording = $request->wording;
-            $fileType->description = $request->description;
-            $fileType->max_size = $request->max_size;
-            $fileType->authorized_files = implode(',', $request->authorized_files);
-            $fileType->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'fileType' => $fileType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $fileType->wording = $request->wording;
+                $fileType->description = $request->description;
+                $fileType->max_size = $request->max_size;
+                $fileType->authorized_files = implode(',', $request->authorized_files);
+                $fileType->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'fileType' => $fileType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -99,20 +120,18 @@ class FileTypeController extends Controller
         $fileType = FileType::findOrFail($id);
         try {
             $fileType->delete();
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'fileType' => $fileType,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -136,33 +155,40 @@ class FileTypeController extends Controller
         }
     }
 
-    protected function validator($mode,$data){
-        if ($mode=='store') {
-            return Validator::make($data,[
-                'wording' => 'required|unique:file_types|max:50',
-                'max_size' => 'numeric',
-                'authorized_files' => 'required',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce type de fichier existe déjà.",
-                'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
-                'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
-                'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
-            ]);
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|unique:file_types|max:50',
+                    'max_size' => 'numeric',
+                    'authorized_files' => 'required',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Ce type de fichier existe déjà.",
+                    'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
+                    'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
+                    'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
+                ]
+            );
         }
-        if ($mode=='update') {
-            return Validator::make($data,[
-                'wording' => 'required|max:50',
-                'max_size' => 'numeric',
-                'authorized_files' => 'required',
-            ],
-            [
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
-                'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
-                'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
-            ]);
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'wording' => 'required|max:50',
+                    'max_size' => 'numeric',
+                    'authorized_files' => 'required',
+                ],
+                [
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le lbellé ne doit pas dépasser 50 caractères.",
+                    'authorized_files.required' => "Vous devez choisir au moins une extension autorisée.",
+                    'max_size.numeric' => "La taille autorisée doit être un entier supérieur à 0."
+                ]
+            );
         }
     }
 }

@@ -34,43 +34,49 @@ class CompartmentController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_COMPARTMENT_CREATE', Compartment::class);
-        $errors = $this->validator('store', $request->all());
-
         try {
-            $compartment = new Compartment();
+            $validation = $this->validator('store', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $compartment = new Compartment();
             $compartment->reference = $request->reference;
             $compartment->number = $request->number;
             $compartment->capacity = $request->capacity;
             $compartment->tank_id = $request->tank ? $request->tank : null;
             $compartment->save();
 
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'compartment' => $compartment,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
     public function associateCompartmentsToTank(Request $request)
     {
         if (empty($request->compartments) && sizeof($request->compartments) == 0) {
-            $success = false;
             $message = "Vous n'avez sélectionné aucun compartiment.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         } else {
             try {
                 foreach ($request->compartments as $key => $compartment) {
@@ -79,20 +85,18 @@ class CompartmentController extends Controller
                     $compartment->save();
                 }
 
-                $success = true;
                 $message = "Compartiments associés à la citerne avec succès.";
                 return new JsonResponse([
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             } catch (Exception $e) {
                 // dd($e);
-                $success = false;
                 $message = "Erreur survenue lors de l'association des compartiments à la citerne.";
                 return new JsonResponse([
-                    'success' => $success,
+                    'success' => false,
                     'message' => $message,
-                ], 400);
+                ], 200);
             }
         }
     }
@@ -111,31 +115,40 @@ class CompartmentController extends Controller
                 'existingCompartment' => $existingCompartments[0],
                 'success' => $success,
                 'message' => "Ce camion existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
-            $compartment->reference = $request->reference;
-            $compartment->number = $request->number;
-            $compartment->capacity = $request->capacity;
-            $compartment->tank_id = $request->tank ? $request->tank : null;
-            $compartment->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'compartment' => $compartment,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $compartment->reference = $request->reference;
+                $compartment->number = $request->number;
+                $compartment->capacity = $request->capacity;
+                $compartment->tank_id = $request->tank ? $request->tank : null;
+                $compartment->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'compartment' => $compartment,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -163,12 +176,11 @@ class CompartmentController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

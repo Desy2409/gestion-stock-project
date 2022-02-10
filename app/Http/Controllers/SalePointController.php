@@ -45,33 +45,41 @@ class SalePointController extends Controller
         }
 
         try {
-            $salePoint = new SalePoint();
-            $salePoint->rccm_number = $request->rccm_number;
-            $salePoint->cc_number = $request->cc_number;
-            $salePoint->social_reason = $request->social_reason;
-            $salePoint->address = $request->address;
-            $salePoint->email = $request->email;
-            $salePoint->bp = $request->bp;
-            $salePoint->phone_number = $request->phone_number;
-            $salePoint->institution_id = $request->institution;
-            $salePoint->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'salePoint' => $salePoint,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $salePoint = new SalePoint();
+                $salePoint->rccm_number = $request->rccm_number;
+                $salePoint->cc_number = $request->cc_number;
+                $salePoint->social_reason = $request->social_reason;
+                $salePoint->address = $request->address;
+                $salePoint->email = $request->email;
+                $salePoint->bp = $request->bp;
+                $salePoint->phone_number = $request->phone_number;
+                $salePoint->institution_id = $request->institution;
+                $salePoint->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'salePoint' => $salePoint,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -103,40 +111,48 @@ class SalePointController extends Controller
 
         $existingSalePoints = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
         if (!empty($existingSalePoints) && sizeof($existingSalePoints) > 1) {
-            $success = false;
             return new JsonResponse([
                 'existingInstitution' => $existingSalePoints[0],
-                'success' => $success,
+                'success' => false,
                 'message' => "Le point de vente " . $existingSalePoints[0]->social_reason . " existe déjà."
-            ], 400);
+            ], 200);
         }
 
         try {
-            $salePoint->rccm_number = $request->rccm_number;
-            $salePoint->cc_number = $request->cc_number;
-            $salePoint->social_reason = $request->social_reason;
-            $salePoint->address = $request->address;
-            $salePoint->email = $request->email;
-            $salePoint->bp = $request->bp;
-            $salePoint->phone_number = $request->phone_number;
-            $salePoint->institution_id = $request->institution;
-            $salePoint->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'salePoint' => $salePoint,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $salePoint->rccm_number = $request->rccm_number;
+                $salePoint->cc_number = $request->cc_number;
+                $salePoint->social_reason = $request->social_reason;
+                $salePoint->address = $request->address;
+                $salePoint->email = $request->email;
+                $salePoint->bp = $request->bp;
+                $salePoint->phone_number = $request->phone_number;
+                $salePoint->institution_id = $request->institution;
+                $salePoint->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'salePoint' => $salePoint,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -170,12 +186,11 @@ class SalePointController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 

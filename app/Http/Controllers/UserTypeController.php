@@ -12,6 +12,7 @@ use App\Repositories\UserTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserTypeController extends Controller
 {
@@ -38,29 +39,19 @@ class UserTypeController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_USER_TYPE_CREATE', UserType::class);
-        // dd(array($request->checkedRoles));
-        $this->validate(
-            $request,
-            [
-                'code' => 'required|unique:user_types',
-                'wording' => 'required|unique:user_types|max:150',
-                'description' => 'max:255',
-                'roles' => 'required',
-            ],
-            [
-                'code.required' => "Le code est obligatoire.",
-                'code.unique' => "Ce code existe déjà.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce type existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'roles' => "Le choix d'au moins un rôle est obligatoire.",
-            ]
-        );
 
         try {
+            $validation = $this->validator('store', $request->all());
 
-            // Liste des opérations et pages opérations sélectionnées
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                // Liste des opérations et pages opérations sélectionnées
             $checkedRoles = [];
             // $checkedRoles = json_decode();
             // foreach ($request->roles as $key => $role) {
@@ -75,20 +66,20 @@ class UserTypeController extends Controller
             $userType->roles = $request->roles;
             $userType->save();
 
-
-            $success = true;
             $message = "Enregistrement effectué avec succès.";
             return new JsonResponse([
                 'userType' => $userType,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
+            }
+
+            
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -98,28 +89,11 @@ class UserTypeController extends Controller
     {
         $this->authorize('ROLE_USER_TYPE_UPDATE', UserType::class);
         $userType = UserType::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'code' => 'required',
-                'wording' => 'required|max:150',
-                'description' => 'max:255',
-                'roles' => 'required',
-            ],
-            [
-                'code.required' => "Le code est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                'roles' => "Le choix d'au moins un rôle est obligatoire.",
-            ]
-        );
 
         $existingUserTypesOnCode = UserType::where('code', $request->code)->get();
         if (!empty($existingUserTypesOnCode) && sizeof($existingUserTypesOnCode) > 1) {
-            $success = false;
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'existingUserType' => $existingUserTypesOnCode[0],
                 'message' => "Le code " . $existingUserTypesOnCode[0]->wording . " existe déjà"
             ], 200);
@@ -136,32 +110,41 @@ class UserTypeController extends Controller
         }
 
         try {
-            $userType->code = strtoupper(str_replace(' ', '_', $request->code));
-            $userType->wording = $request->wording;
-            $userType->description = $request->description;
-            $userType->roles = $request->roles;
-            $userType->save();
+            $validation = $this->validator('update', $request->all());
 
-            $usersOfThisType = User::where('user_type_id', $userType)->get();
-            if (!empty($usersOfThisType) && sizeof($usersOfThisType) > 0) {
-                foreach ($usersOfThisType as $key => $user) {
-                    $user->roles = $request->roles;
-                    $user->save();
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $userType->code = strtoupper(str_replace(' ', '_', $request->code));
+                $userType->wording = $request->wording;
+                $userType->description = $request->description;
+                $userType->roles = $request->roles;
+                $userType->save();
+
+                $usersOfThisType = User::where('user_type_id', $userType)->get();
+                if (!empty($usersOfThisType) && sizeof($usersOfThisType) > 0) {
+                    foreach ($usersOfThisType as $key => $user) {
+                        $user->roles = $request->roles;
+                        $user->save();
+                    }
                 }
-            }
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'userType' => $userType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'userType' => $userType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }
@@ -190,12 +173,11 @@ class UserTypeController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -231,6 +213,48 @@ class UserTypeController extends Controller
             return new JsonResponse(['datas' => ['userTypes' => $userTypes]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'code' => 'required|unique:user_types',
+                    'wording' => 'required|unique:user_types|max:150',
+                    'description' => 'max:255',
+                    'roles' => 'required',
+                ],
+                [
+                    'code.required' => "Le code est obligatoire.",
+                    'code.unique' => "Ce code existe déjà.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Ce type existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères.",
+                    'roles' => "Le choix d'au moins un rôle est obligatoire.",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'code' => 'required',
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255',
+                    'roles' => 'required',
+                ],
+                [
+                    'code.required' => "Le code est obligatoire.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères.",
+                    'roles' => "Le choix d'au moins un rôle est obligatoire.",
+                ]
+            );
         }
     }
 }

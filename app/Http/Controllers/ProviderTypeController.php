@@ -7,6 +7,7 @@ use App\Repositories\ProviderTypeRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProviderTypeController extends Controller
 {
@@ -25,23 +26,23 @@ class ProviderTypeController extends Controller
 
         switch ($type) {
             case 'Raffinerie':
-                $providerTypes = ProviderType::where('type','=','Raffinerie')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::where('type', '=', 'Raffinerie')->with('providers')->orderBy('wording')->get();
                 break;
 
             case 'Unité de stockage':
-                $providerTypes = ProviderType::where('type','=','Unité de stockage')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::where('type', '=', 'Unité de stockage')->with('providers')->orderBy('wording')->get();
                 break;
 
             case 'Transport':
-                $providerTypes = ProviderType::where('type','=','Transport')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::where('type', '=', 'Transport')->with('providers')->orderBy('wording')->get();
                 break;
 
             case 'Autres fournisseurs':
-                $providerTypes = ProviderType::where('type','=','Autres fournisseurs')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::where('type', '=', 'Autres fournisseurs')->with('providers')->orderBy('wording')->get();
                 break;
 
             default:
-            $providerTypes = [];
+                $providerTypes = [];
                 break;
         }
         return new JsonResponse([
@@ -53,47 +54,38 @@ class ProviderTypeController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_PROVIDER_TYPE_CREATE', ProviderType::class);
-        $this->validate(
-            $request,
-            [
-                'type' => 'required',
-                'reference' => 'required|unique:provider_types',
-                'wording' => 'required|unique:provider_types|max:150',
-                'description' => 'max:255'
-            ],
-            [
-                'type.required' => "Le type du type de fournisseur est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette réference a déjà été attribuée déjà.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce type de fournisseur existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         try {
-            $providerType = new ProviderType();
-            $providerType->reference = $request->reference;
-            $providerType->wording = $request->wording;
-            $providerType->description = $request->description;
-            $providerType->type = $request->type;
-            $providerType->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'providerType' => $providerType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $providerType = new ProviderType();
+                $providerType->reference = $request->reference;
+                $providerType->wording = $request->wording;
+                $providerType->description = $request->description;
+                $providerType->type = $request->type;
+                $providerType->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'providerType' => $providerType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -102,44 +94,37 @@ class ProviderTypeController extends Controller
     {
         $this->authorize('ROLE_PROVIDER_TYPE_UPDATE', ProviderType::class);
         $providerType = ProviderType::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'type' => 'required',
-                'reference' => 'required',
-                'wording' => 'required|max:150',
-                'description' => 'max:255'
-            ],
-            [
-                'type.required' => "Le type du type de fournisseur est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         try {
-            $providerType->reference = $request->reference;
-            $providerType->wording = $request->wording;
-            $providerType->description = $request->description;
-            $providerType->type = $request->type;
-            $providerType->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'providerType' => $providerType,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $providerType->reference = $request->reference;
+                $providerType->wording = $request->wording;
+                $providerType->description = $request->description;
+                $providerType->type = $request->type;
+                $providerType->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'providerType' => $providerType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -167,12 +152,11 @@ class ProviderTypeController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -193,6 +177,48 @@ class ProviderTypeController extends Controller
             return new JsonResponse(['datas' => ['providerTypes' => $providerTypes]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'type' => 'required',
+                    'reference' => 'required|unique:provider_types',
+                    'wording' => 'required|unique:provider_types|max:150',
+                    'description' => 'max:255'
+                ],
+                [
+                    'type.required' => "Le type du type de fournisseur est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'reference.unique' => "Cette réference a déjà été attribuée déjà.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Ce type de fournisseur existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'type' => 'required',
+                    'reference' => 'required',
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255'
+                ],
+                [
+                    'type.required' => "Le type du type de fournisseur est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
         }
     }
 }

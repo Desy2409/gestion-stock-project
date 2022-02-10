@@ -35,33 +35,39 @@ class DeliveryPointController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_DELIVERY_POINT_CREATE', DeliveryPoint::class);
-        $errors = $this->validator('store', $request->all());
-
         try {
-            $deliveryPoint = new DeliveryPoint();
-            $deliveryPoint->code = $request->code;
-            $deliveryPoint->wording = $request->wording;
-            $deliveryPoint->latitude = $request->latitude;
-            $deliveryPoint->longitude = $request->longitude;
-            $deliveryPoint->description = $request->description;
-            $deliveryPoint->institution_id = $request->institution;
-            $deliveryPoint->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'deliveryPoint' => $deliveryPoint,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $deliveryPoint = new DeliveryPoint();
+                $deliveryPoint->code = $request->code;
+                $deliveryPoint->wording = $request->wording;
+                $deliveryPoint->latitude = $request->latitude;
+                $deliveryPoint->longitude = $request->longitude;
+                $deliveryPoint->description = $request->description;
+                $deliveryPoint->institution_id = $request->institution;
+                $deliveryPoint->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'deliveryPoint' => $deliveryPoint,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -69,7 +75,6 @@ class DeliveryPointController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_POINT_UPDATE', DeliveryPoint::class);
         $deliveryPoint = DeliveryPoint::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         $existingDeliveryPointsOnCode = DeliveryPoint::where('wording', $request->wording)->get();
         if (!empty($existingDeliveryPointsOnCode) && sizeof($existingDeliveryPointsOnCode) >= 1) {
@@ -92,30 +97,38 @@ class DeliveryPointController extends Controller
         }
 
         try {
-            $deliveryPoint->code = $request->code;
-            $deliveryPoint->wording = $request->wording;
-            $deliveryPoint->latitude = $request->latitude;
-            $deliveryPoint->longitude = $request->longitude;
-            $deliveryPoint->description = $request->description;
-            $deliveryPoint->institution_id = $request->institution;
-            $deliveryPoint->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'deliveryPoint' => $deliveryPoint,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $deliveryPoint->code = $request->code;
+                $deliveryPoint->wording = $request->wording;
+                $deliveryPoint->latitude = $request->latitude;
+                $deliveryPoint->longitude = $request->longitude;
+                $deliveryPoint->description = $request->description;
+                $deliveryPoint->institution_id = $request->institution;
+                $deliveryPoint->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'deliveryPoint' => $deliveryPoint,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            dd($e);
             $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -125,20 +138,18 @@ class DeliveryPointController extends Controller
         $deliveryPoint = DeliveryPoint::findOrFail($id);
         try {
             $deliveryPoint->delete();
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'deliveryPoint' => $deliveryPoint,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -165,39 +176,47 @@ class DeliveryPointController extends Controller
     protected function validator($mode, $data)
     {
         if ($mode == 'store') {
-            return Validator::make($data, [
-                'code' => 'required|unique:delivery_points',
-                'wording' => 'required|unique:delivery_points|max:150',
-                'description' => 'max:255',
-                'latitude' => 'integer',
-                'longitude' => 'integer',
-            ], [
-                'code.required' => "Le code est obligatoire.",
-                'code.unique' => "Ce code existe déjà.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce lieu de livraison existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'latitude.integer' => "La latitude doit être un nombre.",
-                'longitude.integer' => "La longitude doit être un nombre.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-            ]);
+            return Validator::make(
+                $data,
+                [
+                    'code' => 'required|unique:delivery_points',
+                    'wording' => 'required|unique:delivery_points|max:150',
+                    'description' => 'max:255',
+                    'latitude' => 'integer',
+                    'longitude' => 'integer',
+                ],
+                [
+                    'code.required' => "Le code est obligatoire.",
+                    'code.unique' => "Ce code existe déjà.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Ce lieu de livraison existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'latitude.integer' => "La latitude doit être un nombre.",
+                    'longitude.integer' => "La longitude doit être un nombre.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères.",
+                ]
+            );
         }
         if ($mode == 'update') {
-            return Validator::make($data, [
-                'code' => 'required',
-                'wording' => 'required|max:150',
-                'description' => 'max:255',
-                'latitude' => 'integer',
-                'longitude' => 'integer',
-            ], [
-                'code.required' => "Le code est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Ce lieu de livraison existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'latitude.integer' => "La latitude doit être un nombre.",
-                'longitude.integer' => "La longitude doit être un nombre.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères.",
-            ]);
+            return Validator::make(
+                $data,
+                [
+                    'code' => 'required',
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255',
+                    'latitude' => 'integer',
+                    'longitude' => 'integer',
+                ],
+                [
+                    'code.required' => "Le code est obligatoire.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Ce lieu de livraison existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'latitude.integer' => "La latitude doit être un nombre.",
+                    'longitude.integer' => "La longitude doit être un nombre.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères.",
+                ]
+            );
         }
     }
 }

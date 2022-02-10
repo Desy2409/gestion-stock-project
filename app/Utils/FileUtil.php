@@ -32,14 +32,14 @@ class FileUtil
         return storage_path('app/' . $entityFolder . '/' . $name);
     }
 
-    public function createFileInDefaultFolder($entity, $file, $personalizedFilename=null)
+    public function createFile($entity, $file, $personalizedFilename = null)
     {
         try {
             $ext = $file->getClientOriginalExtension();
             $name = rand() . '.' . $ext;
             if ($personalizedFilename) {
                 $this->moveUploadEntityFile($entity, $file, $personalizedFilename);
-            }else{
+            } else {
                 $this->moveUploadEntityFile($entity, $file, $name);
             }
 
@@ -51,33 +51,6 @@ class FileUtil
                 "personalized_filename" => $personalizedFilename,
                 "fileable_type" => get_class($entity),
                 "fileable_id" => $entity->id
-            ]);
-
-            return $fileSaved;
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
-    public function createFileInPersonalizedFolder($folder, $file, $personalizedFilename)
-    {
-        try {
-            $ext = $file->getClientOriginalExtension();
-            $name = rand() . '.' . $ext;
-            if ($personalizedFilename) {
-                $this->moveUploadEntityFile($folder, $file, $personalizedFilename);
-            }else{
-                $this->moveUploadEntityFile($folder, $file, $name);
-            }
-
-            $fileSaved = FileUpload::create([
-                "mime" => $file->getClientMimeType(),
-                "original_filename" => $file->getClientOriginalName(),
-                "filename" => $name,
-                "link" => $this->storePath($folder, $name),
-                "personalized_filename" => $personalizedFilename,
-                "fileable_type" => get_class($folder),
-                "fileable_id" => $folder->id
             ]);
 
             return $fileSaved;
@@ -116,4 +89,31 @@ class FileUtil
 
         return false;
     }
+
+    // public function createFileInPersonalizedFolder($folder, $file, $personalizedFilename)
+    // {
+    //     try {
+    //         $ext = $file->getClientOriginalExtension();
+    //         $name = rand() . '.' . $ext;
+    //         if ($personalizedFilename) {
+    //             $this->moveUploadEntityFile($folder, $file, $personalizedFilename);
+    //         } else {
+    //             $this->moveUploadEntityFile($folder, $file, $name);
+    //         }
+
+    //         $fileSaved = FileUpload::create([
+    //             "mime" => $file->getClientMimeType(),
+    //             "original_filename" => $file->getClientOriginalName(),
+    //             "filename" => $name,
+    //             "link" => $this->storePath($folder, $name),
+    //             "personalized_filename" => $personalizedFilename,
+    //             "fileable_type" => get_class($folder),
+    //             "fileable_id" => $folder->id
+    //         ]);
+
+    //         return $fileSaved;
+    //     } catch (Exception $e) {
+    //         return null;
+    //     }
+    // }
 }

@@ -69,39 +69,46 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_PRODUCT_CREATE', Product::class);
-        $errors = $this->validator('store', $request->all());
 
         try {
-            $lastProduct = Product::latest()->first();
+            $validation = $this->validator('store', $request->all());
 
-            $product = new Product();
-            if ($lastProduct) {
-                $product->code = $this->formateNPosition($this->prefix, $lastProduct->id + 1, 8);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
             } else {
-                $product->code = $this->formateNPosition($this->prefix, 1, 8);
-            }
-            $product->reference = $request->reference;
-            $product->wording = $request->wording;
-            $product->description = $request->description;
-            $product->sub_category_id = $request->sub_category;
-            $product->save();
+                $lastProduct = Product::latest()->first();
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'product' => $product,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+                $product = new Product();
+                if ($lastProduct) {
+                    $product->code = $this->formateNPosition($this->prefix, $lastProduct->id + 1, 8);
+                } else {
+                    $product->code = $this->formateNPosition($this->prefix, 1, 8);
+                }
+                $product->reference = $request->reference;
+                $product->wording = $request->wording;
+                $product->description = $request->description;
+                $product->sub_category_id = $request->sub_category;
+                $product->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'product' => $product,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -149,28 +156,37 @@ class ProductController extends Controller
         }
 
         try {
-            $product->reference = $request->reference;
-            $product->wording = $request->wording;
-            $product->description = $request->description;
-            $product->sub_category_id = $request->sub_category;
-            $product->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'product' => $product,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $product->reference = $request->reference;
+                $product->wording = $request->wording;
+                $product->description = $request->description;
+                $product->sub_category_id = $request->sub_category;
+                $product->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'product' => $product,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -207,12 +223,11 @@ class ProductController extends Controller
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -247,18 +262,16 @@ class ProductController extends Controller
             $productPricing->product_id = $product->id;
             $productPricing->save();
 
-            $success = true;
             $message = "Prix défini avec succès.";
             return new JsonResponse([
                 'product' => $product,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la définition de prix.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 400);
         }

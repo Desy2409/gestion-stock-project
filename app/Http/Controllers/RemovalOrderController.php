@@ -24,6 +24,7 @@ use App\Repositories\PurchaseOrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RemovalOrderController extends Controller
 {
@@ -128,112 +129,87 @@ class RemovalOrderController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
-        $this->validate(
-            $request,
-            [
-                'client' => 'required',
-                'stock_type' => 'required',
-                'reference' => 'required|unique:removal_orders',
-                // 'reference_tourn' => 'required|unique:tourns',
-                'voucher_date' => 'required|date', //|date_format:Ymd
-                'delivery_date_wished' => 'required|date|after:voucher_date', //|date_format:Ymd
-                'voucher_type' => 'required',
-                'customs_regime' => 'required',
-                'storage_unit' => 'required',
-                'carrier' => 'required',
-            ],
-            [
-                'client' => "Le choix du client est obligatoire.",
-                'stock_type' => "Le choix du type de stock est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette référence existe déjà.",
-                'reference_tourn.required' => "La référence de la tournée est obligatoire.",
-                'reference_tourn.unique' => "Cette référence de tournée existe déjà.",
-                'voucher_date.required' => "La date du bon à enlever est obligatoire.",
-                'voucher_date.date' => "La date du bon à enlever est incorrecte.",
-                // 'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
-                'voucher_date.date_equals' => "La date du bon à enlever ne peut être qu'aujourd'hui.",
-                'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
-                'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
-                // 'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : Année Mois Jour.",
-                'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
-                'voucher_type.required' => "Le type de bon est obligatoire.",
-                'customs_regime.required' => "Le régime douanier est obligatoire.",
-                'storage_unit.required' => "L'unité de stockage est obligatoire.",
-                'carrier.required' => "Le transporteur est obligatoire.",
-            ],
-        );
 
         try {
-            $lastRemovalOrder = RemovalOrder::latest()->first();
+            $validation = $this->validator('store', $request->all());
 
-            $removalOrder = new RemovalOrder();
-            if ($lastRemovalOrder) {
-                $removalOrder->code = $this->formateNPosition('BE', $lastRemovalOrder->id + 1, 8);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
             } else {
-                $removalOrder->code = $this->formateNPosition('BE', 1, 8);
+                $lastRemovalOrder = RemovalOrder::latest()->first();
+
+                $removalOrder = new RemovalOrder();
+                if ($lastRemovalOrder) {
+                    $removalOrder->code = $this->formateNPosition('BE', $lastRemovalOrder->id + 1, 8);
+                } else {
+                    $removalOrder->code = $this->formateNPosition('BE', 1, 8);
+                }
+                $removalOrder->reference = $request->reference;
+                $removalOrder->voucher_date = $request->voucher_date;
+                $removalOrder->delivery_date_wished = $request->delivery_date_wished;
+                $removalOrder->place_of_delivery = $request->place_of_delivery;
+                $removalOrder->voucher_type = $request->voucher_type;
+                $removalOrder->customs_regime = $request->customs_regime;
+                $removalOrder->storage_unit_id = $request->storage_unit;
+                $removalOrder->carrier_id = $request->carrier;
+                $removalOrder->transmitter_id = $request->transmitter;
+                $removalOrder->receiver_id = $request->receiver;
+                $removalOrder->client_id = $request->client;
+                $removalOrder->stock_type_id = $request->stock_type;
+                $removalOrder->save();
+    
+                $lastTourn = Tourn::latest()->first();
+    
+                $tourn = new Tourn();
+                if ($lastTourn) {
+                    $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+                } else {
+                    $tourn->code = $this->formateNPosition('TO', 1, 8);
+                }
+    
+                $clientDeliveryNotes = [];
+                array_push($clientDeliveryNotes, $request->client_delivery_note);
+    
+                $tourn->reference = $request->reference_tourn;
+                $tourn->date_of_edition = $request->date_of_edition;
+                $tourn->removal_order_id = $removalOrder->id;
+                $tourn->truck_id = $request->truck;
+                $tourn->tank_id = $request->tank;
+                $tourn->destination_id = $request->destination;
+                $tourn->client_delivery_notes = $clientDeliveryNotes;
+                $tourn->save();
+    
+                $productsTourns = [];
+                foreach ($request->productTourns as $key => $productTournLine) {
+                    // dd($productTournLine);
+                    $productTourn = new ProductTourn();
+                    $productTourn->quantity = $productTournLine['quantity'];
+                    $productTourn->product_id = $productTournLine['product_id'];
+                    $productTourn->tourn_id = $tourn->id;
+                    $productTourn->unity_id = $productTournLine['unity_id'];
+                    $productTourn->save();
+    
+                    array_push($productsTourns, $productTourn);
+                }
+    
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'removalOrder' => $removalOrder,
+                    'success' => true,
+                    'message' => $message,
+                    'datas' => ['productsTourns' => $productsTourns],
+                ], 200); 
             }
-            $removalOrder->reference = $request->reference;
-            $removalOrder->voucher_date = $request->voucher_date;
-            $removalOrder->delivery_date_wished = $request->delivery_date_wished;
-            $removalOrder->place_of_delivery = $request->place_of_delivery;
-            $removalOrder->voucher_type = $request->voucher_type;
-            $removalOrder->customs_regime = $request->customs_regime;
-            $removalOrder->storage_unit_id = $request->storage_unit;
-            $removalOrder->carrier_id = $request->carrier;
-            $removalOrder->transmitter_id = $request->transmitter;
-            $removalOrder->receiver_id = $request->receiver;
-            $removalOrder->client_id = $request->client;
-            $removalOrder->stock_type_id = $request->stock_type;
-            $removalOrder->save();
-
-            $lastTourn = Tourn::latest()->first();
-
-            $tourn = new Tourn();
-            if ($lastTourn) {
-                $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
-            } else {
-                $tourn->code = $this->formateNPosition('TO', 1, 8);
-            }
-
-            $clientDeliveryNotes = [];
-            array_push($clientDeliveryNotes, $request->client_delivery_note);
-
-            $tourn->reference = $request->reference_tourn;
-            $tourn->date_of_edition = $request->date_of_edition;
-            $tourn->removal_order_id = $removalOrder->id;
-            $tourn->truck_id = $request->truck;
-            $tourn->tank_id = $request->tank;
-            $tourn->destination_id = $request->destination;
-            $tourn->client_delivery_notes = $clientDeliveryNotes;
-            $tourn->save();
-
-            $productsTourns = [];
-            foreach ($request->productTourns as $key => $productTournLine) {
-                // dd($productTournLine);
-                $productTourn = new ProductTourn();
-                $productTourn->quantity = $productTournLine['quantity'];
-                $productTourn->product_id = $productTournLine['product_id'];
-                $productTourn->tourn_id = $tourn->id;
-                $productTourn->unity_id = $productTournLine['unity_id'];
-                $productTourn->save();
-
-                array_push($productsTourns, $productTourn);
-            }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'removalOrder' => $removalOrder,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productsTourns' => $productsTourns],
-            ], 200);
+            
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -261,51 +237,28 @@ class RemovalOrderController extends Controller
     {
         $this->authorize('ROLE_REMOVAL_ORDER_UPDATE', RemovalOrder::class);
         $removalOrder = RemovalOrder::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'client' => 'required',
-                'stock_type' => 'required',
-                'reference' => 'required|unique:removal_orders',
-                'voucher_date' => 'required|date|date_format:Ymd|date_equals:today',
-                'delivery_date_wished' => 'required|date|date_format:Ymd|after:voucher_date',
-                'voucher_type' => 'required',
-                'customs_regime' => 'required',
-                'storage_unit' => 'required',
-                'carrier' => 'required',
-            ],
-            [
-                'stock_type' => "Le choix du client est obligatoire.",
-                'stock_type' => "Le choix du type de stock est obligatoire.",
-                'reference.required' => "La référence est obligatoire.",
-                'reference.unique' => "Cette référence existe déjà.",
-                'voucher_date.required' => "La date du bon à enlever est obligatoire.",
-                'voucher_date.date' => "La date du bon à enlever est incorrecte.",
-                'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
-                'voucher_date.date_equals' => "La date du bon à enlever ne peut être qu'aujourd'hui.",
-                'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
-                'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
-                'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : Année Mois Jour.",
-                'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
-                'voucher_type.required' => "Le type de bon est obligatoire.",
-                'customs_regime.required' => "Le régime douanier est obligatoire.",
-                'storage_unit.required' => "L'unité de stockage est obligatoire.",
-                'carrier.required' => "Le transporteur est obligatoire.",
-            ],
-        );
 
         $existingRemovalOrders = RemovalOrder::where('reference', $request->reference)->get();
         if (!empty($existingRemovalOrders) && sizeof($existingRemovalOrders) > 1) {
-            $success = false;
             return new JsonResponse([
                 'existingRemovalOrder' => $existingRemovalOrders[0],
-                'success' => $success,
+                'success' => false,
                 'message' => "Le bon à enlever portant la référence " . $existingRemovalOrders[0]->reference . " existe déjà."
             ], 200);
         }
 
         try {
-            $removalOrder->reference = $request->reference;
+            $validation = $this->validator('update', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $removalOrder->reference = $request->reference;
             $removalOrder->voucher_date = $request->voucher_date;
             $removalOrder->delivery_date_wished = $request->delivery_date_wished;
             $removalOrder->place_of_delivery = $request->place_of_delivery;
@@ -319,18 +272,18 @@ class RemovalOrderController extends Controller
             $removalOrder->stock_type_id = $request->stock_type;
             $removalOrder->save();
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
+            }
+            
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
         }
@@ -343,20 +296,93 @@ class RemovalOrderController extends Controller
         try {
             $removalOrder->delete();
 
-            $success = true;
             $message = "Suppression effectuée avec succès.";
             return new JsonResponse([
                 'removalOrder' => $removalOrder,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
             ], 200);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'client' => 'required',
+                    'stock_type' => 'required',
+                    'reference' => 'required|unique:removal_orders',
+                    // 'reference_tourn' => 'required|unique:tourns',
+                    'voucher_date' => 'required|date', //|date_format:Ymd
+                    'delivery_date_wished' => 'required|date|after:voucher_date', //|date_format:Ymd
+                    'voucher_type' => 'required',
+                    'customs_regime' => 'required',
+                    'storage_unit' => 'required',
+                    'carrier' => 'required',
+                ],
+                [
+                    'client' => "Le choix du client est obligatoire.",
+                    'stock_type' => "Le choix du type de stock est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'reference.unique' => "Cette référence existe déjà.",
+                    'reference_tourn.required' => "La référence de la tournée est obligatoire.",
+                    'reference_tourn.unique' => "Cette référence de tournée existe déjà.",
+                    'voucher_date.required' => "La date du bon à enlever est obligatoire.",
+                    'voucher_date.date' => "La date du bon à enlever est incorrecte.",
+                    // 'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
+                    'voucher_date.date_equals' => "La date du bon à enlever ne peut être qu'aujourd'hui.",
+                    'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
+                    'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
+                    // 'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : Année Mois Jour.",
+                    'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
+                    'voucher_type.required' => "Le type de bon est obligatoire.",
+                    'customs_regime.required' => "Le régime douanier est obligatoire.",
+                    'storage_unit.required' => "L'unité de stockage est obligatoire.",
+                    'carrier.required' => "Le transporteur est obligatoire.",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'client' => 'required',
+                    'stock_type' => 'required',
+                    'reference' => 'required|unique:removal_orders',
+                    'voucher_date' => 'required|date|date_format:Ymd|date_equals:today',
+                    'delivery_date_wished' => 'required|date|date_format:Ymd|after:voucher_date',
+                    'voucher_type' => 'required',
+                    'customs_regime' => 'required',
+                    'storage_unit' => 'required',
+                    'carrier' => 'required',
+                ],
+                [
+                    'stock_type' => "Le choix du client est obligatoire.",
+                    'stock_type' => "Le choix du type de stock est obligatoire.",
+                    'reference.required' => "La référence est obligatoire.",
+                    'reference.unique' => "Cette référence existe déjà.",
+                    'voucher_date.required' => "La date du bon à enlever est obligatoire.",
+                    'voucher_date.date' => "La date du bon à enlever est incorrecte.",
+                    'voucher_date.date_format' => "La date du bon à enlever doit être sous le format : Année Mois Jour.",
+                    'voucher_date.date_equals' => "La date du bon à enlever ne peut être qu'aujourd'hui.",
+                    'delivery_date_wished.required' => "La date de livraison souhaitée prévue est obligatoire.",
+                    'delivery_date_wished.date' => "La date de livraison souhaitée est incorrecte.",
+                    'delivery_date_wished.date_format' => "La date de livraison souhaitée doit être sous le format : Année Mois Jour.",
+                    'delivery_date_wished.after' => "La date de livraison souhaitée doit être ultérieure à la date du bon à enlever.",
+                    'voucher_type.required' => "Le type de bon est obligatoire.",
+                    'customs_regime.required' => "Le régime douanier est obligatoire.",
+                    'storage_unit.required' => "L'unité de stockage est obligatoire.",
+                    'carrier.required' => "Le transporteur est obligatoire.",
+                ]
+            );
         }
     }
 }

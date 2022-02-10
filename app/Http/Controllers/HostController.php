@@ -8,6 +8,7 @@ use App\Repositories\HostRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class HostController extends Controller
@@ -18,7 +19,7 @@ class HostController extends Controller
     {
         $this->hostRepository = $hostRepository;
     }
-    
+
     public function index()
     {
         $this->authorize('ROLE_HOST_READ', Host::class);
@@ -31,47 +32,39 @@ class HostController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_HOST_CREATE', Host::class);
-        $this->validate(
-            $request,
-            [
-                'driver' => 'required',
-                'host_name' => 'required|unique:hosts|max:20',
-                'provider' => 'required',
-                'url' => 'required'
-            ],
-            [
-                'driver.required' => "Le driver est obligatoire.",
-                'host_name.required' => "Le nom d'hôte est obligatoire.",
-                'host_name.unique' => "Cet hôte existe déjà.",
-                'host_name.max' => "Le nom d'hôte ne doit pas dépasser 20 caractères.",
-                'provider.required' => "Le fournisseur de service est obligatoire.",
-                'url.required' => "L'url est obligatoire."
-            ]
-        );
 
         try {
-            $host = new Host();
-            $host->code = Str::random(10);
-            $host->provider = $request->provider;
-            $host->url = $request->url;
-            $host->host_name = $request->host_name;
-            $host->driver_id = $request->driver;
-            $host->save();
+            $validation = $this->validator('store', $request->all());
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'host' => $host,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $host = new Host();
+                $host->code = Str::random(10);
+                $host->provider = $request->provider;
+                $host->url = $request->url;
+                $host->host_name = $request->host_name;
+                $host->driver_id = $request->driver;
+                $host->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'host' => $host,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -79,22 +72,6 @@ class HostController extends Controller
     {
         $this->authorize('ROLE_HOST_UPDATE', Host::class);
         $host = Host::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'driver' => 'required',
-                'host_name' => 'required|max:20',
-                'provider' => 'required',
-                'url' => 'required'
-            ],
-            [
-                'driver.required' => "Le driver est obligatoire.",
-                'host_name.required' => "Le nom d'hôte est obligatoire.",
-                'host_name.max' => "Le nom d'hôte ne doit pas dépasser 20 caractères.",
-                'provider.required' => "Le fournisseur de service est obligatoire.",
-                'url.required' => "L'url est obligatoire."
-            ]
-        );
 
         $existingHosts = Host::where('host_name', $request->host_name)->get();
         if (!empty($existingHosts) && sizeof($existingHosts) >= 1) {
@@ -107,27 +84,36 @@ class HostController extends Controller
         }
 
         try {
-            $host->provider = $request->provider;
-            $host->url = $request->url;
-            $host->host_name = $request->host_name;
-            $host->driver_id = $request->driver;
-            $host->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'host' => $host,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $host->provider = $request->provider;
+                $host->url = $request->url;
+                $host->host_name = $request->host_name;
+                $host->driver_id = $request->driver;
+                $host->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'host' => $host,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -143,23 +129,22 @@ class HostController extends Controller
                 $host->delete();
                 $success = true;
                 $message = "Suppression effectuée avec succès.";
-            }else{
+            } else {
                 // dd('not delete');
                 $message = "Cet hôte ne peut être supprimé car il a servi dans des traitements.";
             }
-            
+
             return new JsonResponse([
                 'host' => $host,
                 'success' => $success,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -180,6 +165,47 @@ class HostController extends Controller
             return new JsonResponse(['datas' => ['hosts' => $hosts]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'driver' => 'required',
+                    'host_name' => 'required|unique:hosts|max:20',
+                    'provider' => 'required',
+                    'url' => 'required'
+                ],
+                [
+                    'driver.required' => "Le driver est obligatoire.",
+                    'host_name.required' => "Le nom d'hôte est obligatoire.",
+                    'host_name.unique' => "Cet hôte existe déjà.",
+                    'host_name.max' => "Le nom d'hôte ne doit pas dépasser 20 caractères.",
+                    'provider.required' => "Le fournisseur de service est obligatoire.",
+                    'url.required' => "L'url est obligatoire."
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'driver' => 'required',
+                    'host_name' => 'required|max:20',
+                    'provider' => 'required',
+                    'url' => 'required'
+                ],
+                [
+                    'driver.required' => "Le driver est obligatoire.",
+                    'host_name.required' => "Le nom d'hôte est obligatoire.",
+                    'host_name.max' => "Le nom d'hôte ne doit pas dépasser 20 caractères.",
+                    'provider.required' => "Le fournisseur de service est obligatoire.",
+                    'url.required' => "L'url est obligatoire."
+                ]
+            );
         }
     }
 }

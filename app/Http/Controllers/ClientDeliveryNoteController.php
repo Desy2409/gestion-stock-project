@@ -96,63 +96,73 @@ class ClientDeliveryNoteController extends Controller
         $errors = $this->validator('store', $request->all());
 
         try {
-            $sale = Sale::where('purchase_order_id', $request->purchase_order)->first();
-            $lastClientDeliveryNote = ClientDeliveryNote::latest()->first();
 
-            $clientDeliveryNote = new ClientDeliveryNote();
-            if ($lastClientDeliveryNote) {
-                $clientDeliveryNote->code = $this->formateNPosition($this->prefix, $lastClientDeliveryNote->id + 1, 8);
+            $validation = $this->validator('store', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
             } else {
-                $clientDeliveryNote->code = $this->formateNPosition($this->prefix, 1, 8);
+                $sale = Sale::where('purchase_order_id', $request->purchase_order)->first();
+                $lastClientDeliveryNote = ClientDeliveryNote::latest()->first();
+
+                $clientDeliveryNote = new ClientDeliveryNote();
+                if ($lastClientDeliveryNote) {
+                    $clientDeliveryNote->code = $this->formateNPosition($this->prefix, $lastClientDeliveryNote->id + 1, 8);
+                } else {
+                    $clientDeliveryNote->code = $this->formateNPosition($this->prefix, 1, 8);
+                }
+                $clientDeliveryNote->reference = $request->reference;
+                $clientDeliveryNote->delivery_date   = $request->delivery_date;
+                $clientDeliveryNote->total_amount = $request->total_amount;
+                $clientDeliveryNote->observation = $request->observation;
+                $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
+                $clientDeliveryNote->sale_id = $sale->id;
+                $clientDeliveryNote->save();
+
+                $productClientDeliveryNotes = [];
+                foreach ($request->clientDeliveryNoteProducts as $key => $product) {
+                    $productClientDeliveryNote = new ProductClientDeliveryNote();
+                    $productClientDeliveryNote->quantity = $product["quantity"];
+                    $productClientDeliveryNote->unity_id = $product["unity"]["id"];
+                    $productClientDeliveryNote->product_id = $product["product"]["id"];
+                    $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
+                    $productClientDeliveryNote->save();
+
+                    array_push($productClientDeliveryNotes, $productClientDeliveryNote);
+                }
+
+                $folder = Folder::findOrFail($request->folder);
+
+                $check = $this->checkFileType($clientDeliveryNote);
+                if (!$check) {
+                    $success = false;
+                    $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
+                    return new JsonResponse(['success' => $success, 'message' => $message], 400);
+                } else {
+                    $this->storeFile($this->user, $clientDeliveryNote, $folder, $request->upload_files);
+                }
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'clientDeliveryNote' => $clientDeliveryNote,
+                    'success' => true,
+                    'message' => $message,
+                    'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
+                ], 200);
             }
-            $clientDeliveryNote->reference = $request->reference;
-            $clientDeliveryNote->delivery_date   = $request->delivery_date;
-            $clientDeliveryNote->total_amount = $request->total_amount;
-            $clientDeliveryNote->observation = $request->observation;
-            $clientDeliveryNote->place_of_delivery = $request->place_of_delivery;
-            $clientDeliveryNote->sale_id = $sale->id;
-            $clientDeliveryNote->save();
-
-            $productClientDeliveryNotes = [];
-            foreach ($request->clientDeliveryNoteProducts as $key => $product) {
-                $productClientDeliveryNote = new ProductClientDeliveryNote();
-                $productClientDeliveryNote->quantity = $product["quantity"];
-                $productClientDeliveryNote->unity_id = $product["unity"]["id"];
-                $productClientDeliveryNote->product_id = $product["product"]["id"];
-                $productClientDeliveryNote->client_delivery_note_id = $clientDeliveryNote->id;
-                $productClientDeliveryNote->save();
-
-                array_push($productClientDeliveryNotes, $productClientDeliveryNote);
-            }
-
-            $folder = Folder::findOrFail($request->folder);
-
-            $check = $this->checkFileType($clientDeliveryNote);
-            if (!$check) {
-                $success = false;
-                $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
-                return new JsonResponse(['success' => $success, 'message' => $message], 400);
-            } else {
-                $this->storeFile($this->user, $clientDeliveryNote, $folder, $request->upload_files);
-            }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'clientDeliveryNote' => $clientDeliveryNote,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
-            ], 200);
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -189,6 +199,18 @@ class ClientDeliveryNoteController extends Controller
         $errors = $this->validator('update', $request->all());
 
         try {
+            $validation = $this->validator('update', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                
+            }
             $sale = Sale::where('purchase_order_id', $request->purchase_order)->first();
 
             $clientDeliveryNote->reference = $request->reference;
@@ -213,23 +235,21 @@ class ClientDeliveryNoteController extends Controller
                 array_push($productClientDeliveryNotes, $productClientDeliveryNote);
             }
 
-            $success = true;
             $message = "Modification effectuée avec succès.";
             return new JsonResponse([
                 'clientDeliveryNote' => $clientDeliveryNote,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
                 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
             ], 200);
         } catch (Exception $e) {
             // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
                 'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -258,12 +278,11 @@ class ClientDeliveryNoteController extends Controller
                 'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la suppression.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -272,7 +291,6 @@ class ClientDeliveryNoteController extends Controller
         try {
             $this->processing(ClientDeliveryNote::class, $id, $action);
 
-            $success = true;
             if ($action == 'validate') {
                 $message = "Livraison validée avec succès.";
             }
@@ -280,11 +298,10 @@ class ClientDeliveryNoteController extends Controller
                 $message = "Livraison rejetée avec succès.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            $success = false;
             if ($action == 'validate') {
                 $message = "Erreur survenue lors de la validation de la livraison.";
             }
@@ -292,9 +309,9 @@ class ClientDeliveryNoteController extends Controller
                 $message = "Erreur survenue lors de l'annulation de la livraison.";
             }
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -307,21 +324,18 @@ class ClientDeliveryNoteController extends Controller
 
             $this->decrementByRetunringClientDeliveryNote($clientDeliveryNote);
 
-            $success = true;
             $message = "Marchandises rendues avec succès.";
             return new JsonResponse([
                 'clientDeliveryNote' => $clientDeliveryNote,
-                'success' => $success,
+                'success' => true,
                 'message' => $message,
             ], 200);
         } catch (Exception $e) {
-            dd($e);
-            $success = false;
             $message = "Erreur survenue lors du retour des marchandises.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
