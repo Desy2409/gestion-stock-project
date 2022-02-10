@@ -19,10 +19,10 @@ class CreateFileUploadsTable extends Migration
             $table->string('original_filename');
             $table->string('filename');
             $table->string('link');
-            $table->string('personalized_filename');
+            $table->string('personalized_filename')->nullable();
+            $table->double('size')->nullable()->default(0);
             $table->foreignId('file_type_id')->nullable()->constrained();
             $table->foreignId('folder_id')->nullable()->constrained();
-            $table->foreignId('size')->nullable()->constrained();
             $table->foreignId('order_id')->nullable()->constrained();
             $table->foreignId('purchase_id')->nullable()->constrained();
             $table->foreignId('delivery_note_id')->nullable()->constrained();

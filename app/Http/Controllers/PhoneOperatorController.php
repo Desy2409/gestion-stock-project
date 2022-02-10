@@ -9,6 +9,7 @@ use App\Repositories\PhoneOperatorRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class PhoneOperatorController extends Controller
@@ -34,50 +35,46 @@ class PhoneOperatorController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_PHONE_OPERATOR_CREATE', PhoneOperator::class);
-        $this->validate(
-            $request,
-            [
-                'country' => 'required',
-                'wording' => 'required|unique:phone_operators|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'country.required' => "Le choix d'un pays est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.unique' => "Cet opérateur téléphonique existe déjà.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         try {
-            $phoneOperator = new PhoneOperator();
-            $phoneOperator->code = Str::random(10);
-            $phoneOperator->wording = $request->wording;
-            $phoneOperator->description = $request->description;
-            $phoneOperator->country_id = $request->country;
-            $phoneOperator->save();
+            $validation = $this->validator('store', $request->all());
 
-            $startNumbers = [];
-            if ($request->startNumbers) {
-                foreach ($request->startNumbers as $key => $number) {
-                    $startNumber = new StartNumber();
-                    $startNumber->number = $number;
-                    $startNumber->phone_operator_id = $phoneOperator->id;
-                    $startNumber->save();
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $phoneOperator = new PhoneOperator();
+                $phoneOperator->code = Str::random(10);
+                $phoneOperator->wording = $request->wording;
+                $phoneOperator->description = $request->description;
+                $phoneOperator->country_id = $request->country;
+                $phoneOperator->save();
 
-                    array_push($startNumbers, $startNumber);
+                $startNumbers = [];
+                if ($request->startNumbers) {
+                    foreach ($request->startNumbers as $key => $number) {
+                        $startNumber = new StartNumber();
+                        $startNumber->number = $number;
+                        $startNumber->phone_operator_id = $phoneOperator->id;
+                        $startNumber->save();
+
+                        array_push($startNumbers, $startNumber);
+                    }
                 }
-            }
 
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'phoneOperator' => $phoneOperator,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['startNumbers' => $startNumbers]
-            ], 200);
+                $success = true;
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'phoneOperator' => $phoneOperator,
+                    'success' => $success,
+                    'message' => $message,
+                    'datas' => ['startNumbers' => $startNumbers]
+                ], 200);
+            }
         } catch (Exception $e) {
             dd($e);
             $success = false;
@@ -85,7 +82,7 @@ class PhoneOperatorController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -93,20 +90,6 @@ class PhoneOperatorController extends Controller
     {
         $this->authorize('ROLE_PHONE_OPERATOR_UPDATE', PhoneOperator::class);
         $phoneOperator = PhoneOperator::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'country' => 'required',
-                'wording' => 'required|max:150',
-                'description' => 'max:255',
-            ],
-            [
-                'country.required' => "Le choix d'un pays est obligatoire.",
-                'wording.required' => "Le libellé est obligatoire.",
-                'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
-                'description.max' => "La description ne doit pas dépasser 255 caractères."
-            ]
-        );
 
         $existingPhoneOperators = PhoneOperator::where('wording', $request->wording)->get();
         if (!empty($existingPhoneOperators) && sizeof($existingPhoneOperators) >= 1) {
@@ -119,40 +102,51 @@ class PhoneOperatorController extends Controller
         }
 
         try {
-            $phoneOperator->wording = $request->wording;
-            $phoneOperator->description = $request->description;
-            $phoneOperator->country_id = $request->country;
-            $phoneOperator->save();
+            $validation = $this->validator('update', $request->all());
 
-            StartNumber::where('phone_operator_id', $phoneOperator->id)->delete();
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $phoneOperator->wording = $request->wording;
+                $phoneOperator->description = $request->description;
+                $phoneOperator->country_id = $request->country;
+                $phoneOperator->save();
 
-            $startNumbers = [];
-            if ($request->startNumbers) {
-                foreach ($request->startNumbers as $key => $number) {
-                    $startNumber = new StartNumber();
-                    $startNumber->number = $number;
-                    $startNumber->phone_operator_id = $phoneOperator->id;
-                    $startNumber->save();
+                StartNumber::where('phone_operator_id', $phoneOperator->id)->delete();
 
-                    array_push($startNumbers, $startNumber);
+                $startNumbers = [];
+                if ($request->startNumbers) {
+                    foreach ($request->startNumbers as $key => $number) {
+                        $startNumber = new StartNumber();
+                        $startNumber->number = $number;
+                        $startNumber->phone_operator_id = $phoneOperator->id;
+                        $startNumber->save();
+
+                        array_push($startNumbers, $startNumber);
+                    }
                 }
-            }
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'phoneOperator' => $phoneOperator,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['startNumbers' => $startNumbers]
-            ], 200);
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'phoneOperator' => $phoneOperator,
+                    'success' => $success,
+                    'message' => $message,
+                    'datas' => ['startNumbers' => $startNumbers]
+                ], 200);
+            }
         } catch (Exception $e) {
             $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -162,16 +156,16 @@ class PhoneOperatorController extends Controller
         $phoneOperator = PhoneOperator::findOrFail($id);
         try {
             $success = false;
-                $message = "";
-                if (empty($phoneOperator->startNumbers) || sizeof($phoneOperator->startNumbers) == 0) {
-                    // dd('delete');
-                    $phoneOperator->delete();
-                    $success = true;
-                    $message = "Suppression effectuée avec succès.";
-                }else{
-                    // dd('not delete');
-                    $message = "Cet opérateur téléphonique ne peut être supprimé car il a servi dans des traitements.";
-                }
+            $message = "";
+            if (empty($phoneOperator->startNumbers) || sizeof($phoneOperator->startNumbers) == 0) {
+                // dd('delete');
+                $phoneOperator->delete();
+                $success = true;
+                $message = "Suppression effectuée avec succès.";
+            } else {
+                // dd('not delete');
+                $message = "Cet opérateur téléphonique ne peut être supprimé car il a servi dans des traitements.";
+            }
 
             return new JsonResponse([
                 'phoneOperator' => $phoneOperator,
@@ -205,6 +199,43 @@ class PhoneOperatorController extends Controller
             return new JsonResponse(['datas' => ['phoneOperators' => $phoneOperators]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'country' => 'required',
+                    'wording' => 'required|unique:phone_operators|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'country.required' => "Le choix d'un pays est obligatoire.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.unique' => "Cet opérateur téléphonique existe déjà.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'country' => 'required',
+                    'wording' => 'required|max:150',
+                    'description' => 'max:255',
+                ],
+                [
+                    'country.required' => "Le choix d'un pays est obligatoire.",
+                    'wording.required' => "Le libellé est obligatoire.",
+                    'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
+                    'description.max' => "La description ne doit pas dépasser 255 caractères."
+                ]
+            );
         }
     }
 }

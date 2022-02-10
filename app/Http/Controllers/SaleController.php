@@ -26,6 +26,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class SaleController extends Controller
 {
@@ -97,7 +98,7 @@ class SaleController extends Controller
 
         $productPurchaseOrders = ProductPurchaseOrder::where('purchase_order_id', $purchaseOrder->id)->with('product')->with('unity')->get();
         return new JsonResponse([
-         'purchaseOrder' => $purchaseOrder, 'datas' => ['productPurchaseOrders' => $productPurchaseOrders]
+            'purchaseOrder' => $purchaseOrder, 'datas' => ['productPurchaseOrders' => $productPurchaseOrders]
         ], 200);
     }
 
@@ -135,10 +136,10 @@ class SaleController extends Controller
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
         $sale = Sale::with('purchaseOrder')->findOrFail($id);
-        $productSales = ProductSale::where('sale_id',$sale->id)->with('product')->with('unity')->get();
+        $productSales = ProductSale::where('sale_id', $sale->id)->with('product')->with('unity')->get();
         return new JsonResponse([
             'sale' => $sale,
-            'datas' => [ 'productSales' => $productSales]
+            'datas' => ['productSales' => $productSales]
         ], 200);
     }
 
@@ -257,7 +258,7 @@ class SaleController extends Controller
                     'message' => $message,
                 ], 400);
             }
-        } elseif ($request->saleType == "Vente sur commande"){
+        } elseif ($request->saleType == "Vente sur commande") {
             $this->validate(
                 $request,
                 [
@@ -657,6 +658,36 @@ class SaleController extends Controller
             return new JsonResponse(['datas' => ['sales' => $sales]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            if ($data['saleType'] == 'Vente directe') {
+                return Validator::make(
+                    $data,
+
+                );
+            } else {
+                return Validator::make(
+                    $data,
+
+                );
+            }
+        }
+        if ($mode == 'update') {
+            if ($data['saleType'] == 'Vente directe') {
+                return Validator::make(
+                    $data,
+
+                );
+            } else {
+                return Validator::make(
+                    $data,
+
+                );
+            }
         }
     }
 }

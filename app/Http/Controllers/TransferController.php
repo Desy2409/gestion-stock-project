@@ -14,6 +14,7 @@ use App\Repositories\TransferRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TransferController extends Controller
 {
@@ -84,89 +85,65 @@ class TransferController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_TRANSFER_CREATE', Transfer::class);
-        $this->validate(
-            $request,
-            [
-                'transfer_demand' => 'required',
-                // 'transmitter' => 'required',
-                // 'receiver' => 'required',
-                'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date|date_equals:today', //|date_format:Ymd
-                'date_of_receipt' => 'date|after:date_of_transfer', //|date_format:Ymd
-                'transferProducts' => 'required',
-                // 'quantities' => 'required|min:0',
-                // 'unit_prices' => 'required|min:0',
-            ],
-            [
-                'transfer_demand.required' => "Le choix d'une demande de transfert est obligatoire.",
-                // 'transmitter.required' => "Le point de vente source est obligatoire.",
-                // 'receiver.required' => "Le point de vente destination est obligatoire.",
-                'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
-                'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
-                'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                // 'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
-                'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
-                'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                // 'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
-                'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
-                'transferProducts.required' => "Vous devez ajouter au moins un produit.",
-                // 'quantities.required' => "Les quantités sont obligatoires.",
-                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-            ]
-        );
 
         try {
-            $lastTransfer = Transfer::latest()->first();
+            $validation = $this->validator('store', $request->all());
 
-            $transfer = new Transfer();
-            if ($lastTransfer) {
-                $transfer->code = $this->formateNPosition($this->prefix, $lastTransfer->id + 1, 8);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
             } else {
-                $transfer->code = $this->formateNPosition($this->prefix, 1, 8);
+                $lastTransfer = Transfer::latest()->first();
+
+                $transfer = new Transfer();
+                if ($lastTransfer) {
+                    $transfer->code = $this->formateNPosition($this->prefix, $lastTransfer->id + 1, 8);
+                } else {
+                    $transfer->code = $this->formateNPosition($this->prefix, 1, 8);
+                }
+                $transfer->transfer_reason = $request->transfer_reason;
+                $transfer->date_of_transfer = $request->date_of_transfer;
+                $transfer->date_of_receipt = $request->date_of_receipt;
+                $transfer->transmitter_id = $request->transmitter;
+                $transfer->receiver_id = $request->receiver;
+                $transfer->transfer_demand_id = $request->transfer_demand;
+                $transfer->save();
+
+                $productTansfers = [];
+                foreach ($request->transferProducts as $key => $product) {
+                    $transferLine = new ProductTransferLine();
+                    $transferLine->quantity = $product["quantity"];
+                    $transferLine->unity_id = $product['unity']["id"];
+                    $transferLine->product_id = $product['product']["id"];
+                    $transferLine->transfer_id = $transfer->id;
+                    $transferLine->save();
+
+                    array_push($productTansfers, $transferLine);
+                }
+
+                // $savedProductTransferLines = ProductTransferLine::where('transfer_id', $transfer->id)->get();
+                // if (empty($savedProductTransferLines) || sizeof($savedProductTransferLines) == 0) {
+                //     $transfer->delete();
+                // }
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'transfer' => $transfer,
+                    'success' => true,
+                    'message' => $message,
+                    'datas' => ['productTansfers' => $productTansfers]
+                ], 200);
             }
-            $transfer->transfer_reason = $request->transfer_reason;
-            $transfer->date_of_transfer = $request->date_of_transfer;
-            $transfer->date_of_receipt = $request->date_of_receipt;
-            $transfer->transmitter_id = $request->transmitter;
-            $transfer->receiver_id = $request->receiver;
-            $transfer->transfer_demand_id = $request->transfer_demand;
-            $transfer->save();
-
-            $productTansfers = [];
-            foreach ($request->transferProducts as $key => $product) {
-                $transferLine = new ProductTransferLine();
-                $transferLine->quantity = $product["quantity"];
-                $transferLine->unity_id = $product['unity']["id"];
-                $transferLine->product_id = $product['product']["id"];
-                $transferLine->transfer_id = $transfer->id;
-                $transferLine->save();
-
-                array_push($productTansfers, $transferLine);
-            }
-
-            // $savedProductTransferLines = ProductTransferLine::where('transfer_id', $transfer->id)->get();
-            // if (empty($savedProductTransferLines) || sizeof($savedProductTransferLines) == 0) {
-            //     $transfer->delete();
-            // }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'transfer' => $transfer,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productTansfers' => $productTansfers]
-            ], 200);
         } catch (Exception $e) {
-            // dd($e);
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -199,83 +176,60 @@ class TransferController extends Controller
     {
         $this->authorize('ROLE_TRANSFER_UPDATE', Transfer::class);
         $transfer = Transfer::findOrFail($id);
-        $this->validate(
-            $request,
-            [
-                'transfer_demand' => 'required',
-                // 'transmitter' => 'required',
-                // 'receiver' => 'required',
-                'transfer_reason' => 'required',
-                'date_of_transfer' => 'required|date', //|date_format:Ymd
-                'date_of_receipt' => 'date|after:date_of_transfer', //|date_format:Ymd
-                'transferProducts' => 'required',
-                // 'quantities' => 'required|min:0',
-                // 'unit_prices' => 'required|min:0',
-            ],
-            [
-                'transfer_demand.required' => "Le choix d'une demande de transfert est obligatoire.",
-                // 'transmitter.required' => "Le point de vente source est obligatoire.",
-                // 'receiver.required' => "Le point de vente destination est obligatoire.",
-                'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
-                'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
-                'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
-                // 'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
-                'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
-                'date_of_receipt.date' => "La date limite de livraison est invalide.",
-                // 'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
-                'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
-                'transferProducts.required' => "Vous devez ajouter au moins un produit.",
-                // 'quantities.required' => "Les quantités sont obligatoires.",
-                // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
-                // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
-                // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
-            ]
-        );
 
         try {
-            $transfer->transfer_reason = $request->transfer_reason;
-            $transfer->date_of_transfer = $request->date_of_transfer;
-            $transfer->date_of_receipt = $request->date_of_receipt;
-            $transfer->transmitter_id = $request->transmitter;
-            $transfer->receiver_id = $request->receiver;
-            $transfer->transfer_demand_id = $request->transfer_demand;
-            $transfer->save();
+            $validation = $this->validator('update', $request->all());
 
-            ProductTransferLine::where('transfer_id', $transfer->id)->delete();
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $transfer->transfer_reason = $request->transfer_reason;
+                $transfer->date_of_transfer = $request->date_of_transfer;
+                $transfer->date_of_receipt = $request->date_of_receipt;
+                $transfer->transmitter_id = $request->transmitter;
+                $transfer->receiver_id = $request->receiver;
+                $transfer->transfer_demand_id = $request->transfer_demand;
+                $transfer->save();
 
-            $productTansfers = [];
-            foreach ($request->transferProducts as $key => $product) {
-                $transferLine = new ProductTransferLine();
-                $transferLine->quantity = $product["quantity"];
-                $transferLine->unity_id = $product['unity']["id"];
-                $transferLine->product_id = $product['product']["id"];
-                $transferLine->transfer_id = $transfer->id;
-                $transferLine->save();
+                ProductTransferLine::where('transfer_id', $transfer->id)->delete();
 
-                array_push($productTansfers, $transferLine);
+                $productTansfers = [];
+                foreach ($request->transferProducts as $key => $product) {
+                    $transferLine = new ProductTransferLine();
+                    $transferLine->quantity = $product["quantity"];
+                    $transferLine->unity_id = $product['unity']["id"];
+                    $transferLine->product_id = $product['product']["id"];
+                    $transferLine->transfer_id = $transfer->id;
+                    $transferLine->save();
+
+                    array_push($productTansfers, $transferLine);
+                }
+
+                $savedProductTransferLines = ProductTransferLine::where('transfer_id', $transfer->id)->get();
+                if (empty($savedProductTransferLines) || sizeof($savedProductTransferLines) == 0) {
+                    $transfer->delete();
+                }
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'transfer' => $transfer,
+                    'success' => true,
+                    'message' => $message,
+                    'datas' => ['productTansfers' => $productTansfers]
+                ], 200);
             }
-
-            $savedProductTransferLines = ProductTransferLine::where('transfer_id', $transfer->id)->get();
-            if (empty($savedProductTransferLines) || sizeof($savedProductTransferLines) == 0) {
-                $transfer->delete();
-            }
-
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'transfer' => $transfer,
-                'success' => $success,
-                'message' => $message,
-                'datas' => ['productTansfers' => $productTansfers]
-            ], 200);
         } catch (Exception $e) {
             dd($e);
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -312,7 +266,6 @@ class TransferController extends Controller
         }
     }
 
-
     public function transferReports(Request $request)
     {
         $this->authorize('ROLE_TRANSFER_DEMAND_PRINT', Tourn::class);
@@ -321,6 +274,78 @@ class TransferController extends Controller
             return new JsonResponse(['datas' => ['transfers' => $transfers]], 200);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    protected function validator($mode, $data)
+    {
+        if ($mode == 'store') {
+            return Validator::make(
+                $data,
+                [
+                    'transfer_demand' => 'required',
+                    // 'transmitter' => 'required',
+                    // 'receiver' => 'required',
+                    'transfer_reason' => 'required',
+                    'date_of_transfer' => 'required|date|date_equals:today', //|date_format:Ymd
+                    'date_of_receipt' => 'date|after:date_of_transfer', //|date_format:Ymd
+                    'transferProducts' => 'required',
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                ],
+                [
+                    'transfer_demand.required' => "Le choix d'une demande de transfert est obligatoire.",
+                    // 'transmitter.required' => "Le point de vente source est obligatoire.",
+                    // 'receiver.required' => "Le point de vente destination est obligatoire.",
+                    'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
+                    'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
+                    'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
+                    // 'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
+                    'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
+                    'date_of_receipt.date' => "La date limite de livraison est invalide.",
+                    // 'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
+                    'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
+                    'transferProducts.required' => "Vous devez ajouter au moins un produit.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                ]
+            );
+        }
+        if ($mode == 'update') {
+            return Validator::make(
+                $data,
+                [
+                    'transfer_demand' => 'required',
+                    // 'transmitter' => 'required',
+                    // 'receiver' => 'required',
+                    'transfer_reason' => 'required',
+                    'date_of_transfer' => 'required|date', //|date_format:Ymd
+                    'date_of_receipt' => 'date|after:date_of_transfer', //|date_format:Ymd
+                    'transferProducts' => 'required',
+                    // 'quantities' => 'required|min:0',
+                    // 'unit_prices' => 'required|min:0',
+                ],
+                [
+                    'transfer_demand.required' => "Le choix d'une demande de transfert est obligatoire.",
+                    // 'transmitter.required' => "Le point de vente source est obligatoire.",
+                    // 'receiver.required' => "Le point de vente destination est obligatoire.",
+                    'transfer_reason.required' => "Le motif de la demande de transfert est obligatoire.",
+                    'date_of_transfer.required' => "La date de la demande de transfert est obligatoire.",
+                    'date_of_transfer.date' => "La date de la demande de transfert est invalide.",
+                    // 'date_of_transfer.date_format' => "La date de la demande de transfert doit être sous le format : Année Mois Jour.",
+                    'date_of_transfer.date_equals' => "La date de la demande de transfert ne peut être qu'aujourd'hui.",
+                    'date_of_receipt.date' => "La date limite de livraison est invalide.",
+                    // 'date_of_receipt.date_format' => "La date limite de livraison doit être sous le format : Année Mois Jour.",
+                    'date_of_receipt.after' => "La date limite de livraison ne peut être antérieur à la date de transfert.",
+                    'transferProducts.required' => "Vous devez ajouter au moins un produit.",
+                    // 'quantities.required' => "Les quantités sont obligatoires.",
+                    // 'quantities.min' => "Aucune des quantités ne peut être inférieur à 0.",
+                    // 'unit_prices.required' => "Les prix unitaires sont obligatoires.",
+                    // 'unit_prices.min' => "Aucun des prix unitaires ne peut être inférieur à 0.",
+                ]
+            );
         }
     }
 }

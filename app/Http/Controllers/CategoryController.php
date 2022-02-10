@@ -45,7 +45,7 @@ class CategoryController extends Controller
 
             $validation = $this->validator('store', $request->all());
 
-            if($validation->fails()){
+            if ($validation->fails()) {
                 $messages = $validation->errors()->all();
                 $messages = implode('<br/>', $messages);
                 return new JsonResponse([
@@ -53,23 +53,20 @@ class CategoryController extends Controller
                     'message' => $messages,
                     //'message' => 'Des donnees sont invalides',
                 ], 200);
-            }else{
+            } else {
                 $category = new Category();
                 $category->reference = $request->reference;
                 $category->wording = $request->wording;
                 $category->description = $request->description;
                 $category->save();
 
-                $success = true;
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'category' => $category,
-                    'success' => $success,
+                    'success' => true,
                     'message' => $message,
                 ], 200);
             }
-
-
         } catch (Exception $e) {
             return new JsonResponse([
                 'success' => false,
@@ -84,10 +81,6 @@ class CategoryController extends Controller
         $this->authorize('ROLE_CATEGORY_UPDATE', Category::class);
         $category = Category::findOrFail($id);
 
-        $errors = $this->validator('update', $request->all());
-
-
-
         $existingCategories = Category::where('wording', $request->wording)->get();
         if (!empty($existingCategories) && sizeof($existingCategories) > 1) {
             $success = false;
@@ -99,26 +92,36 @@ class CategoryController extends Controller
         }
 
         try {
-            $category->reference = $request->reference;
-            $category->wording = $request->wording;
-            $category->description = $request->description;
-            $category->save();
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'category' => $category,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            $validation = $this->validator('update', $request->all());
+
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $category->reference = $request->reference;
+                $category->wording = $request->wording;
+                $category->description = $request->description;
+                $category->save();
+
+                $success = true;
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'category' => $category,
+                    'success' => $success,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -151,7 +154,7 @@ class CategoryController extends Controller
             return new JsonResponse([
                 'success' => $success,
                 'message' => $message,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -212,7 +215,7 @@ class CategoryController extends Controller
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères."
                 ]
-            )->customMessages;
+            );
         }
     }
 }

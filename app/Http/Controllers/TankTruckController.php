@@ -38,7 +38,6 @@ class TankTruckController extends Controller
             $tankTrucks = TankTruck::where('truck_id', $id)->with('truck')->orderBy('created_at', 'desc')->get();
         } else {
             $tankTrucks = TankTruck::where('tank_id', $id)->with('tank')->orderBy('created_at', 'desc')->get();
-
         }
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();
@@ -48,52 +47,59 @@ class TankTruckController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_TANK_TRUCK_CREATE', TankTruck::class);
-        $errors = $this->validator('store', $request->all());
 
         try {
-            $tankTruck = new TankTruck();
-            $tankTruck->gauging_certificate = $request->gauging_certificate;
-            $tankTruck->validity_date = $request->validity_date;
-            $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
-            $tankTruck->tank_id = $request->tank;
-            $tankTruck->truck_id = $request->truck;
-            // $tankTruck->file_type_id = $this->tankTruckAuthorizedFiles()->id;
-            $tankTruck->save();
+            $validation = $this->validator('store', $request->all());
 
-            $file = $request->file('gauging_certificate');
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $tankTruck = new TankTruck();
+                $tankTruck->gauging_certificate = $request->gauging_certificate;
+                $tankTruck->validity_date = $request->validity_date;
+                $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
+                $tankTruck->tank_id = $request->tank;
+                $tankTruck->truck_id = $request->truck;
+                // $tankTruck->file_type_id = $this->tankTruckAuthorizedFiles()->id;
+                $tankTruck->save();
 
-            if ($request->folder) {
-                $fileUpload = $this->fileUtil->createFileInDefaultFolder($tankTruck, $file, $request->personalized_filename);
+                $file = $request->file('gauging_certificate');
+
+                if ($request->folder) {
+                    $fileUpload = $this->fileUtil->createFileInDefaultFolder($tankTruck, $file, $request->personalized_filename);
+                    // $this->fileUtil->setPath('isidore/desire/');
+                    // $this->fileUtil->setAddId('false');
+                } else {
+                    $fileUpload = $this->fileUtil->createFileInPersonalizedFolder($request->folder, $file, $request->personalized_filename);
+                }
+                $fileUpload->save();
+
+
+                // $fileUpload = $this->fileUtil->createFile($tankTruck, $file);
                 // $this->fileUtil->setPath('isidore/desire/');
                 // $this->fileUtil->setAddId('false');
-            } else {
-                $fileUpload = $this->fileUtil->createFileInPersonalizedFolder($request->folder, $file, $request->personalized_filename);
+
+                // if($fileUpload){
+                // }
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'tankTruck' => $tankTruck,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
             }
-            $fileUpload->save();
-
-
-            // $fileUpload = $this->fileUtil->createFile($tankTruck, $file);
-            // $this->fileUtil->setPath('isidore/desire/');
-            // $this->fileUtil->setAddId('false');
-
-            // if($fileUpload){
-            // }
-
-            $success = true;
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'tankTruck' => $tankTruck,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
@@ -101,33 +107,40 @@ class TankTruckController extends Controller
     {
         $this->authorize('ROLE_TANK_TRUCK_UPDATE', TankTruck::class);
         $tankTruck = TankTruck::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         try {
-            $tankTruck->gauging_certificate = $request->gauging_certificate;
-            $tankTruck->validity_date = $request->validity_date;
-            $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
-            // $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->gauging_certificate->getClientOriginalExtension();
-            // $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
-            $tankTruck->tank_id = $request->tank;
-            $tankTruck->truck_id = $request->truck;
-            $tankTruck->save();
+            $validation = $this->validator('update', $request->all());
 
-            $success = true;
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'tankTruck' => $tankTruck,
-                'success' => $success,
-                'message' => $message,
-            ], 200);
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
+                $tankTruck->gauging_certificate = $request->gauging_certificate;
+                $tankTruck->validity_date = $request->validity_date;
+                $tankTruck->gauging_certificate_number = $request->gauging_certificate_number;
+                // $fileName = $this->tankTruckAuthorizedFiles()->wording . $request->gauging_certificate->getClientOriginalExtension();
+                // $path = $tankTruck->gauging_certificate->storeAs($this->tankTruckAuthorizedFiles()->wording . '/', $fileName, 'public');
+                $tankTruck->tank_id = $request->tank;
+                $tankTruck->truck_id = $request->truck;
+                $tankTruck->save();
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'tankTruck' => $tankTruck,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
+            }
         } catch (Exception $e) {
-            $success = false;
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'message' => $message,
-                'errors' => $errors,
-            ], 400);
+            ], 200);
         }
     }
 
