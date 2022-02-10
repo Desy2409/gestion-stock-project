@@ -58,4 +58,9 @@ class Order extends Model
         return $this->belongsTo(SalePoint::class);
     }
 
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
+
 }

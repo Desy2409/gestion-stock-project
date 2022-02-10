@@ -51,4 +51,9 @@ class ClientDeliveryNote extends Model
     {
         return $this->hasMany(Tourn::class);
     }
+
+    public function fileUploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
 }
