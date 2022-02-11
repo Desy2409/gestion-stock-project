@@ -83,4 +83,6 @@ class Product extends Model
     {
         return $this->hasMany(ProductTourn::class);
     }
+
+    
 }
