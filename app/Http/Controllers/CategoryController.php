@@ -39,8 +39,6 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_CATEGORY_CREATE', Category::class);
-
-
         try {
 
             $validation = $this->validator('store', $request->all());
