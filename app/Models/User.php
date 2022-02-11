@@ -42,8 +42,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'roles' => 'array',
-        'sale_points' => 'array',
         'settings' => 'array',
+        // 'sale_points' => 'array',
     ];
 
     protected $attributes = [
@@ -79,5 +79,10 @@ class User extends Authenticatable
     public function userType()
     {
         return $this->belongsTo(UserType::class);
+    }
+
+    public function passwordHistories()
+    {
+        return $this->hasMany(PasswordHistory::class);
     }
 }

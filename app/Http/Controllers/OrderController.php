@@ -18,6 +18,7 @@ use App\Models\SalePoint;
 use App\Models\Unity;
 use App\Models\User;
 use App\Repositories\OrderRepository;
+use App\Utils\FileUtil;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -40,15 +41,17 @@ class OrderController extends Controller
         $this->orderRepository = $orderRepository;
         $this->user = Auth::user();
         $this->prefix = Order::$code;
+        $this->fileUtil = new FileUtil('Orders');
     }
 
     public function index()
     {
         // dd("OrderController");
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $orders = Order::orderBy('order_date')->get();
+        $orders = Order::orderBy('created_at')->get();
         // $orders = Order::orderBy('order_date')->with('')->get();
         $providers = Provider::with('person')->get();
+        
         $products = Product::orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
@@ -99,64 +102,69 @@ class OrderController extends Controller
                 ], 200);
             } else {
                 // dd($request->productOrders);
-            $lastOrder = Order::latest()->first();
+                $lastOrder = Order::latest()->first();
 
-            $order = new Order();
-            if ($lastOrder) {
-                $order->code = $this->formateNPosition($this->prefix, $lastOrder->id + 1, 8);
-            } else {
-                $order->code = $this->formateNPosition($this->prefix, 1, 8);
+                $order = new Order();
+                if ($lastOrder) {
+                    $order->code = $this->formateNPosition($this->prefix, $lastOrder->id + 1, 8);
+                } else {
+                    $order->code = $this->formateNPosition($this->prefix, 1, 8);
+                }
+                $order->reference = $request->reference;
+                $order->order_date = $request->order_date;
+                $order->delivery_date = $request->delivery_date;
+                $order->total_amount = $request->total_amount;
+                $order->observation = $request->observation;
+                $order->provider_id = $request->provider;
+                $order->sale_point_id = $request->sale_point;
+                $order->save();
+
+
+                $productsOrders = [];
+                foreach ($request->productOrders as $key => $productOrderLine) {
+                    // dd($productOrderLine);
+                    $productOrder = new ProductOrder();
+                    $productOrder->quantity = $productOrderLine['quantity'];
+                    $productOrder->unit_price = $productOrderLine['unit_price'];
+                    $productOrder->product_id = $productOrderLine['product_id'];
+                    $productOrder->order_id = $order->id;
+                    $productOrder->unity_id = $productOrderLine['unity_id'];
+                    $productOrder->save();
+
+                    array_push($productsOrders, $productOrder);
+                }
+                // dd($productsOrders);
+
+                $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
+                if (empty($savedProductOrders) || sizeof($savedProductOrders) == 0) {
+                    $order->delete();
+                }
+
+                // $folder = Folder::findOrFail($request->folder);
+
+                // $check = $this->checkFileType($order);
+                // if (!$check) {
+                //     $success = false;
+                //     $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
+                //     return new JsonResponse(['success' => $success, 'message' => $message], 400);
+                // } else {
+                //     $this->storeFile($this->user, $order, $folder, $request->upload_files);
+                // }
+
+                foreach ($request->files as $key => $file) {
+                    $fileUpload = $this->fileUtil->createFile($order, $file, $request->personalized_filename);
+                }
+
+                $file = $request->file('gauging_certificate');
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'order' => $order,
+                    'success' => true,
+                    'message' => $message,
+                    'datas' => ['productsOrders' => $productsOrders],
+                ], 200);
             }
-            $order->reference = $request->reference;
-            $order->order_date   = $request->order_date;
-            $order->delivery_date   = $request->delivery_date;
-            $order->total_amount = $request->total_amount;
-            $order->observation = $request->observation;
-            $order->provider_id = $request->provider;
-            $order->sale_point_id = $request->sale_point;
-            $order->save();
-
-
-            $productsOrders = [];
-            foreach ($request->productOrders as $key => $productOrderLine) {
-                // dd($productOrderLine);
-                $productOrder = new ProductOrder();
-                $productOrder->quantity = $productOrderLine['quantity'];
-                $productOrder->unit_price = $productOrderLine['unit_price'];
-                $productOrder->product_id = $productOrderLine['product_id'];
-                $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $productOrderLine['unity_id'];
-                $productOrder->save();
-
-                array_push($productsOrders, $productOrder);
-            }
-            // dd($productsOrders);
-
-            /*$savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
-            if (empty($savedProductOrders)||sizeof($savedProductOrders)==0) {
-                $order->delete();
-            }*/
-
-            $folder = Folder::findOrFail($request->folder);
-
-            $check = $this->checkFileType($order);
-            if (!$check) {
-                $success = false;
-                $message = "Les formats de fichiers autorisés sont : pdf,docx et xls";
-                return new JsonResponse(['success' => $success, 'message' => $message], 400);
-            } else {
-                $this->storeFile($this->user, $order, $folder, $request->upload_files);
-            }
-
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'order' => $order,
-                'success' => true,
-                'message' => $message,
-                'datas' => ['productsOrders' => $productsOrders],
-            ], 200);
-            }
-            
         } catch (Exception $e) {
             // dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
@@ -216,44 +224,47 @@ class OrderController extends Controller
                 ], 200);
             } else {
                 // $order = new Order();
-            $order->reference = $request->reference;
-            $order->order_date   = $request->order_date;
-            $order->delivery_date   = $request->delivery_date;
-            $order->total_amount = $request->total_amount;
-            $order->observation = $request->observation;
-            $order->provider_id = $request->provider;
-            $order->sale_point_id = $request->sale_point;
-            $order->save();
+                $order->reference = $request->reference;
+                $order->order_date   = $request->order_date;
+                $order->delivery_date   = $request->delivery_date;
+                $order->total_amount = $request->total_amount;
+                $order->observation = $request->observation;
+                $order->provider_id = $request->provider;
+                $order->sale_point_id = $request->sale_point;
+                $order->save();
 
-            ProductOrder::where('order_id', $order->id)->delete();
+                ProductOrder::where('order_id', $order->id)->delete();
 
-            $productsOrders = [];
-            foreach ($request->productOrders as $key => $product) {
-                $productOrder = new ProductOrder();
-                $productOrder->quantity = $product["quantity"];
-                $productOrder->unit_price = $product["unit_price"];
-                $productOrder->product_id = $product["product_id"];
-                $productOrder->order_id = $order->id;
-                $productOrder->unity_id = $product["unity_id"];
-                $productOrder->save();
+                $productsOrders = [];
+                foreach ($request->productOrders as $key => $product) {
+                    $productOrder = new ProductOrder();
+                    $productOrder->quantity = $product["quantity"];
+                    $productOrder->unit_price = $product["unit_price"];
+                    $productOrder->product_id = $product["product_id"];
+                    $productOrder->order_id = $order->id;
+                    $productOrder->unity_id = $product["unity_id"];
+                    $productOrder->save();
 
-                array_push($productsOrders, $productOrder);
+                    array_push($productsOrders, $productOrder);
+                }
+
+                $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
+                if (empty($savedProductOrders) || sizeof($savedProductOrders) == 0) {
+                    $order->delete();
+                }
+
+                foreach ($request->files as $key => $file) {
+                    $fileUpload = $this->fileUtil->createFile($order, $file, $request->personalized_filename);
+                }
+
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'order' => $order,
+                    'success' => true,
+                    'message' => $message,
+                    'datas' => ['productsOrders' => $productsOrders],
+                ], 200);
             }
-
-            $savedProductOrders = ProductOrder::where('order_id', $order->id)->get();
-            if (empty($savedProductOrders) || sizeof($savedProductOrders) == 0) {
-                $order->delete();
-            }
-
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'order' => $order,
-                'success' => true,
-                'message' => $message,
-                'datas' => ['productsOrders' => $productsOrders],
-            ], 200);
-            }
-            
         } catch (Exception $e) {
             // dd($e);
             $message = "Erreur survenue lors de la modification.";

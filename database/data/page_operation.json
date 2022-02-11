@@ -1465,7 +1465,7 @@
         "description": "Consultation des extensions",
         "role": "ROLE_EXTENSION_READ",
         "operation_id": 1,
-        "page_id": 32
+        "page_id": 33
     },
     {
         "code": "EXTENSION_CREATE",
@@ -1473,7 +1473,7 @@
         "description": "Création d'une extension",
         "role": "ROLE_EXTENSION_CREATE",
         "operation_id": 2,
-        "page_id": 32
+        "page_id": 33
     },
     {
         "code": "EXTENSION_UPDATE",
@@ -1481,7 +1481,7 @@
         "description": "Mise à jour des informations d'une extension",
         "role": "ROLE_EXTENSION_UPDATE",
         "operation_id": 3,
-        "page_id": 32
+        "page_id": 33
     },
     {
         "code": "EXTENSION_DELETE",
@@ -1489,7 +1489,7 @@
         "description": "Suppression d'une extension",
         "role": "ROLE_EXTENSION_DELETE",
         "operation_id": 4,
-        "page_id": 32
+        "page_id": 33
     },
     {
         "code": "EXTENSION_PRINT",
@@ -1497,14 +1497,14 @@
         "description": "Impression d'extensions",
         "role": "ROLE_EXTENSION_PRINT",
         "operation_id": 5,
-        "page_id": 32
+        "page_id": 33
     }, {
         "code": "FILE_TYPE_READ",
         "title": "Consultation des types de fichier",
         "description": "Consultation des types de fichier",
         "role": "ROLE_FILE_TYPE_READ",
         "operation_id": 1,
-        "page_id": 32
+        "page_id": 34
     },
     {
         "code": "FILE_TYPE_CREATE",
@@ -1512,7 +1512,7 @@
         "description": "Création d'un type de fichier",
         "role": "ROLE_FILE_TYPE_CREATE",
         "operation_id": 2,
-        "page_id": 32
+        "page_id": 34
     },
     {
         "code": "FILE_TYPE_UPDATE",
@@ -1520,7 +1520,7 @@
         "description": "Mise à jour des informations d'un type de fichier",
         "role": "ROLE_FILE_TYPE_UPDATE",
         "operation_id": 3,
-        "page_id": 32
+        "page_id": 34
     },
     {
         "code": "FILE_TYPE_DELETE",
@@ -1528,7 +1528,7 @@
         "description": "Suppression d'un type de fichier",
         "role": "ROLE_FILE_TYPE_DELETE",
         "operation_id": 4,
-        "page_id": 32
+        "page_id": 34
     },
     {
         "code": "FILE_TYPE_PRINT",
@@ -1536,6 +1536,45 @@
         "description": "Impression de types de fichier",
         "role": "ROLE_FILE_TYPE_PRINT",
         "operation_id": 5,
-        "page_id": 32
+        "page_id": 34
+    }, {
+        "code": "TAXE_READ",
+        "title": "Consultation des taxes",
+        "description": "Consultation des taxes",
+        "role": "ROLE_TAXE_READ",
+        "operation_id": 1,
+        "page_id": 35
+    },
+    {
+        "code": "TAXE_CREATE",
+        "title": "Création d'une taxe",
+        "description": "Création d'une taxe",
+        "role": "ROLE_TAXE_CREATE",
+        "operation_id": 2,
+        "page_id": 35
+    },
+    {
+        "code": "TAXE_UPDATE",
+        "title": "Mise à jour des informations d'une taxe",
+        "description": "Mise à jour des informations d'une taxe",
+        "role": "ROLE_TAXE_UPDATE",
+        "operation_id": 3,
+        "page_id": 35
+    },
+    {
+        "code": "TAXE_DELETE",
+        "title": "Suppression d'une taxe",
+        "description": "Suppression d'une taxe",
+        "role": "ROLE_TAXE_DELETE",
+        "operation_id": 4,
+        "page_id": 35
+    },
+    {
+        "code": "TAXE_PRINT",
+        "title": "Impression de taxe",
+        "description": "Impression de taxe",
+        "role": "ROLE_TAXE_PRINT",
+        "operation_id": 5,
+        "page_id": 35
     }
 ]

@@ -99,7 +99,7 @@ class TankController extends Controller
         $this->authorize('ROLE_TANK_UPDATE', Tank::class);
         $tank = Tank::findOrFail($id);
 
-        $existingTanks = Tank::where('reference', $request->reference)->where('tank_registration', $request->tank_registration)->where('tank_registration', $request->tank_registration)->get();
+        $existingTanks = Tank::where('reference', $request->reference)->where('tank_registration', $request->tank_registration)->get();
         if (!empty($existingTanks) && sizeof($existingTanks) > 1) {
             return new JsonResponse([
                 'existingTank' => $existingTanks[0],
