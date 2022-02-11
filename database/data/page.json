@@ -191,5 +191,11 @@
         "title": "Type utilisateur",
         "description": "Page de configuration d'un type de fichier",
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
+    },
+    {
+        "code": "TAXE",
+        "title": "Taxe",
+        "description": "Page de configuration d'une taxe",
+        "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
     }
 ]

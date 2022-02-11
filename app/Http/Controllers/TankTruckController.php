@@ -21,7 +21,7 @@ class TankTruckController extends Controller
 
     public function __construct()
     {
-        $this->fileUtil = new FileUtil('TankTrucks', false);
+        $this->fileUtil = new FileUtil('TankTrucks');
     }
 
     private function tankTruckAuthorizedFiles()
