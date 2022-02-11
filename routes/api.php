@@ -35,6 +35,7 @@ use App\Http\Controllers\SalePointController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\TankController;
 use App\Http\Controllers\TankTruckController;
+use App\Http\Controllers\TaxeController;
 use App\Http\Controllers\TournController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferDemandController;
@@ -408,6 +409,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::class, 'update']);
     Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
     Route::get('/email-channel-param-report', [EmailChannelParamController::class, 'emailChannelParamReports']);
+
+    // Taxe routes
+    Route::get('/taxe', [TaxeController::class, 'index']);
+    Route::post('/taxe', [TaxeController::class, 'store']);
+    Route::patch('/taxe/{id}/update', [TaxeController::class, 'update']);
+    Route::delete('/taxe/{id}/destroy', [TaxeController::class, 'destroy']);
+    Route::get('/taxe/{id}/show', [TaxeController::class, 'show']);
+    Route::get('/taxe-report', [TaxeController::class, 'taxeReports']);
 
     Route::prefix('user')->group(function () {
         // Operation routes

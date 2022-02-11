@@ -1,10 +1,18 @@
 [{
-    "order_purchase_order_validation_level": "",
+    "order_validation_level": "",
+    "order_validation_reminder": "",
+    "order_number_recall_day": "",
+    "purchase_order_validation_level": "",
+    "purchase_order_validation_reminder": "",
+    "purchase_order_number_recall_day": "",
+    "transfert_demand_validation_level": "",
+    "transfert_demand_validation_reminder": "",
+    "transfert_demand_number_recall_day": "",
     "blocking_number_of_attempt": "",
     "password_complexity": {
-        "minuscule": true,
-        "majuscule": true,
-        "special_characters": true,
+        "minuscule": "",
+        "majuscule": "",
+        "special_characters": "",
         "min_length": "",
         "old_password": "",
         "new_password": ""
@@ -12,11 +20,10 @@
     "client_code_length": "",
     "provider_code_length": "",
     "goods_code_length": "",
-    "order_purchase_order_number_recall_day": "",
     "offline_mode": "",
     "institution_type": "",
-    "currency": "",
+    "principal_currency": "",
+    "principal_unit_of_measure": "",
     "taxes": "",
-    "possible_price_update": "",
     "from_order_to_delivery": ""
 }]

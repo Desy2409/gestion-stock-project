@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Operation;
 use App\Models\Page;
 use App\Models\PageOperation;
+use App\Models\PasswordHistory;
 use App\Models\Person;
 use App\Models\SalePoint;
 use App\Models\User;
@@ -40,13 +41,14 @@ class UserController extends Controller
         $this->authorize('ROLE_USER_READ', User::class);
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
+        $salePoints = SalePoint::orderBy('wording')->get();
 
         $pages = Page::all();
         $operations = Operation::all();
         // $pageOperations = PageOperation::with('page')->with('operation')->get();
 
         return new JsonResponse([
-            'datas' => ['users' => $users, 'userTypes' => $userTypes, 'pages' => $pages, 'operations' => $operations]
+            'datas' => ['users' => $users, 'salePoints' => $salePoints, 'userTypes' => $userTypes, 'pages' => $pages, 'operations' => $operations]
         ], 200);
     }
 
@@ -76,23 +78,28 @@ class UserController extends Controller
                 ], 200);
             } else {
                 $user = new User();
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->last_name = $request->last_name;
-            $user->first_name = $request->first_name;
-            $user->date_of_birth = $request->date_of_birth;
-            $user->place_of_birth = $request->place_of_birth;
-            $user->save();
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->password = Hash::make($request->password);
+                $user->last_name = $request->last_name;
+                $user->first_name = $request->first_name;
+                $user->date_of_birth = $request->date_of_birth;
+                $user->place_of_birth = $request->place_of_birth;
+                $user->save();
 
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'user' => $user,
-                'success' => true,
-                'message' => $message,
-            ], 200);
+                $passwordHistory = new PasswordHistory();
+                $passwordHistory->user_id = $user->id;
+                $passwordHistory->password = $user->password;
+                $passwordHistory->date = $user->date;
+                $passwordHistory->save();
+
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'user' => $user,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
             }
-            
         } catch (Exception $e) {
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
@@ -143,6 +150,20 @@ class UserController extends Controller
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
                 $user->save();
+
+                $passwordHistory = PasswordHistory::where('user_id', $user->id)->latest();
+                if ($user->password) {
+                    # code...
+                } else {
+                    # code...
+                }
+
+
+                $passwordHistory = new PasswordHistory();
+                $passwordHistory->user_id = $user->id;
+                $passwordHistory->password = $user->password;
+                $passwordHistory->date = $user->date;
+                $passwordHistory->save();
 
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
