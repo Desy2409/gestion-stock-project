@@ -6,6 +6,7 @@ use App\Http\Traits\FileTrait;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\SaleValidationMail;
+use App\Models\Category;
 use App\Models\Client;
 use App\Models\ClientDeliveryNote;
 use App\Models\Folder;
@@ -20,6 +21,7 @@ use App\Models\Sale;
 use App\Models\SalePoint;
 use App\Models\SaleRegister;
 use App\Models\Unity;
+use App\Repositories\ProductRepository;
 use App\Repositories\SaleRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -35,10 +37,12 @@ class SaleController extends Controller
     use FileTrait;
 
     public $saleRepository;
+    public $productRepository;
     protected $prefix;
-    public function __construct(SaleRepository $saleRepository)
+    public function __construct(SaleRepository $saleRepository, ProductRepository $productRepository)
     {
         $this->saleRepository = $saleRepository;
+        $this->productRepository = $productRepository;
         $this->user = Auth::user();
         $this->prefix = Sale::$code;
     }
@@ -81,11 +85,12 @@ class SaleController extends Controller
 
         $clients = Client::with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
-        $products = Product::with('subCategory')->get();
+        $categories = Category::orderBy('wording')->get();
+        // $products = Product::with('subCategory')->get();
         $unities = Unity::orderBy('wording')->get();
 
         return new JsonResponse([
-            'datas' => ['clients' => $clients, 'salePoints' => $salePoints, 'products' => $products, 'sales' => $sales, 'unities' => $unities]
+            'datas' => ['clients' => $clients, 'salePoints' => $salePoints, 'categories' => $categories, 'sales' => $sales, 'unities' => $unities]
         ]);
     }
 
@@ -115,6 +120,14 @@ class SaleController extends Controller
         return new JsonResponse([
             'code' => $code
         ], 200);
+    }
+    
+    public function productsOfSelectedCategory($id)
+    {
+        $category = Category::findOrFail($id);
+        $products = $this->productRepository->productsOfCategory($category->id);
+
+        return new JsonResponse(['datas' => ['products' => $products]], 200);
     }
 
     public function show($id)

@@ -22,9 +22,9 @@ class CreatePasswordHistoriesTable extends Migration
             $table->id();
             $table->string('password');
             $table->date('date')->useCurrent();
-            //$table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // $table->unsignedBigInteger('user_id')->nullable();
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

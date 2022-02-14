@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\PurchaseValidationMail;
+use App\Models\Category;
 use App\Models\DeliveryNote;
 use App\Models\Folder;
 use App\Models\Product;
@@ -17,6 +18,7 @@ use App\Models\Order;
 use App\Models\ProductDeliveryNote;
 use App\Models\SalePoint;
 use App\Models\Unity;
+use App\Repositories\ProductRepository;
 use App\Repositories\PurchaseRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -35,11 +37,13 @@ class PurchaseController extends Controller
     private $purchaseOnOrder = "Achat sur commande";
 
     public $purchaseRepository;
+    public $productRepository;
     protected $prefix;
 
-    public function __construct(PurchaseRepository $purchaseRepository)
+    public function __construct(PurchaseRepository $purchaseRepository, ProductRepository $productRepository)
     {
         $this->purchaseRepository = $purchaseRepository;
+        $this->productRepository = $productRepository;
         $this->user = Auth::user();
         $this->prefix = Purchase::$code;
     }
@@ -80,10 +84,11 @@ class PurchaseController extends Controller
 
         $providers = Provider::with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
-        $products = Product::orderBy('wording')->get();
+        $categories = Category::orderBy('wording')->get();
+        // $products = Product::orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         return new JsonResponse([
-            'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'products' => $products, 'purchases' => $purchases, 'unities' => $unities]
+            'datas' => ['providers' => $providers, 'salePoints' => $salePoints, 'categories' => $categories, 'purchases' => $purchases, 'unities' => $unities]
         ]);
     }
 
@@ -113,6 +118,14 @@ class PurchaseController extends Controller
         return new JsonResponse([
             'code' => $code
         ], 200);
+    }
+
+    public function productsOfSelectedCategory($id)
+    {
+        $category = Category::findOrFail($id);
+        $products = $this->productRepository->productsOfCategory($category->id);
+
+        return new JsonResponse(['datas' => ['products' => $products]], 200);
     }
 
     public function show($id)

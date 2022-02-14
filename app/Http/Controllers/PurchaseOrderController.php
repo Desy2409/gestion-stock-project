@@ -6,6 +6,7 @@ use App\Http\Traits\FileTrait;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\PurchaseOrderValidationMail;
+use App\Models\Category;
 use App\Models\Client;
 use App\Models\Folder;
 use App\Models\Product;
@@ -14,6 +15,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderRegister;
 use App\Models\SalePoint;
 use App\Models\Unity;
+use App\Repositories\ProductRepository;
 use App\Repositories\PurchaseOrderRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -30,11 +32,13 @@ class PurchaseOrderController extends Controller
     use FileTrait;
 
     public $purchaseOrderRepository;
+    public $productRepository;
     protected $prefix;
 
-    public function __construct(PurchaseOrderRepository $purchaseOrderRepository)
+    public function __construct(PurchaseOrderRepository $purchaseOrderRepository, ProductRepository $productRepository)
     {
         $this->purchaseOrderRepository = $purchaseOrderRepository;
+        $this->productRepository = $productRepository;
         $this->user = Auth::user();
         $this->prefix = PurchaseOrder::$code;
     }
@@ -45,7 +49,8 @@ class PurchaseOrderController extends Controller
         // $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
         $purchaseOrders = PurchaseOrder::orderBy('purchase_date')->get();
         $clients = Client::with('person')->get();
-        $products = Product::orderBy('wording')->get();
+        $categories = Category::orderBy('wording')->get();
+        // $products = Product::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
         $unities = Unity::orderBy('wording')->get();
 
@@ -60,7 +65,7 @@ class PurchaseOrderController extends Controller
         $purchaseOrderRegister->save();
 
         return new JsonResponse([
-            'datas' => ['purchaseOrders' => $purchaseOrders, 'clients' => $clients, 'products' => $products, 'salePoints' => $salePoints, 'unities' => $unities]
+            'datas' => ['purchaseOrders' => $purchaseOrders, 'clients' => $clients, 'categories' => $categories, 'salePoints' => $salePoints, 'unities' => $unities]
         ], 200);
     }
 
@@ -77,6 +82,14 @@ class PurchaseOrderController extends Controller
         return new JsonResponse([
             'code' => $code
         ], 200);
+    }
+    
+    public function productsOfSelectedCategory($id)
+    {
+        $category = Category::findOrFail($id);
+        $products = $this->productRepository->productsOfCategory($category->id);
+
+        return new JsonResponse(['datas' => ['products' => $products]], 200);
     }
 
     public function store(Request $request)
