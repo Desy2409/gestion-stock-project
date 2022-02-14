@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductTransferDemandLine;
 use App\Models\ProductTransferLine;
@@ -11,6 +12,7 @@ use App\Models\Transfer;
 use App\Models\TransferDemand;
 use App\Models\TransferDemandRegister;
 use App\Models\Unity;
+use App\Repositories\ProductRepository;
 use App\Repositories\TransferDemandRepository;
 use DateTime;
 use Exception;
@@ -26,9 +28,10 @@ class TransferDemandController extends Controller
 
 
     public $transferDemandRepository;
+    public $productRepository;
     protected $prefix;
 
-    public function __construct(TransferDemandRepository $transferDemandRepository)
+    public function __construct(TransferDemandRepository $transferDemandRepository, ProductRepository $productRepository)
     {
         $this->transferDemandRepository = $transferDemandRepository;
         $this->prefix = TransferDemand::$code;
@@ -45,7 +48,8 @@ class TransferDemandController extends Controller
         //     $transmitters = SalePoint::whereIn('id', $user->sale_points)->orderBy('social_reason')->get();
         // }
         // dd($transmitters);
-        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $categories = Category::orderBy('wording')->get();
+        // $products = Product::with('subCategory')->orderBy('wording')->get();
         // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $transfersDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $unities = Unity::orderBy('wording')->get();
@@ -61,7 +65,7 @@ class TransferDemandController extends Controller
         $transferDemandRegister->save();
 
         return new JsonResponse([
-            'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'products' => $products, 'unities' => $unities]
+            'datas' => ['transfersDemands' => $transfersDemands, 'salesPoints' => $salesPoints, 'categories' => $categories, 'unities' => $unities]
             // 'datas' => ['transfersDemands' => $transfersDemands, 'transmitters' => $transmitters, 'products' => $products, 'unities' => $unities]
         ], 200);
     }
@@ -79,6 +83,14 @@ class TransferDemandController extends Controller
         return new JsonResponse([
             'code' => $code
         ], 200);
+    }
+    
+    public function productsOfSelectedCategory($id)
+    {
+        $category = Category::findOrFail($id);
+        $products = $this->productRepository->productsOfCategory($category->id);
+
+        return new JsonResponse(['datas' => ['products' => $products]], 200);
     }
 
     public function showReceiversOnTransmitterSelect($id)

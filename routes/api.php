@@ -276,7 +276,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Transfer routes
     Route::get('/transfer', [TransferController::class, 'index']);
     Route::get('/transfer-code', [TransferController::class, 'showNextCode']);
-    Route::get('/transfer-products-of-category/{id}', [TransferController::class, 'productsOfSelectedCategory']);
     Route::get('/transfer-transfer-demand-select/{id}', [TransferController::class, 'datasOnSelectTransferDemand']);
     Route::post('/transfer', [TransferController::class, 'store']);
     Route::get('/transfer/{id}/show', [TransferController::class, 'show']);
