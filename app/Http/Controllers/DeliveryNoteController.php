@@ -45,7 +45,7 @@ class DeliveryNoteController extends Controller
     public function index()
     {
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
-        $deliveryNotes = DeliveryNote::with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('delivery_date')->get();
+        $deliveryNotes = DeliveryNote::orderBy('created_at','desc')->with('purchase')->with('productDeliveryNotes')->orderBy('code')->orderBy('delivery_date')->get();
         $purchasesBasedOnOrderId = Purchase::select('order_id')->distinct()->where('order_id', '!=', null)->pluck('order_id')->toArray();
         $orders = Order::whereIn('id', $purchasesBasedOnOrderId)->with('provider')->with('purchases')->orderBy('code')->orderBy('order_date')->get();
         // dd($orders->pluck('id')->toArray());

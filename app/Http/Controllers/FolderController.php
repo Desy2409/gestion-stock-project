@@ -22,7 +22,7 @@ class FolderController extends Controller
     public function index()
     {
         $this->authorize('ROLE_FOLDER_READ', Folder::class);
-        $folders = Folder::with('parent')->with('children')->orderBy('name')->get();
+        $folders = Folder::orderBy('created_at','desc')->with('parent')->with('children')->orderBy('name')->get();
         // $folders = Folder::orderBy('name')->get();
         return new JsonResponse([
             'datas' => ['folders' => $folders]

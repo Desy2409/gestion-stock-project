@@ -44,7 +44,7 @@ class ClientDeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_READ', ClientDeliveryNote::class);
         // $sales = Sale::with('provider')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->get();
-        $clientDeliveryNotes = ClientDeliveryNote::with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_date')->get();
+        $clientDeliveryNotes = ClientDeliveryNote::orderBy('created_at','desc')->with('sale')->with('productClientDeliveryNotes')->orderBy('delivery_date')->get();
         $purchasesBasedOnPurchaseOrderId = Sale::select('purchase_order_id')->distinct()->where('purchase_order_id', '!=', null)->pluck('purchase_order_id')->toArray();
         $purchaseOrders = PurchaseOrder::whereIn('id', $purchasesBasedOnPurchaseOrderId)->with('client')->with('sales')->orderBy('code')->orderBy('purchase_date')->get();
 
@@ -93,7 +93,6 @@ class ClientDeliveryNoteController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_CREATE', ClientDeliveryNote::class);
-        $errors = $this->validator('store', $request->all());
 
         try {
 
@@ -161,7 +160,6 @@ class ClientDeliveryNoteController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => $message,
-                'errors' => $errors,
             ], 200);
         }
     }
@@ -196,7 +194,6 @@ class ClientDeliveryNoteController extends Controller
     {
         $this->authorize('ROLE_CLIENT_DELIVERY_NOTE_UPDATE', ClientDeliveryNote::class);
         $clientDeliveryNote = ClientDeliveryNote::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         try {
             $validation = $this->validator('update', $request->all());
@@ -248,7 +245,6 @@ class ClientDeliveryNoteController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => $message,
-                'errors' => $errors,
             ], 200);
         }
     }

@@ -52,7 +52,7 @@ class OrderController extends Controller
     {
         // dd("OrderController");
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $orders = Order::orderBy('created_at')->get();
+        $orders = Order::orderBy('created_at','desc')->get();
         // $orders = Order::orderBy('order_date')->with('')->get();
         $providers = Provider::with('person')->get();
 

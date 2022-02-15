@@ -197,5 +197,11 @@
         "title": "Taxe",
         "description": "Page de configuration d'une taxe",
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
+    },
+    {
+        "code": "SMS_CHANNEL_PARAM",
+        "title": "SMS channel params",
+        "description": "Page de configuration d'un sms",
+        "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
     }
 ]

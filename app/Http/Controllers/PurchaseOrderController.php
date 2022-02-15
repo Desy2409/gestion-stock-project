@@ -47,7 +47,7 @@ class PurchaseOrderController extends Controller
     {
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         // $purchaseOrders = PurchaseOrder::with('client')->with('salePoint')->with('productPurchaseOrders')->orderBy('purchase_date')->get();
-        $purchaseOrders = PurchaseOrder::orderBy('purchase_date')->get();
+        $purchaseOrders = PurchaseOrder::orderBy('created_at','desc')->orderBy('purchase_date')->get();
         $clients = Client::with('person')->get();
         $categories = Category::orderBy('wording')->get();
         // $products = Product::orderBy('wording')->get();

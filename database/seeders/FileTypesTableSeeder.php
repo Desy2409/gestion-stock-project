@@ -18,6 +18,7 @@ class FileTypesTableSeeder extends Seeder
         $json_file_type = File::get("database/data/file_type.json");
         $fileTypes = json_decode($json_file_type);
         foreach ($fileTypes as $key => $fileType) {
+            // dd($fileType);
             $existingFileType = FileType::where('code', $fileType->code)->first();
             if (!$existingFileType) {
                 FileType::create([

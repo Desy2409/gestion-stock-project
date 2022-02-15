@@ -11,8 +11,11 @@ class FileType extends Model
         'code',
         'wording',
         'description',
-        'authorized_files',
         'max_size'
+    ];
+
+    protected $casts = [
+        'authorized_files' => 'array'
     ];
 
     public function fileUploads()

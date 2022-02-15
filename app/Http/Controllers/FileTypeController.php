@@ -23,7 +23,7 @@ class FileTypeController extends Controller
     public function index()
     {
         $this->authorize('ROLE_FILE_TYPE_READ', FileType::class);
-        $fileTypes = FileType::orderBy('wording')->get();
+        $fileTypes = FileType::orderBy('created_at','desc')->orderBy('wording')->get();
         $extensions = FileType::orderBy('extension')->get();
         return new JsonResponse(['datas' => ['fileTypes' => $fileTypes, 'extensions' => $extensions]], 200);
     }

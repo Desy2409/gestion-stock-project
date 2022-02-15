@@ -24,7 +24,7 @@ class EmailChannelParamController extends Controller
     public function index()
     {
         $this->authorize('ROLE_EMAIL_CHANNEL_PARAM_READ', EmailChannelParam::class);
-        $emailChannelParams = EmailChannelParam::with('correspondenceChannel')->with('driver')->orderBy('is_active', 'DESC')->orderBy('created_at', 'DESC')->get();
+        $emailChannelParams = EmailChannelParam::orderBy('created_at','desc')->with('correspondenceChannel')->with('driver')->orderBy('is_active', 'DESC')->orderBy('created_at', 'DESC')->get();
         return new JsonResponse([
             'datas' => ['emailChannelParams' => $emailChannelParams]
         ], 200);

@@ -20,7 +20,7 @@ class InstitutionController extends Controller
     public function index()
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
-        $institutions = Institution::with('salesPoints')->orderBy('social_reason')->get();
+        $institutions = Institution::orderBy('created_at','desc')->with('salesPoints')->orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['institutions' => $institutions]
         ], 200);
@@ -59,6 +59,20 @@ class InstitutionController extends Controller
                 $institution->email = $request->email;
                 $institution->bp = $request->bp;
                 $institution->phone_number = $request->phone_number;
+                $institution->settings = [
+                    'blocking_number_of_attempt' => $request->blocking_number_of_attempt,
+                    'principal_currency' => $request->principal_currency,
+                    'principal_unit_of_measure' => $request->principal_unit_of_measure,
+                    'from_order_to_delivery' => $request->from_order_to_delivery,
+                    'password_complexity' => [
+                        'minuscule' => $request->minuscule,
+                        'majuscule' => $request->majuscule,
+                        'special_characters' => $request->special_characters,
+                        'min_length' => $request->min_length,
+                        'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
+                    ],
+                ];
+
                 $institution->save();
 
                 $message = "Enregistrement effectué avec succès.";
@@ -69,6 +83,7 @@ class InstitutionController extends Controller
                 ], 200);
             }
         } catch (Exception $e) {
+            dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -128,6 +143,19 @@ class InstitutionController extends Controller
                 $institution->email = $request->email;
                 $institution->bp = $request->bp;
                 $institution->phone_number = $request->phone_number;
+                $institution->settings = [
+                    'blocking_number_of_attempt' => $request->blocking_number_of_attempt,
+                    'principal_currency' => $request->principal_currency,
+                    'principal_unit_of_measure' => $request->principal_unit_of_measure,
+                    'from_order_to_delivery' => $request->from_order_to_delivery,
+                    'password_complexity' => [
+                        'minuscule' => $request->minuscule,
+                        'majuscule' => $request->majuscule,
+                        'special_characters' => $request->special_characters,
+                        'min_length' => $request->min_length,
+                        'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
+                    ],
+                ];
                 $institution->save();
 
                 $message = "Modification effectuée avec succès.";

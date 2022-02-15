@@ -23,7 +23,7 @@ class UnityController extends Controller
     public function index()
     {
         $this->authorize('ROLE_UNITY_READ', Truck::class);
-        $unities = Unity::orderBy('wording')->get();
+        $unities = Unity::orderBy('created_at','desc')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['unities' => $unities]
         ], 200);

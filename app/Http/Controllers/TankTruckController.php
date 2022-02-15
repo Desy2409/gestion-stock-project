@@ -35,9 +35,9 @@ class TankTruckController extends Controller
     {
         $this->authorize('ROLE_TANK_TRUCK_READ', TankTruck::class);
         if ($param == 'truck') {
-            $tankTrucks = TankTruck::where('truck_id', $id)->with('truck')->orderBy('created_at', 'desc')->get();
+            $tankTrucks = TankTruck::orderBy('created_at','desc')->where('truck_id', $id)->with('truck')->orderBy('created_at', 'desc')->get();
         } else {
-            $tankTrucks = TankTruck::where('tank_id', $id)->with('tank')->orderBy('created_at', 'desc')->get();
+            $tankTrucks = TankTruck::orderBy('created_at','desc')->where('tank_id', $id)->with('tank')->orderBy('created_at', 'desc')->get();
         }
         $tanks = Tank::orderBy('tank_registration')->get();
         $trucks = Truck::orderBy('truck_registration')->get();

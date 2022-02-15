@@ -30,7 +30,7 @@ class UserTypeController extends Controller
         $pages = Page::all();
         $operations = Operation::all();
         // $pageOperations = PageOperation::with('page')->with('operation')->get();
-        $userTypes = UserType::orderBy('wording')->get();
+        $userTypes = UserType::orderBy('created_at','desc')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['pages' => $pages, 'operations' => $operations, 'userTypes' => $userTypes]
         ], 200);

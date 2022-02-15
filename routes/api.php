@@ -32,6 +32,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
+use App\Http\Controllers\SmsChannelParamController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\TankController;
 use App\Http\Controllers\TankTruckController;
@@ -414,6 +415,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::class, 'update']);
     Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
     Route::get('/email-channel-param-report', [EmailChannelParamController::class, 'emailChannelParamReports']);
+
+    // Sms channel param routes
+    Route::get('/sms-channel-param', [SmsChannelParamController::class, 'index']);
+    Route::post('/sms-channel-param', [SmsChannelParamController::class, 'store']);
+    Route::get('/sms-channel-param/{id}/show', [SmsChannelParamController::class, 'show']);
+    Route::patch('/sms-channel-param/{id}/update', [SmsChannelParamController::class, 'update']);
+    Route::delete('/sms-channel-param/{id}/destroy', [SmsChannelParamController::class, 'destroy']);
+    Route::get('/sms-channel-param-report', [SmsChannelParamController::class, 'emailChannelParamReports']);
 
     // Taxe routes
     Route::get('/taxe', [TaxeController::class, 'index']);

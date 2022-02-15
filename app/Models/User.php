@@ -48,9 +48,7 @@ class User extends Authenticatable
 
     protected $attributes = [
         'settings' => '{
-            "authorized_sale_point": "",
-            "order_purchase_order_validation": "",
-            "transfer_demand_validation": ""
+            "authorized_sale_points": ""
         }'
     ];
 
