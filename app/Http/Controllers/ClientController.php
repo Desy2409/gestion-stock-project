@@ -27,11 +27,11 @@ class ClientController extends Controller
     public function index()
     {
         $this->authorize('ROLE_CLIENT_READ', Client::class);
-        $corporations = Client::with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
+        $corporations = Client::orderBy('created_at','desc')->with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne morale');
         })->get();
 
-        $personPhysic = Client::with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
+        $personPhysic = Client::orderBy('created_at','desc')->with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne physique');
         })->get();
 

@@ -23,7 +23,7 @@ class SubCategoryController extends Controller
     {
         $this->authorize('ROLE_SUB_CATEGORY_READ', SubCategory::class);
         $categories = Category::orderBy('wording')->get();
-        $subCategories = SubCategory::with('category')->orderBy('wording')->get();
+        $subCategories = SubCategory::orderBy('created_at','desc')->with('category')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories, 'subCategories' => $subCategories]
         ], 200);
@@ -74,7 +74,6 @@ class SubCategoryController extends Controller
     {
         $this->authorize('ROLE_SUB_CATEGORY_UPDATE', SubCategory::class);
         $subCategory = SubCategory::findOrFail($id);
-        $errors = $this->validator('', $request->all());
 
         $existingSubCategories = SubCategory::where('wording', $request->wording)->get();
         if (!empty($existingSubCategories) && sizeof($existingSubCategories) > 1) {

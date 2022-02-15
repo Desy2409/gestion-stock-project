@@ -1,31 +1,31 @@
 [{
     "code": "BC",
     "wording": "Bon de commande",
-    "description": "Page de configuration d'un driver",
+    "description": "Types de fichier pour les bons de commandes",
     "authorized_files": ["pdf", "docx", "xls"],
     "max_size": 5120
 }, {
     "code": "BA",
     "wording": "Bon d'achat",
-    "description": "Page de configuration d'un driver",
+    "description": "Types de fichier pour les bons d'achat",
     "authorized_files": ["pdf", "docx", "xls"],
     "max_size": 5120
 }, {
     "code": "BL",
     "wording": "Bon de livraison",
-    "description": "Page de configuration d'un driver",
+    "description": "Types de fichier pour les bons de livraison",
     "authorized_files": ["pdf", "docx", "xls"],
     "max_size": 5120
 }, {
     "code": "VT",
     "wording": "Vente",
-    "description": "Page de configuration d'un driver",
+    "description": "Types de fichier pour les vente",
     "authorized_files": ["pdf", "docx", "xls"],
     "max_size": 5120
 }, {
     "code": "CJ",
     "wording": "Certificat de jaugeage",
-    "description": "Page de configuration d'un driver",
+    "description": "Types de fichier pour les certificats de jaugeage",
     "authorized_files": ["pdf", "docx", "xls"],
     "max_size": 5120
 }]

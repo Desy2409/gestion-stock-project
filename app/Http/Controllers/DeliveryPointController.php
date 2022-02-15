@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
+use App\Models\Client;
 use App\Models\DeliveryPoint;
 use App\Models\Institution;
 use App\Repositories\DeliveryPointRepository;
@@ -25,10 +26,11 @@ class DeliveryPointController extends Controller
     public function index()
     {
         $this->authorize('ROLE_DELIVERY_POINT_READ', DeliveryPoint::class);
-        $deliveryPoints = DeliveryPoint::with('institution')->orderBy('wording')->get();
+        $deliveryPoints = DeliveryPoint::orderBy('created_at','desc')->with('institution')->orderBy('wording')->get();
         $institutions = Institution::orderBy('social_reason')->get();
+        $clients = Client::with('person')->get();
         return new JsonResponse([
-            'datas' => ['deliveryPoints' => $deliveryPoints, 'institutions' => $institutions]
+            'datas' => ['deliveryPoints' => $deliveryPoints, 'institutions' => $institutions,'clients'=>$clients]
         ], 200);
     }
 

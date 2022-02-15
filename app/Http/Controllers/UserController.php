@@ -39,9 +39,9 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('ROLE_USER_READ', User::class);
-        $users = User::orderBy('last_name')->orderBy('first_name')->get();
+        $users = User::orderBy('created_at','desc')->orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
-        $salePoints = SalePoint::orderBy('wording')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
 
         $pages = Page::all();
         $operations = Operation::all();
@@ -85,6 +85,7 @@ class UserController extends Controller
                 $user->first_name = $request->first_name;
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
+                $user->sale_points = $request->sale_points;
                 $user->save();
 
                 $passwordHistory = new PasswordHistory();
@@ -149,6 +150,7 @@ class UserController extends Controller
                 $user->first_name = $request->first_name;
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
+                $user->sale_points = $request->sale_points;
                 $user->save();
 
                 $passwordHistory = PasswordHistory::where('user_id', $user->id)->latest()->first();

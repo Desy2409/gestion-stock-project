@@ -23,25 +23,18 @@ class Institution extends Model
     ];
 
     protected $attributes = [
-        'setting' => '{
-            "order_purchase_order_validation_level": "",
+        'settings' => '{
             "blocking_number_of_attempt": "",
+            "principal_currency": "",
+            "principal_unit_of_measure": "",
+            "from_order_to_delivery": "",
             "password_complexity": {
                 "minuscule": true,
                 "majuscule": true,
                 "special_characters": true,
                 "min_length": "",
-                "old_password>": "",
-                "new_password>": ""
-            },
-            "client_code_length": "",
-            "provider_code_length": "",
-            "goods_code_length": "",
-            "order_purchase_order_number_recall_day": "",
-            "offline_mode": "",
-            "institution_type": "",
-            "currency": "",
-            "taxes": ""
+                "new_password_diffrent_from_old>": ""
+            }
         }'
     ];
 

@@ -23,7 +23,7 @@ class HostController extends Controller
     public function index()
     {
         $this->authorize('ROLE_HOST_READ', Host::class);
-        $hosts = Host::with('driver')->orderBy('provider')->get();
+        $hosts = Host::orderBy('created_at','desc')->with('driver')->orderBy('provider')->get();
         return new JsonResponse([
             'datas' => ['hosts' => $hosts]
         ], 200);

@@ -31,7 +31,7 @@ class TournController extends Controller
     public function index()
     {
         $this->authorize('ROLE_TOURN_READ', Tourn::class);
-        $tourns = Tourn::orderBy('reference')->get();
+        $tourns = Tourn::orderBy('created_at','desc')->orderBy('reference')->get();
         // $removalOrders = RemovalOrder::orderBy('voucher_date')->orderBy('reference')->get();
         $tanks = Tank::all();
         $trucks = Truck::all();

@@ -17,7 +17,7 @@ class TaxeController extends Controller
     public function index()
     {
         $this->authorize('ROLE_TAXE_READ', Taxe::class);
-        $taxes = Taxe::orderBy('wording')->get();
+        $taxes = Taxe::orderBy('created_at','desc')->orderBy('wording')->get();
 
         return new JsonResponse(['datas' => ['taxes' => $taxes]], 200);
     }

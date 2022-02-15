@@ -50,7 +50,7 @@ class RemovalOrderController extends Controller
         $idOfProviderTypeStorageUnits = ProviderType::where('type', "Unité de stockage")->pluck('id')->toArray();
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
 
-        $removalOrders = RemovalOrder::orderBy('voucher_date')->orderBy('reference')->get();
+        $removalOrders = RemovalOrder::orderBy('created_at','desc')->orderBy('voucher_date')->orderBy('reference')->get();
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();

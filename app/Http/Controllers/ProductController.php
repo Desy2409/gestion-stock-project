@@ -33,7 +33,7 @@ class ProductController extends Controller
     public function index()
     {
         $this->authorize('ROLE_PRODUCT_READ', Product::class);
-        $products = Product::with('subCategory')->orderBy('wording')->get();
+        $products = Product::orderBy('created_at','desc')->with('subCategory')->orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
 
         $lastProductRegister = ProductRegister::latest()->first();
@@ -133,7 +133,6 @@ class ProductController extends Controller
     {
         $this->authorize('ROLE_PRODUCT_UPDATE', Product::class);
         $product = Product::with('subCategory')->findOrFail($id);
-        $errors = $this->validator('store', $request->all());
 
         $existingProductsOnReference = Product::where('reference', $request->reference)->get();
         if (!empty($existingProductsOnReference) && sizeof($existingProductsOnReference) > 1) {
@@ -185,7 +184,6 @@ class ProductController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => $message,
-                'errors' => $errors,
             ], 200);
         }
     }

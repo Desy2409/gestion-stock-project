@@ -51,7 +51,7 @@ class TransferDemandController extends Controller
         $categories = Category::orderBy('wording')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
         // $transfersDemands = TransferDemand::with('salePoint')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
-        $transfersDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
+        $transfersDemands = TransferDemand::orderBy('created_at','desc')->with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $unities = Unity::orderBy('wording')->get();
 
         $lastTransferDemandRegister = TransferDemandRegister::latest()->first();

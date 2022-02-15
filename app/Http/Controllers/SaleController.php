@@ -51,7 +51,7 @@ class SaleController extends Controller
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
         // $sales = Sale::with('client')->with('purchaseOrder')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
-        $sales = Sale::with('clientDeliveryNotes')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::orderBy('created_at','desc')->with('clientDeliveryNotes')->where('purchase_order_id', '!=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
@@ -72,7 +72,7 @@ class SaleController extends Controller
     {
         $this->authorize('ROLE_SALE_READ', Sale::class);
         // $sales = Sale::with('client')->with('clientDeliveryNotes')->with('productSales')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
-        $sales = Sale::with('clientDeliveryNotes')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
+        $sales = Sale::orderBy('created_at','desc')->with('clientDeliveryNotes')->where('purchase_order_id', '=', null)->orderBy('code')->orderBy('sale_date')->get();
         $lastSaleRegister = SaleRegister::latest()->first();
 
         $saleRegister = new SaleRegister();
