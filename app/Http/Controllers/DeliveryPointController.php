@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\DeliveryPoint;
+use App\Models\Destination;
 use App\Models\Institution;
+use App\Models\SalePoint;
 use App\Repositories\DeliveryPointRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -26,11 +28,12 @@ class DeliveryPointController extends Controller
     public function index()
     {
         $this->authorize('ROLE_DELIVERY_POINT_READ', DeliveryPoint::class);
-        $deliveryPoints = DeliveryPoint::orderBy('created_at','desc')->with('institution')->orderBy('wording')->get();
-        $institutions = Institution::orderBy('social_reason')->get();
+        $deliveryPoints = DeliveryPoint::orderBy('created_at', 'desc')->with('institution')->orderBy('wording')->get();
+        $destintations = Destination::orderBy('wording')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
         $clients = Client::with('person')->get();
         return new JsonResponse([
-            'datas' => ['deliveryPoints' => $deliveryPoints, 'institutions' => $institutions,'clients'=>$clients]
+            'datas' => ['deliveryPoints' => $deliveryPoints, 'salePoints' => $salePoints, 'clients' => $clients, 'destintations' => $destintations]
         ], 200);
     }
 
