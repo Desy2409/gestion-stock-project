@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\UtilityTrait;
 use App\Models\Institution;
+use App\Models\TableSetting;
 use App\Repositories\InstitutionRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -11,17 +13,33 @@ use Illuminate\Support\Facades\Validator;
 
 class InstitutionController extends Controller
 {
-    public $institutionRepository;
+    use UtilityTrait;
 
-    public function __construct(InstitutionRepository $institutionRepository)
+    public $institutionRepository;
+    public $tablesConcernBySettingCodeMinLength = [
+        "App\Models\Poduct", "App\Models\Client", "App\Models\Provider",
+        "App\Models\Order", "App\Models\Purchase", "App\Models\DeliveryNote", "App\Models\PurchaseOrder",
+        "App\Models\Sale", "App\Models\ClientDeliveryNote", "App\Models\TransferDemand", //"App\Models\Transfer",
+        "App\Models\RemovalOrder", "App\Models\Tourn"
+    ];
+
+    public $tablesConcernBySettingValidationNumberAndLevel = [
+        "App\Models\Order", "App\Models\Purchase", "App\Models\DeliveryNote", "App\Models\PurchaseOrder",
+        "App\Models\Sale", "App\Models\ClientDeliveryNote", "App\Models\TransferDemand", //"App\Models\Transfer",
+        "App\Models\RemovalOrder", "App\Models\Tourn"
+    ];
+
+    public function __construct(InstitutionRepository $institutionRepository, $tablesConcernbySetting, $tablesConcernBySettingValidationNumberAndLevel)
     {
         $this->institutionRepository = $institutionRepository;
+        $this->tablesConcernbySetting = $tablesConcernbySetting;
+        $this->tablesConcernBySettingValidationNumberAndLevel = $tablesConcernBySettingValidationNumberAndLevel;
     }
 
     public function index()
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
-        $institutions = Institution::orderBy('created_at','desc')->with('salesPoints')->orderBy('social_reason')->get();
+        $institutions = Institution::orderBy('created_at', 'desc')->with('salesPoints')->orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['institutions' => $institutions]
         ], 200);
@@ -74,6 +92,8 @@ class InstitutionController extends Controller
                 ];
 
                 $institution->save();
+
+
 
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
@@ -158,6 +178,9 @@ class InstitutionController extends Controller
                 ];
                 $institution->save();
 
+                // $this->saveSettings('update', $request, "App\Models\Order");
+                // $this->saveSettings('update', $request, "App\Models\PurchaseOrder");
+
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
                     'institution' => $institution,
@@ -207,12 +230,20 @@ class InstitutionController extends Controller
 
     public function institutionReports(Request $request)
     {
+        $this->authorize('ROLE_INSTITUTION_PRINT', Institution::class);
+
         try {
             $institutions = $this->institutionRepository->institutionReport($request->selected_default_fields);
             return new JsonResponse(['datas' => ['institutions' => $institutions]], 200);
         } catch (Exception $e) {
             dd($e);
         }
+    }
+
+    public function institutionSettings($id)
+    {
+        // dd('in controller');
+        return new JsonResponse(['datas' => ['institution_settings' => $this->getInstitutionSettings($id)]], 200);
     }
 
     public function validator($mode, $data)
@@ -266,4 +297,17 @@ class InstitutionController extends Controller
             );
         }
     }
+
+    protected function saveSettings($mode, Request $request, $tableName)
+    {
+        // if ($tableSetting) {
+        // } else {
+        // }
+    }
+
+    
+
+
+
+
 }

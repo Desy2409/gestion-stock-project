@@ -50,6 +50,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+// use App\Http\Traits\UtilityTrait;
+use Illuminate\Http\JsonResponse;
 
 /*
 |--------------------------------------------------------------------------
@@ -239,6 +241,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client-delivery-note-report', [ClientDeliveryNoteController::class, 'clientDeliveryNoteReports']);
 
     // Institution routes
+
+    // Route::get('/instiution/{id}/settings', function ($id) {
+    //     // dd('here\'s test');
+        
+    //     return new JsonResponse(['datas'=>['institution_settings'=>$this->getInstitutionSettings($id)]],200);
+    // });
     Route::get('/institution', [InstitutionController::class, 'index']);
     Route::post('/institution', [InstitutionController::class, 'store']);
     Route::get('/institution/{id}/show', [InstitutionController::class, 'show']);
@@ -246,6 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/institution/{id}/update', [InstitutionController::class, 'update']);
     Route::delete('/institution/{id}/destroy', [InstitutionController::class, 'destroy']);
     Route::get('/institution-report', [InstitutionController::class, 'institutionReports']);
+    Route::get('/institution/{id}/settings', [InstitutionController::class, 'institutionSettings']);
 
     // Sale point routes
     Route::get('/sale-point', [SalePointController::class, 'index']);
@@ -385,11 +394,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // DeliveryPoint routes
     Route::get('/delivery-point', [DeliveryPointController::class, 'index']);
-    Route::post('/delivery-point', [DeliveryPointController::class, 'store']);
-    Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
-    Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
-    Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
-    Route::get('/delivery-point-report', [DeliveryPointController::class, 'deliveryPointReports']);
+    Route::post('/delivery-point-client', [DeliveryPointController::class, 'configClientDeliveryPoint']);
+    Route::post('/delivery-point-sale-point', [DeliveryPointController::class, 'configSalePointDeliveryPoint']);
+    // Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
+    // Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
+    // Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
+    // Route::get('/delivery-point-report', [DeliveryPointController::class, 'deliveryPointReports']);
 
     // Driver routes
     Route::get('/driver', [DriverController::class, 'index']);
