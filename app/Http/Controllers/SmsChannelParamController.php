@@ -86,7 +86,7 @@ class SmsChannelParamController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->authorize('ROLE_SMS_CHANNEL_PARAM_', SmsChannelParam::class);
+        $this->authorize('ROLE_SMS_CHANNEL_PARAM_UPDATE', SmsChannelParam::class);
         $smsChannelParam = SmsChannelParam::findOrFail($id);
 
         try {
@@ -128,12 +128,12 @@ class SmsChannelParamController extends Controller
 
     public function destroy($id)
     {
-        $this->authorize('ROLE_SMS_CHANNEL_PARAM_', SmsChannelParam::class);
+        $this->authorize('ROLE_SMS_CHANNEL_PARAM_DESTROY', SmsChannelParam::class);
     }
 
     public function smsChannelParamReports()
     {
-        $this->authorize('ROLE_SMS_CHANNEL_PARAM_', SmsChannelParam::class);
+        $this->authorize('ROLE_SMS_CHANNEL_PARAM_PRINT', SmsChannelParam::class);
     }
 
     protected function validator($mode, $data)
