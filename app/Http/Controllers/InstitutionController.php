@@ -17,6 +17,7 @@ class InstitutionController extends Controller
     {
         $this->institutionRepository = $institutionRepository;
     }
+
     public function index()
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
@@ -29,7 +30,6 @@ class InstitutionController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_INSTITUTION_CREATE', Institution::class);
-
         $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
         if ($existingInstitution) {
             $success = false;
