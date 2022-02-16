@@ -41,7 +41,7 @@ class UserController extends Controller
         $this->authorize('ROLE_USER_READ', User::class);
         $users = User::orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
-        $salePoints = SalePoint::orderBy('wording')->get();
+        $salePoints = SalePoint::orderBy('social_reason')->get();
 
         $pages = Page::all();
         $operations = Operation::all();
