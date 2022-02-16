@@ -18,7 +18,8 @@ class SalePoint extends Model
     ];
 
     protected $casts = [
-        'settings' => 'array'
+        'settings' => 'array',
+        'delivery_points' => 'array'
     ];
 
     protected $attributes = [

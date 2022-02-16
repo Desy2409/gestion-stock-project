@@ -385,11 +385,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // DeliveryPoint routes
     Route::get('/delivery-point', [DeliveryPointController::class, 'index']);
-    Route::post('/delivery-point', [DeliveryPointController::class, 'store']);
-    Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
-    Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
-    Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
-    Route::get('/delivery-point-report', [DeliveryPointController::class, 'deliveryPointReports']);
+    Route::post('/delivery-point-client', [DeliveryPointController::class, 'configClientDeliveryPoint']);
+    Route::post('/delivery-point-sale-point', [DeliveryPointController::class, 'configSalePointDeliveryPoint']);
+    // Route::get('/delivery-point/{id}/show', [DeliveryPointController::class, 'show']);
+    // Route::patch('/delivery-point/{id}/update', [DeliveryPointController::class, 'update']);
+    // Route::delete('/delivery-point/{id}/destroy', [DeliveryPointController::class, 'destroy']);
+    // Route::get('/delivery-point-report', [DeliveryPointController::class, 'deliveryPointReports']);
 
     // Driver routes
     Route::get('/driver', [DriverController::class, 'index']);
