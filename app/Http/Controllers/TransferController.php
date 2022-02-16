@@ -35,7 +35,7 @@ class TransferController extends Controller
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
         // $products = Product::with('subCategory')->orderBy('wording')->get();
-        $transfers = Transfer::with('transferDemand')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
+        $transfers = Transfer::orderBy('created_at','desc')->with('transferDemand')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
         // $transfers = Transfer::with('transferDemand')->with('productsTransfersLines')->with('getTransmitterAttribute')->with('getReceiverAttribute')->orderBy('date_of_transfer', 'desc')->orderBy('transfer_reason')->get();
         // $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->where('state', 'S')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();
         $transferDemands = TransferDemand::with('productsTransfersDemandsLines')->orderBy('date_of_demand', 'desc')->orderBy('request_reason')->get();

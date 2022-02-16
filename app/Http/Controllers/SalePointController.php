@@ -22,7 +22,7 @@ class SalePointController extends Controller
     {
         $this->authorize('ROLE_SALE_POINT_READ', SalePoint::class);
         // $salesPoints = SalePoint::with('institution')->with('transfersDemands')->with('transfers')->with('orders')->with('sales')->with('clientDeliveryNotes')->orderBy('social_reason')->get();
-        $salesPoints = SalePoint::with('institution')->orderBy('social_reason')->get();
+        $salesPoints = SalePoint::orderBy('created_at','desc')->with('institution')->orderBy('social_reason')->get();
         $institutions = Institution::orderBy('social_reason')->get();
         return new JsonResponse([
             'datas' => ['salesPoints' => $salesPoints, 'institutions' => $institutions]
@@ -32,7 +32,6 @@ class SalePointController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_SALE_POINT_CREATE', SalePoint::class);
-        $errors = $this->validator('store', $request->all());
 
         $existingSalePoint = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
         if ($existingSalePoint) {
@@ -78,7 +77,6 @@ class SalePointController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => $message,
-                'errors' => $errors,
             ], 200);
         }
     }
@@ -107,7 +105,6 @@ class SalePointController extends Controller
     {
         $this->authorize('ROLE_SALE_POINT_UPDATE', SalePoint::class);
         $salePoint = SalePoint::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         $existingSalePoints = SalePoint::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->get();
         if (!empty($existingSalePoints) && sizeof($existingSalePoints) > 1) {
@@ -151,7 +148,6 @@ class SalePointController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => $message,
-                'errors' => $errors,
             ], 200);
         }
     }

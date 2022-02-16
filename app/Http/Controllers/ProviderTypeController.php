@@ -26,19 +26,19 @@ class ProviderTypeController extends Controller
 
         switch ($type) {
             case 'Raffinerie':
-                $providerTypes = ProviderType::where('type', '=', 'Raffinerie')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::orderBy('created_at','desc')->where('type', '=', 'Raffinerie')->with('providers')->orderBy('wording')->get();
                 break;
 
             case 'Unité de stockage':
-                $providerTypes = ProviderType::where('type', '=', 'Unité de stockage')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::orderBy('created_at','desc')->where('type', '=', 'Unité de stockage')->with('providers')->orderBy('wording')->get();
                 break;
 
-            case 'Transport':
-                $providerTypes = ProviderType::where('type', '=', 'Transport')->with('providers')->orderBy('wording')->get();
+            case 'Transporteurs':
+                $providerTypes = ProviderType::orderBy('created_at','desc')->where('type', '=', 'Transport')->with('providers')->orderBy('wording')->get();
                 break;
 
             case 'Autres fournisseurs':
-                $providerTypes = ProviderType::where('type', '=', 'Autres fournisseurs')->with('providers')->orderBy('wording')->get();
+                $providerTypes = ProviderType::orderBy('created_at','desc')->where('type', '=', 'Autres fournisseurs')->with('providers')->orderBy('wording')->get();
                 break;
 
             default:

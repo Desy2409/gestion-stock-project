@@ -23,7 +23,7 @@ class TruckController extends Controller
     public function index()
     {
         $this->authorize('ROLE_TRUCK_READ', Truck::class);
-        $trucks = Truck::with('provider')->orderBy('truck_registration')->get();
+        $trucks = Truck::orderBy('created_at','desc')->with('provider')->orderBy('truck_registration')->get();
 
         $idOfProviderTypeCarriers = ProviderType::where('type', "Transport")->pluck('id')->toArray();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();

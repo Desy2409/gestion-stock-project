@@ -22,7 +22,7 @@ class CategoryController extends Controller
     public function index()
     {
         $this->authorize('ROLE_CATEGORY_READ', Category::class);
-        $categories = Category::orderBy('wording')->get();
+        $categories = Category::orderBy('created_at','desc')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['categories' => $categories]
         ], 200);

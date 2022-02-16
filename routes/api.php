@@ -32,6 +32,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalePointController;
+use App\Http\Controllers\SmsChannelParamController;
 use App\Http\Controllers\StockTypeController;
 use App\Http\Controllers\TankController;
 use App\Http\Controllers\TankTruckController;
@@ -156,6 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Order routes
     Route::get('/order', [OrderController::class, 'index']);
     Route::get('/order-code', [OrderController::class, 'showNextCode']);
+    Route::get('/order-products-of-category/{id}', [OrderController::class, 'productsOfSelectedCategory']);
     Route::post('/order', [OrderController::class, 'store']);
     Route::get('/order/{id}/show', [OrderController::class, 'show']);
     Route::patch('/order/{id}/update', [OrderController::class, 'update']);
@@ -169,6 +171,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-on-order-datas/{id}', [PurchaseController::class, 'datasFromOrder']);
     Route::get('/purchase-direct', [PurchaseController::class, 'directPurchase']);
     Route::get('/purchase-code', [PurchaseController::class, 'showNextCode']);
+    Route::get('/purchase-products-of-category/{id}', [PurchaseController::class, 'productsOfSelectedCategory']);
     Route::post('/purchase', [PurchaseController::class, 'store']);
     Route::get('/purchase/{id}/show', [PurchaseController::class, 'show']);
     Route::get('/purchase/{id}/edit', [PurchaseController::class, 'edit']);
@@ -193,6 +196,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Purchase order routes
     Route::get('/purchase-order', [PurchaseOrderController::class, 'index']);
     Route::get('/purchase-order-code', [PurchaseOrderController::class, 'showNextCode']);
+    Route::get('/purchase-order-products-of-category/{id}', [PurchaseOrderController::class, 'productsOfSelectedCategory']);
     Route::post('/purchase-order', [PurchaseOrderController::class, 'store']);
     Route::get('/purchase-order/{id}/show', [PurchaseOrderController::class, 'show']);
     Route::get('/purchase-order/{id}/edit', [PurchaseOrderController::class, 'edit']);
@@ -208,6 +212,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sale-on-purchase-order/{id}', [SaleController::class, 'datasFromPurchaseOrder']);
     Route::get('/sale-direct', [SaleController::class, 'directSale']);
     Route::get('/sale-code', [SaleController::class, 'showNextCode']);
+    Route::get('/sale-products-of-category/{id}', [SaleController::class, 'productsOfSelectedCategory']);
     Route::post('/sale', [SaleController::class, 'store']);
     Route::get('/sale/{id}/show', [SaleController::class, 'show']);
     Route::get('/sale/{id}/edit', [SaleController::class, 'edit']);
@@ -254,6 +259,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Transfer demand routes
     Route::get('/transfer-demand', [TransferDemandController::class, 'index']);
     Route::get('/transfer-demand-code', [TransferDemandController::class, 'showNextCode']);
+    Route::get('/transfer-demand-products-of-category/{id}', [TransferDemandController::class, 'productsOfSelectedCategory']);
     Route::get('/transfer-demand-on-transmitter-select', [TransferDemandController::class, 'showReceiversOnTransmitterSelect']);
     Route::post('/transfer-demand', [TransferDemandController::class, 'store']);
     Route::get('/transfer-demand/{id}/show', [TransferDemandController::class, 'show']);
@@ -409,6 +415,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/email-channel-param/{id}/update', [EmailChannelParamController::class, 'update']);
     Route::delete('/email-channel-param/{id}/destroy', [EmailChannelParamController::class, 'destroy']);
     Route::get('/email-channel-param-report', [EmailChannelParamController::class, 'emailChannelParamReports']);
+
+    // Sms channel param routes
+    Route::get('/sms-channel-param', [SmsChannelParamController::class, 'index']);
+    Route::post('/sms-channel-param', [SmsChannelParamController::class, 'store']);
+    Route::get('/sms-channel-param/{id}/show', [SmsChannelParamController::class, 'show']);
+    Route::patch('/sms-channel-param/{id}/update', [SmsChannelParamController::class, 'update']);
+    Route::delete('/sms-channel-param/{id}/destroy', [SmsChannelParamController::class, 'destroy']);
+    Route::get('/sms-channel-param-report', [SmsChannelParamController::class, 'emailChannelParamReports']);
 
     // Taxe routes
     Route::get('/taxe', [TaxeController::class, 'index']);

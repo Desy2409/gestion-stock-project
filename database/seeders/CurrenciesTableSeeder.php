@@ -15,6 +15,7 @@ class CurrenciesTableSeeder extends Seeder
      */
     public function run()
     {
+        // Currency::query()->truncate();
         $json_currency = File::get('database/data/currency.json');
         $currencies = json_decode($json_currency);
         foreach ($currencies as $key => $currency) {

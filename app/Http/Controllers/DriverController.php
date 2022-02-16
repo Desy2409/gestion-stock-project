@@ -26,7 +26,7 @@ class DriverController extends Controller
     public function index()
     {
         $this->authorize('ROLE_DRIVER_READ', Driver::class);
-        $drivers = Driver::with('hosts')->orderBy('wording')->get();
+        $drivers = Driver::orderBy('created_at','desc')->with('hosts')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['drivers' => $drivers],
         ], 200);

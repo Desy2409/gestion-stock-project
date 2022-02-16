@@ -21,7 +21,7 @@ class StockTypeController extends Controller
     public function index()
     {
         $this->authorize('ROLE_STOCK_TYPE_READ', StockType::class);
-        $stockTypes = StockType::orderBy('wording')->get();
+        $stockTypes = StockType::orderBy('created_at','desc')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['stockTypes' => $stockTypes]
         ], 200);

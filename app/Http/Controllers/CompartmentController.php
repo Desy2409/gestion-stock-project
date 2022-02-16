@@ -106,7 +106,6 @@ class CompartmentController extends Controller
     {
         $this->authorize('ROLE_COMPARTMENT_UPDATE', Compartment::class);
         $compartment = Compartment::findOrFail($id);
-        $errors = $this->validator('update', $request->all());
 
         $existingCompartments = Compartment::where('reference', $request->reference)->get();
         if (!empty($existingCompartments) && sizeof($existingCompartments) > 1) {
@@ -147,7 +146,6 @@ class CompartmentController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'message' => $message,
-                'errors' => $errors,
             ], 200);
         }
     }

@@ -6,6 +6,7 @@ use App\Http\Traits\FileTrait;
 use App\Http\Traits\ProcessingTrait;
 use App\Http\Traits\UtilityTrait;
 use App\Mail\OrderValidationMail;
+use App\Models\Category;
 use App\Models\Folder;
 use App\Models\Institution;
 use App\Models\Order;
@@ -18,6 +19,7 @@ use App\Models\SalePoint;
 use App\Models\Unity;
 use App\Models\User;
 use App\Repositories\OrderRepository;
+use App\Repositories\ProductRepository;
 use App\Utils\FileUtil;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -34,11 +36,13 @@ class OrderController extends Controller
     use FileTrait;
 
     public $orderRepository;
+    public $productRepository;
     protected $prefix;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository, ProductRepository $productRepository)
     {
         $this->orderRepository = $orderRepository;
+        $this->productRepository = $productRepository;
         $this->user = Auth::user();
         $this->prefix = Order::$code;
         $this->fileUtil = new FileUtil('Orders');
@@ -48,11 +52,12 @@ class OrderController extends Controller
     {
         // dd("OrderController");
         $this->authorize('ROLE_ORDER_READ', Order::class);
-        $orders = Order::orderBy('created_at')->get();
+        $orders = Order::orderBy('created_at','desc')->get();
         // $orders = Order::orderBy('order_date')->with('')->get();
         $providers = Provider::with('person')->get();
-        
-        $products = Product::orderBy('wording')->get();
+
+        $categories = Category::orderBy('wording')->get();
+        // $products = Product::orderBy('wording')->get();
         $unities = Unity::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
 
@@ -67,7 +72,7 @@ class OrderController extends Controller
         $orderRegister->save();
 
         return new JsonResponse([
-            'datas' => ['orders' => $orders, 'providers' => $providers, 'products' => $products, 'unities' => $unities, 'salePoints' => $salePoints]
+            'datas' => ['orders' => $orders, 'providers' => $providers, 'categories' => $categories, 'unities' => $unities, 'salePoints' => $salePoints]
         ], 200);
     }
 
@@ -84,6 +89,14 @@ class OrderController extends Controller
         return new JsonResponse([
             'code' => $code
         ], 200);
+    }
+
+    public function productsOfSelectedCategory($id)
+    {
+        $category = Category::findOrFail($id);
+        $products = $this->productRepository->productsOfCategory($category->id);
+
+        return new JsonResponse(['datas' => ['products' => $products]], 200);
     }
 
     public function store(Request $request)

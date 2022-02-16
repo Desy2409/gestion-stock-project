@@ -23,7 +23,7 @@ class ExtensionController extends Controller
     public function index()
     {
         $this->authorize('ROLE_EXTENSION_READ', Extension::class);
-        $extensions = Extension::orderBy('extension')->get();
+        $extensions = Extension::orderBy('created_at','desc')->orderBy('extension')->get();
         return new JsonResponse([
             'datas' => ['extensions' => $extensions]
         ], 200);

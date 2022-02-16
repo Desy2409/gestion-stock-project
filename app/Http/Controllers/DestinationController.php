@@ -19,7 +19,7 @@ class DestinationController extends Controller
     public function index()
     {
         $this->authorize('ROLE_DESTINATION_READ', Destination::class);
-        $destinations = Destination::orderBy('wording')->get();
+        $destinations = Destination::orderBy('created_at','desc')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['destinations' => $destinations]
         ], 200);

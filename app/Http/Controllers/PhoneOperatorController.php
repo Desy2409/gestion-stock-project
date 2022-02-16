@@ -25,7 +25,7 @@ class PhoneOperatorController extends Controller
     public function index()
     {
         $this->authorize('ROLE_PHONE_OPERATOR_READ', PhoneOperator::class);
-        $phoneOperators = PhoneOperator::with('startNumbers')->orderBy('wording')->get();
+        $phoneOperators = PhoneOperator::orderBy('created_at','desc')->with('startNumbers')->orderBy('wording')->get();
         $countries = Country::orderBy('name_fr')->get();
         return new JsonResponse([
             'datas' => ['phoneOperators' => $phoneOperators, 'countries' => $countries]
