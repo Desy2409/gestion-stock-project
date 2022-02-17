@@ -27,10 +27,10 @@ class UserTypeController extends Controller
     public function index()
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
-        $pages = Page::all();
+        $pages = Page::with('pageOperations')->get();
         $operations = Operation::all();
         // $pageOperations = PageOperation::with('page')->with('operation')->get();
-        $userTypes = UserType::orderBy('created_at','desc')->orderBy('wording')->get();
+        $userTypes = UserType::orderBy('created_at', 'desc')->orderBy('wording')->get();
         return new JsonResponse([
             'datas' => ['pages' => $pages, 'operations' => $operations, 'userTypes' => $userTypes]
         ], 200);
@@ -51,30 +51,25 @@ class UserTypeController extends Controller
                     'message' => $messages,
                 ], 200);
             } else {
-                // Liste des opérations et pages opérations sélectionnées
-            $checkedRoles = [];
-            // $checkedRoles = json_decode();
-            // foreach ($request->roles as $key => $role) {
-            //     $checkedRole = Role::where('operation_id', '=', $role->operation_id)->where('page_operation_id', '=', $role->page_operation->id)->first();
-            //     array_push($checkedRoles, $checkedRole->code);
-            // }
+                $userType = new UserType();
+                $userType->code = strtoupper(str_replace(' ', '_', $request->code));
+                $userType->wording = $request->wording;
+                $userType->description = $request->description;
+                $roles = [];
+                foreach ($$request->page_operations as $key => $pageOperationId) {
+                    $pageOperation = PageOperation::where('id', $pageOperationId)->first();
+                    array_push($roles, $pageOperation->code);
+                }
+                $userType->roles = $roles;
+                $userType->save();
 
-            $userType = new UserType();
-            $userType->code = strtoupper(str_replace(' ', '_', $request->code));
-            $userType->wording = $request->wording;
-            $userType->description = $request->description;
-            $userType->roles = $request->roles;
-            $userType->save();
-
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'userType' => $userType,
-                'success' => true,
-                'message' => $message,
-            ], 200);
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'userType' => $userType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
             }
-
-            
         } catch (Exception $e) {
             // dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";

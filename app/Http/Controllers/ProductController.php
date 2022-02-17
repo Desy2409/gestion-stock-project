@@ -40,7 +40,7 @@ class ProductController extends Controller
 
         $productRegister = new ProductRegister();
         if ($lastProductRegister) {
-            $productRegister->code = $this->formateNPosition(ProductRegister::class, $lastProductRegister->id);
+            $productRegister->code = $this->formateNPosition(ProductRegister::class, $lastProductRegister->id+1);
         } else {
             $productRegister->code = $this->formateNPosition(ProductRegister::class, 1);
         }

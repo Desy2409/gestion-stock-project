@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
@@ -73,8 +74,13 @@ Route::post('/register', [AuthUserController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthUserController::class, 'logout']);
-    // Route::get('/products', [ProductController::class, 'index']);
-    // Route::get('/product/{$name}/search', [ProductController::class, 'search']);
+    
+    // Api Service routes
+    Route::get('/api-service', [ApiServiceController::class, 'index']);
+    Route::post('/api-service', [ApiServiceController::class, 'store']);
+    Route::patch('/api-service/{id}/update', [ApiServiceController::class, 'update']);
+    Route::delete('/api-service/{id}/destroy', [ApiServiceController::class, 'destroy']);
+    Route::get('/api-service/{id}/show', [ApiServiceController::class, 'show']);
 
     // Dashboard routes
     Route::get('/count', [DashboardController::class, 'count']);

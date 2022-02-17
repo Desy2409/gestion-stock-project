@@ -22,12 +22,10 @@ class TransferController extends Controller
 
 
     public $transferRepository;
-    protected $prefix;
 
     public function __construct(TransferRepository $transferRepository)
     {
         $this->transferRepository = $transferRepository;
-        $this->prefix = Transfer::$code;
     }
 
     public function index()
@@ -44,9 +42,9 @@ class TransferController extends Controller
 
         $transferRegister = new TransferRegister();
         if ($lastTransferRegister) {
-            $transferRegister->code = $this->formateNPosition($this->prefix, $lastTransferRegister->id + 1, 8);
+            $transferRegister->code = $this->formateNPosition(Transfer::class, $lastTransferRegister->id + 1);
         } else {
-            $transferRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $transferRegister->code = $this->formateNPosition(Transfer::class, 1);
         }
         $transferRegister->save();
 
@@ -72,9 +70,9 @@ class TransferController extends Controller
         $this->authorize('ROLE_TRANSFER_READ', Transfer::class);
         $lastTransferRegister = TransferRegister::latest()->first();
         if ($lastTransferRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastTransferRegister->id + 1, 8);
+            $code = $this->formateNPosition(Transfer::class, $lastTransferRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix, 1, 8);
+            $code = $this->formateNPosition(Transfer::class, 1);
         }
 
         return new JsonResponse([
@@ -101,9 +99,9 @@ class TransferController extends Controller
 
                 $transfer = new Transfer();
                 if ($lastTransfer) {
-                    $transfer->code = $this->formateNPosition($this->prefix, $lastTransfer->id + 1, 8);
+                    $transfer->code = $this->formateNPosition(Transfer::class, $lastTransfer->id + 1);
                 } else {
-                    $transfer->code = $this->formateNPosition($this->prefix, 1, 8);
+                    $transfer->code = $this->formateNPosition(Transfer::class, 1);
                 }
                 $transfer->transfer_reason = $request->transfer_reason;
                 $transfer->date_of_transfer = $request->date_of_transfer;

@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class TableSetting extends Model
 {
-    use HasFactory;
+   protected $fillable=['table_name','code_min_length','validation_number','validation_reminder'];
 }

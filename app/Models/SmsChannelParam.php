@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SmsChannelParam extends Model
 {
-    protected $fillable = ['url', 'user', 'password', 'sender'];
+    protected $fillable = ['url', 'user', 'password', 'sender','interval'];
 
     protected $casts = [
         'type' => 'array',

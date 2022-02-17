@@ -33,14 +33,12 @@ class PurchaseOrderController extends Controller
 
     public $purchaseOrderRepository;
     public $productRepository;
-    protected $prefix;
 
     public function __construct(PurchaseOrderRepository $purchaseOrderRepository, ProductRepository $productRepository)
     {
         $this->purchaseOrderRepository = $purchaseOrderRepository;
         $this->productRepository = $productRepository;
         $this->user = Auth::user();
-        $this->prefix = PurchaseOrder::$code;
     }
 
     public function index()
@@ -58,9 +56,9 @@ class PurchaseOrderController extends Controller
 
         $purchaseOrderRegister = new PurchaseOrderRegister();
         if ($lastPurchaseOrderRegister) {
-            $purchaseOrderRegister->code = $this->formateNPosition($this->prefix, $lastPurchaseOrderRegister->id + 1, 8);
+            $purchaseOrderRegister->code = $this->formateNPosition(PurchaseOrder::class, $lastPurchaseOrderRegister->id + 1);
         } else {
-            $purchaseOrderRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $purchaseOrderRegister->code = $this->formateNPosition(PurchaseOrder::class, 1);
         }
         $purchaseOrderRegister->save();
 
@@ -74,9 +72,9 @@ class PurchaseOrderController extends Controller
         $this->authorize('ROLE_PURCHASE_ORDER_READ', PurchaseOrder::class);
         $lastPurchaseOrderRegister = PurchaseOrderRegister::latest()->first();
         if ($lastPurchaseOrderRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastPurchaseOrderRegister->id + 1, 8);
+            $code = $this->formateNPosition(PurchaseOrder::class, $lastPurchaseOrderRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix,  1, 8);
+            $code = $this->formateNPosition(PurchaseOrder::class,  1);
         }
 
         return new JsonResponse([
@@ -111,9 +109,9 @@ class PurchaseOrderController extends Controller
 
                 $purchaseOrder = new PurchaseOrder();
                 if ($lastPurchaseOrder) {
-                    $purchaseOrder->code = $this->formateNPosition($this->prefix, $lastPurchaseOrder->id + 1, 8);
+                    $purchaseOrder->code = $this->formateNPosition(PurchaseOrder::class, $lastPurchaseOrder->id + 1);
                 } else {
-                    $purchaseOrder->code = $this->formateNPosition($this->prefix, 1, 8);
+                    $purchaseOrder->code = $this->formateNPosition(PurchaseOrder::class, 1);
                 }
                 $purchaseOrder->reference = $request->reference;
                 $purchaseOrder->purchase_date = $request->purchase_date;
