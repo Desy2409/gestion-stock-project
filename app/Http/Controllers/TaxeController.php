@@ -64,12 +64,21 @@ class TaxeController extends Controller
         $this->authorize('ROLE_TAXE_UPDATE', Taxe::class);
         $taxe = Taxe::findOrFail($id);
 
-        $existingTaxes = Taxe::where('reference', $request->reference)->get();
-        if (!empty($existingTaxes) && sizeof($existingTaxes) > 1) {
+        $existingTaxesBasedOnReference = Taxe::where('reference', $request->reference)->get();
+        if (!empty($existingTaxesBasedOnReference) && sizeof($existingTaxesBasedOnReference) > 1) {
             return new JsonResponse([
-                'existingTaxe' => $existingTaxes[0],
+                'existingTaxe' => $existingTaxesBasedOnReference[0],
                 'success' => false,
-                'message' => "Cette taxe existe déjà."
+                'message' => "Cette référence existe déjà."
+            ], 200);
+        }
+
+        $existingTaxesBasedOnWording = Taxe::where('wording', $request->wording)->get();
+        if (!empty($existingTaxesBasedOnWording) && sizeof($existingTaxesBasedOnWording) > 1) {
+            return new JsonResponse([
+                'existingTaxe' => $existingTaxesBasedOnWording[0],
+                'success' => false,
+                'message' => "Ce libellé existe déjà."
             ], 200);
         }
 
@@ -127,6 +136,15 @@ class TaxeController extends Controller
     }
 
     public function show($id)
+    {
+        $this->authorize('ROLE_TAXE_READ', Taxe::class);
+        $taxe = Taxe::findOrFail($id);
+        return new JsonResponse([
+            'taxe' => $taxe
+        ], 200);
+    }
+
+    public function edit($id)
     {
         $this->authorize('ROLE_TAXE_READ', Taxe::class);
         $taxe = Taxe::findOrFail($id);

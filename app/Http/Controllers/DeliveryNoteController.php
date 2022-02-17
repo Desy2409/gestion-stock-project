@@ -33,13 +33,11 @@ class DeliveryNoteController extends Controller
     use FileTrait;
 
     public $deliveryNoteRepository;
-    protected $prefix;
 
     public function __construct(DeliveryNoteRepository $deliveryNoteRepository)
     {
         $this->deliveryNoteRepository = $deliveryNoteRepository;
         $this->user = Auth::user();
-        $this->prefix = DeliveryNote::$code;
     }
 
     public function index()
@@ -55,9 +53,9 @@ class DeliveryNoteController extends Controller
 
         $deliveryNoteRegister = new DeliveryNoteRegister();
         if ($lastDeliveryNoteRegister) {
-            $deliveryNoteRegister->code = $this->formateNPosition($this->prefix, $lastDeliveryNoteRegister->id + 1, 8);
+            $deliveryNoteRegister->code = $this->formateNPosition(DeliveryNote::class, $lastDeliveryNoteRegister->id + 1);
         } else {
-            $deliveryNoteRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $deliveryNoteRegister->code = $this->formateNPosition(DeliveryNote::class, 1);
         }
         $deliveryNoteRegister->save();
 
@@ -72,9 +70,9 @@ class DeliveryNoteController extends Controller
         $this->authorize('ROLE_DELIVERY_NOTE_READ', DeliveryNote::class);
         $lastDeliveryNoteRegister = DeliveryNoteRegister::latest()->first();
         if ($lastDeliveryNoteRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastDeliveryNoteRegister->id + 1, 8);
+            $code = $this->formateNPosition(DeliveryNote::class, $lastDeliveryNoteRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix, 1, 8);
+            $code = $this->formateNPosition(DeliveryNote::class, 1);
         }
 
         return new JsonResponse([
@@ -124,9 +122,9 @@ class DeliveryNoteController extends Controller
 
                 $deliveryNote = new DeliveryNote();
                 if ($lastDeliveryNote) {
-                    $deliveryNote->code = $this->formateNPosition($this->prefix, $lastDeliveryNote->id + 1, 8);
+                    $deliveryNote->code = $this->formateNPosition(DeliveryNote::class, $lastDeliveryNote->id + 1);
                 } else {
-                    $deliveryNote->code = $this->formateNPosition($this->prefix, 1, 8);
+                    $deliveryNote->code = $this->formateNPosition(DeliveryNote::class, 1);
                 }
                 $deliveryNote->reference = $request->reference;
                 $deliveryNote->delivery_date   = $request->delivery_date;

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Models\Address;
 use App\Models\ClientRegister;
+use App\Models\DeliveryPoint;
 use App\Repositories\ClientRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -27,11 +28,14 @@ class ClientController extends Controller
     public function index()
     {
         $this->authorize('ROLE_CLIENT_READ', Client::class);
-        $corporations = Client::orderBy('created_at','desc')->with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
+
+        dd($this->getAllModels());
+
+        $corporations = Client::orderBy('created_at', 'desc')->with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne morale');
         })->get();
 
-        $personPhysic = Client::orderBy('created_at','desc')->with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
+        $personPhysic = Client::orderBy('created_at', 'desc')->with(['person.addresses', 'person.address'])->whereHas('person', function ($q) {
             $q->where('person_type', '=', 'Personne physique');
         })->get();
 
@@ -39,9 +43,9 @@ class ClientController extends Controller
 
         $clientRegister = new ClientRegister();
         if ($lastClientRegister) {
-            $clientRegister->code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
+            $clientRegister->code = $this->formateNPosition(Client::class, $lastClientRegister->id + 1);
         } else {
-            $clientRegister->code = $this->formateNPosition('CL', 1, 8);
+            $clientRegister->code = $this->formateNPosition(Client::class, 1);
         }
         $clientRegister->save();
 
@@ -56,9 +60,9 @@ class ClientController extends Controller
         $lastClientRegister = ClientRegister::latest()->first();
         // dd($lastClientRegister);
         if ($lastClientRegister) {
-            $code = $this->formateNPosition('CL', $lastClientRegister->id + 1, 8);
+            $code = $this->formateNPosition(Client::class, $lastClientRegister->id + 1);
         } else {
-            $code = $this->formateNPosition('CL', 1, 8);
+            $code = $this->formateNPosition(Client::class, 1);
         }
 
         return new JsonResponse([
@@ -97,9 +101,9 @@ class ClientController extends Controller
 
                 $client = new Client();
                 if ($lastClient) {
-                    $client->code = $this->formateNPosition('CL', $lastClient->id + 1, 8);
+                    $client->code = $this->formateNPosition(Client::class, $lastClient->id + 1);
                 } else {
-                    $client->code = $this->formateNPosition('CL', 1, 8);
+                    $client->code = $this->formateNPosition(Client::class, 1);
                 }
                 $client->reference = $request->reference;
                 $client->settings = $request->settings;
@@ -125,6 +129,16 @@ class ClientController extends Controller
                 $address->bp = $request->bp;
                 $address->person_id = $person->id;
                 $address->save();
+
+                if (!empty($request->delivery_points) && sizeof($request->delivery_points) > 0) {
+                    foreach ($request->delivery_points as $key => $delivery_point) {
+                        $deliveryPoint = new DeliveryPoint();
+                        $deliveryPoint->destination_id = $delivery_point;
+                        $deliveryPoint->client_id = $client->id;
+
+                        $deliveryPoint->save();
+                    }
+                }
 
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
@@ -211,6 +225,17 @@ class ClientController extends Controller
                     $address->bp = $request->bp;
                     $address->person_id = $person->id;
                     $address->save();
+                }
+
+                DeliveryPoint::where('client_id', $client->id)->delete();
+                if (!empty($request->delivery_points) && sizeof($request->delivery_points) > 0) {
+                    foreach ($request->delivery_points as $key => $delivery_point) {
+                        $deliveryPoint = new DeliveryPoint();
+                        $deliveryPoint->destination_id = $delivery_point;
+                        $deliveryPoint->client_id = $client->id;
+
+                        $deliveryPoint->save();
+                    }
                 }
 
                 $message = "Modification effectuée avec succès.";

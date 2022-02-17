@@ -44,6 +44,7 @@ class SmsChannelParamController extends Controller
                 $smsChannelParam->user = $request->user;
                 $smsChannelParam->password = Hash::make($request->password);
                 $smsChannelParam->sender = $request->sender;
+                $smsChannelParam->interval = $request->interval;
                 $smsChannelParam->type = [
                     'simple_http' => $request->simple_http,
                     'json_body_server' => $request->json_body_server,
@@ -104,6 +105,7 @@ class SmsChannelParamController extends Controller
                 $smsChannelParam->user = $request->user;
                 $smsChannelParam->password = Hash::make($request->password);
                 $smsChannelParam->sender = $request->sender;
+                $smsChannelParam->interval = $request->interval;
                 $smsChannelParam->type = [
                     'simple_http' => $request->simple_http,
                     'json_body_server' => $request->json_body_server,

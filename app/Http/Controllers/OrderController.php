@@ -37,14 +37,12 @@ class OrderController extends Controller
 
     public $orderRepository;
     public $productRepository;
-    protected $prefix;
 
     public function __construct(OrderRepository $orderRepository, ProductRepository $productRepository)
     {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
         $this->user = Auth::user();
-        $this->prefix = Order::$code;
         $this->fileUtil = new FileUtil('Orders');
     }
 
@@ -65,9 +63,9 @@ class OrderController extends Controller
 
         $orderRegister = new OrderRegister();
         if ($lastOrderRegister) {
-            $orderRegister->code = $this->formateNPosition($this->prefix, $lastOrderRegister->id + 1, 8);
+            $orderRegister->code = $this->formateNPosition(Order::class, $lastOrderRegister->id + 1);
         } else {
-            $orderRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $orderRegister->code = $this->formateNPosition(Order::class, 1);
         }
         $orderRegister->save();
 
@@ -81,9 +79,9 @@ class OrderController extends Controller
         $this->authorize('ROLE_ORDER_READ', Order::class);
         $lastOrderRegister = OrderRegister::latest()->first();
         if ($lastOrderRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastOrderRegister->id + 1, 8);
+            $code = $this->formateNPosition(Order::class, $lastOrderRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix, 1, 8);
+            $code = $this->formateNPosition(Order::class, 1);
         }
 
         return new JsonResponse([
@@ -119,9 +117,9 @@ class OrderController extends Controller
 
                 $order = new Order();
                 if ($lastOrder) {
-                    $order->code = $this->formateNPosition($this->prefix, $lastOrder->id + 1, 8);
+                    $order->code = $this->formateNPosition(Order::class, $lastOrder->id + 1);
                 } else {
-                    $order->code = $this->formateNPosition($this->prefix, 1, 8);
+                    $order->code = $this->formateNPosition(Order::class, 1);
                 }
                 $order->reference = $request->reference;
                 $order->order_date = $request->order_date;

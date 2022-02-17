@@ -200,6 +200,7 @@ class EmailChannelParamController extends Controller
             $emailChannelParam->is_active = false;
             $emailChannelParam->driver_id = $request->driver;
             $emailChannelParam->host_id = $request->host;
+            $emailChannelParam->time_out = $request->time_out;
             $emailChannelParam->save();
 
             $correspondenceChannel = new CorrespondenceChannel();
@@ -421,6 +422,7 @@ class EmailChannelParamController extends Controller
             $emailChannelParam->is_active = false;
             $emailChannelParam->driver_id = $request->driver;
             $emailChannelParam->host_id = $request->host;
+            $emailChannelParam->time_out = $request->time_out;
             $emailChannelParam->save();
 
             $correspondenceChannel->name = $request->name;

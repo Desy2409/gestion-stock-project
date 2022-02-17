@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Traits\UtilityTrait;
 use App\Models\Institution;
+use App\Models\Product;
 use App\Models\TableSetting;
 use App\Repositories\InstitutionRepository;
 use Exception;
@@ -16,24 +17,31 @@ class InstitutionController extends Controller
     use UtilityTrait;
 
     public $institutionRepository;
-    public $tablesConcernBySettingCodeMinLength = [
-        "App\Models\Poduct", "App\Models\Client", "App\Models\Provider",
-        "App\Models\Order", "App\Models\Purchase", "App\Models\DeliveryNote", "App\Models\PurchaseOrder",
-        "App\Models\Sale", "App\Models\ClientDeliveryNote", "App\Models\TransferDemand", //"App\Models\Transfer",
-        "App\Models\RemovalOrder", "App\Models\Tourn"
+    // public $tablesConcernBySettingCodeMinLength = [
+    //     "App\Models\Poduct", "App\Models\Client", "App\Models\Provider",
+    //     "App\Models\Order", "App\Models\Purchase", "App\Models\DeliveryNote", "App\Models\PurchaseOrder",
+    //     "App\Models\Sale", "App\Models\ClientDeliveryNote", "App\Models\TransferDemand", //"App\Models\Transfer",
+    //     "App\Models\RemovalOrder", "App\Models\Tourn"
+    // ];
+
+    // public $tablesConcernBySettingValidationNumberAndLevel = [
+    //     "App\Models\Order", "App\Models\Purchase", "App\Models\DeliveryNote", "App\Models\PurchaseOrder",
+    //     "App\Models\Sale", "App\Models\ClientDeliveryNote", "App\Models\TransferDemand", //"App\Models\Transfer",
+    //     "App\Models\RemovalOrder", "App\Models\Tourn"
+    // ];
+
+    public $tablesConcernBySetting = [
+        Product::class, Client::class, Provider::class,
+        Order::class, Purchase::class, DeliveryNote::class, PurchaseOrder::class,
+        Sale::class, ClientDeliveryNote::class, TransferDemand::class, //Transfer::class,
+        RemovalOrder::class, Tourn::class
     ];
 
-    public $tablesConcernBySettingValidationNumberAndLevel = [
-        "App\Models\Order", "App\Models\Purchase", "App\Models\DeliveryNote", "App\Models\PurchaseOrder",
-        "App\Models\Sale", "App\Models\ClientDeliveryNote", "App\Models\TransferDemand", //"App\Models\Transfer",
-        "App\Models\RemovalOrder", "App\Models\Tourn"
-    ];
-
-    public function __construct(InstitutionRepository $institutionRepository, $tablesConcernbySetting, $tablesConcernBySettingValidationNumberAndLevel)
+    public function __construct(InstitutionRepository $institutionRepository)
     {
         $this->institutionRepository = $institutionRepository;
-        $this->tablesConcernbySetting = $tablesConcernbySetting;
-        $this->tablesConcernBySettingValidationNumberAndLevel = $tablesConcernBySettingValidationNumberAndLevel;
+        // $this->tablesConcernbySetting = $tablesConcernbySetting;
+        // $this->tablesConcernBySettingValidationNumberAndLevel = $tablesConcernBySettingValidationNumberAndLevel;
     }
 
     public function index()
@@ -48,56 +56,62 @@ class InstitutionController extends Controller
     public function store(Request $request)
     {
         $this->authorize('ROLE_INSTITUTION_CREATE', Institution::class);
-        $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
-        if ($existingInstitution) {
-            $success = false;
-            return new JsonResponse([
-                'existingInstitution' => $existingInstitution,
-                'success' => $success,
-                'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
-            ], 200);
-        }
+
+        // $existingInstitution = Institution::where('rccm_number', $request->rccm_number)->where('cc_number', $request->cc_number)->first();
+        // if ($existingInstitution) {
+        //     $success = false;
+        //     return new JsonResponse([
+        //         'existingInstitution' => $existingInstitution,
+        //         'success' => $success,
+        //         'message' => "L'institution " . $existingInstitution->social_reason . " existe déjà."
+        //     ], 200);
+        // }
 
         try {
-            $validation = $this->validator('store', $request->all());
+            // $validation = $this->validator('store', $request->all());
 
-            if ($validation->fails()) {
-                $messages = $validation->errors()->all();
-                $messages = implode('<br/>', $messages);
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => $messages,
-                ], 200);
-            } else {
-                $institution = new Institution();
-                $institution->rccm_number = $request->rccm_number;
-                $institution->cc_number = $request->cc_number;
-                $institution->social_reason = $request->social_reason;
-                $institution->address = $request->address;
-                $institution->email = $request->email;
-                $institution->bp = $request->bp;
-                $institution->phone_number = $request->phone_number;
-                $institution->settings = [
-                    'blocking_number_of_attempt' => $request->blocking_number_of_attempt,
-                    'principal_currency' => $request->principal_currency,
-                    'principal_unit_of_measure' => $request->principal_unit_of_measure,
-                    'from_order_to_delivery' => $request->from_order_to_delivery,
-                    'password_complexity' => [
-                        'minuscule' => $request->minuscule,
-                        'majuscule' => $request->majuscule,
-                        'special_characters' => $request->special_characters,
-                        'min_length' => $request->min_length,
-                        'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
-                    ],
-                ];
-                $institution->save();
-                $message = "Enregistrement effectué avec succès.";
-                return new JsonResponse([
-                    'institution' => $institution,
-                    'success' => true,
-                    'message' => $message,
-                ], 200);
-            }
+            // if ($validation->fails()) {
+            //     $messages = $validation->errors()->all();
+            //     $messages = implode('<br/>', $messages);
+            //     return new JsonResponse([
+            //         'success' => false,
+            //         'message' => $messages,
+            //     ], 200);
+            // } else {
+            $institution = new Institution();
+            $institution->rccm_number = $request->rccm_number;
+            $institution->cc_number = $request->cc_number;
+            $institution->social_reason = $request->social_reason;
+            $institution->address = $request->address;
+            $institution->email = $request->email;
+            $institution->bp = $request->bp;
+            $institution->phone_number = $request->phone_number;
+            $institution->settings = [
+                'blocking_number_of_attempt' => $request->blocking_number_of_attempt,
+                'principal_currency' => $request->principal_currency,
+                'principal_unit_of_measure' => $request->principal_unit_of_measure,
+                'from_order_to_delivery' => $request->from_order_to_delivery,
+                'password_complexity' => [
+                    'minuscule' => $request->minuscule,
+                    'majuscule' => $request->majuscule,
+                    'special_characters' => $request->special_characters,
+                    'min_length' => $request->min_length,
+                    'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
+                ],
+                'taxes' => $request->taxes
+            ];
+
+            $institution->save();
+
+            $this->saveTableSetting($request);
+
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'institution' => $institution,
+                'success' => true,
+                'message' => $message,
+            ], 200);
+            // }
         } catch (Exception $e) {
             dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
@@ -171,11 +185,11 @@ class InstitutionController extends Controller
                         'min_length' => $request->min_length,
                         'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
                     ],
+                    'taxes' => $request->taxes
                 ];
                 $institution->save();
 
-                // $this->saveSettings('update', $request, "App\Models\Order");
-                // $this->saveSettings('update', $request, "App\Models\PurchaseOrder");
+                $this->saveTableSetting($request);
 
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
@@ -293,17 +307,4 @@ class InstitutionController extends Controller
             );
         }
     }
-
-    protected function saveSettings($mode, Request $request, $tableName)
-    {
-        // if ($tableSetting) {
-        // } else {
-        // }
-    }
-
-
-
-
-
-
 }
