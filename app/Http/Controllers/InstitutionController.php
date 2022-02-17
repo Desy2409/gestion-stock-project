@@ -90,11 +90,7 @@ class InstitutionController extends Controller
                         'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
                     ],
                 ];
-
                 $institution->save();
-
-
-
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
                     'institution' => $institution,
@@ -305,7 +301,7 @@ class InstitutionController extends Controller
         // }
     }
 
-    
+
 
 
 
