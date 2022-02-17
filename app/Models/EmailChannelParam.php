@@ -16,7 +16,9 @@ class EmailChannelParam extends Model
         'from_adress',
         'from_name',
         'description',
-        'is_active'
+        'is_active',
+        'reception_protocol',
+        'time_out'
     ];
 
     public function correspondenceChannel()

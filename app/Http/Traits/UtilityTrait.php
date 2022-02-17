@@ -18,6 +18,7 @@ use App\Models\Tourn;
 use App\Models\Transfer;
 use App\Models\TransferDemand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 trait UtilityTrait
 {
@@ -125,5 +126,40 @@ trait UtilityTrait
             $pageOperation->save();
         }
     }
+
+    function getAllModels(): array
+{
+        $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+        $modelsWithDefaultPath = [];
+        foreach ((array)data_get($composer, 'autoload.psr-4') as $namespace => $path) {
+            $modelsWithDefaultPath = array_merge(collect(File::allFiles(base_path($path)))
+                ->map(function ($item) use ($namespace) {
+                    $path = $item->getRelativePathName();
+                    return sprintf('\%s%s',
+                        $namespace,
+                        strtr(substr($path, 0, strrpos($path, '.')), '/', '\\'));
+                })
+                ->filter(function ($class) {
+                    $valid = false;
+                    if (class_exists($class)) {
+                        $reflection = new \ReflectionClass($class);
+                        $valid = $reflection->isSubclassOf(\Illuminate\Database\Eloquent\Model::class) &&
+                            !$reflection->isAbstract();
+                    }
+                    return $valid;
+                })
+                ->values()
+                ->toArray(), $modelsWithDefaultPath);
+        }
+
+        $models=[];
+
+        foreach ($modelsWithDefaultPath as $key => $model) {
+            array_push($models,substr($model,12));
+        }
+
+        dd($models);
+        return $models;
+}
 
 }

@@ -97,6 +97,7 @@ class InstitutionController extends Controller
                     'min_length' => $request->min_length,
                     'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
                 ],
+                'taxes' => $request->taxes
             ];
 
             $institution->save();
@@ -183,6 +184,7 @@ class InstitutionController extends Controller
                         'min_length' => $request->min_length,
                         'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
                     ],
+                    'taxes' => $request->taxes
                 ];
                 $institution->save();
 
@@ -304,5 +306,4 @@ class InstitutionController extends Controller
             );
         }
     }
-
 }

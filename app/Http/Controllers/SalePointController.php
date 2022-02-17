@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DeliveryPoint;
 use App\Models\Institution;
 use App\Models\SalePoint;
 use App\Repositories\SalePointRepository;
@@ -64,6 +65,16 @@ class SalePointController extends Controller
                 $salePoint->phone_number = $request->phone_number;
                 $salePoint->institution_id = $request->institution;
                 $salePoint->save();
+
+                if (!empty($request->delivery_points) && sizeof($request->delivery_points) > 0) {
+                    foreach ($request->delivery_points as $key => $delivery_point) {
+                        $deliveryPoint = new DeliveryPoint();
+                        $deliveryPoint->destination_id = $delivery_point;
+                        $deliveryPoint->sale_point_id = $salePoint->id;
+
+                        $deliveryPoint->save();
+                    }
+                }
 
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
@@ -135,6 +146,17 @@ class SalePointController extends Controller
                 $salePoint->phone_number = $request->phone_number;
                 $salePoint->institution_id = $request->institution;
                 $salePoint->save();
+
+                DeliveryPoint::where('sale_point_id', $salePoint->id)->delete();
+                if (!empty($request->delivery_points) && sizeof($request->delivery_points) > 0) {
+                    foreach ($request->delivery_points as $key => $delivery_point) {
+                        $deliveryPoint = new DeliveryPoint();
+                        $deliveryPoint->destination_id = $delivery_point;
+                        $deliveryPoint->sale_point_id = $salePoint->id;
+
+                        $deliveryPoint->save();
+                    }
+                }
 
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([

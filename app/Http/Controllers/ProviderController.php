@@ -47,9 +47,9 @@ class ProviderController extends Controller
 
         $providerRegister = new ProviderRegister();
         if ($lastProviderRegister) {
-            $providerRegister->code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
+            $providerRegister->code = $this->formateNPosition(Provider::class, $lastProviderRegister->id + 1);
         } else {
-            $providerRegister->code = $this->formateNPosition('FS', 1, 8);
+            $providerRegister->code = $this->formateNPosition(Provider::class, 1);
         }
         $providerRegister->save();
 
@@ -63,9 +63,9 @@ class ProviderController extends Controller
         $this->authorize('ROLE_PROVIDER_READ', Provider::class);
         $lastProviderRegister = ProviderRegister::latest()->first();
         if ($lastProviderRegister) {
-            $code = $this->formateNPosition('FS', $lastProviderRegister->id + 1, 8);
+            $code = $this->formateNPosition(Provider::class, $lastProviderRegister->id + 1);
         } else {
-            $code = $this->formateNPosition('FS', 1, 8);
+            $code = $this->formateNPosition(Provider::class, 1);
         }
 
         return new JsonResponse([
@@ -111,9 +111,9 @@ class ProviderController extends Controller
 
                 $provider = new Provider();
                 if ($lastProvider) {
-                    $provider->code = $this->formateNPosition('FS', $lastProvider->id + 1, 8);
+                    $provider->code = $this->formateNPosition(Provider::class, $lastProvider->id + 1);
                 } else {
-                    $provider->code = $this->formateNPosition('FS', 1, 8);
+                    $provider->code = $this->formateNPosition(Provider::class, 1);
                 }
                 $provider->reference = $request->reference;
                 $provider->settings = $request->settings;

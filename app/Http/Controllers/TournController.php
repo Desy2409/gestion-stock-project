@@ -20,12 +20,10 @@ class TournController extends Controller
     use UtilityTrait;
 
     public $tournRepository;
-    protected $prefix;
 
     public function __construct(TournRepository $tournRepository)
     {
         $this->tournRepository = $tournRepository;
-        $this->prefix = Tourn::$code;
     }
 
     public function index()
@@ -40,9 +38,9 @@ class TournController extends Controller
 
         $tournRegister = new TournRegister();
         if ($lastTournRegister) {
-            $tournRegister->code = $this->formateNPosition($this->prefix, $lastTournRegister->id + 1, 8);
+            $tournRegister->code = $this->formateNPosition(Tourn::class, $lastTournRegister->id + 1);
         } else {
-            $tournRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $tournRegister->code = $this->formateNPosition(Tourn::class, 1);
         }
         $tournRegister->save();
 
@@ -56,9 +54,9 @@ class TournController extends Controller
         $this->authorize('ROLE_TOURN_READ', Tourn::class);
         $lastTournRegister = TournRegister::latest()->first();
         if ($lastTournRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastTournRegister->id + 1, 8);
+            $code = $this->formateNPosition(Tourn::class, $lastTournRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix, 1, 8);
+            $code = $this->formateNPosition(Tourn::class, 1);
         }
 
         return new JsonResponse([
@@ -86,9 +84,9 @@ class TournController extends Controller
 
                 $tourn = new Tourn();
                 if ($lastTourn) {
-                    $tourn->code = $this->formateNPosition($this->prefix, $lastTourn->id + 1, 8);
+                    $tourn->code = $this->formateNPosition(Tourn::class, $lastTourn->id + 1);
                 } else {
-                    $tourn->code = $this->formateNPosition($this->prefix, 1, 8);
+                    $tourn->code = $this->formateNPosition(Tourn::class, 1);
                 }
                 $clientDeliveryNotes = [];
                 array_push($clientDeliveryNotes, $request->client_delivery_note);

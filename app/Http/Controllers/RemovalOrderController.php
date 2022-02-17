@@ -62,9 +62,9 @@ class RemovalOrderController extends Controller
 
         $removalOrderRegister = new RemovalOrderRegister();
         if ($lastRemovalOrderRegister) {
-            $removalOrderRegister->code = $this->formateNPosition('BE', $lastRemovalOrderRegister->id + 1, 8);
+            $removalOrderRegister->code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrderRegister->id + 1);
         } else {
-            $removalOrderRegister->code = $this->formateNPosition('BE', 1, 8);
+            $removalOrderRegister->code = $this->formateNPosition(RemovalOrder::class, 1);
         }
         $removalOrderRegister->save();
 
@@ -86,9 +86,9 @@ class RemovalOrderController extends Controller
         $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
         if ($lastRemovalOrderRegister) {
-            $code = $this->formateNPosition('BE', $lastRemovalOrderRegister->id + 1, 8);
+            $code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrderRegister->id + 1);
         } else {
-            $code = $this->formateNPosition('BE', 1, 8);
+            $code = $this->formateNPosition(RemovalOrder::class, 1);
         }
 
         return new JsonResponse([
@@ -145,9 +145,9 @@ class RemovalOrderController extends Controller
 
                 $removalOrder = new RemovalOrder();
                 if ($lastRemovalOrder) {
-                    $removalOrder->code = $this->formateNPosition('BE', $lastRemovalOrder->id + 1, 8);
+                    $removalOrder->code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrder->id + 1);
                 } else {
-                    $removalOrder->code = $this->formateNPosition('BE', 1, 8);
+                    $removalOrder->code = $this->formateNPosition(RemovalOrder::class, 1);
                 }
                 $removalOrder->reference = $request->reference;
                 $removalOrder->voucher_date = $request->voucher_date;
@@ -167,9 +167,9 @@ class RemovalOrderController extends Controller
     
                 $tourn = new Tourn();
                 if ($lastTourn) {
-                    $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1, 8);
+                    $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1);
                 } else {
-                    $tourn->code = $this->formateNPosition('TO', 1, 8);
+                    $tourn->code = $this->formateNPosition('TO', 1);
                 }
     
                 $clientDeliveryNotes = [];

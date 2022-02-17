@@ -38,13 +38,11 @@ class SaleController extends Controller
 
     public $saleRepository;
     public $productRepository;
-    protected $prefix;
     public function __construct(SaleRepository $saleRepository, ProductRepository $productRepository)
     {
         $this->saleRepository = $saleRepository;
         $this->productRepository = $productRepository;
         $this->user = Auth::user();
-        $this->prefix = Sale::$code;
     }
 
     public function saleOnPurchaseOrder()
@@ -56,9 +54,9 @@ class SaleController extends Controller
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition($this->prefix, $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition(Sale::class, $lastSaleRegister->id + 1);
         } else {
-            $saleRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $saleRegister->code = $this->formateNPosition(Sale::class, 1);
         }
         $saleRegister->save();
 
@@ -77,9 +75,9 @@ class SaleController extends Controller
 
         $saleRegister = new SaleRegister();
         if ($lastSaleRegister) {
-            $saleRegister->code = $this->formateNPosition($this->prefix, $lastSaleRegister->id + 1, 8);
+            $saleRegister->code = $this->formateNPosition(Sale::class, $lastSaleRegister->id + 1);
         } else {
-            $saleRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $saleRegister->code = $this->formateNPosition(Sale::class, 1);
         }
         $saleRegister->save();
 
@@ -112,9 +110,9 @@ class SaleController extends Controller
         $this->authorize('ROLE_SALE_READ', Sale::class);
         $lastSaleRegister = SaleRegister::latest()->first();
         if ($lastSaleRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastSaleRegister->id + 1, 8);
+            $code = $this->formateNPosition(Sale::class, $lastSaleRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix, 1, 8);
+            $code = $this->formateNPosition(Sale::class, 1);
         }
 
         return new JsonResponse([
@@ -177,9 +175,9 @@ class SaleController extends Controller
 
                     $sale = new Sale();
                     if ($lastSale) {
-                        $sale->code = $this->formateNPosition($this->prefix, $lastSale->id + 1, 8);
+                        $sale->code = $this->formateNPosition(Sale::class, $lastSale->id + 1);
                     } else {
-                        $sale->code = $this->formateNPosition($this->prefix, 1, 8);
+                        $sale->code = $this->formateNPosition(Sale::class, 1);
                     }
                     $sale->reference = $request->reference;
                     $sale->sale_date   = $request->sale_date;
@@ -198,9 +196,9 @@ class SaleController extends Controller
 
                     $clientDeliveryNote = new ClientDeliveryNote();
                     if ($lastClientDeliveryNote) {
-                        $clientDeliveryNote->code = $this->formateNPosition('BL', $lastClientDeliveryNote->id + 1, 8);
+                        $clientDeliveryNote->code = $this->formateNPosition('BL', $lastClientDeliveryNote->id + 1);
                     } else {
-                        $clientDeliveryNote->code = $this->formateNPosition('BL', 1, 8);
+                        $clientDeliveryNote->code = $this->formateNPosition('BL', 1);
                     }
                     $clientDeliveryNote->reference = $request->reference;
                     $clientDeliveryNote->delivery_date   = $request->delivery_date;
@@ -267,9 +265,9 @@ class SaleController extends Controller
 
                     $sale = new Sale();
                     if ($lastSale) {
-                        $sale->code = $this->formateNPosition($this->prefix, $lastSale->id + 1, 8);
+                        $sale->code = $this->formateNPosition(Sale::class, $lastSale->id + 1);
                     } else {
-                        $sale->code = $this->formateNPosition($this->prefix, 1, 8);
+                        $sale->code = $this->formateNPosition(Sale::class, 1);
                     }
                     $sale->reference = $request->reference;
                     $sale->sale_date   = $request->sale_date;
