@@ -135,6 +135,15 @@ class TaxeController extends Controller
         ], 200);
     }
 
+    public function edit($id)
+    {
+        $this->authorize('ROLE_TAXE_READ', Taxe::class);
+        $taxe = Taxe::findOrFail($id);
+        return new JsonResponse([
+            'taxe' => $taxe
+        ], 200);
+    }
+
     public function taxeReports()
     {
         $this->authorize('ROLE_TAXE_PRINT', Taxe::class);
