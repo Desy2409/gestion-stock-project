@@ -27,22 +27,22 @@ class ProductController extends Controller
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
-        $this->prefix = Product::$code;
+        // $this->prefix = Product::$code;
     }
 
     public function index()
     {
         $this->authorize('ROLE_PRODUCT_READ', Product::class);
-        $products = Product::orderBy('created_at','desc')->with('subCategory')->orderBy('wording')->get();
+        $products = Product::orderBy('created_at', 'desc')->with('subCategory')->orderBy('wording')->get();
         $subCategories = SubCategory::orderBy('wording')->get();
 
         $lastProductRegister = ProductRegister::latest()->first();
 
         $productRegister = new ProductRegister();
         if ($lastProductRegister) {
-            $productRegister->code = $this->formateNPosition($this->prefix, $lastProductRegister->id + 1, 8);
+            $productRegister->code = $this->formateNPosition(ProductRegister::class, $lastProductRegister->id);
         } else {
-            $productRegister->code = $this->formateNPosition($this->prefix, 1, 8);
+            $productRegister->code = $this->formateNPosition(ProductRegister::class, 1);
         }
         $productRegister->save();
 
@@ -56,9 +56,9 @@ class ProductController extends Controller
         $this->authorize('ROLE_PRODUCT_READ', Product::class);
         $lastProductRegister = ProductRegister::latest()->first();
         if ($lastProductRegister) {
-            $code = $this->formateNPosition($this->prefix, $lastProductRegister->id + 1, 8);
+            $code = $this->formateNPosition(ProductRegister::class, $lastProductRegister->id + 1);
         } else {
-            $code = $this->formateNPosition($this->prefix, $lastProductRegister->id + 1, 8);
+            $code = $this->formateNPosition(ProductRegister::class, 1);
         }
 
         return new JsonResponse([
@@ -85,9 +85,9 @@ class ProductController extends Controller
 
                 $product = new Product();
                 if ($lastProduct) {
-                    $product->code = $this->formateNPosition($this->prefix, $lastProduct->id + 1, 8);
+                    $product->code = $this->formateNPosition(Product::class, $lastProduct->id + 1);
                 } else {
-                    $product->code = $this->formateNPosition($this->prefix, 1, 8);
+                    $product->code = $this->formateNPosition(Product::class, 1);
                 }
                 $product->reference = $request->reference;
                 $product->wording = $request->wording;

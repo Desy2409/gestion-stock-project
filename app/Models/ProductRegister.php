@@ -9,4 +9,6 @@ class ProductRegister extends Model
     protected $fillable = [
         'code'
     ];
+
+    public static $code='PR';
 }
