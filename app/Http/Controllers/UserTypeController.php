@@ -55,8 +55,8 @@ class UserTypeController extends Controller
                 $userType->wording = $request->wording;
                 $userType->description = $request->description;
                 $roles = [];
-                if (!empty($request->page_operations) && sizeof($request->page_operations) > 0) {
-                    foreach ($request->page_operations as $key => $pageOperationId) {
+                if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
+                    foreach ($request->page_operation_ids as $key => $pageOperationId) {
                         $pageOperation = PageOperation::where('id', $pageOperationId)->first();
                         array_push($roles, $pageOperation->code);
                     }
@@ -123,8 +123,8 @@ class UserTypeController extends Controller
             $userType->description = $request->description;
             $roles = [];
             // dd($request->page_operations);
-            if (!empty($request->page_operations) && sizeof($request->page_operations) > 0) {
-                foreach ($request->page_operations as $key => $pageOperationId) {
+            if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
+                foreach ($request->page_operation_ids as $key => $pageOperationId) {
                     $pageOperation = PageOperation::where('id', $pageOperationId)->first();
                     array_push($roles, $pageOperation->code);
                 }
