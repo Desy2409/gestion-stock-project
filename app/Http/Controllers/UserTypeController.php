@@ -189,13 +189,10 @@ class UserTypeController extends Controller
     {
         $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
         $userType = UserType::findOrFail($id);
-        // $pageOperations = PageOperation::whereIn('role', $userType->role)->get();
-
-        // $pages = Page::all();
-        // $operations = Operation::all();
+        
 
         return new JsonResponse([
-            'userType' => $userType, //'pageOperations' => $pageOperations
+            'userType' => $userType, 'page_operation_ids' => $this->pageOperationIdsAccordingToUserTypeRoles($userType)
         ], 200);
     }
 
@@ -267,5 +264,15 @@ class UserTypeController extends Controller
                 $user->save();
             }
         }
+    }
+
+    protected function pageOperationIdsAccordingToUserTypeRoles(UserType $userType){
+        $page_operation_ids=[];
+        foreach ($userType->roles as $key => $role) {
+            $pageOperationId = PageOperation::where('code',$role)->pluck('id')->toArray();
+            array_push($page_operation_ids,$pageOperationId);
+        }
+
+        return $page_operation_ids;
     }
 }
