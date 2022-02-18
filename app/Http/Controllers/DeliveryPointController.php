@@ -28,11 +28,11 @@ class DeliveryPointController extends Controller
     {
         $this->authorize('ROLE_DELIVERY_POINT_READ', DeliveryPoint::class);
         $deliveryPoints = DeliveryPoint::orderBy('created_at', 'desc')->with('institution')->orderBy('wording')->get();
-        $destintations = Destination::orderBy('wording')->get();
+        $destinations = Destination::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
         $clients = Client::with('person')->get();
         return new JsonResponse([
-            'datas' => ['deliveryPoints' => $deliveryPoints, 'salePoints' => $salePoints, 'clients' => $clients, 'destintations' => $destintations]
+            'datas' => ['deliveryPoints' => $deliveryPoints, 'salePoints' => $salePoints, 'clients' => $clients, 'destinations' => $destinations]
         ], 200);
     }
 

@@ -114,13 +114,14 @@ class AuthUserController extends Controller
 
                     return response($response, 201);
                 } else {
-                    return response([
+                    return new JsonResponse([
+                        'success' => false,
                         'message' => 'Email ou mot de passe incorrect.'
-                    ], 401);
+                    ], 200);
                 }
             }
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $message = "Erreur survenue lors de la connexion.";
             return new JsonResponse([
                 'success' => false,

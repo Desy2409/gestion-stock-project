@@ -43,6 +43,7 @@ class InstitutionController extends Controller
         // $this->tablesConcernbySetting = $tablesConcernbySetting;
         // $this->tablesConcernBySettingValidationNumberAndLevel = $tablesConcernBySettingValidationNumberAndLevel;
     }
+
     public function index()
     {
         $this->authorize('ROLE_INSTITUTION_READ', Institution::class);
