@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ApiService extends Model
 {
     protected $fillable = [
-        'wording', 'description', 'authorization_type',
+        'reference', 'wording', 'description', 'authorization_type',
         'authorization_user', 'authorization_password',
         'authorization_token', 'authorization_prefix',
         'authorization_key', 'authorization_value'
