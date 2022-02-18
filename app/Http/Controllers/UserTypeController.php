@@ -160,7 +160,7 @@ class UserTypeController extends Controller
                 $message = "Suppression effectuée avec succès.";
             } else {
                 // dd('not delete');
-                $message = "Cette citerne ne peut être supprimée car elle a servi dans des traitements.";
+                $message = "Ce type d'utilisateur ne peut être supprimée car il a servi dans des traitements.";
             }
             return new JsonResponse([
                 'userType' => $userType,
