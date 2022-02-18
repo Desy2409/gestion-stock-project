@@ -188,6 +188,7 @@ class EmailChannelParamController extends Controller
         }
 
         try {
+            
             $emailChannelParam = new EmailChannelParam();
             $emailChannelParam->port = $request->port;
             $emailChannelParam->username = $request->username;

@@ -307,4 +307,8 @@ class InstitutionController extends Controller
             );
         }
     }
+
+    protected function saveEmailChannelParam(Request $request){
+
+    }
 }

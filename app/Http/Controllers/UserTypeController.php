@@ -269,10 +269,14 @@ class UserTypeController extends Controller
     protected function pageOperationIdsAccordingToUserTypeRoles(UserType $userType){
         $page_operation_ids=[];
         foreach ($userType->roles as $key => $role) {
-            $pageOperationId = PageOperation::where('code',$role)->pluck('id')->toArray();
+            $pageOperationId = PageOperation::where('code',$role)->pluck('id')->first();
             array_push($page_operation_ids,$pageOperationId);
         }
 
         return $page_operation_ids;
+    }
+
+    protected function saveUserTypeRoles(){
+        
     }
 }
