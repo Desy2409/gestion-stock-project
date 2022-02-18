@@ -56,7 +56,7 @@ class UserTypeController extends Controller
                 $userType->wording = $request->wording;
                 $userType->description = $request->description;
                 $roles = [];
-                foreach ($$request->page_operations as $key => $pageOperationId) {
+                foreach ($request->page_operations as $key => $pageOperationId) {
                     $pageOperation = PageOperation::where('id', $pageOperationId)->first();
                     array_push($roles, $pageOperation->code);
                 }
@@ -71,7 +71,7 @@ class UserTypeController extends Controller
                 ], 200);
             }
         } catch (Exception $e) {
-            // dd($e);
+            dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -220,7 +220,6 @@ class UserTypeController extends Controller
                     'code' => 'required|unique:user_types',
                     'wording' => 'required|unique:user_types|max:150',
                     'description' => 'max:255',
-                    'roles' => 'required',
                 ],
                 [
                     'code.required' => "Le code est obligatoire.",
@@ -229,7 +228,6 @@ class UserTypeController extends Controller
                     'wording.unique' => "Ce type existe déjà.",
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                    'roles' => "Le choix d'au moins un rôle est obligatoire.",
                 ]
             );
         }
@@ -240,14 +238,12 @@ class UserTypeController extends Controller
                     'code' => 'required',
                     'wording' => 'required|max:150',
                     'description' => 'max:255',
-                    'roles' => 'required',
                 ],
                 [
                     'code.required' => "Le code est obligatoire.",
                     'wording.required' => "Le libellé est obligatoire.",
                     'wording.max' => "Le libellé ne doit pas dépasser 150 caractères.",
                     'description.max' => "La description ne doit pas dépasser 255 caractères.",
-                    'roles' => "Le choix d'au moins un rôle est obligatoire.",
                 ]
             );
         }

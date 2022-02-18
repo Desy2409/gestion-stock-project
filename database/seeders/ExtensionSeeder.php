@@ -6,7 +6,7 @@ use App\Models\Extension;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
-class ExtensionsTableSeeder extends Seeder
+class ExtensionSeeder extends Seeder
 {
     /**
      * Run the database seeds.

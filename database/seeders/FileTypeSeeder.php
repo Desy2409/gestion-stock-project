@@ -6,7 +6,7 @@ use App\Models\FileType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
-class FileTypesTableSeeder extends Seeder
+class FileTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.

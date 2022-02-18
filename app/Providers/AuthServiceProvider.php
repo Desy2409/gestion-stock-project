@@ -33,8 +33,8 @@ class AuthServiceProvider extends ServiceProvider
             $pageOperations = PageOperation::all();
             if ($pageOperations) {
                 foreach ($pageOperations as $key => $pageOperation) {
-                    Gate::define($pageOperation->role, function (User $user) use ($pageOperation) {
-                        return (in_array($pageOperation->role, $user->roles) || in_array('ADMIN', $user->roles)) ? Response::allow() : abort(403);
+                    Gate::define($pageOperation->code, function (User $user) use ($pageOperation) {
+                        return (in_array($pageOperation->code, $user->roles) || in_array('ADMIN', $user->roles)) ? Response::allow() : abort(403);
                     });
                 }
             }
