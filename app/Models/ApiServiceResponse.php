@@ -29,6 +29,10 @@ class ApiServiceResponse extends Model
                 $value = "Echoué(e)";
                 break;
 
+            case 'T':
+                $value = "Temps dépassé";
+                break;
+
             default:
                 $value = "En attente";
                 break;

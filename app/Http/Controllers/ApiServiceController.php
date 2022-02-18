@@ -34,6 +34,7 @@ class ApiServiceController extends Controller
                 ], 200);
             } else {
                 $apiService = new ApiService();
+                $apiService->reference = $request->reference;
                 $apiService->wording = $request->wording;
                 $apiService->description = $request->description;
                 $apiService->authorization_type = $request->authorization_type;
@@ -70,9 +71,9 @@ class ApiServiceController extends Controller
     public function update(Request $request, $id)
     {
         $apiService = ApiService::findOrFail($id);
-        dd($apiService);
+        // dd($apiService);
 
-        dd($request->all());
+        // dd($request->all());
         try {
             // $validation = $this->apiServiceValidator($request->all());
 
@@ -84,33 +85,33 @@ class ApiServiceController extends Controller
             //         'message' => $messages,
             //     ], 200);
             // } else {
-                $apiService->wording = $request->wording;
-                $apiService->wording = $request->wording;
-                $apiService->description = $request->description;
-                $apiService->authorization_type = $request->authorization_type;
-                $apiService->authorization_type = $request->authorization_type;
-                $apiService->authorization_user = $request->authorization_user;
-                $apiService->authorization_password = Hash::make($request->authorization_password);
-                $apiService->authorization_token = $request->authorization_token;
-                $apiService->authorization_prefix = $request->authorization_prefix;
-                $apiService->authorization_key = $request->authorization_key;
-                $apiService->authorization_value = $request->authorization_value;
-                $apiService->body_type = $request->body_type;
-                $apiService->body_content = $request->body_content;
-                $apiService->save();
+            $apiService->reference = $request->reference;
+            $apiService->wording = $request->wording;
+            $apiService->description = $request->description;
+            $apiService->authorization_type = $request->authorization_type;
+            $apiService->authorization_type = $request->authorization_type;
+            $apiService->authorization_user = $request->authorization_user;
+            $apiService->authorization_password = Hash::make($request->authorization_password);
+            $apiService->authorization_token = $request->authorization_token;
+            $apiService->authorization_prefix = $request->authorization_prefix;
+            $apiService->authorization_key = $request->authorization_key;
+            $apiService->authorization_value = $request->authorization_value;
+            $apiService->body_type = $request->body_type;
+            $apiService->body_content = $request->body_content;
+            $apiService->save();
 
-                ApiServiceResponse::where("api_service_id", $apiService->id)->delete();
-                $this->storeApiServiceResponse($request, $apiService);
+            ApiServiceResponse::where("api_service_id", $apiService->id)->delete();
+            $this->storeApiServiceResponse($request, $apiService);
 
-                ApiServiceHeader::where("api_service_id", $apiService->id)->delete();
-                $this->storeApiServiceHeader($request, $apiService);
+            ApiServiceHeader::where("api_service_id", $apiService->id)->delete();
+            $this->storeApiServiceHeader($request, $apiService);
 
-                $message = "Modification effectuée avec succès.";
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => $message,
-                    'apiService' => $apiService
-                ], 200);
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'success' => true,
+                'message' => $message,
+                'apiService' => $apiService
+            ], 200);
             // }
         } catch (Exception $e) {
             dd($e);
@@ -170,6 +171,7 @@ class ApiServiceController extends Controller
     public function storeApiServiceResponse(Request $request, ApiService $apiService)
     {
         try {
+            ApiServiceResponse::where('api_service_id', $apiService->id)->delete();
             if (!empty($request->api_service_responses) && sizeof($request->api_service_responses) > 0) {
                 foreach ($request->api_service_responses as $key => $response) {
                     $apiServiceResponse = new ApiServiceResponse();
@@ -192,6 +194,7 @@ class ApiServiceController extends Controller
     public function storeApiServiceHeader(Request $request, ApiService $apiService)
     {
         try {
+            ApiServiceHeader::where('api_service_id', $apiService->id)->delete();
             if (!empty($request->api_service_headers) && sizeof($request->api_service_headers) > 0) {
                 foreach ($request->api_service_headers as $key => $header) {
                     $apiServiceHeader = new ApiServiceHeader();
@@ -217,26 +220,32 @@ class ApiServiceController extends Controller
         return Validator::make(
             $data,
             [
-                'authorization_type' => 'required',
-                'authorization_user' => 'required',
-                'authorization_password' => 'required',
-                'authorization_token' => 'required',
-                'authorization_prefix' => 'required',
-                'authorization_key' => 'required',
-                'authorization_value' => 'required',
-                'body_type' => 'required',
-                'body_content' => 'required',
+                'reference' => 'required',
+                'wording' => 'required',
+                'description' => 'required',
+                // 'authorization_type' => 'required',
+                // 'authorization_user' => 'required',
+                // 'authorization_password' => 'required',
+                // 'authorization_token' => 'required',
+                // 'authorization_prefix' => 'required',
+                // 'authorization_key' => 'required',
+                // 'authorization_value' => 'required',
+                // 'body_type' => 'required',
+                // 'body_content' => 'required',
             ],
             [
-                'authorization_type.required' => "Le type du service est obligatoire.",
-                'authorization_user.required' => "L'utilisateur est obligatoire.",
-                'authorization_password.required' => "Le mot de passe est obligatoire.",
-                'authorization_token.required' => "Le token est obligatoire.",
-                'authorization_prefix.required' => "Le préfixe est obligatoire.",
-                'authorization_key.required' => "La clé de l'api_key est obligatoire.",
-                'authorization_value.required' => "La valeur de l'api_key est obligatoire.",
-                'body_type.required' => "Le type du corps est obligatoire.",
-                'body_content.required' => "Le contenu du corps est obligatoire.",
+                'reference.required' => "La référence est obligatoire.",
+                'wording.required' => "Le libellé est obligatoire.",
+                'description.required' => "La description est obligatoire.",
+                // 'authorization_type.required' => "Le type du service est obligatoire.",
+                // 'authorization_user.required' => "L'utilisateur est obligatoire.",
+                // 'authorization_password.required' => "Le mot de passe est obligatoire.",
+                // 'authorization_token.required' => "Le token est obligatoire.",
+                // 'authorization_prefix.required' => "Le préfixe est obligatoire.",
+                // 'authorization_key.required' => "La clé de l'api_key est obligatoire.",
+                // 'authorization_value.required' => "La valeur de l'api_key est obligatoire.",
+                // 'body_type.required' => "Le type du corps est obligatoire.",
+                // 'body_content.required' => "Le contenu du corps est obligatoire.",
             ]
         );
     }
