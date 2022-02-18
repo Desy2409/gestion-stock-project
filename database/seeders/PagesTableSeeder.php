@@ -29,7 +29,7 @@ class PagesTableSeeder extends Seeder
                     'operations' => $page->operations,
                 ]);
 
-                $page = Page::latest()->first();;
+                $page = Page::latest()->first();
 
                 foreach ($page->operations as $key => $valueOperation) {
                     $operation = Operation::where('code', '=', $valueOperation)->first();
