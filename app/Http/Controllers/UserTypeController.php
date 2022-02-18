@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Operation;
 use App\Models\Page;
 use App\Models\PageOperation;
-use App\Models\Role;
 use App\Models\User;
 use App\Models\UserType;
 use App\Repositories\UserTypeRepository;
@@ -56,9 +55,11 @@ class UserTypeController extends Controller
                 $userType->wording = $request->wording;
                 $userType->description = $request->description;
                 $roles = [];
-                foreach ($request->page_operations as $key => $pageOperationId) {
-                    $pageOperation = PageOperation::where('id', $pageOperationId)->first();
-                    array_push($roles, $pageOperation->code);
+                if (!empty($request->page_operations) && sizeof($request->page_operations) > 0) {
+                    foreach ($request->page_operations as $key => $pageOperationId) {
+                        $pageOperation = PageOperation::where('id', $pageOperationId)->first();
+                        array_push($roles, $pageOperation->code);
+                    }
                 }
                 $userType->roles = $roles;
                 $userType->save();
@@ -84,6 +85,7 @@ class UserTypeController extends Controller
     {
         $this->authorize('ROLE_USER_TYPE_UPDATE', UserType::class);
         $userType = UserType::findOrFail($id);
+        // dd($userType);
 
         $existingUserTypesOnCode = UserType::where('code', $request->code)->get();
         if (!empty($existingUserTypesOnCode) && sizeof($existingUserTypesOnCode) > 1) {
@@ -105,6 +107,7 @@ class UserTypeController extends Controller
         }
 
         try {
+            // dd($request->all());
             $validation = $this->validator('update', $request->all());
 
             if ($validation->fails()) {
@@ -115,28 +118,34 @@ class UserTypeController extends Controller
                     'message' => $messages,
                 ], 200);
             } else {
-                $userType->code = strtoupper(str_replace(' ', '_', $request->code));
-                $userType->wording = $request->wording;
-                $userType->description = $request->description;
-                $userType->roles = $request->roles;
-                $userType->save();
-
-                $usersOfThisType = User::where('user_type_id', $userType)->get();
-                if (!empty($usersOfThisType) && sizeof($usersOfThisType) > 0) {
-                    foreach ($usersOfThisType as $key => $user) {
-                        $user->roles = $request->roles;
-                        $user->save();
-                    }
+            $userType->code = strtoupper(str_replace(' ', '_', $request->code));
+            $userType->wording = $request->wording;
+            $userType->description = $request->description;
+            $roles = [];
+            // dd($request->page_operations);
+            if (!empty($request->page_operations) && sizeof($request->page_operations) > 0) {
+                foreach ($request->page_operations as $key => $pageOperationId) {
+                    $pageOperation = PageOperation::where('id', $pageOperationId)->first();
+                    array_push($roles, $pageOperation->code);
                 }
+            }
+            $userType->roles = $roles;
+            $userType->save();
 
-                $message = "Modification effectuée avec succès.";
-                return new JsonResponse([
-                    'userType' => $userType,
-                    'success' => true,
-                    'message' => $message,
-                ], 200);
+            if ($request->update_user_roles) {
+                // dd('update_user_roles');
+                $this->userRoleAccordingToUserTypeRoles($userType);
+            }
+
+            $message = "Modification effectuée avec succès.";
+            return new JsonResponse([
+                'userType' => $userType,
+                'success' => true,
+                'message' => $message,
+            ], 200);
             }
         } catch (Exception $e) {
+            dd($e);
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => false,
@@ -246,6 +255,17 @@ class UserTypeController extends Controller
                     'description.max' => "La description ne doit pas dépasser 255 caractères.",
                 ]
             );
+        }
+    }
+
+    protected function userRoleAccordingToUserTypeRoles(UserType $userType)
+    {
+        $usersOfUserType = User::where('user_type_id', $userType->id)->get();
+        if (!empty($usersOfUserType) && sizeof($usersOfUserType) > 0) {
+            foreach ($usersOfUserType as $key => $user) {
+                $user->roles = $userType->roles;
+                $user->save();
+            }
         }
     }
 }
