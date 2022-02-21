@@ -185,16 +185,16 @@ class RemovalOrderController extends Controller
         $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
 
         try {
-            // $validation = $this->validator('store', $request->all());
+            $validation = $this->validator('store', $request->all());
 
-            // if ($validation->fails()) {
-            //     $messages = $validation->errors()->all();
-            //     $messages = implode('<br/>', $messages);
-            //     return new JsonResponse([
-            //         'success' => false,
-            //         'message' => $messages,
-            //     ], 200);
-            // } else {
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
             $lastRemovalOrder = RemovalOrder::latest()->first();
 
             $removalOrder = new RemovalOrder();
@@ -258,7 +258,7 @@ class RemovalOrderController extends Controller
                 'message' => $message,
                 // 'datas' => ['productsTourns' => $productsTourns],
             ], 200);
-            // }
+            }
         } catch (Exception $e) {
             dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
@@ -269,7 +269,7 @@ class RemovalOrderController extends Controller
         }
     }
 
-    public function updqte(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
         $removalOrder = RemovalOrder::findOrFail($id);
@@ -330,6 +330,7 @@ class RemovalOrderController extends Controller
                 ], 200);
             }
         } catch (Exception $e) {
+            dd($e);
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => false,
