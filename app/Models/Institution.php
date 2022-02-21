@@ -34,6 +34,35 @@ class Institution extends Model
                 "special_characters": true,
                 "min_length": "",
                 "new_password_diffrent_from_old>": ""
+            },
+            "taxes" : "",
+            "smtp": {
+                "host" : "",
+                "port" : "",
+                "reception_protocol" : "",
+                "from_name" : "",
+                "username" : "",
+                "password" : "",
+                "from_address" : "",
+                "time_out" : ""
+            },
+            "sms": {
+                "url" : "",
+                "user" : "",
+                "password" : "",
+                "sender" : "",
+                "interval" : "",
+                "type" : {
+                    "simple_http" : "",
+                    "json_body_server" : "",
+                    "xml_body_server" : ""
+                },
+                "sms_header_type" : {
+                    "basic" : "",
+                    "bearer" : "",
+                    "none" : "",
+                    "api_key" : ""
+                }
             }
         }'
     ];

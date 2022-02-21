@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class RemovalOrder extends Model
 {
 
+    public static $code = 'BE';
+
     public function provider()
     {
         return $this->belongsTo(Provider::class);

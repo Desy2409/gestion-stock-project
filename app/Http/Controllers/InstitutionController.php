@@ -10,6 +10,7 @@ use App\Repositories\InstitutionRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class InstitutionController extends Controller
@@ -98,7 +99,35 @@ class InstitutionController extends Controller
                     'min_length' => $request->min_length,
                     'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
                 ],
-                'taxes' => $request->taxes
+                'taxes' => $request->taxes,
+                'smtp' => [
+                    "host" => $request->host,
+                    "port" => $request->port,
+                    "reception_protocol" => $request->reception_protocol,
+                    "from_name" => $request->from_name,
+                    "username" => $request->username,
+                    "password" => $request->password,
+                    "from_address" => $request->from_address,
+                    "time_out" => $request->time_out
+                ],
+                'sms' => [
+                    "url" => $request->url,
+                    "user" => $request->user,
+                    "password" => Hash::make($request->password),
+                    "sender" => $request->sender,
+                    "interval" => $request->interval,
+                    "type" => [
+                        "simple_http" => "",
+                        "json_body_server" => "",
+                        "xml_body_server" => ""
+                    ],
+                    'sms_header_type' => [
+                        "basic" => "",
+                        "bearer" => "",
+                        "none" => "",
+                        "api_key" => ""
+                    ]
+                ]
             ];
 
             $institution->save();
@@ -185,7 +214,26 @@ class InstitutionController extends Controller
                         'min_length' => $request->min_length,
                         'new_password_diffrent_from_old' => $request->new_password_diffrent_from_old,
                     ],
-                    'taxes' => $request->taxes
+                    'taxes' => $request->taxes,
+                    'smtp' => [],
+                    'sms' => [
+                        "url" => $request->url,
+                        "user" => $request->user,
+                        "password" => Hash::make($request->password),
+                        "sender" => $request->sender,
+                        "interval" => $request->interval,
+                        "type" => [
+                            "simple_http" => "",
+                            "json_body_server" => "",
+                            "xml_body_server" => ""
+                        ],
+                        'sms_header_type' => [
+                            "basic" => "",
+                            "bearer" => "",
+                            "none" => "",
+                            "api_key" => ""
+                        ]
+                    ]
                 ];
                 $institution->save();
 
@@ -308,7 +356,7 @@ class InstitutionController extends Controller
         }
     }
 
-    protected function saveEmailChannelParam(Request $request){
-
+    protected function saveEmailChannelParam(Request $request)
+    {
     }
 }
