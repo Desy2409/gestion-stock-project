@@ -15,7 +15,7 @@ class ApiServiceController extends Controller
 {
     public function index()
     {
-        $apiServices = ApiService::orderBy('created_at')->with('apiServiceResponses')->with('apiServiceHeaders')->get();
+        $apiServices = ApiService::orderBy('created_at')->with('apiServices')->with('apiServiceResponses')->with('apiServiceHeaders')->get();
 
         return new JsonResponse(['datas' => ['apiServices' => $apiServices]], 200);
     }
@@ -44,6 +44,8 @@ class ApiServiceController extends Controller
                 $apiService->authorization_prefix = $request->authorization_prefix;
                 $apiService->authorization_key = $request->authorization_key;
                 $apiService->authorization_value = $request->authorization_value;
+                $apiService->api_service_id = $request->api_service;
+                $apiService->token_attribute = $request->token_attribute;
                 $apiService->body_type = $request->body_type;
                 $apiService->body_content = $request->body_content;
                 $apiService->save();
@@ -95,6 +97,8 @@ class ApiServiceController extends Controller
                 $apiService->authorization_prefix = $request->authorization_prefix;
                 $apiService->authorization_key = $request->authorization_key;
                 $apiService->authorization_value = $request->authorization_value;
+                $apiService->api_service_id = $request->api_service;
+                $apiService->token_attribute = $request->token_attribute;
                 $apiService->body_type = $request->body_type;
                 $apiService->body_content = $request->body_content;
                 $apiService->save();
@@ -124,13 +128,13 @@ class ApiServiceController extends Controller
 
     public function show($id)
     {
-        $apiService = ApiService::with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
+        $apiService = ApiService::with('apiService')->with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
     public function edit($id)
     {
-        $apiService = ApiService::with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
+        $apiService = ApiService::with('apiService')->with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
