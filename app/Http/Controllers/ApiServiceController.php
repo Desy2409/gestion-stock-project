@@ -23,16 +23,16 @@ class ApiServiceController extends Controller
     public function store(Request $request)
     {
         try {
-            $validation = $this->apiServiceValidator($request->all());
+            // $validation = $this->apiServiceValidator($request->all());
 
-            if ($validation->fails()) {
-                $messages = $validation->errors()->all();
-                $messages = implode('<br/>', $messages);
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => $messages,
-                ], 200);
-            } else {
+            // if ($validation->fails()) {
+            //     $messages = $validation->errors()->all();
+            //     $messages = implode('<br/>', $messages);
+            //     return new JsonResponse([
+            //         'success' => false,
+            //         'message' => $messages,
+            //     ], 200);
+            // } else {
                 $apiService = new ApiService();
                 $apiService->reference = $request->reference;
                 $apiService->wording = $request->wording;
@@ -59,7 +59,7 @@ class ApiServiceController extends Controller
                     'message' => $message,
                     'apiService' => $apiService
                 ], 200);
-            }
+            // }
         } catch (Exception $e) {
             dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
