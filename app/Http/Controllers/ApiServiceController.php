@@ -15,7 +15,7 @@ class ApiServiceController extends Controller
 {
     public function index()
     {
-        $apiServices = ApiService::orderBy('created_at')->with('apiServiceResponses')->with('apiServiceHeaders')->get();
+        $apiServices = ApiService::orderBy('created_at')->with('apiServices')->with('apiServiceResponses')->with('apiServiceHeaders')->get();
 
         return new JsonResponse(['datas' => ['apiServices' => $apiServices]], 200);
     }
@@ -128,13 +128,13 @@ class ApiServiceController extends Controller
 
     public function show($id)
     {
-        $apiService = ApiService::with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
+        $apiService = ApiService::with('apiService')->with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
     public function edit($id)
     {
-        $apiService = ApiService::with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
+        $apiService = ApiService::with('apiService')->with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
