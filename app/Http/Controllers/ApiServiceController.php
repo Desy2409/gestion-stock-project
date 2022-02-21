@@ -124,13 +124,13 @@ class ApiServiceController extends Controller
 
     public function show($id)
     {
-        $apiService = ApiService::with('apiServiceResponse')->with('apiServiceHeader')->where('id', $id)->first();
+        $apiService = ApiService::with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
     public function edit($id)
     {
-        $apiService = ApiService::with('apiServiceResponse')->with('apiServiceHeader')->where('id', $id)->first();
+        $apiService = ApiService::with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
