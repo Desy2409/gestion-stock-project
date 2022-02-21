@@ -195,69 +195,71 @@ class RemovalOrderController extends Controller
                     'message' => $messages,
                 ], 200);
             } else {
-            $lastRemovalOrder = RemovalOrder::latest()->first();
+                $lastRemovalOrder = RemovalOrder::latest()->first();
 
-            $removalOrder = new RemovalOrder();
-            if ($lastRemovalOrder) {
-                $removalOrder->code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrder->id + 1);
-            } else {
-                $removalOrder->code = $this->formateNPosition(RemovalOrder::class, 1);
-            }
-            $removalOrder->reference = $request->reference;
-            $removalOrder->voucher_date = $request->voucher_date;
-            $removalOrder->delivery_date_wished = $request->delivery_date_wished;
-            $removalOrder->place_of_delivery = $request->place_of_delivery;
-            $removalOrder->voucher_type = $request->voucher_type;
-            $removalOrder->customs_regime = $request->customs_regime;
-            $removalOrder->storage_unit_id = $request->storage_unit;
-            $removalOrder->carrier_id = $request->carrier;
-            // $removalOrder->sale_point_id = $request->sale_point;
-            $removalOrder->client_id = $request->client;
-            // $removalOrder->stock_type_id = $request->stock_type;
-            $removalOrder->save();
+                $removalOrder = new RemovalOrder();
+                if ($lastRemovalOrder) {
+                    $removalOrder->code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrder->id + 1);
+                } else {
+                    $removalOrder->code = $this->formateNPosition(RemovalOrder::class, 1);
+                }
+                $removalOrder->reference = $request->reference;
+                $removalOrder->wording = $request->wording;
+                $removalOrder->description = $request->description;
+                $removalOrder->voucher_date = $request->voucher_date;
+                $removalOrder->delivery_date_wished = $request->delivery_date_wished;
+                $removalOrder->place_of_delivery = $request->place_of_delivery;
+                $removalOrder->voucher_type = $request->voucher_type;
+                $removalOrder->customs_regime = $request->customs_regime;
+                $removalOrder->storage_unit_id = $request->storage_unit;
+                $removalOrder->carrier_id = $request->carrier;
+                // $removalOrder->sale_point_id = $request->sale_point;
+                $removalOrder->client_id = $request->client;
+                // $removalOrder->stock_type_id = $request->stock_type;
+                $removalOrder->save();
 
-            $lastTourn = Tourn::latest()->first();
+                $lastTourn = Tourn::latest()->first();
 
-            $tourn = new Tourn();
-            if ($lastTourn) {
-                $tourn->code = $this->formateNPosition(Tourn::class, $lastTourn->id + 1);
-            } else {
-                $tourn->code = $this->formateNPosition(Tourn::class, 1);
-            }
+                $tourn = new Tourn();
+                if ($lastTourn) {
+                    $tourn->code = $this->formateNPosition(Tourn::class, $lastTourn->id + 1);
+                } else {
+                    $tourn->code = $this->formateNPosition(Tourn::class, 1);
+                }
 
-            $clientDeliveryNotes = [];
-            array_push($clientDeliveryNotes, $request->client_delivery_note);
+                $clientDeliveryNotes = [];
+                array_push($clientDeliveryNotes, $request->client_delivery_note);
 
-            $tourn->reference = $request->reference_tourn;
-            $tourn->date_of_edition = $request->date_of_edition;
-            $tourn->removal_order_id = $removalOrder->id;
-            $tourn->truck_id = $request->truck;
-            $tourn->tank_id = $request->tank;
-            $tourn->destination_id = $request->destination;
-            $tourn->client_delivery_notes = $clientDeliveryNotes;
-            $tourn->save();
+                $tourn->reference = $request->reference_tourn;
+                $tourn->date_of_edition = $request->date_of_edition;
+                $tourn->removal_order_id = $removalOrder->id;
+                $tourn->truck_id = $request->truck;
+                $tourn->tank_id = $request->tank;
+                $tourn->destination_id = $request->destination;
+                $tourn->client_delivery_notes = $clientDeliveryNotes;
+                $tourn->save();
 
-            // $productsTourns = [];
-            foreach ($request->productTourns as $key => $productTournLine) {
-                // dd($productTournLine);
-                $productTourn = new ProductTourn();
-                $productTourn->quantity = $productTournLine['quantity'];
-                $productTourn->product_id = $productTournLine['product_id'];
-                $productTourn->unity_id = $productTournLine['unity_id'];
-                $productTourn->compartment_id = $productTournLine['compartment_id'];
-                $productTourn->tourn_id = $tourn->id;
-                $productTourn->save();
+                // $productsTourns = [];
+                foreach ($request->productTourns as $key => $productTournLine) {
+                    // dd($productTournLine);
+                    $productTourn = new ProductTourn();
+                    $productTourn->quantity = $productTournLine['quantity'];
+                    $productTourn->product_id = $productTournLine['product_id'];
+                    $productTourn->unity_id = $productTournLine['unity_id'];
+                    $productTourn->compartment_id = $productTournLine['compartment_id'];
+                    $productTourn->tourn_id = $tourn->id;
+                    $productTourn->save();
 
-                // array_push($productsTourns, $productTourn);
-            }
+                    // array_push($productsTourns, $productTourn);
+                }
 
-            $message = "Enregistrement effectué avec succès.";
-            return new JsonResponse([
-                'removalOrder' => $removalOrder,
-                'success' => true,
-                'message' => $message,
-                // 'datas' => ['productsTourns' => $productsTourns],
-            ], 200);
+                $message = "Enregistrement effectué avec succès.";
+                return new JsonResponse([
+                    'removalOrder' => $removalOrder,
+                    'success' => true,
+                    'message' => $message,
+                    // 'datas' => ['productsTourns' => $productsTourns],
+                ], 200);
             }
         } catch (Exception $e) {
             dd($e);
@@ -287,6 +289,8 @@ class RemovalOrderController extends Controller
                 ], 200);
             } else {
                 $removalOrder->reference = $request->reference;
+                $removalOrder->wording = $request->wording;
+                $removalOrder->description = $request->description;
                 $removalOrder->voucher_date = $request->voucher_date;
                 $removalOrder->delivery_date_wished = $request->delivery_date_wished;
                 $removalOrder->place_of_delivery = $request->place_of_delivery;
@@ -374,7 +378,7 @@ class RemovalOrderController extends Controller
             return Validator::make(
                 $data,
                 [
-                    'client' => 'required',
+                    // 'client' => 'required',
                     // 'stock_type' => 'required',
                     'reference' => 'required|unique:removal_orders',
                     // 'reference_tourn' => 'required|unique:tourns',
@@ -386,7 +390,7 @@ class RemovalOrderController extends Controller
                     'carrier' => 'required',
                 ],
                 [
-                    'client' => "Le choix du client est obligatoire.",
+                    // 'client' => "Le choix du client est obligatoire.",
                     'stock_type' => "Le choix du type de stock est obligatoire.",
                     'reference.required' => "La référence est obligatoire.",
                     'reference.unique' => "Cette référence existe déjà.",
@@ -411,7 +415,7 @@ class RemovalOrderController extends Controller
             return Validator::make(
                 $data,
                 [
-                    'client' => 'required',
+                    // 'client' => 'required',
                     // 'stock_type' => 'required',
                     'reference' => 'required|unique:removal_orders',
                     'voucher_date' => 'required|date|date_equals:today', //|date_format:Ymd
@@ -422,8 +426,8 @@ class RemovalOrderController extends Controller
                     'carrier' => 'required',
                 ],
                 [
-                    'stock_type' => "Le choix du client est obligatoire.",
-                    'stock_type' => "Le choix du type de stock est obligatoire.",
+                    // 'stock_type' => "Le choix du client est obligatoire.",
+                    // 'stock_type' => "Le choix du type de stock est obligatoire.",
                     'reference.required' => "La référence est obligatoire.",
                     'reference.unique' => "Cette référence existe déjà.",
                     'voucher_date.required' => "La date du bon à enlever est obligatoire.",
