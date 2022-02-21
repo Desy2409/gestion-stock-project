@@ -79,6 +79,21 @@ class RemovalOrderController extends Controller
         ]], 200);
     }
 
+    public function showNextCode()
+    {
+        $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
+        $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
+        if ($lastRemovalOrderRegister) {
+            $code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrderRegister->id + 1);
+        } else {
+            $code = $this->formateNPosition(RemovalOrder::class, 1);
+        }
+
+        return new JsonResponse([
+            'code' => $code
+        ], 200);
+    }
+
     public function externalRemovalOrderDatasOnPurchaseOrderSelect($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
