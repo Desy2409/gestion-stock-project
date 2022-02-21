@@ -113,7 +113,7 @@ class ApiServiceController extends Controller
             ], 200);
             }
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => false,
@@ -175,14 +175,14 @@ class ApiServiceController extends Controller
                 foreach ($request->api_service_responses as $key => $response) {
                     $apiServiceResponse = new ApiServiceResponse();
                     $apiServiceResponse->response_type = $response['response_type'];
-                    $apiServiceResponse->response_content = $response['response_content'];
+                    $apiServiceResponse->response_content = array_key_exists('response_content', $response) ? $response['response_content'] : null;
                     $apiServiceResponse->response_state = $response['response_state'];
                     $apiServiceResponse->api_service_id = $apiService->id;
                     $apiServiceResponse->save();
                 }
             }
         } catch (Exception $e) {
-            // dd($e);
+            dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -206,7 +206,7 @@ class ApiServiceController extends Controller
                 // }
             }
         } catch (Exception $e) {
-            // dd($e);
+            dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
