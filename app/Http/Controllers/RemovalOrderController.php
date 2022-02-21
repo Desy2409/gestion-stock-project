@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\UtilityTrait;
 use App\Models\Client;
 use App\Models\ClientDeliveryNote;
+use App\Models\Compartment;
 use App\Models\Order;
 use App\Models\ProductTourn;
 use App\Models\RemovalOrder;
@@ -36,12 +37,12 @@ class RemovalOrderController extends Controller
     private $customsRegimes = ["HT", "TTC"];
 
     public $purchaseOrderRepository;
-    public $ankRepository;
+    public $tankRepository;
 
-    public function __construct(PurchaseOrderRepository $purchaseOrderRepository, TankRepository $ankRepository)
+    public function __construct(PurchaseOrderRepository $purchaseOrderRepository, TankRepository $tankRepository)
     {
         $this->purchaseOrderRepository = $purchaseOrderRepository;
-        $this->ankRepository = $ankRepository;
+        $this->tankRepository = $tankRepository;
     }
 
     public function index($voucherType)
@@ -62,6 +63,7 @@ class RemovalOrderController extends Controller
         $removalOrders = RemovalOrder::orderBy('created_at', 'desc')->orderBy('voucher_date')->orderBy('reference')->get();
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
+        $compartments = Compartment::orderBy('reference')->get();
 
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
@@ -74,7 +76,7 @@ class RemovalOrderController extends Controller
         $removalOrderRegister->save();
 
         return new JsonResponse(['datas' => [
-            'removalOrders' => $removalOrders, 'purchaseOrders' => $purchaseOrders,
+            'removalOrders' => $removalOrders, 'purchaseOrders' => $purchaseOrders, 'compartments' => $compartments,
             'storageUnits' => $storageUnits, 'carriers' => $carriers, 'customsRegimes' => $this->customsRegimes,
         ]], 200);
     }
@@ -139,21 +141,21 @@ class RemovalOrderController extends Controller
 
     public function datasOnClientDeliveryNoteSelect($id)
     {
-        $clientDeliveryNote = ClientDeliveryNote::with('sale')->findOrdFail($id);
+        $clientDeliveryNote = ClientDeliveryNote::with('sale')->findOrFail($id);
         $client = $clientDeliveryNote ? $clientDeliveryNote->sale->client : null;
         $salePoint = $clientDeliveryNote ? $clientDeliveryNote->sale->salePoint : null;
         $deliveryDate = $clientDeliveryNote ? $clientDeliveryNote->delivery_date : null;
         $purchaseOrder = $clientDeliveryNote ? $clientDeliveryNote->sale->purchaseOrder : null;
-        $productClientDeliveryNote = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNote : null;
+        $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
 
         return new JsonResponse([
             'client' => $client, 'salePoint' => $salePoint,
             'deliveryDate' => $deliveryDate, 'purchaseOrder' => $purchaseOrder,
-            'datas' => ['productClientDeliveryNote' => $productClientDeliveryNote],
+            'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
         ], 200);
     }
 
-    
+
     // public function onCarrierSelect($id)
     // {
     //     $provider = Provider::with('person')->with('trucks')->findOrFail($id);
@@ -183,80 +185,82 @@ class RemovalOrderController extends Controller
         $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
 
         try {
-            $validation = $this->validator('store', $request->all());
+            // $validation = $this->validator('store', $request->all());
 
-            if ($validation->fails()) {
-                $messages = $validation->errors()->all();
-                $messages = implode('<br/>', $messages);
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => $messages,
-                ], 200);
+            // if ($validation->fails()) {
+            //     $messages = $validation->errors()->all();
+            //     $messages = implode('<br/>', $messages);
+            //     return new JsonResponse([
+            //         'success' => false,
+            //         'message' => $messages,
+            //     ], 200);
+            // } else {
+            $lastRemovalOrder = RemovalOrder::latest()->first();
+
+            $removalOrder = new RemovalOrder();
+            if ($lastRemovalOrder) {
+                $removalOrder->code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrder->id + 1);
             } else {
-                $lastRemovalOrder = RemovalOrder::latest()->first();
-
-                $removalOrder = new RemovalOrder();
-                if ($lastRemovalOrder) {
-                    $removalOrder->code = $this->formateNPosition(RemovalOrder::class, $lastRemovalOrder->id + 1);
-                } else {
-                    $removalOrder->code = $this->formateNPosition(RemovalOrder::class, 1);
-                }
-                $removalOrder->reference = $request->reference;
-                $removalOrder->voucher_date = $request->voucher_date;
-                $removalOrder->delivery_date_wished = $request->delivery_date_wished;
-                $removalOrder->place_of_delivery = $request->place_of_delivery;
-                $removalOrder->voucher_type = $request->voucher_type;
-                $removalOrder->customs_regime = $request->customs_regime;
-                $removalOrder->storage_unit_id = $request->storage_unit;
-                $removalOrder->carrier_id = $request->carrier;
-                $removalOrder->sale_point_id = $request->sale_point;
-                $removalOrder->client_id = $request->client;
-                // $removalOrder->stock_type_id = $request->stock_type;
-                $removalOrder->save();
-
-                $lastTourn = Tourn::latest()->first();
-
-                $tourn = new Tourn();
-                if ($lastTourn) {
-                    $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1);
-                } else {
-                    $tourn->code = $this->formateNPosition('TO', 1);
-                }
-
-                $clientDeliveryNotes = [];
-                array_push($clientDeliveryNotes, $request->client_delivery_note);
-
-                $tourn->reference = $request->reference_tourn;
-                $tourn->date_of_edition = $request->date_of_edition;
-                $tourn->removal_order_id = $removalOrder->id;
-                $tourn->truck_id = $request->truck;
-                $tourn->tank_id = $request->tank;
-                $tourn->destination_id = $request->destination;
-                $tourn->client_delivery_notes = $clientDeliveryNotes;
-                $tourn->save();
-
-                // $productsTourns = [];
-                foreach ($request->productTourns as $key => $productTournLine) {
-                    // dd($productTournLine);
-                    $productTourn = new ProductTourn();
-                    $productTourn->quantity = $productTournLine['quantity'];
-                    $productTourn->product_id = $productTournLine['product_id'];
-                    $productTourn->unity_id = $productTournLine['unity_id'];
-                    $productTourn->tourn_id = $tourn->id;
-                    $productTourn->save();
-
-                    // array_push($productsTourns, $productTourn);
-                }
-
-                $message = "Enregistrement effectué avec succès.";
-                return new JsonResponse([
-                    'removalOrder' => $removalOrder,
-                    'success' => true,
-                    'message' => $message,
-                    // 'datas' => ['productsTourns' => $productsTourns],
-                ], 200);
+                $removalOrder->code = $this->formateNPosition(RemovalOrder::class, 1);
             }
+            $removalOrder->reference = $request->reference;
+            $removalOrder->voucher_date = $request->voucher_date;
+            $removalOrder->delivery_date_wished = $request->delivery_date_wished;
+            $removalOrder->place_of_delivery = $request->place_of_delivery;
+            $removalOrder->voucher_type = $request->voucher_type;
+            $removalOrder->customs_regime = $request->customs_regime;
+            $removalOrder->storage_unit_id = $request->storage_unit;
+            $removalOrder->carrier_id = $request->carrier;
+            // $removalOrder->sale_point_id = $request->sale_point;
+            $removalOrder->client_id = $request->client;
+            // $removalOrder->stock_type_id = $request->stock_type;
+            $removalOrder->save();
+
+            $lastTourn = Tourn::latest()->first();
+
+            $tourn = new Tourn();
+            if ($lastTourn) {
+                $tourn->code = $this->formateNPosition(Tourn::class, $lastTourn->id + 1);
+            } else {
+                $tourn->code = $this->formateNPosition(Tourn::class, 1);
+            }
+
+            $clientDeliveryNotes = [];
+            array_push($clientDeliveryNotes, $request->client_delivery_note);
+
+            $tourn->reference = $request->reference_tourn;
+            $tourn->date_of_edition = $request->date_of_edition;
+            $tourn->removal_order_id = $removalOrder->id;
+            $tourn->truck_id = $request->truck;
+            $tourn->tank_id = $request->tank;
+            $tourn->destination_id = $request->destination;
+            $tourn->client_delivery_notes = $clientDeliveryNotes;
+            $tourn->save();
+
+            // $productsTourns = [];
+            foreach ($request->productTourns as $key => $productTournLine) {
+                // dd($productTournLine);
+                $productTourn = new ProductTourn();
+                $productTourn->quantity = $productTournLine['quantity'];
+                $productTourn->product_id = $productTournLine['product_id'];
+                $productTourn->unity_id = $productTournLine['unity_id'];
+                $productTourn->compartment_id = $productTournLine['compartment_id'];
+                $productTourn->tourn_id = $tourn->id;
+                $productTourn->save();
+
+                // array_push($productsTourns, $productTourn);
+            }
+
+            $message = "Enregistrement effectué avec succès.";
+            return new JsonResponse([
+                'removalOrder' => $removalOrder,
+                'success' => true,
+                'message' => $message,
+                // 'datas' => ['productsTourns' => $productsTourns],
+            ], 200);
+            // }
         } catch (Exception $e) {
+            dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -290,7 +294,7 @@ class RemovalOrderController extends Controller
                 $removalOrder->customs_regime = $request->customs_regime;
                 $removalOrder->storage_unit_id = $request->storage_unit;
                 $removalOrder->carrier_id = $request->carrier;
-                $removalOrder->sale_point_id = $request->sale_point;
+                // $removalOrder->sale_point_id = $request->sale_point;
                 $removalOrder->client_id = $request->client;
                 // $removalOrder->stock_type_id = $request->stock_type;
                 $removalOrder->save();
@@ -313,6 +317,7 @@ class RemovalOrderController extends Controller
                     $productTourn->quantity = $productTournLine['quantity'];
                     $productTourn->product_id = $productTournLine['product_id'];
                     $productTourn->unity_id = $productTournLine['unity_id'];
+                    $productTourn->compartment_id = $productTournLine['compartment_id'];
                     $productTourn->tourn_id = $tourn->id;
                     $productTourn->save();
                 }

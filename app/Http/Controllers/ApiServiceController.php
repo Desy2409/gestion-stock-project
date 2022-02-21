@@ -85,32 +85,32 @@ class ApiServiceController extends Controller
                     'message' => $messages,
                 ], 200);
             } else {
-            $apiService->reference = $request->reference;
-            $apiService->wording = $request->wording;
-            $apiService->description = $request->description;
-            $apiService->authorization_type = $request->authorization_type;
-            $apiService->authorization_user = $request->authorization_user;
-            $apiService->authorization_password = Hash::make($request->authorization_password);
-            $apiService->authorization_token = $request->authorization_token;
-            $apiService->authorization_prefix = $request->authorization_prefix;
-            $apiService->authorization_key = $request->authorization_key;
-            $apiService->authorization_value = $request->authorization_value;
-            $apiService->body_type = $request->body_type;
-            $apiService->body_content = $request->body_content;
-            $apiService->save();
+                $apiService->reference = $request->reference;
+                $apiService->wording = $request->wording;
+                $apiService->description = $request->description;
+                $apiService->authorization_type = $request->authorization_type;
+                $apiService->authorization_user = $request->authorization_user;
+                $apiService->authorization_password = Hash::make($request->authorization_password);
+                $apiService->authorization_token = $request->authorization_token;
+                $apiService->authorization_prefix = $request->authorization_prefix;
+                $apiService->authorization_key = $request->authorization_key;
+                $apiService->authorization_value = $request->authorization_value;
+                $apiService->body_type = $request->body_type;
+                $apiService->body_content = $request->body_content;
+                $apiService->save();
 
-            ApiServiceResponse::where("api_service_id", $apiService->id)->delete();
-            $this->storeApiServiceResponse($request, $apiService);
+                ApiServiceResponse::where("api_service_id", $apiService->id)->delete();
+                $this->storeApiServiceResponse($request, $apiService);
 
-            ApiServiceHeader::where("api_service_id", $apiService->id)->delete();
-            $this->storeApiServiceHeader($request, $apiService);
+                ApiServiceHeader::where("api_service_id", $apiService->id)->delete();
+                $this->storeApiServiceHeader($request, $apiService);
 
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'success' => true,
-                'message' => $message,
-                'apiService' => $apiService
-            ], 200);
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => $message,
+                    'apiService' => $apiService
+                ], 200);
             }
         } catch (Exception $e) {
             // dd($e);
@@ -124,13 +124,13 @@ class ApiServiceController extends Controller
 
     public function show($id)
     {
-        $apiService = ApiService::with('person.address')->where('id', $id)->first();
+        $apiService = ApiService::with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
     public function edit($id)
     {
-        $apiService = ApiService::with('person.address')->where('id', $id)->first();
+        $apiService = ApiService::with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
@@ -174,9 +174,9 @@ class ApiServiceController extends Controller
             if (!empty($request->api_service_responses) && sizeof($request->api_service_responses) > 0) {
                 foreach ($request->api_service_responses as $key => $response) {
                     $apiServiceResponse = new ApiServiceResponse();
-                    $apiServiceResponse->response_type = $response['response_type'];
+                    $apiServiceResponse->response_type = array_key_exists('response_type', $response) ?  $response['response_type'] : null;
                     $apiServiceResponse->response_content = array_key_exists('response_content', $response) ? $response['response_content'] : null;
-                    $apiServiceResponse->response_state = $response['response_state'];
+                    $apiServiceResponse->response_state = array_key_exists('response_state', $response) ? $response['response_state'] : null;
                     $apiServiceResponse->api_service_id = $apiService->id;
                     $apiServiceResponse->save();
                 }
@@ -198,8 +198,8 @@ class ApiServiceController extends Controller
             if (!empty($request->api_service_headers) && sizeof($request->api_service_headers) > 0) {
                 foreach ($request->api_service_headers as $key => $header) {
                     $apiServiceHeader = new ApiServiceHeader();
-                    $apiServiceHeader->key = $header['key'];
-                    $apiServiceHeader->value = $header['value'];
+                    $apiServiceHeader->key = array_key_exists('key', $header) ? $header['key'] : null;
+                    $apiServiceHeader->value = array_key_exists('value', $header) ? $header['value'] : null;
                     $apiServiceHeader->api_service_id = $apiService->id;
                     $apiServiceHeader->save();
                 }

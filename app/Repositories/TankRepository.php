@@ -31,7 +31,7 @@ class TankRepository extends Repository
     public function tanksOfSelectedTruck($id)
     {
         $tanks = Tank::join('tank_trucks', 'tank_trucks.tank_id', '=', 'tanks.id')
-            ->join('trucks', 'trucks.id', '=', 'tank_trucks.trucks.id')->where('trucks.id', $id)->get();
+            ->join('trucks', 'trucks.id', '=', 'tank_trucks.truck_id')->where('trucks.id', $id)->get();
 
         return $tanks;
     }
