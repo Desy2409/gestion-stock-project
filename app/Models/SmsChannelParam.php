@@ -15,15 +15,15 @@ class SmsChannelParam extends Model
 
     protected $attributes = [
         'type' => '{
-            "simple_http"=>"",
-            "json_body_server"=>"",
-            "xml_body_server"=>""
+            "simple_http" : "",
+            "json_body_server" : "",
+            "xml_body_server" : ""
         }',
         'sms_header_type' => '{
-            "basic"=>"",
-            "bearer"=>"",
-            "none"=>"",
-            "api_key"=>""
+            "basic" : "",
+            "bearer" : "",
+            "none" : "",
+            "api_key" : ""
         }'
     ];
 

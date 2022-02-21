@@ -75,20 +75,19 @@ class ApiServiceController extends Controller
 
         // dd($request->all());
         try {
-            // $validation = $this->apiServiceValidator($request->all());
+            $validation = $this->apiServiceValidator($request->all());
 
-            // if ($validation->fails()) {
-            //     $messages = $validation->errors()->all();
-            //     $messages = implode('<br/>', $messages);
-            //     return new JsonResponse([
-            //         'success' => false,
-            //         'message' => $messages,
-            //     ], 200);
-            // } else {
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
             $apiService->reference = $request->reference;
             $apiService->wording = $request->wording;
             $apiService->description = $request->description;
-            $apiService->authorization_type = $request->authorization_type;
             $apiService->authorization_type = $request->authorization_type;
             $apiService->authorization_user = $request->authorization_user;
             $apiService->authorization_password = Hash::make($request->authorization_password);
@@ -112,7 +111,7 @@ class ApiServiceController extends Controller
                 'message' => $message,
                 'apiService' => $apiService
             ], 200);
-            // }
+            }
         } catch (Exception $e) {
             dd($e);
             $message = "Erreur survenue lors de la modification.";
@@ -177,6 +176,7 @@ class ApiServiceController extends Controller
                     $apiServiceResponse = new ApiServiceResponse();
                     $apiServiceResponse->response_type = $response['response_type'];
                     $apiServiceResponse->response_content = $response['response_content'];
+                    $apiServiceResponse->response_state = $response['response_state'];
                     $apiServiceResponse->api_service_id = $apiService->id;
                     $apiServiceResponse->save();
                 }
@@ -222,7 +222,7 @@ class ApiServiceController extends Controller
             [
                 'reference' => 'required',
                 'wording' => 'required',
-                'description' => 'required',
+                // 'description' => 'required',
                 // 'authorization_type' => 'required',
                 // 'authorization_user' => 'required',
                 // 'authorization_password' => 'required',
@@ -236,7 +236,7 @@ class ApiServiceController extends Controller
             [
                 'reference.required' => "La référence est obligatoire.",
                 'wording.required' => "Le libellé est obligatoire.",
-                'description.required' => "La description est obligatoire.",
+                // 'description.required' => "La description est obligatoire.",
                 // 'authorization_type.required' => "Le type du service est obligatoire.",
                 // 'authorization_user.required' => "L'utilisateur est obligatoire.",
                 // 'authorization_password.required' => "Le mot de passe est obligatoire.",

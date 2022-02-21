@@ -356,13 +356,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/destination-report', [DestinationController::class, 'destinationReports']);
 
     // Good to remove routes
-    Route::get('/removal-order', [RemovalOrderController::class, 'index']);
+    Route::get('/removal-order/{voucher_type}', [RemovalOrderController::class, 'index']);
     Route::get('/removal-order-code', [RemovalOrderController::class, 'showNextCode']);
-    Route::get('/removal-order/{id}/on-purchase-order-select', [RemovalOrderController::class, 'datasOnPurchaseOrderSelect']);
-    Route::get('/removal-order/{id}/on-client-select', [RemovalOrderController::class, 'onClientSelect']);
-    Route::get('/removal-order/{id}/on-select', [RemovalOrderController::class, 'onCarrierSelect']);
+    Route::get('/removal-order/{id}/on-purchase-order-select', [RemovalOrderController::class, 'externalRemovalOrderDatasOnPurchaseOrderSelect']);
+    Route::get('/removal-order/{id}/on-transfer-select', [RemovalOrderController::class, 'internalRemovalOrderDatasOnTransferSelect']);
+    Route::get('/removal-order/{id}/on-provider-select', [RemovalOrderController::class, 'trucksOfSelectedTransportProvider']);
+    Route::get('/removal-order/{id}/on-truck-select', [RemovalOrderController::class, 'tanksOfSelectedTruck']);
+    Route::get('/removal-order/load-client-delivery-note', [RemovalOrderController::class, 'loadAllClientDeliveryNotes']);
+    Route::get('/removal-order/{id}/on-client-delivery-note-select', [RemovalOrderController::class, 'datasOnClientDeliveryNoteSelect']);
+    // Route::get('/removal-order/{id}/on-client-select', [RemovalOrderController::class, 'onClientSelect']);
+    // Route::get('/removal-order/{id}/on-select', [RemovalOrderController::class, 'onCarrierSelect']);
     Route::post('/removal-order', [RemovalOrderController::class, 'store']);
     Route::get('/removal-order/{id}/show', [RemovalOrderController::class, 'show']);
+    Route::get('/removal-order/{id}/edit', [RemovalOrderController::class, 'edit']);
     Route::patch('/removal-order/{id}/update', [RemovalOrderController::class, 'update']);
     Route::delete('/removal-order/{id}/destroy', [RemovalOrderController::class, 'destroy']);
 
