@@ -36,12 +36,12 @@ class RemovalOrderController extends Controller
     private $customsRegimes = ["HT", "TTC"];
 
     public $purchaseOrderRepository;
-    public $ankRepository;
+    public $tankRepository;
 
-    public function __construct(PurchaseOrderRepository $purchaseOrderRepository, TankRepository $ankRepository)
+    public function __construct(PurchaseOrderRepository $purchaseOrderRepository, TankRepository $tankRepository)
     {
         $this->purchaseOrderRepository = $purchaseOrderRepository;
-        $this->ankRepository = $ankRepository;
+        $this->tankRepository = $tankRepository;
     }
 
     public function index($voucherType)
@@ -139,17 +139,17 @@ class RemovalOrderController extends Controller
 
     public function datasOnClientDeliveryNoteSelect($id)
     {
-        $clientDeliveryNote = ClientDeliveryNote::with('sale')->findOrdFail($id);
+        $clientDeliveryNote = ClientDeliveryNote::with('sale')->findOrFail($id);
         $client = $clientDeliveryNote ? $clientDeliveryNote->sale->client : null;
         $salePoint = $clientDeliveryNote ? $clientDeliveryNote->sale->salePoint : null;
         $deliveryDate = $clientDeliveryNote ? $clientDeliveryNote->delivery_date : null;
         $purchaseOrder = $clientDeliveryNote ? $clientDeliveryNote->sale->purchaseOrder : null;
-        $productClientDeliveryNote = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNote : null;
+        $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
 
         return new JsonResponse([
             'client' => $client, 'salePoint' => $salePoint,
             'deliveryDate' => $deliveryDate, 'purchaseOrder' => $purchaseOrder,
-            'datas' => ['productClientDeliveryNote' => $productClientDeliveryNote],
+            'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
         ], 200);
     }
 
@@ -183,16 +183,16 @@ class RemovalOrderController extends Controller
         $this->authorize('ROLE_REMOVAL_ORDER_CREATE', RemovalOrder::class);
 
         try {
-            $validation = $this->validator('store', $request->all());
+            // $validation = $this->validator('store', $request->all());
 
-            if ($validation->fails()) {
-                $messages = $validation->errors()->all();
-                $messages = implode('<br/>', $messages);
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => $messages,
-                ], 200);
-            } else {
+            // if ($validation->fails()) {
+            //     $messages = $validation->errors()->all();
+            //     $messages = implode('<br/>', $messages);
+            //     return new JsonResponse([
+            //         'success' => false,
+            //         'message' => $messages,
+            //     ], 200);
+            // } else {
                 $lastRemovalOrder = RemovalOrder::latest()->first();
 
                 $removalOrder = new RemovalOrder();
@@ -209,7 +209,7 @@ class RemovalOrderController extends Controller
                 $removalOrder->customs_regime = $request->customs_regime;
                 $removalOrder->storage_unit_id = $request->storage_unit;
                 $removalOrder->carrier_id = $request->carrier;
-                $removalOrder->sale_point_id = $request->sale_point;
+                // $removalOrder->sale_point_id = $request->sale_point;
                 $removalOrder->client_id = $request->client;
                 // $removalOrder->stock_type_id = $request->stock_type;
                 $removalOrder->save();
@@ -218,9 +218,9 @@ class RemovalOrderController extends Controller
 
                 $tourn = new Tourn();
                 if ($lastTourn) {
-                    $tourn->code = $this->formateNPosition('TO', $lastTourn->id + 1);
+                    $tourn->code = $this->formateNPosition(Tourn::class, $lastTourn->id + 1);
                 } else {
-                    $tourn->code = $this->formateNPosition('TO', 1);
+                    $tourn->code = $this->formateNPosition(Tourn::class, 1);
                 }
 
                 $clientDeliveryNotes = [];
@@ -255,8 +255,9 @@ class RemovalOrderController extends Controller
                     'message' => $message,
                     // 'datas' => ['productsTourns' => $productsTourns],
                 ], 200);
-            }
+            // }
         } catch (Exception $e) {
+            dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -290,7 +291,7 @@ class RemovalOrderController extends Controller
                 $removalOrder->customs_regime = $request->customs_regime;
                 $removalOrder->storage_unit_id = $request->storage_unit;
                 $removalOrder->carrier_id = $request->carrier;
-                $removalOrder->sale_point_id = $request->sale_point;
+                // $removalOrder->sale_point_id = $request->sale_point;
                 $removalOrder->client_id = $request->client;
                 // $removalOrder->stock_type_id = $request->stock_type;
                 $removalOrder->save();
