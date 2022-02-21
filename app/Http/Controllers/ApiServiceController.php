@@ -59,7 +59,7 @@ class ApiServiceController extends Controller
                 ], 200);
             }
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -89,7 +89,7 @@ class ApiServiceController extends Controller
             $apiService->wording = $request->wording;
             $apiService->description = $request->description;
             $apiService->authorization_type = $request->authorization_type;
-            $apiService->authorization_type = $request->authorization_type;
+            // $apiService->authorization_type = $request->authorization_type;
             $apiService->authorization_user = $request->authorization_user;
             $apiService->authorization_password = Hash::make($request->authorization_password);
             $apiService->authorization_token = $request->authorization_token;
@@ -114,7 +114,7 @@ class ApiServiceController extends Controller
             ], 200);
             // }
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => false,
@@ -222,7 +222,7 @@ class ApiServiceController extends Controller
             [
                 'reference' => 'required',
                 'wording' => 'required',
-                'description' => 'required',
+                // 'description' => 'required',
                 // 'authorization_type' => 'required',
                 // 'authorization_user' => 'required',
                 // 'authorization_password' => 'required',
