@@ -44,6 +44,8 @@ class ApiServiceController extends Controller
                 $apiService->authorization_prefix = $request->authorization_prefix;
                 $apiService->authorization_key = $request->authorization_key;
                 $apiService->authorization_value = $request->authorization_value;
+                $apiService->api_service_id = $request->api_service;
+                $apiService->token_attribute = $request->token_attribute;
                 $apiService->body_type = $request->body_type;
                 $apiService->body_content = $request->body_content;
                 $apiService->save();
@@ -95,6 +97,8 @@ class ApiServiceController extends Controller
                 $apiService->authorization_prefix = $request->authorization_prefix;
                 $apiService->authorization_key = $request->authorization_key;
                 $apiService->authorization_value = $request->authorization_value;
+                $apiService->api_service_id = $request->api_service;
+                $apiService->token_attribute = $request->token_attribute;
                 $apiService->body_type = $request->body_type;
                 $apiService->body_content = $request->body_content;
                 $apiService->save();
