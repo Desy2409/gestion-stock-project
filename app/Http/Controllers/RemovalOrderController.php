@@ -64,7 +64,7 @@ class RemovalOrderController extends Controller
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $compartments = Compartment::orderBy('reference')->get();
-        $currentTourns = Tourn::where('state','!=','C')->get();
+        $currentTourns = Tourn::where('state', '!=', 'C')->get();
 
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
@@ -79,7 +79,7 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['datas' => [
             'removalOrders' => $removalOrders, 'purchaseOrders' => $purchaseOrders, 'compartments' => $compartments,
             'storageUnits' => $storageUnits, 'carriers' => $carriers, 'customsRegimes' => $this->customsRegimes,
-            'currentTourns' => $currentTourns, 
+            'currentTourns' => $currentTourns,
         ]], 200);
     }
 
@@ -147,12 +147,13 @@ class RemovalOrderController extends Controller
         $client = $clientDeliveryNote ? $clientDeliveryNote->sale->client : null;
         $salePoint = $clientDeliveryNote ? $clientDeliveryNote->sale->salePoint : null;
         $deliveryDate = $clientDeliveryNote ? $clientDeliveryNote->delivery_date : null;
+        $placeOfDelivery = $clientDeliveryNote ? $clientDeliveryNote->place_of_delivery : null;
         $purchaseOrder = $clientDeliveryNote ? $clientDeliveryNote->sale->purchaseOrder : null;
         $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
 
         return new JsonResponse([
             'client' => $client, 'salePoint' => $salePoint,
-            'deliveryDate' => $deliveryDate, 'purchaseOrder' => $purchaseOrder,
+            'deliveryDate' => $deliveryDate, 'purchaseOrder' => $purchaseOrder, 'placeOfDelivery' => $placeOfDelivery,
             'datas' => ['productClientDeliveryNotes' => $productClientDeliveryNotes],
         ], 200);
     }
