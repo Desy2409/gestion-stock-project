@@ -11,6 +11,7 @@ use App\Models\SalePoint;
 use App\Models\User;
 use App\Models\UserType;
 use App\Repositories\UserRepository;
+use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,6 +50,18 @@ class UserController extends Controller
 
         return new JsonResponse([
             'datas' => ['users' => $users, 'salePoints' => $salePoints, 'userTypes' => $userTypes, 'pages' => $pages, 'operations' => $operations]
+        ], 200);
+    }
+
+    
+    public function pageOperationIdsOnUserTypeSelect($id)
+    {
+        // $this->authorize('ROLE_USER_READ', User::class);
+        $userType = UserType::findOrFail($id);
+        $pageOperationIds = $userType->roles ? $this->pageOperationIdsAccordingToUserTypeRoles($userType) : null;
+
+        return new JsonResponse([
+            'datas' => ['page_operation_ids' => $pageOperationIds]
         ], 200);
     }
 
@@ -95,12 +108,13 @@ class UserController extends Controller
                         array_push($roles, $pageOperation->code);
                     }
                 }
+                $user->roles = $roles;
                 $user->save();
 
                 $passwordHistory = new PasswordHistory();
                 $passwordHistory->user_id = $user->id;
                 $passwordHistory->password = Hash::make($user->password);
-                $passwordHistory->date = $user->date;
+                $passwordHistory->date = new DateTime();
                 $passwordHistory->save();
 
                 $message = "Enregistrement effectué avec succès.";
@@ -111,6 +125,7 @@ class UserController extends Controller
                 ], 200);
             }
         } catch (Exception $e) {
+            // dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";
             return new JsonResponse([
                 'success' => false,
@@ -174,6 +189,7 @@ class UserController extends Controller
                         array_push($roles, $pageOperation->code);
                     }
                 }
+                $user->roles = $roles;
                 $user->save();
 
                 $passwordHistory = PasswordHistory::where('user_id', $user->id)->latest()->first();
@@ -188,14 +204,14 @@ class UserController extends Controller
                         $passwordHistory = new PasswordHistory();
                         $passwordHistory->user_id = $user->id;
                         $passwordHistory->password = Hash::make($user->password);
-                        $passwordHistory->date = $user->date;
+                        $passwordHistory->date = new DateTime();
                         $passwordHistory->save();
                     }
                 } else {
                     $passwordHistory = new PasswordHistory();
                     $passwordHistory->user_id = $user->id;
                     $passwordHistory->password = Hash::make($user->password);
-                    $passwordHistory->date = $user->date;
+                    $passwordHistory->date = new DateTime();
                     $passwordHistory->save();
                 }
 
@@ -207,6 +223,7 @@ class UserController extends Controller
                 ], 200);
             }
         } catch (Exception $e) {
+            // dd($e);
             $message = "Erreur survenue lors de la modification.";
             return new JsonResponse([
                 'success' => false,
@@ -352,7 +369,7 @@ class UserController extends Controller
                     'email.required' => "Le champ email est obligatoire.",
                     'email.email' => "Le champ email est incorrect.",
                     'password.required' => "Le champ mot de passe est obligatoire.",
-                    'password.min' => "Le champ mot de passe doit contenir 8 caractères.",
+                    'password.min' => "Le champ mot de passe doit contenir au moins 8 caractères.",
                     'last_name.required' => "e champ nom est obligatoire.",
                     'last_name.max' => "Le champ nom ne doit pas dépasser 30 caractères.",
                     'first_name.required' => "Le champ prénom(s) est obligatoire.",
@@ -381,7 +398,7 @@ class UserController extends Controller
                     'email.required' => "Le champ email est obligatoire.",
                     'email.email' => "Le champ email est incorrect.",
                     'password.required' => "Le champ mot de passe est obligatoire.",
-                    'password.min' => "Le champ mot de passe doit contenir 8 caractères.",
+                    'password.min' => "Le champ mot de passe doit contenir au moins 8 caractères.",
                     'last_name.required' => "e champ nom est obligatoire.",
                     'last_name.max' => "Le champ nom ne doit pas dépasser 30 caractères.",
                     'first_name.required' => "Le champ prénom(s) est obligatoire.",
@@ -399,6 +416,18 @@ class UserController extends Controller
     {
         $page_operation_ids = [];
         foreach ($user->roles as $key => $role) {
+            $pageOperationId = PageOperation::where('code', $role)->pluck('id')->first();
+            array_push($page_operation_ids, $pageOperationId);
+        }
+
+        return $page_operation_ids;
+    }
+
+    
+    protected function pageOperationIdsAccordingToUserTypeRoles(UserType $userType)
+    {
+        $page_operation_ids = [];
+        foreach ($userType->roles as $key => $role) {
             $pageOperationId = PageOperation::where('code', $role)->pluck('id')->first();
             array_push($page_operation_ids, $pageOperationId);
         }

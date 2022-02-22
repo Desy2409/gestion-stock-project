@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\ClientDeliveryNote;
 use App\Models\Compartment;
 use App\Models\Order;
+use App\Models\ProductClientDeliveryNote;
 use App\Models\ProductTourn;
 use App\Models\RemovalOrder;
 use App\Models\RemovalOrderRegister;
@@ -64,7 +65,7 @@ class RemovalOrderController extends Controller
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $compartments = Compartment::orderBy('reference')->get();
-        $currentTourns = Tourn::where('state','!=','C')->get();
+        $currentTourns = Tourn::where('state', '!=', 'C')->get();
 
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
@@ -79,7 +80,7 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['datas' => [
             'removalOrders' => $removalOrders, 'purchaseOrders' => $purchaseOrders, 'compartments' => $compartments,
             'storageUnits' => $storageUnits, 'carriers' => $carriers, 'customsRegimes' => $this->customsRegimes,
-            'currentTourns' => $currentTourns, 
+            'currentTourns' => $currentTourns,
         ]], 200);
     }
 
@@ -154,7 +155,8 @@ class RemovalOrderController extends Controller
         $salePoint = $clientDeliveryNote ? $clientDeliveryNote->sale->salePoint : null;
         $deliveryDate = $clientDeliveryNote ? $clientDeliveryNote->delivery_date : null;
         $purchaseOrder = $clientDeliveryNote ? $clientDeliveryNote->sale->purchaseOrder : null;
-        $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
+        // $productClientDeliveryNotes = $clientDeliveryNote ? $clientDeliveryNote->productClientDeliveryNotes : null;
+        $productClientDeliveryNotes = $clientDeliveryNote ? ProductClientDeliveryNote::where('client_delivery_note_id', $clientDeliveryNote->id)->with('product')->with('unity')->get() : null;
 
         return new JsonResponse([
             'client' => $client, 'salePoint' => $salePoint,
