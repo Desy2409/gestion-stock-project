@@ -45,6 +45,6 @@ class Tourn extends Model
 
     public function state()
     {
-        return ($this->state == 'C') ? "Tournée clôturée" : "";
+        return ($this->state == 'C') ? "Tournée clôturée" : "Tournée en cours";
     }
 }
