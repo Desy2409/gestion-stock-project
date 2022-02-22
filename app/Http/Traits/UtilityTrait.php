@@ -48,7 +48,7 @@ trait UtilityTrait
         $tableSetting = TableSetting::where('table_name', '=', $model)->first();
         $valueString = $model::$code;
         $valueLength = strlen($valueString . $suffixe);
-        $length=$tableSetting?$tableSetting->code_min_length:env('DEFAULT_CODE_MIN_LENGTH');
+        $length = $tableSetting ? $tableSetting->code_min_length : env('DEFAULT_CODE_MIN_LENGTH');
         while ($valueLength < $length) {
             $valueString = $valueString . '0';
             $valueLength = strlen($valueString . $suffixe);
@@ -76,7 +76,7 @@ trait UtilityTrait
                     'validation_number' => $tableSetting->validation_number,
                     'code_min_length' => $tableSetting->code_min_length,
                     // 'validation_level' => $tableSetting->validation_level,
-                ]; 
+                ];
             }
             //$this->tableRelatedSettings($tableName);
             $settings = array_merge($settings, $othersSettings);
@@ -128,16 +128,18 @@ trait UtilityTrait
     }
 
     function getAllModels(): array
-{
+    {
         $composer = json_decode(file_get_contents(base_path('composer.json')), true);
         $modelsWithDefaultPath = [];
         foreach ((array)data_get($composer, 'autoload.psr-4') as $namespace => $path) {
             $modelsWithDefaultPath = array_merge(collect(File::allFiles(base_path($path)))
                 ->map(function ($item) use ($namespace) {
                     $path = $item->getRelativePathName();
-                    return sprintf('\%s%s',
+                    return sprintf(
+                        '\%s%s',
                         $namespace,
-                        strtr(substr($path, 0, strrpos($path, '.')), '/', '\\'));
+                        strtr(substr($path, 0, strrpos($path, '.')), '/', '\\')
+                    );
                 })
                 ->filter(function ($class) {
                     $valid = false;
@@ -152,14 +154,13 @@ trait UtilityTrait
                 ->toArray(), $modelsWithDefaultPath);
         }
 
-        $models=[];
+        $models = [];
 
         foreach ($modelsWithDefaultPath as $key => $model) {
-            array_push($models,substr($model,12));
+            array_push($models, substr($model, 12));
         }
 
         dd($models);
         return $models;
-}
-
+    }
 }
