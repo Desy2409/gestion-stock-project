@@ -31,7 +31,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         if (Schema::hasTable('page_operations')) {
             $pageOperations = PageOperation::all();
-            if ($pageOperations) {
+            if (!empty($pageOperations) && sizeof($pageOperations) > 0) {
                 foreach ($pageOperations as $key => $pageOperation) {
                     Gate::define($pageOperation->code, function (User $user) use ($pageOperation) {
                         return (in_array($pageOperation->code, $user->roles) || in_array('ADMIN', $user->roles)) ? Response::allow() : abort(403);
