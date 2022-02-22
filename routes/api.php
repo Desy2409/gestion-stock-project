@@ -498,11 +498,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('', [UserController::class, 'index']);
         Route::post('', [UserController::class, 'store']);
         Route::get('{id}/edit', [UserController::class, 'edit']);
+        Route::get('{id}/page-operation-on-user-type-select', [UserController::class, 'pageOperationIdsOnUserTypeSelect']);
         Route::patch('{id}/update', [UserController::class, 'update']);
         Route::delete('{id}/destroy', [UserController::class, 'destroy']);
-        Route::patch('{id}/user-type-config', [UserController::class, 'userTypeConfiguration']);
-        Route::patch('{id}/roles-config', [UserController::class, 'rolesConfiguration']);
-        Route::patch('{id}/sale-points-config', [UserController::class, 'salePointsConfiguration']);
+        // Route::patch('{id}/user-type-config', [UserController::class, 'userTypeConfiguration']);
+        // Route::patch('{id}/roles-config', [UserController::class, 'rolesConfiguration']);
+        // Route::patch('{id}/sale-points-config', [UserController::class, 'salePointsConfiguration']);
         Route::get('/user-report', [UserController::class, 'userReports']);
 
         // User profile routes
