@@ -138,7 +138,7 @@ class ApiServiceController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('ROLE_API_SERVICE_CREATE', ApiService::class);
+        $this->authorize('ROLE_API_SERVICE_UPDATE', ApiService::class);
         $apiService = ApiService::with('apiService')->with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }

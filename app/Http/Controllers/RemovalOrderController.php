@@ -141,6 +141,12 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['datas' => ['clientDeliveryNotes' => $clientDeliveryNotes]], 200);
     }
 
+    public function loadAllTransfers()
+    {
+        $transfers = Transfer::orderBy('created_at', 'desc')->with('productTransfers')->get();
+        return new JsonResponse(['datas' => ['transfers' => $transfers]], 200);
+    }
+
     public function datasOnClientDeliveryNoteSelect($id)
     {
         $clientDeliveryNote = ClientDeliveryNote::with('sale')->findOrFail($id);
