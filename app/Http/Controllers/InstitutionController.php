@@ -69,16 +69,16 @@ class InstitutionController extends Controller
         // }
 
         try {
-            // $validation = $this->validator('store', $request->all());
+            $validation = $this->validator('store', $request->all());
 
-            // if ($validation->fails()) {
-            //     $messages = $validation->errors()->all();
-            //     $messages = implode('<br/>', $messages);
-            //     return new JsonResponse([
-            //         'success' => false,
-            //         'message' => $messages,
-            //     ], 200);
-            // } else {
+            if ($validation->fails()) {
+                $messages = $validation->errors()->all();
+                $messages = implode('<br/>', $messages);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $messages,
+                ], 200);
+            } else {
             $institution = new Institution();
             $institution->rccm_number = $request->rccm_number;
             $institution->cc_number = $request->cc_number;
@@ -140,7 +140,7 @@ class InstitutionController extends Controller
                 'success' => true,
                 'message' => $message,
             ], 200);
-            // }
+            }
         } catch (Exception $e) {
             dd($e);
             $message = "Erreur survenue lors de l'enregistrement.";

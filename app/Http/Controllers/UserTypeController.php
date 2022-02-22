@@ -118,31 +118,31 @@ class UserTypeController extends Controller
                     'message' => $messages,
                 ], 200);
             } else {
-            $userType->code = strtoupper(str_replace(' ', '_', $request->code));
-            $userType->wording = $request->wording;
-            $userType->description = $request->description;
-            $roles = [];
-            // dd($request->page_operations);
-            if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
-                foreach ($request->page_operation_ids as $key => $pageOperationId) {
-                    $pageOperation = PageOperation::where('id', $pageOperationId)->first();
-                    array_push($roles, $pageOperation->code);
+                $userType->code = strtoupper(str_replace(' ', '_', $request->code));
+                $userType->wording = $request->wording;
+                $userType->description = $request->description;
+                $roles = [];
+                // dd($request->page_operations);
+                if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
+                    foreach ($request->page_operation_ids as $key => $pageOperationId) {
+                        $pageOperation = PageOperation::where('id', $pageOperationId)->first();
+                        array_push($roles, $pageOperation->code);
+                    }
                 }
-            }
-            $userType->roles = $roles;
-            $userType->save();
+                $userType->roles = $roles;
+                $userType->save();
 
-            if ($request->update_user_roles) {
-                // dd('update_user_roles');
-                $this->userRoleAccordingToUserTypeRoles($userType);
-            }
+                if ($request->update_user_roles) {
+                    // dd('update_user_roles');
+                    $this->userRoleAccordingToUserTypeRoles($userType);
+                }
 
-            $message = "Modification effectuée avec succès.";
-            return new JsonResponse([
-                'userType' => $userType,
-                'success' => true,
-                'message' => $message,
-            ], 200);
+                $message = "Modification effectuée avec succès.";
+                return new JsonResponse([
+                    'userType' => $userType,
+                    'success' => true,
+                    'message' => $message,
+                ], 200);
             }
         } catch (Exception $e) {
             dd($e);
@@ -187,12 +187,13 @@ class UserTypeController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('ROLE_USER_TYPE_READ', UserType::class);
+        $this->authorize('ROLE_USER_TYPE_UPDATE', UserType::class);
         $userType = UserType::findOrFail($id);
-        
+        $pageOperationIds = $userType->roles ? $this->pageOperationIdsAccordingToUserTypeRoles($userType) : null;
 
         return new JsonResponse([
-            'userType' => $userType, 'page_operation_ids' => $this->pageOperationIdsAccordingToUserTypeRoles($userType)
+            'userType' => $userType, 
+            'datas'=>['page_operation_ids' => $pageOperationIds],
         ], 200);
     }
 
@@ -266,17 +267,18 @@ class UserTypeController extends Controller
         }
     }
 
-    protected function pageOperationIdsAccordingToUserTypeRoles(UserType $userType){
-        $page_operation_ids=[];
+    protected function pageOperationIdsAccordingToUserTypeRoles(UserType $userType)
+    {
+        $page_operation_ids = [];
         foreach ($userType->roles as $key => $role) {
-            $pageOperationId = PageOperation::where('code',$role)->pluck('id')->first();
-            array_push($page_operation_ids,$pageOperationId);
+            $pageOperationId = PageOperation::where('code', $role)->pluck('id')->first();
+            array_push($page_operation_ids, $pageOperationId);
         }
 
         return $page_operation_ids;
     }
 
-    protected function saveUserTypeRoles(){
-        
+    protected function saveUserTypeRoles()
+    {
     }
 }

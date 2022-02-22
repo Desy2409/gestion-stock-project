@@ -58,9 +58,8 @@ class UserController extends Controller
 
         $existingUser = Person::where('last_name', $request->last_name)->where('first_name', $request->first_name)->get();
         if (!empty($existingUser) && sizeof($existingUser) >= 1) {
-            $success = false;
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'existingUser' => $existingUser[0],
                 'message' => "Cet utilisateur existe déjà"
             ], 200);
@@ -85,7 +84,9 @@ class UserController extends Controller
                 $user->first_name = $request->first_name;
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
-                $user->sale_points = $request->sale_points;
+                $user->settings = [
+                    'authorized_sale_points' => $request->sale_points
+                ];
                 $user->user_type_id = $request->user_type;
                 $roles = [];
                 if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
@@ -104,9 +105,9 @@ class UserController extends Controller
 
                 $message = "Enregistrement effectué avec succès.";
                 return new JsonResponse([
-                    'user' => $user,
                     'success' => true,
                     'message' => $message,
+                    'user' => $user,
                 ], 200);
             }
         } catch (Exception $e) {
@@ -122,7 +123,12 @@ class UserController extends Controller
     {
         $this->authorize('ROLE_USER_UPDATE', User::class);
         $user = User::findOrFail($id);
-        return new JsonResponse(['user' => $user], 200);
+        $pageOperationIds = $user->roles ? $this->pageOperationIdsAccordingToUserTypeRoles($user) : null;
+
+        return new JsonResponse([
+            'user' => $user,
+            'datas' => ['page_operation_ids' => $pageOperationIds]
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -132,9 +138,8 @@ class UserController extends Controller
 
         $existingUser = Person::where('last_name', $request->last_name)->where('first_name', $request->first_name)->get();
         if (!empty($existingUser) && sizeof($existingUser) >= 1) {
-            $success = false;
             return new JsonResponse([
-                'success' => $success,
+                'success' => false,
                 'existingUser' => $existingUser[0],
                 'message' => "Cet utilisateur existe déjà"
             ], 200);
@@ -158,7 +163,9 @@ class UserController extends Controller
                 $user->first_name = $request->first_name;
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
-                $user->sale_points = $request->sale_points;
+                $user->settings = [
+                    'authorized_sale_points' => $request->sale_points
+                ];
                 $user->user_type_id = $request->user_type;
                 $roles = [];
                 if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
@@ -175,28 +182,28 @@ class UserController extends Controller
                         $message = "Le nouveau mot de passe doit être différent de l'ancien.";
                         return new JsonResponse([
                             'success' => false,
-                            'success' => false,
+                            'message' => $message,
                         ], 200);
                     } else {
                         $passwordHistory = new PasswordHistory();
                         $passwordHistory->user_id = $user->id;
-                        $passwordHistory->password = $user->password;
+                        $passwordHistory->password = Hash::make($user->password);
                         $passwordHistory->date = $user->date;
                         $passwordHistory->save();
                     }
                 } else {
                     $passwordHistory = new PasswordHistory();
                     $passwordHistory->user_id = $user->id;
-                    $passwordHistory->password = $user->password;
+                    $passwordHistory->password = Hash::make($user->password);
                     $passwordHistory->date = $user->date;
                     $passwordHistory->save();
                 }
 
                 $message = "Modification effectuée avec succès.";
                 return new JsonResponse([
-                    'user' => $user,
                     'success' => true,
                     'message' => $message,
+                    'user' => $user,
                 ], 200);
             }
         } catch (Exception $e) {
@@ -386,5 +393,16 @@ class UserController extends Controller
                 ]
             );
         }
+    }
+
+    protected function pageOperationIdsAccordingToUserRoles(User $user)
+    {
+        $page_operation_ids = [];
+        foreach ($user->roles as $key => $role) {
+            $pageOperationId = PageOperation::where('code', $role)->pluck('id')->first();
+            array_push($page_operation_ids, $pageOperationId);
+        }
+
+        return $page_operation_ids;
     }
 }
