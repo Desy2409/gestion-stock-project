@@ -203,5 +203,11 @@
         "title": "SMS channel params",
         "description": "Page de configuration d'un sms",
         "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
+    },
+    {
+        "code": "API_SERVICE",
+        "title": "Service API",
+        "description": "Page de configuration d'un API",
+        "operations": ["READ", "CREATE", "UPDATE", "DELETE", "PRINT"]
     }
 ]

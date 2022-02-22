@@ -15,6 +15,8 @@ class ApiServiceController extends Controller
 {
     public function index()
     {
+        $this->authorize('ROLE_API_SERVICE_READ', ApiService::class);
+
         $apiServices = ApiService::orderBy('created_at')->with('apiServices')->with('apiServiceResponses')->with('apiServiceHeaders')->get();
 
         return new JsonResponse(['datas' => ['apiServices' => $apiServices]], 200);
@@ -22,6 +24,7 @@ class ApiServiceController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('ROLE_API_SERVICE_CREATE', ApiService::class);
         try {
             // $validation = $this->apiServiceValidator($request->all());
 
@@ -72,6 +75,7 @@ class ApiServiceController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('ROLE_API_SERVICE_UPDATE', ApiService::class);
         $apiService = ApiService::findOrFail($id);
         // dd($apiService);
 
@@ -128,18 +132,22 @@ class ApiServiceController extends Controller
 
     public function show($id)
     {
+        $this->authorize('ROLE_API_SERVICE_READ', ApiService::class);
         $apiService = ApiService::with('apiService')->with('apiServiceResponse')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
     public function edit($id)
     {
+        $this->authorize('ROLE_API_SERVICE_CREATE', ApiService::class);
         $apiService = ApiService::with('apiService')->with('apiServiceResponses')->with('apiServiceHeaders')->where('id', $id)->first();
         return new JsonResponse(['apiService' => $apiService], 200);
     }
 
     public function destroy($id)
     {
+        $this->authorize('ROLE_API_SERVICE_DELETE', ApiService::class);
+
         $apiService = ApiService::findOrFail($id);
         try {
             $success = false;
@@ -171,7 +179,7 @@ class ApiServiceController extends Controller
         }
     }
 
-    public function storeApiServiceResponse(Request $request, ApiService $apiService)
+    protected function storeApiServiceResponse(Request $request, ApiService $apiService)
     {
         try {
             ApiServiceResponse::where('api_service_id', $apiService->id)->delete();
@@ -195,7 +203,7 @@ class ApiServiceController extends Controller
         }
     }
 
-    public function storeApiServiceHeader(Request $request, ApiService $apiService)
+    protected function storeApiServiceHeader(Request $request, ApiService $apiService)
     {
         try {
             ApiServiceHeader::where('api_service_id', $apiService->id)->delete();

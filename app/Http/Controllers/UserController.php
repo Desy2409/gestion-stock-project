@@ -39,11 +39,11 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('ROLE_USER_READ', User::class);
-        $users = User::orderBy('created_at','desc')->orderBy('last_name')->orderBy('first_name')->get();
+        $users = User::orderBy('created_at', 'desc')->orderBy('last_name')->orderBy('first_name')->get();
         $userTypes = UserType::orderBy('wording')->get();
         $salePoints = SalePoint::orderBy('social_reason')->get();
 
-        $pages = Page::all();
+        $pages = Page::with('pageOperations')->get();
         $operations = Operation::all();
         // $pageOperations = PageOperation::with('page')->with('operation')->get();
 
@@ -86,11 +86,19 @@ class UserController extends Controller
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
                 $user->sale_points = $request->sale_points;
+                $user->user_type_id = $request->user_type;
+                $roles = [];
+                if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
+                    foreach ($request->page_operation_ids as $key => $pageOperationId) {
+                        $pageOperation = PageOperation::where('id', $pageOperationId)->first();
+                        array_push($roles, $pageOperation->code);
+                    }
+                }
                 $user->save();
 
                 $passwordHistory = new PasswordHistory();
                 $passwordHistory->user_id = $user->id;
-                $passwordHistory->password = $user->password;
+                $passwordHistory->password = Hash::make($user->password);
                 $passwordHistory->date = $user->date;
                 $passwordHistory->save();
 
@@ -151,6 +159,14 @@ class UserController extends Controller
                 $user->date_of_birth = $request->date_of_birth;
                 $user->place_of_birth = $request->place_of_birth;
                 $user->sale_points = $request->sale_points;
+                $user->user_type_id = $request->user_type;
+                $roles = [];
+                if (!empty($request->page_operation_ids) && sizeof($request->page_operation_ids) > 0) {
+                    foreach ($request->page_operation_ids as $key => $pageOperationId) {
+                        $pageOperation = PageOperation::where('id', $pageOperationId)->first();
+                        array_push($roles, $pageOperation->code);
+                    }
+                }
                 $user->save();
 
                 $passwordHistory = PasswordHistory::where('user_id', $user->id)->latest()->first();
@@ -316,6 +332,7 @@ class UserController extends Controller
             return Validator::make(
                 $data,
                 [
+                    'user_type' => 'required',
                     'email' => 'required|email',
                     'password' => 'required|min:8',
                     'last_name' => 'required|max:30',
@@ -324,6 +341,7 @@ class UserController extends Controller
                     'place_of_birth' => 'required|max:100',
                 ],
                 [
+                    'user_type.required' => "Le type d'utilisateur est obligatoire.",
                     'email.required' => "Le champ email est obligatoire.",
                     'email.email' => "Le champ email est incorrect.",
                     'password.required' => "Le champ mot de passe est obligatoire.",
@@ -343,6 +361,7 @@ class UserController extends Controller
             return Validator::make(
                 $data,
                 [
+                    'user_type' => 'required',
                     'email' => 'required|email',
                     'password' => 'required|min:8',
                     'last_name' => 'required|max:30',
@@ -351,6 +370,7 @@ class UserController extends Controller
                     'place_of_birth' => 'required|max:100',
                 ],
                 [
+                    'user_type.required' => "Le type d'utilisateur est obligatoire.",
                     'email.required' => "Le champ email est obligatoire.",
                     'email.email' => "Le champ email est incorrect.",
                     'password.required' => "Le champ mot de passe est obligatoire.",

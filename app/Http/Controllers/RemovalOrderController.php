@@ -64,6 +64,7 @@ class RemovalOrderController extends Controller
         $storageUnits = Provider::whereIn('provider_type_id', $idOfProviderTypeStorageUnits)->with('person')->get();
         $carriers = Provider::whereIn('provider_type_id', $idOfProviderTypeCarriers)->with('person')->get();
         $compartments = Compartment::orderBy('reference')->get();
+        $currentTourns = Tourn::where('state','!=','C')->get();
 
         $lastRemovalOrderRegister = RemovalOrderRegister::latest()->first();
 
@@ -78,6 +79,7 @@ class RemovalOrderController extends Controller
         return new JsonResponse(['datas' => [
             'removalOrders' => $removalOrders, 'purchaseOrders' => $purchaseOrders, 'compartments' => $compartments,
             'storageUnits' => $storageUnits, 'carriers' => $carriers, 'customsRegimes' => $this->customsRegimes,
+            'currentTourns' => $currentTourns, 
         ]], 200);
     }
 
@@ -165,7 +167,7 @@ class RemovalOrderController extends Controller
     public function show($id)
     {
         $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
-        $removalOrder = RemovalOrder::findOrFail($id);
+        $removalOrder = RemovalOrder::with('tourn')->with('client')->findOrFail($id);
         return new JsonResponse([
             'removalOrder' => $removalOrder
         ], 200);
@@ -174,7 +176,7 @@ class RemovalOrderController extends Controller
     public function edit($id)
     {
         $this->authorize('ROLE_REMOVAL_ORDER_READ', RemovalOrder::class);
-        $removalOrder = RemovalOrder::findOrFail($id);
+        $removalOrder = RemovalOrder::with('tourn')->with('client')->findOrFail($id);
         return new JsonResponse([
             'removalOrder' => $removalOrder,
         ], 200);
@@ -213,6 +215,7 @@ class RemovalOrderController extends Controller
                 $removalOrder->customs_regime = $request->customs_regime;
                 $removalOrder->storage_unit_id = $request->storage_unit;
                 $removalOrder->carrier_id = $request->carrier;
+                $removalOrder->transmitter_id = $request->transmitter;
                 // $removalOrder->sale_point_id = $request->sale_point;
                 $removalOrder->client_id = $request->client;
                 // $removalOrder->stock_type_id = $request->stock_type;
@@ -298,6 +301,7 @@ class RemovalOrderController extends Controller
                 $removalOrder->customs_regime = $request->customs_regime;
                 $removalOrder->storage_unit_id = $request->storage_unit;
                 $removalOrder->carrier_id = $request->carrier;
+                $removalOrder->transmitter_id = $request->transmitter;
                 // $removalOrder->sale_point_id = $request->sale_point;
                 $removalOrder->client_id = $request->client;
                 // $removalOrder->stock_type_id = $request->stock_type;
