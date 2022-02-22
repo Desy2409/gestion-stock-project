@@ -363,6 +363,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/removal-order/{id}/on-provider-select', [RemovalOrderController::class, 'trucksOfSelectedTransportProvider']);
     Route::get('/removal-order/{id}/on-truck-select', [RemovalOrderController::class, 'tanksOfSelectedTruck']);
     Route::get('/all-client-delivery-notes', [RemovalOrderController::class, 'loadAllClientDeliveryNotes']);
+    Route::get('/all-transfers', [RemovalOrderController::class, 'loadAllTransfers']);
     Route::get('/removal-order/{id}/on-client-delivery-note-select', [RemovalOrderController::class, 'datasOnClientDeliveryNoteSelect']);
     // Route::get('/removal-order/{id}/on-client-select', [RemovalOrderController::class, 'onClientSelect']);
     // Route::get('/removal-order/{id}/on-select', [RemovalOrderController::class, 'onCarrierSelect']);

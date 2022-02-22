@@ -144,7 +144,7 @@ class RemovalOrderController extends Controller
 
     public function loadAllTransfers()
     {
-        $transfers = Transfer::orderBy('created_at', 'desc')->with('productTransfers')->get();
+        $transfers = Transfer::orderBy('created_at', 'desc')->with('productsTransfersLines')->get();
         return new JsonResponse(['datas' => ['transfers' => $transfers]], 200);
     }
 
